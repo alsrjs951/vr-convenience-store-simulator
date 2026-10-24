@@ -1,0 +1,11 @@
+# schema=v1
+# id: [품종]_[형태]_[2자리번호] 키
+# name: 게임 내 표시명
+# price: 원 단위 정수
+# size_cm: 실측 W·D·H cm (구분자 ·, x, X 허용)
+# barcode_face: bottom|back|side
+# splat_path: Assets/GaussianSplats/Products/{id}.asset
+# scan_source: scaniverse|splatfacto
+# retake_count: 재촬영 횟수 (2 초과 시 dropped)
+# status: draft|scanned|cleaned|prefab|live|dropped
+id,name,price,size_cm,barcode_face,splat_path,scan_source,retake_count,status

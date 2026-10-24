@@ -1,0 +1,5 @@
+# file: Data/scenarios.csv
+# items 형식: {product_id}x{수량}|{product_id}x{수량} ...
+# special 허용값: none|microwave|hotwater|oneplus
+# product_id는 Data/products.csv의 status=live 행과 조인
+order_id,day,seq,spawn_after_prev_sec,time_limit_sec,payment,bag,special,items

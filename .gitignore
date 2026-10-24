@@ -1,0 +1,11 @@
+capture/
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+[Oo]bj/
+.vs/
+*.csproj
+*.sln
+*.user

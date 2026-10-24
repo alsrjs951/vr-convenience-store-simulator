@@ -1,0 +1,4 @@
+*.ply filter=lfs diff=lfs merge=lfs -text
+*.spz filter=lfs diff=lfs merge=lfs -text
+Assets/GaussianSplats/**/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/GaussianSplats/**/*.bytes filter=lfs diff=lfs -text
