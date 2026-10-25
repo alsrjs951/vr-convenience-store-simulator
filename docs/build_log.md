@@ -15,3 +15,4 @@
 | 날짜 | 빌드# | 커밋 | fps | 차질 요약 |
 |------|-------|------|-----|-----------|
 |      |       |      |     |           |
+| 2026-10-25 | P0 macOS | de32f65 이후 작업트리 | - | Unity 6.3 프로젝트·패키지 5종 고정(URP 17.3.0·XRI 3.6.1·OpenXR 1.18.0·XRPM 4.7.0·GaussianSplatting v1.1.0), URP·레이어·태그·충돌 매트릭스 설정, 샘플 스플랫(1200 가우시안) Metal 렌더 성공 — 증거 docs/p0/splat_render_check_macos_metal.png |

@@ -1,0 +1,15 @@
+
+
+## License and External Code Used
+
+The code I wrote for this is under MIT license. The project also uses several 3rd party libraries:
+
+- [zanders3/json](https://github.com/zanders3/json), MIT license, (c) 2018 Alex Parker.
+- "DeviceRadixSort" GPU sorting code contributed by Thomas Smith ([#82](https://github.com/aras-p/UnityGaussianSplatting/pull/82)).
+- Virtual Reality fixes contributed by [@ninjamode](https://github.com/ninjamode) based on
+  [Unity-VR-Gaussian-Splatting](https://github.com/ninjamode/Unity-VR-Gaussian-Splatting).
+
+However, keep in mind that the [license of the original paper implementation](https://github.com/graphdeco-inria/gaussian-splatting/blob/main/LICENSE.md)
+says that the official _training_ software for the Gaussian Splats is for educational / academic / non-commercial
+purpose; commercial usage requires getting license from INRIA. That is: even if this viewer / integration
+into Unity is just "MIT license", you need to separately consider *how* did you get your Gaussian Splat PLY files.
