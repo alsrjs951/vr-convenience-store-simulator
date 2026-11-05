@@ -66,7 +66,7 @@
 - [ ] Project Settings → **XR Plug-in Management** → **PC 탭**에서 **OpenXR**에 체크.
 - [ ] OpenXR 하위 설정에서 **Interaction Profiles → Add: Oculus Touch Controller Profile** 추가(Meta Quest 2 컨트롤러 — 2026-11-06 기종 확정, 마일스톤 P0-L2·구현 문서 2.7절).
 - [ ] **Stereo Rendering Mode = Multi-pass**로 설정(기본값; 필요 시 Single Pass Instanced와 양안 정렬 비교 — 마일스톤 P0-L2·리스크표).
-- [ ] (Quest 2 유선 Link로 실기 테스트가 가능할 때) Link 접속 후 에디터 Play에서 양안 출력 확인 — HMD 확보는 P0-K3 경로 사용. 이 항목은 P0에서 필수 아님(종료 기준은 XR Device Simulator).
+- [ ] 보유 Quest 2(2026-11-06 확보)를 유선 Link로 연결해 에디터 Play에서 양안 출력 확인 — Meta Quest Link 앱 설치·72Hz 설정은 마일스톤 P0-K3b. P0 마감(11/06) 또는 P1 첫날(11/07)에 수행(G1-H 사전 확인).
 
 ## 8. 레이어·태그·충돌 매트릭스 (P0-L3)
 
