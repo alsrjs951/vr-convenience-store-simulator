@@ -115,12 +115,13 @@ vr-convenience-store-simulator/
 │     │  ├─ PaymentZones.cs                  # CardSlotZone, CashDrawer, ChangeTray 판정
 │     │  ├─ TaskZones.cs                     # ShelfSlotZone(진열 — 용량·유닛 컷아웃), DisposalBinZone(폐기), MicrowaveZone, WaterDispenserZone, BoxStandSocket, BoxRecycleZone
 │     │  ├─ StockBox.cs                      # 입고 박스 상태 머신(Sealed→…→Recycled) + BoxFlap + TapeCutPath + BoxUnit
-│     │  └─ BoxCutter.cs                     # 커터 잡기·홀더 자동 복귀, CutterBlade 체크포인트 통과 판정
+│     │  ├─ BoxCutter.cs                     # 커터 잡기·홀더 자동 복귀, CutterBlade 체크포인트 통과 판정
+│     │  └─ PlacementPreview.cs              # 진열 미리보기: 시선점·0.6m 후보·히스테리시스, 흐린 LOD1 고스트 + 초록/빨강 테두리
 │     ├─ Gameplay/
 │     │  ├─ GameManager.cs                   # 일차 진행(Intro→Shift→Settlement→DayEnd) 및 점수 정산
 │     │  ├─ POSController.cs                 # 스캔 목록 합산, [-] 스캔 취소 버튼, 1+1 할인, 결제 승인 이벤트
 │     │  ├─ CustomerDirector.cs              # 3D 손님 캐릭터 NavMesh 스폰·이동·바구니 배치·주문 HUD·음성
-│     │  ├─ IntakeDirector.cs                # 입고 박스 스폰·중간 도착·진열 집계(완료율·오진열·정면 진열·미수거)
+│     │  ├─ IntakeDirector.cs                # 입고 박스 스폰·중간 도착·진열 집계(완료율·오진열·미수거)
 │     │  └─ TutorialController.cs            # 1일차 6단계 조작 체인 + 2일차 입고 안내 4단계(I1~I4)
 │     └─ Rendering/
 │        ├─ SplatShelfSlot.cs                # 진열대 집기/놓기 시 GaussianSplatCutout 토글 + m_RenderOrder 전환
@@ -332,13 +333,14 @@ vr-convenience-store-simulator/
 
 #### B. 이민건 (2·3일차 확장 과제 · 컷아웃/LOD 시스템 · HMD 72fps 최적화)
 - [ ] **P4-L1. 2일차 입고 박스 개봉·진열(`restock`) 및 유통기한 폐기(`dispose`) 구현 (`5.7절`, `6.4절`)**:
-  - 선행 확인(착수 첫날): 칸 1개·박스 1개 규모로 ① 박스 벽(불투명 메시) 뒤 경량 스플랫 가림 ② 유닛 컷아웃 경계 품질을 먼저 확인(구현 문서 7.3절).
+  - 선행 확인(착수 첫날): 칸 1개·박스 1개 규모로 ① 박스 벽(불투명 메시) 뒤 경량 스플랫 가림 ② 유닛 컷아웃 경계 품질 ③ 고스트용 `m_OpacityScale` 흐림 동작(안 되면 초록 테두리 + 상품명 라벨로 대체)을 먼저 확인(구현 문서 7.3·5.7.5절).
   - 프로젝트 설정: 레이어 `Tool`(13번) 추가, 충돌 매트릭스 `Tool` ↔ `Zone`만 허용.
   - `DeliveryLoader.cs`: `Data/deliveries.csv` 로드 + 검증 6항목(live 상품·칸 존재/상품 일치·`case_qty ∈ {4,6,8}`·칸 용량·도착 순번·경량본 존재) + `"처리 N건 / 스킵 M건"` 요약 로그.
   - `StockBox.cs`: `Sealed → Carried → Docked → TapeCut → Open → Empty → Recycled` 상태 머신. `StockBox.Build(ProductData, caseQty)`로 단층 치수 생성(내부 = 열×W+1cm × 행×D+1cm × H+1cm), 손잡이 `HandleL/R`로만 잡기(`XRGrabInteractable` Movement Type Instantaneous, 2kg), 측면 TextMeshPro 라벨(상품명 ×수량·대상 칸).
   - `BoxFlap`: 손 위치 투영 각도로 0~210° 회전, 놓을 때 110° 이상 완전 개방 스냅, 보조 플랩 연동. `TapeCutPath`: 체크포인트 6개 순서 통과(양방향, 간격 2초 이내), `Docked`에서만 판정. `BoxCutter.cs`: 놓으면 1초 후 홀더 복귀.
   - `BoxUnit`: 경량 스플랫 유닛을 잡으면 렌더러 끄고 풀의 원본 4겹 프리팹으로 선택 이양(`m_RenderOrder = 10`), 낙하·오진열 시 유닛 자리로 리스폰.
-  - `ShelfSlotZone` 확장: `slotId`·`productId`·`capacity`·`unitPoses`·`unitCutouts`, 수용 판정(상품 일치·잔여 용량·존 안 SelectExit) → 0.15초 스냅 → `SlotRenderMode`(`Individual` = kinematic 고정 / `Merged` = 디스폰 + 유닛 컷아웃 해제). 오진열·만석 '땡'. 정면 진열(앞면 ±60°) 집계.
+  - `ShelfSlotZone` 확장: `slotId`·`productId`·`capacity`·`unitPoses`·`unitCutouts`·`filled`, 채움 순서 '열마다 앞자리 → 뒷자리', `Commit(p, unit)` → 0.15초 스냅 → `SlotRenderMode`(`Individual` = kinematic 고정 / `Merged` = 디스폰 + 유닛 컷아웃 해제). 일차 시작 시 뒷열 → 앞열 오른쪽 순으로 비움.
+  - `PlacementPreview.cs`(구현 문서 5.7.5절): 머리 방향 레이 시선점(칸 존 미적중 시 손 위치) + 손 0.6m 이내 입고 대상 칸만 후보 → 가장 가까운 열의 다음 빈자리 선택(5cm·0.2초 히스테리시스) → 맞는 칸은 경량본 `{id}_LOD1` 고스트(`m_OpacityScale` ≈ 0.3, `m_RenderOrder = 5`) + 초록 테두리(불투명 Unlit 선), 틀린 칸·만석 칸은 빨간 테두리만. 놓을 때 초록 = 수용, 빨강 = 오진열('땡' + 유닛 자리 리스폰), 표시 없음 = 일반 낙하. 표시·자리 변경 시 햅틱 0.1 / 0.02초.
   - `BoxStandSocket`(앵커 ②③, 허리 높이 0.8m)·`BoxRecycleZone`(앵커 ⑥), 동시 개봉 1개 규칙, `IntakeDirector.cs`(시작 입고·중간 도착 스폰·알림, 진열 집계 → 정산 항목 4종).
   - 2일차 입고 안내 I1~I4(`TutorialController` — `IntakeTutorialStep`), 첫 손님 스폰은 I4 완료 또는 90초 후.
   - 유통기한 폐기: 일차 시작 시 무작위 3개 슬롯(그 일차 입고 대상 칸 제외) 상품에 만료 마커(`IsExpired = true`) 부여 → 플레이어가 집어 `DisposalBinZone`(폐기함)에 넣으면 폐기 카운트 +1(정상 상품 투입 시 '땡' + 오탐 감점).
