@@ -1,0 +1,921 @@
+# VR 편의점 알바 시뮬레이터 — 구현 문서
+
+> 통합 편집 기준일: 2026-10-24(1차)·동일 일자 지적 반영(2차)·2026-10-25 사용자 결정 반영(D1~D6 확정, 3차)·**2026-10-25 기술 검증 및 하드 제약 강화 반영(D9 신설·미해소 전수 종결, 4차)**·**2026-11-06 HMD 기종 Meta Quest 2 확정 및 입고 박스 개봉·진열 추가(D2 갱신·D10 신설, 5차)**. 원본: `docs/_sections/` 01~09 섹션. 내용은 보존 원칙으로 다듬되, 독립 검토가 확인한 장 간 수치·규격 불일치와 패키지 기술 사양 오류는 1.3절 **원본 우선순위 규칙** 및 업스트림(`UnityGaussianSplatting v1.1.0`) 실제 명세에 따라 정렬했다 — 채택되지 않은 원문 값은 **불일치 해소 대장**(아래)에 보존한다.
+
+## 개요
+
+권도훈·이민건 2인 팀이 교내 과제(외부 비공개)로 제작하는 VR 편의점 알바 시뮬레이터의 구현 문서다. Unity 6.3 LTS(URP)·OpenXR·XR Interaction Toolkit 위에 `UnityGaussianSplatting(v1.1.0)`을 얹어 실제 편의점 상품을 3DGS(가우시안 스플래팅)로 재현하고, 동일 촬영 데이터셋으로 NeRF(`nerfacto`)와 3DGS(`splatfacto`·`Scaniverse`) 비교 실험을 수행한다. 목표 런타임은 **Meta Quest 2 + Link/PCVR·72fps**(2026-11-06 기종 확정)이며, 상시 대여 불확실성에 대비해 평시 개발은 XR Device Simulator·에디터를 병행하되 **핵심 검증(G1-H)과 기능 동결(M3)·최종 발표(M4)에서는 반드시 HMD 실기기를 확보(교내 대여·연구실 공유·단기 렌탈 3중 경로)하여 VR 실기 구동·시연을 완수**한다(D2·D9). 상품은 촬영 → 학습(Scaniverse 1차 → 집 데스크톱 RTX 4070의 splatfacto 2단계, 맥북에서 원격 연결) → 정제(SuperSplat) → Unity 스플랫 에셋 변환(`GaussianSplatAsset`) → 상품 표(CSV) 기입 → 자동 프리팹(스플랫·프록시 콜라이더·바코드 트리거·ProductData 4겹) → 진열대 재병합 절차로 **상한 없이 계속 반입**한다(D5). 손님은 사람 캐릭터(무료 에셋 + 최소 애니메이션)로 등장하며 주문 HUD·바구니·음성이 함께 구동된다(D4). 게임은 3일차 근무(튜토리얼 → 스캔·봉투·결제 → 입고 박스 개봉·진열·폐기·특수 요청 → 정산, 총 10~15분)로 구성되며, 2·3일차의 진열은 매장에 입고된 상품 박스를 커터로 뜯어 상품을 한 개씩 꺼내 칸에 채우는 흐름이다(D10, 5.7절). 일정은 **구체적 날짜 없이 순서·의존 관계로만** 정의한다(D1). 아래 결정(D1~D10)은 2026-10-25·2026-11-06 사용자 요구사항으로 확정됐다(1장 결정 표).
+
+> [!IMPORTANT]
+> **프로젝트 3대 절대 제약 (Hard Constraints — D9, 타협·폴백 불가)**
+> 1. **3D 공간·입체 에셋 필수**: 매장 환경·손님 캐릭터·상품 상호작용 전 과정을 3D 공간에서 구현한다. 원거리 진열대 등을 2D 평면 이미지('사진 판'/Quad)로 대체하는 편법을 금지하며, 원거리 경량화 역시 100% 3DGS 기반(가우시안 Decimation 및 SH 압축 포맷)으로만 수행한다.
+> 2. **HMD(VR) 실기기 활용 필수**: 평시 개발 편의를 위해 XR Device Simulator를 활용하더라도, 최종 결과물은 반드시 **HMD(VR) 실기기**에서 동작해야 한다. '비-VR 에디터/시연 영상만으로 최종 발표를 대체'하거나 '실기기 검증을 생략'하는 구성을 배제하고, 3중 확보 경로(학과 대여 → 타 연구실 공유 → 민간 단기 렌탈)를 통해 실기기 검증(G1-H)과 최종 VR 시연(M3·M4)을 의무 수행한다.
+> 3. **NeRF 또는 3D 가우시안 스플래팅(3DGS) 필수 활용**: 매장 내 모든 상품 에셋은 **100% 3DGS**로 구현하며, **NeRF(`nerfacto`)**는 동일 데이터셋 기반 정량·정성 비교 실험(9.3절)에 필수로 활용한다. 어떠한 경우에도 3DGS를 포기하고 전통 폴리곤 메시+텍스처로 회귀하는 **'메시 폴백'은 선택지에서 영구 배제**한다.
+
+### 핵심 기술 결정
+
+- **절대 제약 수호(D9·신설)** — **3D + HMD(VR) + NeRF/3DGS 무조건 활용.** 폴리곤 메시 폴백 금지, 2D 사진 판(Quad) 대체 금지, 비-VR 시뮬레이터 단독 최종 발표 금지. → 전 장 공통
+- **엔진·런타임(D2·D7)** — Unity 6.3 LTS(URP, Render Graph 활성) + OpenXR + XR Interaction Toolkit, 목표 런타임 **Meta Quest 2 + Link(유선)/PCVR**(2026-11-06 확정, 컨트롤러 프로필 `Oculus Touch Controller Profile` — 2.7절), Direct3D 12 강제. **평시 개발은 XR Device Simulator 병행, 핵심 관문(G1-H·M3·M4)은 HMD 실기기 구동 필수**(D2, 3중 확보 경로 운영). Unity 6.0(6000.0.23f1) 폴백을 G1 게이트에서 병행 검증. → 2장·8장·9장
+- **3DGS 렌더링** — `UnityGaussianSplatting(aras-p, v1.1.0)` UPM `?path=/package` 커밋 고정(패치 시 `Packages/` 로컬 임베드), URP Renderer에 `GaussianSplatURPFeature` 등록 및 Render Graph 호환 모드 해제, 무조명 파이프라인, MSAA Off, 다중 렌더러 `m_RenderOrder` 분리. → 2장·7장
+- **학습 인프라 및 NeRF·3DGS 병행(D3·확정)** — 집 데스크톱 **Windows + RTX 4070**에서 `splatfacto`(3DGS) 및 `nerfacto`(NeRF 비교 실험) 학습(맥북에서 원격 연결로 실행). 상품 스캔 경로는 1차 Scaniverse(폰 완결) → 반사 재질 불량 시 무광 스프레이/편광 필터 재촬영 + splatfacto 2단계. Colab 플랜 B는 예비. macOS는 정제·데이터 관리 담당. → 3장·9장
+- **팀 인터페이스(D8)** — 상품 표(CSV)와 정제 스플랫 파일(`.ply`/`.spz` → Unity `GaussianSplatAsset`)이 2인 팀의 유일한 연결 계약. '표 한 줄 = 상품 추가' 주장은 실제 절차(촬영→학습→수동 정제→에셋 변환→표 기입→자동 프리팹→재병합)로 수정. → 3장·4장
+- **손님 표현(D4·확정)** — 사람 캐릭터 도입. 무료 에셋 + 최소 애니메이션(idle·walk·leave) + NavMesh 이동이 원칙(커스텀 제작·리깅 없음). 주문 HUD·바구니·음성은 유지. → 6장
+- **스코프 관리(D5·확정)** — 상품 수 상한 **없음**(계속 추가). 관리 장치는 스플랫 수 예산(7.2절)과 재촬영 상한(2회 초과 → 목록 제외 후 스캔 우호적 실물 상품으로 대체, 100% 3DGS 유지). 특수 요청은 MVP(M2) 완료 후에만 착수(순서 트리거 T1). → 8장
+- **IP·라이선스(D6·확정)** — 외부 비공개 프로젝트, 실제 브랜드 상품 촬영·사용 확정. 가우시안 래스터화 INRIA 상업 라이선스 요건은 상업 전환 시에만 해당됨을 명시. → 3장
+- **입고 박스 개봉·진열(D10·신설)** — 2·3일차 진열을 '입고 카트의 박스 운반 → 커터로 테이프 절단 → 플랩 개방 → 상품 1개씩 꺼내 칸에 진열 → 빈 박스 수거'로 구체화. 박스는 매장 집기 메시(상품 아님), 박스 안 상품과 진열 결과는 100% 3DGS. → 5.7절(원본)·6장·7장
+- **순서 기반 일정(D1·확정)** — 스캔 테스트는 미실시(사용자 확인). 구체적 날짜를 두지 않고 순서·의존 관계로만 계획하며, G1 게이트가 첫 단계. 지연은 디스코프 트리거로 흡수. → 8장·9장
+
+### 편집 방침 (통합 규칙)
+
+1. **용어 통일** — '상품 표(CSV)'(`Data/products.csv`, 최초 언급 시 병기, 이후 '상품 표'), '스플랫'(원문 7장의 '스플릿'), '렌더러'(원문 7장의 '렌더더'), '객관분석'(`docs/제안서_객관분석.md`, 원문의 '분석'·'제안 분석').
+2. **상호 참조** — 장 단위 `(N장)`, 절 단위 `N.M절`.
+3. **번호 정렬** — 원 섹션 01~09를 1장~9장으로, 각 절은 `N.M`으로 번호 재부여(예: 원 02 섹션의 '§2 설치 절차' → 2.2절).
+4. **중복 제거** — 상품 추가 실제 절차의 상세 정의는 4.6절에, 튜토리얼 단계의 상세 정의는 5.6절에 두고 3장·6장은 요약 + 상호 참조로 대체.
+5. **경로 갱신** — 1장 갱신 절차의 `rg` 검색 경로를 통합 문서 경로로 바꿈(`docs/_sections/` → 이 파일).
+
+### 불일치 해소 대장 (2026-10-24 통합 편집 · 2026-10-25 4차 개정 완결)
+
+독립 검토가 확인한 원문 섹션 간 수치·규격 불일치와 기술 검증에서 발견된 패키지/아키텍처 오류를 **1.3절 원본 우선순위 규칙** 및 **D9 하드 제약**으로 정렬했다. 채택되지 않은 원문 값은 아래 표에 보존하며, 기존 미해소 항목(2건) 및 낮음 등급 보류 항목(4건)까지 4차 개정에서 전수 해소했다.
+
+**해소 기록**
+
+| # | 항목 | 채택(원본 장) | 원문 대체값(보존) | 반영 |
+|---|---|---|---|---|
+| 1 | 게이트 판정 시점 | G1 게이트 단계 내 판정, 측정은 그 직전 통합 점검에서 완료(8장 — 2026-10-25 순서 기반 개정) | 9.1절 '판정 10/30(금)'·8장 구(舊) 날짜(3차 개정으로 폐기) | 9.1절·10장 |
+| 2 | 스캔 품질 판독 거리 | 계산대 거리 ~50cm, 브랜드명+가격 숫자 판독(9.1절 G1-a — 게이트 수치 원본) | 8.3절 'HMD 1m 시점 제품명·라벨 판독' | 8.3절 |
+| 3 | 게이트 상품당 처리 시간 | ≤3시간/상품, 재촬영 제외(9.1절 G1-b) | 8.3절 '최초 1종 8시간·2·3종 각 4시간' / 8.1절 '4시간×8종' (3.8절 1.5~2시간은 상시 목표로 구분) | 8.1·8.3절 |
+| 4 | fps 판정·측정 길이·측정 장면 | 용도 분리 — 게이트: 30초×3회·평균 72fps·드롭 <5%·G1-c/G1-H 장면(9.1절) / 상시 최적화: 60초×3회·p95 ≤ 13.5ms·드롭 <1%·S1/S2 장면(7.1절) | 8.3절 '3종 진열+파지 30cm 회전·평균 72fps'(드롭 기준 없음) | 7.1·8.3·9.1절 |
+| 5 | G1 시험 스캔 3종 구성 | 매트(과자 봉지)·인쇄(삼각김밥 랩)·반사(페트병·캔) 각 1종(9.1절 — G1-a 부분 Go 분기가 이 구성에 의존) | 3.7절 '무광 1+페트병·캔 2' / 구(舊) 8.2절 '인쇄 봉지·페트병·유광 플라스틱' | 3.7·8.2절 |
+| 6 | 스플랫 수 예산 | 용도 분리 — 게이트 통과 기준 15만/200만(9.1절) / 게이트 이후 최적화 목표 10만·30만·150만(7.2절, G1·G1-H 실측으로 확정·조정) | (수치는 쌍방 보존, 용도 부여) | 7.2·9.1절 |
+| 7 | P2말 반입 물량 | 누적 ~11종(8장 — 물량 원본) | 9.2절 '10종' | 9.2절·10장 |
+| 8 | 반입 포맷·에셋 경로 | SuperSplat 정제 후 표준 `.ply`(또는 SPZ v2) 출력 → Unity `Create GaussianSplatAsset`으로 `Assets/GaussianSplats/Products/{id}.asset` 런타임 에셋 단일화(3.1·4.1절). (SuperSplat 기본 SPZ v4 ZSTD와 `UnityGaussianSplatting v1.1.0`의 Gzip SPZ v2 파서 간 버전 불일치 예방) | 3차 개정의 `.spz` 직접 참조 / 구 4.1절 `Assets/Splats/*.ply` | 2.2·3.1·3.4·4.1·4.3·4.6절 (구 미해소 1 종결) |
+| 9 | 바코드 트리거 ③ 규격 | 면적 100% × 두께 0.02m, 프록시 내부 완전 포함(4.3·4.4절 — 프리팹 계약 원본, 4.6절 자동 검증과 정합) | 5.2절 '면적 80%·바깥 2mm 돌출' | 5.2절 |
+| 10 | 재촬영 제외 임계값 | `retake_count` > 2 = 총 촬영 3회(D5 결정 표·3.7절·4.6절 검증 원본) | 3.5절 '3 초과(≥4)' / 4.1절 '3 이상(≥3)' | 3.5·4.1·8.5절 |
+| 11 | `status` 열거값 | `dropped`(재촬영 상한 초과 제외 — 8.5절 T2가 사용)을 4.1·4.2절에 등록 | (미정의 상태였음) | 4.1·4.2절 (4.7절 스키마 절차 병행) |
+| 12 | 성능 측정 기록 스키마 | 9.5절을 단일 원본으로 컬럼 통합(7.5절의 백분위·스케일·FSR·`git_rev` 병합) | 7.5절 별도 스키마 / 9.5절 구 스키마(`resolution_scale`) | 7.1·7.5·8.6·9.5절 |
+| 13 | INRIA 상업 라이선스 요건 | 3.9절 신설 — D6 요건 기술 + P0 `LICENSE` 확인 절차 | (3장에 서술 없었음 — D6 반영 누락) | 3.9절·2.2절 |
+| 14 | **[4차] 하드 제약 위배 폴백 제거(D9)** | **메시 폴백·2D 사진 판(Quad)·비-VR 최종 발표 대체를 전면 폐기.** 3DGS/NeRF 내 기술 대안(Unity 6.0 전환·무광 코팅/편광 촬영·splatfacto·3DGS Decimation/SH 축소 LOD) 및 HMD 3중 확보 경로(학과 대여·연구실 공유·단기 렌탈)로 대체 | 3차 개정의 '메시 폴백(8.4·9.1절)', '사진 판(7.2·7.3·8.4절)', '발표 시점 미확보 시 에디터 데모 대체(8.3·9.4절)' | 개요·1.2·2.6·3.7·7.2·7.3·8.2~8.4·9.1·9.4·10장 |
+| 15 | **[4차] UPM 설치 경로·URP Render Graph 누락** | Git URL에 `?path=/package#v1.1.0` 명시(패치 시 `Packages/` 로컬 임베드), URP Renderer에 `GaussianSplatURPFeature` 추가 + `Render Graph Compatibility Mode = OFF` + 에셋 생성 메뉴 `Tools → Gaussian Splats → Create GaussianSplatAsset`으로 정정 | 2.2절 구 URL(루트 경로 — 설치 실패), 우클릭 컨텍스트 메뉴(미존재), URP Feature 누락 | 2.1·2.2·4.5·4.6절 |
+| 16 | **[4차] 컷아웃 및 다중 렌더러 정렬** | `GaussianSplatCutout`(`m_Type=Box`, `m_Invert=true`, `m_Cutouts` 배열 등록) + 파지 시 개별 상품 `m_RenderOrder = 10`(진열대 `0`) 적용 | 7.3절 '컷아웃 텍스처'(미존재 개념) | 2.4·7.3절 |
+| 17 | **[4차] 폴더 구조·LFS 매핑(구 미해소 2)** | 외부 원본·작업 공간 `capture/products/{id}/{raw,scans,cleaned}/`(Git 제외) ↔ Unity LFS 추적 공간 `Assets/GaussianSplats/{Products,Merged}/`로 역할 분리·통합 | 2.6절 `Artifacts/Raw·Clean·Merged/` 별도 표기 | 2.6·3.1절 |
+| 18 | **[4차] 시나리오 경로·특수 요청·진열·폐기 명세(구 보류 ①)** | 시나리오 CSV 경로 `Data/scenarios.csv` 확정. 2일차 진열(`ShelfSlotZone`)·폐기(`DisposalBinZone`) 및 3일차 전자레인지(`MicrowaveZone`)·온수기(`WaterDispenserZone`) VR 트리거·타이머 규칙 명세화 | 6.4·6.5절 경로 미지정 및 구현 명세 부재 | 5.1·6.3·6.4·6.5절 |
+| 19 | **[4차] 컴포넌트·레이어·C# 참조 통일(구 보류 ②·③)** | 시스템 명칭 `GameManager`·`CustomerDirector`·`CatalogLoader`·`DayScenarioLoader` 통일. 자식 오브젝트 `BarcodeTrigger`·레이어 `BarcodeFace`·태그 `Barcode` 통일. 5.3절 `GetComponentInParent<ProductPrefab>().Data`로 ScriptableObject 참조 오류 수정 | `GameDirector`/`CustomerService`, `GetComponentInParent<ProductData>()`(컴파일 오류) | 2.3·4.3·5.1·5.2·5.3·6.2절 |
+| 20 | **[4차] 스캔 취소·텔레포트 앵커 명세(구 보류 ④)** | POS 월드스페이스 UI 품목 행 우측 `[−]` 취소 버튼(Poke/Ray 클릭) + 매장 내 고정 `TeleportationAnchor` 5개소 배치로 멀미 방지 및 취소 조작 확정 | 5.1·5.3절 '트래시 존' 미정의 및 진열대 이동 방식 미명시 | 5.1·5.3절 |
+| 21 | **[5차] 타깃 HMD 기종 확정(D2)** | **Meta Quest 2 + Link(유선 USB-C)/PCVR**, OpenXR `Oculus Touch Controller Profile`, 측정 장치 표기 `device=quest2-link`, 절대 판정은 Quest 2 실측만 유효(2.7절 신설) | 4차의 'Quest 3 + Link', `Meta Quest Touch Plus Controller Profile`, `device=quest3-link`, 2.6절 '(또는 Quest 2/Pro 등 OpenXR 호환 기기)' | 개요·1.2·2장·5.1·7.1·8.3·8.6·9장·10장 |
+| 22 | **[5차] 진열 보충 방식(D10)** | 입고 카트의 상품 박스를 거치대로 운반 → 커터로 테이프 절단 → 플랩 개방 → 1개씩 진열 → 빈 박스 수거(5.7절 신설·원본). 텔레포트 앵커 6개소(⑥ 창고 입구 추가), 레이어 `Tool` 추가, 대표 측정 장면 S1b 추가 | 4차 6.4절 '계산대 하단 보충 박스에서 집어 빈 슬롯에 놓기'(1슬롯=1개), 5.1절 앵커 5개소 | 2.3·4.6·5.1·5.2·5.7·6.2~6.5·7.1~7.3·8.2·9.2·10장 |
+
+고정 커밋 해시(또는 릴리스 태그 `v1.1.0` = `c2a42f5` 계열)는 2.2절 4번의 기입란에 셋업 시 기록한다(재현성의 원본 — 2.1절). **미해소 항목 0건(전수 해소 완료).**
+
+## 목차
+
+1. [확정된 결정 사항](#1-확정된-결정-사항-2026-10-25-확정) — 1.1 질의응답 기록 · 1.2 결정 표 · 1.3 갱신 규칙
+2. [시스템 아키텍처](#2-시스템-아키텍처--unity-63-ltsurpopenxrxr-interaction-toolkitunitygaussiansplatting) — 2.1 레이어 구조와 패키지 버전 규칙 · 2.2 설치 절차 체크리스트 · 2.3 씬·컴포넌트 구성 · 2.4 렌더러 공식 제약의 설계 반영 · 2.5 Unity 6.0 폴백 전환 조건 · 2.6 기기 분담·HMD 확보 경로·GitHub 협업 규칙 · 2.7 Meta Quest 2 타깃 사양과 설계 반영
+3. [3DGS 에셋 파이프라인](#3-3dgs-에셋-파이프라인--촬영학습정제에셋-변환상품-표자동-프리팹) — 3.1 6단계 개요 · 3.2 S1 촬영 · 3.3 S2 학습 2단계 및 NeRF 병행 · 3.4 S3 정제 및 S4 에셋 변환 · 3.5 S4 상품 표 기입 · 3.6 S5 자동 프리팹 · 3.7 품질 판정·재촬영 규칙 · 3.8 상품당 시간 예산 실측 양식 · 3.9 라이선스·IP
+4. [데이터 구조](#4-데이터-구조--상품-표csv-스키마와-프리팹-4겹-구조) — 4.1 상품 표 CSV 스키마 v1 · 4.2 status 상태 머신 · 4.3 프리팹 4겹 계약 · 4.4 바코드 면 열거형과 배치 규칙 · 4.5 스케일 보정 규칙 · 4.6 '상품 표 한 줄 추가 → 프리팹 자동 생성' 실제 절차와 검증 · 4.7 소유권과 변경 절차
+5. [VR 인터랙션](#5-vr-인터랙션--잡기회전-바코드-판정-봉투결제) — 5.1 씬 계층·텔레포트 앵커·레이어 매트릭스 · 5.2 잡기·회전·내려놓기 · 5.3 바코드 판정 및 스캔 취소 · 5.4 봉투 담기 · 5.5 카드·현금 결제·거스름돈 · 5.6 1일차 튜토리얼 · 5.7 입고 박스 개봉·진열
+6. [게임플레이 루프](#6-게임플레이-루프--손님-캐릭터근무-흐름정산3일차-시나리오) — 6.1 손님 시스템(3D 캐릭터) · 6.2 근무 흐름 상태 머신 · 6.3 3일차 시나리오 수치 · 6.4 진열·폐기 및 특수 요청 구현 명세와 디스코프 트리거 · 6.5 정산과 시나리오 데이터
+7. [렌더링 성능 최적화](#7-렌더링-성능-최적화--진열대-병합invert-컷아웃원거리-3dgs-경량화72fps) — 7.1 목표·측정 기준 · 7.2 스플랫 수 예산 · 7.3 4단계 전략 · 7.4 오버드로 근본 대응 · 7.5 측정 일정
+8. [일정·마일스톤](#8-일정마일스톤--순서-기반-계획날짜-없음) — 8.1 계획 원칙 · 8.2 단계×담당(순서) · 8.3 HMD 개발·검증 이원화 및 실기기 의무 확보 · 8.4 G1 게이트 판정·No-go 플랜 B · 8.5 디스코프 트리거 발동·기록 절차 · 8.6 주 2회 통합 빌드 점검
+9. [테스트·평가 계획](#9-테스트평가-계획--게이트-판정-기준통합-빌드-점검nerf3dgs-비교-실험) — 9.1 G1 Go/No-go 게이트(+G1-H 실기기) · 9.2 주 2회 통합 빌드 점검 · 9.3 NeRF·3DGS 비교 실험 · 9.4 실재감·멀미 설문 · 9.5 측정 기록 통합 스키마
+10. [전체 마일스톤 요약](#10-전체-마일스톤-요약)
+
+---
+
+## 1. 확정된 결정 사항 (2026-10-25 확정)
+
+이 문서(2~9장)의 모든 선택은 아래 결정 표에서 파생한다. **이 표가 채택값의 유일한 원본**이며 각 장은 결정 ID만 참조한다(드리프트 방지).
+
+### 1.1 질의응답 기록 (1차 미응답 → 2차 확정 → 4차 하드 제약 강화 → 5차 기종 확정·기능 추가)
+
+1차(2026-10-24)에 6개 결정 질문(Q1 게이트 결과 / Q2 HMD 기종 / Q3 학습 인프라 / Q4 손님 표현 / Q5 상품 수 상한 / Q6 IP·라이선스)을 물었으나 응답이 없어 권장안을 임시 기본값으로 채택했고, **2차(2026-10-25)에 사용자가 전 항목 답변해 D1~D6를 확정했으며, 이어서 3D · HMD(VR) · NeRF/3DGS를 무조건 활용해야 한다는 절대 제약(D9)을 반영해 D2·D7·플랜 B 전반을 보강했다.** 주요 변경: D1 날짜 제거·순서 기반 전환 + 스캔 테스트 미실시 확인 / D2 평시 시뮬레이터 병행하되 **HMD 실기기 확보·검증·최종 시연 필수(3중 확보 경로)** / D3 RTX 4070 원격 학습 확정 / D4 캐릭터 없음 → **캐릭터 도입으로 반전** / D5 15종 상한 → **상한 폐지·계속 추가** / D6 실제 상품 사용 확정(외부 비공개) / **D9 3D·HMD·NeRF/3DGS 절대 제약(메시 폴백·2D 사진 판·비-VR 최종 시연 배제)**. 원본 기록은 `docs/제안서_객관분석.md` '사용자 질의응답'. D7·D8은 운영 결정이다. **5차(2026-11-06)**: 사용자가 ① HMD 기종을 **Meta Quest 2**로 확정했고(D2 갱신 — 목표 기종만 바뀌며 Link/PCVR·DX12·실기기 필수·3중 확보 경로는 유지), ② "편의점 내에 입고된 상품 박스를 플레이어가 개봉해 상품을 하나씩 진열한다"는 기능을 추가 요구해 D10을 신설했다(상세 원본 5.7절).
+
+### 1.2 결정 표
+
+| ID | 결정 항목 | 채택값 (별도 표기가 없으면 2026-10-25 확정) | 근거 | 반영 장 · 권고 |
+|---|---|---|---|---|
+| D1 | 순서 기반 일정·게이트 재배치 | **스캔 테스트는 미실시**(사용자 확인). 구체적 날짜를 두지 않고 순서·의존 관계로만 계획한다. G1 게이트(스캔 3종 품질·처리 시간·렌더링 검증)가 전체 순서의 첫 판정 단계 | 객관분석 §3-E + 사용자 결정(2026-10-25) | 8·9장 · 권고 1·2 |
+| D2 | 타깃 HMD·연결 및 실기기 의무화 | **목표 기종 Meta Quest 2 확정(2026-11-06 갱신 — 구 Quest 3) + Link(유선 USB-C)/PCVR, DX12 필수(스탠드얼론 APK 배제).** OpenXR 컨트롤러 프로필은 `Oculus Touch Controller Profile`이며, 72fps 절대 판정은 Quest 2 실측(`device=quest2-link`)만 유효하다(다른 기종 측정값은 참고용 — 2.7절). 상시 보유가 불확실하므로 평시 개발·단위 테스트는 XR Device Simulator·에디터로 진행하되, **HMD(VR) 실기기 검증(G1-H)과 기능 동결(M3)·최종 발표(M4) VR 시연은 필수(Mandatory)**다. 단일 대여 실패에 대비해 **3중 확보 경로(① 학과/교내 실습실 대여 → ② 타 연구실·사업단 HMD 공유/방문 → ③ 민간 VR 단기 렌탈)**를 가동한다 | 객관분석 §3-A·B + 사용자 하드 제약(HMD 필수) + 사용자 기종 확정(2026-11-06) | 2·5·7·8·9장 · 권고 3 |
+| D3 | 3DGS·NeRF 학습 인프라 | **집 데스크톱(Windows + RTX 4070) 확정** — 맥북에서 원격 연결(RDP·SSH 등)로 `splatfacto`(3DGS) 및 `nerfacto`(NeRF 비교 실험) 학습을 실행한다. 상품 스캔 경로는 2단계: 1차 Scaniverse(폰 완결) → 반사 재질 불량 시 무광 코팅/편광 촬영 + splatfacto. Colab 플랜 B는 예비용 | 객관분석 §3-C + 사용자 결정 | 3·9장 · 권고 4 |
+| D4 | 손님 표현 | **사람 캐릭터 도입(반전).** 무료 스타일라이즈드 에셋 조달 + 최소 애니메이션(idle·walk·leave) + NavMesh 이동이 원칙(커스텀 모델링·리깅 없음). 주문 HUD·바구니·음성은 유지하며 캐릭터와 연결 | 객관분석 §3-D + 사용자 결정(캐릭터 선호) | 6장 · 권고 5 |
+| D5 | 스코프 관리 | **상품 수 상한 없음 — 계속 추가.** 관리 장치는 ① 스플랫 수 예산(7.2절) ② 재촬영 상한(2회 초과 → 목록 제외 후 스캔 우호적 실물 상품으로 대체, 100% 3DGS 유지). 특수 요청은 MVP(M2) 완료 후에만 착수(순서 트리거 T1) | 객관분석 §3-D·E + 사용자 결정 | 3·6·7·8장 · 권고 6·7 |
+| D6 | IP·라이선스 범위 | **외부 비공개 프로젝트 — 실제 브랜드 상품 촬영·사용 확정.** 가상 라벨 교체는 외부 공개로 전환하는 경우에만 검토. 가우시안 래스터화 INRIA 상업 라이선스 요건도 상업 전환 시에만 해당됨을 명시 | 객관분석 §3-H + 사용자 결정 | 3장 · 권고 9 |
+| D7 | 엔진 버전 (제안 추가) | Unity 6.3 LTS(URP, Render Graph 활성)+OpenXR+XR Interaction Toolkit 유지하되 G1 게이트에서 Unity 6.0(6000.0.23f1) VR 폴백 병행 검증 | 6.3+VR 미동작 보고(비공식) 대비 — 객관분석 §3-A·권고 3 | 2·9장 · 권고 3 |
+| D8 | 2인 팀 인터페이스 (제안 수정) | 상품 표 CSV → 자동 프리팹(4겹: 스플랫·프록시 콜라이더·바코드 트리거·상품 데이터) 공식 계약 유지. '표 한 줄' 주장은 수동 정제·에셋 변환·재병합 포함 실제 절차로 수정 | 제안서 슬라이드 14 연결 구조 + 객관분석 권고 8(§3-F 모순 해소) | 3·4장 · 권고 8 |
+| D9 | **3대 하드 제약 수호** | **3D 공간 + HMD(VR) + NeRF/가우시안 스플래팅 무조건 활용.** ① 폴리곤 메시 단독 폴백 금지(전 상품 100% 3DGS 유지, NeRF는 9.3절 비교 실험 필수 수행) ② 원거리 2D 사진 판(Quad) 대체 금지(3DGS Decimation·SH 축소 LOD만 허용) ③ 비-VR 에디터 데모로 최종 발표 대체 금지(HMD 실기기 구동 필수) | 과목 필수 요건 + 사용자 명시 지시(2026-10-25) | 전 장 공통(특히 2·3·7·8·9장) |
+| D10 | **입고 박스 개봉·진열 (2026-11-06 신설)** | **2·3일차 진열 과제를 '입고 카트의 상품 박스 운반 → 거치대 고정 → 커터로 테이프 절단 → 플랩 개방 → 상품 1개씩 꺼내 지정 칸에 진열 → 빈 박스 수거' 흐름으로 확정.** ① 박스는 매장 집기(소모품) 메시로 만들고 상품으로 취급하지 않는다(플랩 회전·테이프 분할 애니메이션이 필요해 정적 3DGS로 불가) ② 박스 안 상품(경량 3DGS `{id}_LOD1`)과 진열 결과(병합 진열대 유닛 컷아웃)는 100% 3DGS ③ 박스 1개 = 상품 1종, 단층 4·6·8입, 동시 개봉 1개 ④ 재고 시뮬레이션 없음(손님 주문과 독립 정산) | 사용자 기능 요구(2026-11-06) + D9 정합 | 2·4·5·6·7·8·9장(**5.7절 원본**) |
+
+### 1.3 갱신 규칙 — 답변이 바뀔 때 고칠 곳
+
+**장 머리 각주 규약**: 2~9장 각 장은 제목 바로 아래 인용줄로 결정 ID를 단다(예: `> 결정 근거: D3, D5, D9 (2026-10-25 확정) — 1장 결정 표`). 본문에는 채택값을 복제하지 않는다.
+
+**갱신 절차(체크리스트)** — 사용자가 결정 사항을 바꾸면:
+
+1. 이 표의 해당 행 '채택값'을 고치고 확정일 표기를 갱신한다. **고칠 곳은 이 행 하나가 원본이다.**
+2. `rg -n "D([1-9]|10)" docs/VR편의점_알바_시뮬레이터_구현_문서.md docs/제안서_객관분석.md` 로 해당 ID 참조 지점을 찾는다. 반영 지점 목록은 위 표 '반영 장' 열이 가리킨다.
+3. 해당 장의 **머리 각주 결정 ID**와 파생 서술(일정·게이트 기준값·상품 수 등)만 수정한다.
+4. `docs/제안서_객관분석.md` '사용자 질의응답'의 해당 Q·'반영 권고' 항목을 함께 갱신한다(그 문서의 갱신 규칙과 상호 대응).
+5. D7·D8·D9는 1단계와 함께 근거 문구를 남긴다(변경 이력).
+
+**원본 우선순위 규칙(결정 표 밖 수치·규격)** — 주제별 원본 장: 게이트 수치 판정 = 9장 / 일정·물량 = 8장 / 상시 최적화 기준 = 7장 / 에셋 파이프라인·반입 포맷 = 3장 / 데이터 계약(상품 표 스키마·프리팹 규격) = 4장. 장 간 서술이 어긋나면 원본 장을 따르고 비원본 쪽을 고쳐 맞춘다. 적용 기록이 문서 머리 '불일치 해소 대장'이다.
+
+**불일치 해소 절차** — 결정 표 밖의 수치·규격 불일치를 발견하면:
+
+1. 문서 머리 대장에 항목 등록한다(발견자가 담당).
+2. 원본 우선순위 규칙으로 준거 장을 확정한다. 규칙이 적용되지 않는 주제는 해당 장 소유자와 상대방 2인 합의로 채택값을 정한다(게이트 수치는 판정일 이전까지).
+3. 비원본 쪽 본문을 수정하고 대장 항목을 해소 기록으로 이동한다(일시·채택값·원문 대체값 보존).
+4. 상품 표 스키마에 영향이 있으면 4.7절 `schema:` 절차를 함께 밟는다.
+
+**남는 열린 항목**: 문서 머리의 미해소 1·2번 및 낮음 등급 ①~④는 4차 개정에서 전수 해소되었으며, G1·G1-H 실측으로 보정할 수치(상품당 실측 처리 시간, 스플랫 예산 미세 조정)만 P1 단계 실행 시 기록한다.
+
+---
+
+## 2. 시스템 아키텍처 — Unity 6.3 LTS·URP·OpenXR·XR Interaction Toolkit·UnityGaussianSplatting
+
+> 결정 근거: D2(2026-11-06 갱신), D7, D9, D10 — 1장 결정 표.
+
+제안서 슬라이드 6의 4층 스택(원문 126-147)을 유지하되, 패키지 버전 고정·URP Render Graph 세팅·폴백 조건까지 "당장 설치 가능한" 수준으로 확정한다. 목표 런타임은 **Meta Quest 2 + Link/PCVR(HMD 필수 활용 — D2·D9, 기종 사양 반영은 2.7절)**이며, 평시 기기 부재 구간의 개발과 HMD 실기기 필수 검증(G1-H·M3·M4)을 8.3절이 체계적으로 연결한다. 스플랫 렌더링이 포함된 빌드는 Windows + Direct3D 12에서만 보장한다(DX11 미지원 — 업스트림 README·객관분석 §3-A 재확인). 72fps 절대 판정 기준이 되는 GPU 사양(RTX 4070)과 측정 프로토콜은 7장·9장에서 다룬다.
+
+### 2.1 레이어 구조와 패키지 버전 규칙
+
+| 레이어 | 패키지 | 버전 규칙 |
+|---|---|---|
+| 게임 로직 | C# 스크립트(계산·근무 흐름·정산) | — |
+| 3DGS 렌더링 | `UnityGaussianSplatting` (aras-p, `v1.1.0`, MIT/INRIA) | UPM Git URL `?path=/package#v1.1.0`(또는 고정 커밋 해시) — Unity 6 Render Graph·SPZ·`m_RenderOrder` 지원 릴리스 고정. 코드 수정(패치) 필요 시 `Packages/org.nesnausk.gaussian-splatting`으로 로컬 패키지 임베드 |
+| XR 인터랙션 | XR Interaction Toolkit 3.x | `Packages/manifest.json`에 고정, 승격 시 전원 동시 갱신 |
+| XR 플러그인 | XR Plugin Management + OpenXR 1.x | 상동 |
+| 엔진 | Unity 6.3 LTS(6000.3.x)·URP(Render Graph) | Unity Hub 설치본. 폴백: 6.0 LTS(6000.0.23f1) |
+
+### 2.2 설치 절차 체크리스트 (Windows, 이민건)
+
+1. Unity Hub에서 Unity 6.3 LTS 설치 — 모듈: Windows Build Support(IL2CPP). Android 모듈은 불필요(PCVR Link 전용이므로).
+2. Universal 3D(URP) 템플릿으로 프로젝트 생성(`vr-convenience-store`).
+3. Package Manager → XR Plugin Management · OpenXR · XR Interaction Toolkit 설치(설치 시점 최신 3.x 안정판) → XRI **Starter Assets 샘플 임포트**(XR Origin·컨트롤러 프리팹 확보) + **XR Device Simulator 샘플 임포트**(평시 개발·단위 테스트 도구, D2).
+4. Package Manager → `+` → Add package from git URL → **`https://github.com/aras-p/UnityGaussianSplatting.git?path=/package#v1.1.0`** 입력(저장소 루트가 아닌 `/package` 하위 경로 지정 필수 — 누락 시 `package.json` 미발견으로 설치 실패; 커밋 해시 기입란: `________________`). 렌더러 셰이더나 스크립트 수정이 필요할 때는 UPM 캐시(`Library/PackageCache`는 재실행 시 초기화됨) 대신 해당 폴더를 `Packages/org.nesnausk.gaussian-splatting/`으로 복사(Embedded Package)하여 Git으로 직접 버전 관리한다.
+5. Project Settings 및 URP 파이프라인 설정(누락 시 스플랫 미렌더링):
+   - **Player → Graphics APIs for Windows → Direct3D12만 남기고 전부 제거**(DX11 잔존 시 스플랫 미렌더링).
+   - **URP Renderer Data(`PC_Renderer.asset` 등) → Inspector → Add Renderer Feature → `Gaussian Splat URP Feature` 추가**(필수 — URP 패스에 스플랫 합성 단계를 주입).
+   - **Graphics → URP → Render Graph → `Compatibility Mode (Render Graph Disabled)` 체크 해제(OFF 필수)**(`UnityGaussianSplatting v1.1.0`의 URP 통합은 Unity 6 Render Graph 전용으로 동작함).
+   - **XR Plug-in Management → PC 탭에서 OpenXR 선택** → Interaction Profiles에 **Oculus Touch Controller Profile**(Quest 2 기본 컨트롤러 — 2.7절) 추가, **Stereo Rendering Mode**를 `Multi-pass`(필요 시 `Single Pass Instanced`와 양안 정렬 비교 검증)로 설정.
+   - **URP Asset**: **MSAA = Off**(스플랫 렌더러 미지원), Render Scale 1.0에서 시작(저하 시 0.8 + FSR — 이슈 #145 보고 완화책).
+   - **무조명 파이프라인**: 스플랫은 라이트·그림자·리플렉션 프로브 영향을 받지 않으므로(공식 제약), URP 에셋에서 Additional Lights·Shadow Distance를 최소화하고 매장 3D 메시 조명은 스캔 캡처 시의 확산광 톤에 맞춘다.
+6. 검증: 상단 메뉴 **`Tools → Gaussian Splats → Create GaussianSplatAsset`** 창 열기 → `Input PLY/SPZ File`에 샘플 `.ply`(또는 Scaniverse `.spz`) 지정 후 `Create Asset` 클릭 → 생성된 `GaussianSplatAsset`(`*.asset`)을 씬의 `GaussianSplatRenderer` 컴포넌트 `Asset` 슬롯에 할당 → **에디터 플레이 모드(DX12)에서 육안 확인** 및 **HMD(Quest 2 Link) 실기기 양안 렌더링 확인(G1-H)**. 고정 커밋 `LICENSE` 파일의 INRIA 계열 라이선스 포함 여부도 함께 확인한다(3.9절 D6).
+
+macOS(권도훈)는 동일 패키지 구성으로 **에디터 검수만** 수행한다(Metal에서도 스플랫 표시 및 `Create GaussianSplatAsset` 변환 지원). VR 실행·빌드 환경과 `splatfacto`·`nerfacto` 학습 환경은 **Windows RTX 4070 데스크톱 1대로 일원화**한다(D3 — 맥북·macOS에서는 원격 접속으로 사용).
+
+### 2.3 씬·컴포넌트 구성
+
+```
+StoreScene
+├─ XR Origin (XRI)        — 카메라·컨트롤러, 고정 텔레포트 앵커 6개소 (평시 개발: XR Device Simulator 병행)
+├─ Environment            — 3D 매장 메시(진열대·계산대·냉장고·전자레인지·온수기·폐기함·창고 입구, URP) + NavMesh(손님 이동)
+├─ Shelves/Merged         — 진열대 칸별 병합 GaussianSplatRenderer + 슬롯·유닛별 GaussianSplatCutout(5.7절·7장)
+├─ Products/              — 개별 상품 3DGS 프리팹(집는 순간 표시 / 바구니 내 배치)
+├─ Intake/                — 입고 카트·빈 박스 수거함(앵커 ⑥), 박스 거치대 소켓·커터 홀더(앵커 ②③), 런타임 P_StockBox(5.7절)
+├─ Customers/             — 손님 3D 캐릭터 스폰 포인트·계산대 대기 지점(6장)
+└─ Systems/
+    ├─ GameManager        — 근무 루프·일차 진행 상태 머신(6.2절)
+    ├─ POSController      — 바코드 판정·합계·스캔 취소·결제(5.3·5.5절)
+    ├─ CustomerDirector   — 손님 캐릭터 스폰·이동·주문 HUD·바구니·음성 구동(6.1·6.2절)
+    ├─ IntakeDirector     — 입고 박스 스폰·중간 도착·진열 집계·2일차 입고 안내(5.7절)
+    ├─ CatalogLoader      — 상품 표 CSV(Data/products.csv) 로드(4장)
+    ├─ DayScenarioLoader  — 주문 시나리오 CSV(Data/scenarios.csv) 로드(6.5절)
+    └─ DeliveryLoader     — 입고 CSV(Data/deliveries.csv) 로드·검증(5.7·6.5절)
+```
+
+상품 프리팹 1개 = 4겹(슬라이드 8): 루트(`P_{id}`)에 프록시 `BoxCollider` + `XRGrabInteractable` + `ProductPrefab`(④ `ProductData` ScriptableObject 참조 보유), 자식 `Splat`에 `GaussianSplatRenderer`(`GaussianSplatAsset` 할당, 레이어 `Splat`), 자식 `BarcodeTrigger`에 `BoxCollider`(`isTrigger=true`, 레이어 `BarcodeFace`, 태그 `Barcode`). 프리팹 생성 절차는 (3장), 상품 표(CSV) 스키마·4겹 계약 상세는 (4장) 참조.
+
+### 2.4 렌더러 공식 제약의 설계 반영
+
+| 공식 제약 | 본 프로젝트 반영 |
+|---|---|
+| 업스트림 비정기 유지보수(`v1.1.0` 이후 기능 추가 중단) | `v1.1.0` 커밋 고정 + 필요 시 `Packages/org.nesnausk.gaussian-splatting` 로컬 임베드 수정(2.2절 4번) |
+| 다중 렌더러는 트랜스폼 중심 기반 정렬 — heavy overlap 시 앞뒤 역전 가능 | ① 집는 즉시 진열대 `GaussianSplatCutout`(Invert) 활성화로 겹침 제거 ② **파지한 개별 상품의 `GaussianSplatRenderer.m_RenderOrder = 10`(진열대 병합본은 `0`)으로 강제 상향**하여 손에 든 상품이 항상 진열대 앞에 그려지도록 보장(7.3절) |
+| 일반 반투명 오브젝트와 블렌딩 불량 | 비닐봉투는 반투명(Transparent) 패스 대신 **URP Lit + Alpha Clipping(컷아웃)** 불투명 패스로 제작(5.4절) |
+| MSAA 미지원 및 Render Graph 필수 | URP MSAA Off 고정, `GaussianSplatURPFeature` 등록 및 Render Graph 호환 모드 OFF(2.2절 5번) |
+| Windows DX11 미지원 | Graphics API D3D12 강제(2.2절 5번) |
+
+### 2.5 Unity 6.0(6000.0.23f1) 폴백 전환 조건
+
+비공식 보고(Worldlabs: "aras-p 플러그인은 Unity 6.3에서 VR 미동작, 6.0 사용 권고")가 있어 G1 게이트에서 동일 테스트 씬(스캔 3종 + 계산대 목업)을 6.3·6.0 양쪽에서 검증한다(에디터 스크리닝 + G1-H HMD 실기기 확정). **전환 조건 — 하나라도 성립하면 프로젝트 전체를 6.0으로 즉시 이식**: ① 6.3에서 양안 스플랫이 검은 화면·한쪽 눈 누락·심각한 왜곡 등으로 렌더 불가, ② XRI 잡기 등 핵심 인터랙션 파손, ③ 그 결함이 6.0에서는 재현되지 않음. 전환 시 패키지 재고정 커밋 + 게이트 프레임 재측정을 1일 내 완료한다(어떠한 경우에도 3DGS 렌더링 자체를 포기하는 메시 폴백은 금지 — D9).
+
+### 2.6 기기 분담·HMD 확보 경로·GitHub 협업 규칙
+
+| 담당 | 기기 | 이 장 기준 역할 |
+|---|---|---|
+| 권도훈 | macOS | 촬영·정제(SuperSplat)·`GaussianSplatAsset` 변환 검수·상품 표(`Data/products.csv`)·시나리오(`Data/scenarios.csv`) 작성 |
+| 이민건 | 맥북 + Windows RTX 4070 데스크톱(원격 연결 겸용) | VR 빌드·프로젝트 세팅 관리·XR 인터랙션·통합 빌드, `splatfacto`(3DGS) 및 `nerfacto`(NeRF) 학습 실행(D3) |
+
+- **HMD(VR) 실기기 확보 3중 경로(D2·D9 — HMD 활용 필수)**:
+  1. **1순위(교내/학과 대여)**: P0 단계에서 학과 사무실·교내 VR 실습실에 **Meta Quest 2**(+ Link 케이블) 대여를 신청한다. 다른 기종(Quest 3/3S/Pro 등)은 기능 확인용으로만 쓰고 72fps 판정·설문에는 사용하지 않는다(D2).
+  2. **2순위(교내 연구실·실습실 공유/방문)**: 장기 반출이 불가할 경우, 학과 실습실이나 유관 연구실의 HMD가 설치된 자리에서 주 1~2회 통합 점검 및 G1-H 측정을 수행한다.
+  3. **3순위(민간 VR 기기 단기 렌탈 — 안전망)**: 교내 수급이 지연될 경우, 상용 VR 기기 단기 렌탈 서비스를 통해 **① G1-H 게이트 실기기 검증 주간(최소 3일)** 및 **② M3 기능 동결 ~ M4 최종 발표 주간(최소 7일)** 총 2회 이상 Quest 2 + Link 케이블을 확정 확보한다.
+- **평시 개발 리듬**: HMD가 책상에 없는 평일 개발 시간에는 양쪽 모두 에디터 + XR Device Simulator로 멈춤 없이 개발·단위 테스트를 진행하고, 확보된 HMD 세션에서 실기기 양안 렌더링·트래킹·72fps 측정을 집중 수행한다(8.3절).
+- **브랜치**: `main`(항상 빌드 가능 상태) + 작업 단위 `feature/*` 병행, 주 2회 통합 빌드 점검 시점에 merge.
+- **폴더 구조 및 Git LFS 규칙(구 미해소 2 종결)**:
+  - **로컬/외부 캡처 작업 폴더(`capture/products/{id}/{raw,scans,cleaned}/` — `.gitignore`에 등록해 Git 제외)**: 스마트폰 원본 사진 100~150장(`raw/`), 미정제 학습 직후 파일(`scans/`), SuperSplat 정제 작업본(`cleaned/`)은 원격 스토리지(구글 드라이브/외장 SSD)로 공유하고 Git 저장소에는 올리지 않는다(LFS 무료 용량 초과 방지).
+  - **Unity 반입·Git LFS 추적 폴더(`Assets/GaussianSplats/` — `.gitattributes`에 `*.ply`, `*.spz`, `*.asset`, `*.bytes` 등록)**:
+    - 개별 상품 정제 소스 및 런타임 에셋: `Assets/GaussianSplats/Products/{id}.ply`(또는 `.spz`) 및 변환된 `Assets/GaussianSplats/Products/{id}.asset`(청크 데이터 포함)
+    - 진열대 칸 병합 런타임 에셋: `Assets/GaussianSplats/Merged/Shelf_{shelfId}_{slotGroup}.asset`
+    - 이로써 슬라이드 9가 요구하는 **'개별 원본(`Products/`) + 진열대 병합본(`Merged/`) 2벌 유지'**를 단일 경로 체계로 명확히 관리한다.
+- **씬 소유**: `StoreScene.unity`은 이민건 단독 수정, 권도훈은 프리팹·스플랫 에셋·CSV 데이터 파일만 변경(2인 규모에서 씬 머지 충돌을 원천 차단).
+
+### 2.7 Meta Quest 2 타깃 사양과 설계 반영 (D2 — 2026-11-06 확정)
+
+목표 기종이 Quest 3에서 **Meta Quest 2**로 확정되면서 바뀌는 것은 컨트롤러 프로필·측정 장치 표기·판독성 기준이며, PCVR(Link)·DX12·72fps 목표·실기기 필수 원칙은 그대로다.
+
+| 항목 | Quest 2 사양 | 설계 반영 |
+|---|---|---|
+| 디스플레이 | 단일 고속 LCD, 눈당 1832×1920 | Quest 3(눈당 2064×2208) 대비 픽셀 수 약 23% 적어 같은 장면의 프래그먼트(오버드로) 부담은 줄어든다. 대신 라벨·HUD 판독성이 낮으므로 **G1-a 라벨 판독과 HUD 글자 크기는 반드시 Quest 2 착용으로 확정**한다(9.1절) |
+| 렌즈 | 프레넬 렌즈(선명 영역이 좁음), IPD 3단계 조절(58·63·68mm) | 주문 HUD·POS 품목 목록·박스 측면 라벨은 시선 중앙 ±20° 안에 배치하고, 글자 높이 초기값을 **시각 1.2° 이상(1m 거리에서 약 2.1cm)**으로 두고 G1-H에서 확정. 설문 전 체험자별 IPD 단계 조정(9.4절) |
+| 주사율 | Link에서 72/80/90/120Hz 선택 | **72Hz 고정 측정 유지**(목표 72fps·p95 ≤ 13.5ms 불변 — 7.1절) |
+| 컨트롤러 | Oculus Touch(그립·트리거·A/B/X/Y·썸스틱·햅틱) | OpenXR **`Oculus Touch Controller Profile`** 등록(2.2절 5번). XRI Starter Assets 기본 입력 액션(그립=잡기, 트리거=UI·Poke 보조, 썸스틱=텔레포트·Snap Turn)을 그대로 쓴다 |
+| 연결 | Quest Link(USB-C 유선)·Air Link(무선) | **측정·설문·시연은 유선 Link만** 사용(무선은 인코딩 지연·비트레이트 변동으로 프레임 판정이 오염됨). Meta Quest Link 앱의 Refresh Rate(72Hz)·Render Resolution 설정값과 헤드셋 펌웨어 버전을 측정마다 `perf_log.csv`의 `notes`에 기록(9.5절) |
+| 트래킹·자세 | 헤드셋 카메라 기반 인사이드아웃 | 몸 뒤쪽·바닥 근처 조작은 트래킹 손실과 허리 굽힘 부담이 크므로 **박스 거치대·폐기함 투입구·입고 카트 상판을 허리 높이(약 0.8m)**로 설계한다(5.7절) |
+
+- **판독 실패의 원인 분리**: Quest 2에서 가격 숫자가 안 읽히면 ① 3DGS 복원 품질 문제인지 ② 헤드셋 해상도 한계인지 구분하기 위해, 에디터 게임뷰 확대 캡처(복원 품질)와 Quest 2 착용 판독(실사용)을 G1-a에 따로 기록한다. ②만 실패하면 재촬영 대상이 아니며 HUD·POS에 상품명·가격을 보조 표시하는 것으로 대응한다.
+- **측정 장치 표기**: `perf_log.csv`의 `device` 값은 `editor` | `quest2-link`(9.5절).
+
+---
+
+## 3. 3DGS 에셋 파이프라인 — 촬영→학습→정제→에셋 변환→상품 표→자동 프리팹
+
+> 소유자: 권도훈(S1~S4), S5 도구는 이민건(제안서 슬라이드 14). 결정 근거: D3, D5, D6, D8, D9 (2026-10-25 확정) — 1장 결정 표.
+
+모든 매장 상품은 **100% 3D 가우시안 스플래팅(3DGS)**으로 제작하며(폴리곤 메시 대체 금지 — D9), **수량 상한 없이 계속 추가**하되(D5) 재촬영 2회 초과 시 다른 실물 상품으로 종목을 대체하고, 스플랫 수 예산(7.2절)으로 런타임 부하를 통제한다. 실제 브랜드 상품 사용 확정 — 외부 비공개 프로젝트(D6).
+
+### 3.1 6단계 개요 — 도구·입출력
+
+| 단계 | 도구 | 입력 → 출력 |
+|---|---|---|
+| S1 촬영 | 스마트폰(+부스·편광/무광 보조) | 실물 상품 → 사진 100~150장(또는 4K 60fps 영상 프레임 추출) |
+| S2-1 1차 학습 | Scaniverse(스마트폰 온디바이스) | 촬영본 → 미정제 **SPZ(또는 PLY)** (`capture/products/{id}/scans/`) |
+| S2-2 2차 학습 | nerfstudio `splatfacto`(Win RTX 4070) | 사진 원본(`raw/`) → 미정제 **PLY** (`capture/products/{id}/scans/`) |
+| S3 정제 | SuperSplat(macOS 브라우저/로컬) | 미정제 SPZ/PLY → 정제 완료 **표준 Binary PLY**(또는 SPZ v2) (`cleaned/{id}.ply`) |
+| S4 에셋 변환·상품 표 | Unity `Create GaussianSplatAsset` + CSV | `cleaned/{id}.ply` → **`Assets/GaussianSplats/Products/{id}.asset`** + `Data/products.csv` 1행 |
+| S5 자동 프리팹 | `ProductPrefabBuilder`(Unity Editor C#) | `GaussianSplatAsset` + 상품 표 1행 → 4겹 프리팹 `Assets/Prefabs/Products/P_{id}.prefab`(4장) |
+
+> [!WARNING]
+> **포맷 호환성 주의(구 미해소 1 완전 해소)**: `UnityGaussianSplatting v1.1.0`은 `.ply`와 `.spz` 입력을 모두 지원하지만, 내장 `SPZFileReader`는 **Gzip 기반 SPZ v2** 규격만 파싱한다. 반면 최신 `SuperSplat`의 기본 SPZ 내보내기는 **ZSTD 기반 SPZ v4**이므로, SuperSplat에서 기본 SPZ로 내보내면 Unity 임포트 시 헤더/압축 오류가 발생할 수 있다. 따라서 **S3(SuperSplat 정제) 완료 후 내보내기 포맷은 100% 호환되는 '표준 Binary `.ply`'(또는 SPZ v2 명시 옵션)로 통일**하고, Unity 반입 시 `Tools → Gaussian Splats → Create GaussianSplatAsset`을 통해 Unity 전용 압축 런타임 에셋인 **`{id}.asset`**으로 변환·단일화한다(최종 빌드에는 원본 `.ply` 크기가 아닌 압축된 `.asset`만 포함됨).
+
+### 3.2 S1 촬영 체크리스트
+
+- **배경·조명**: 무광 단색 배경지 + 균일 확산광(LED 소프트박스), 스마트폰 카메라 노출(AE)·초점(AF) 고정(잠금).
+- **반사·투명 재질 대응(페트병·알루미늄 캔·유광 봉지)**:
+  - 촬영 부스로 측면 주변광 반사를 차폐한다.
+  - 하이라이트가 라벨 글씨를 가리는 강한 유광/금속 캔이나 투명 페트병은 **소멸성/수용성 무광 스캔 스프레이(매트 코팅제) 도포** 또는 **스마트폰 렌즈 CPL(원형 편광) 필터 장착**을 적극 활용하여 특징점 추출률을 높인다(D9 — 메시 폴백 없이 3DGS로 반사 상품을 돌파하기 위한 핵심 기법).
+- **궤도(슬라이드 7)**: 수평 2바퀴(눈높이 + 상방 45°) 후 앞뒤·양옆 근접 각 2장, **바코드 면 필수 근접 촬영**(슬라이드 8의 게임 규칙).
+- **장수**: 사진 100~150장, 반사 재질 +30장. 소요 시간·조명 조건은 로그에 기록(3.8절 입력).
+
+### 3.3 S2 학습 2단계 및 NeRF 병행 (D3·D9)
+
+1. **1차 Scaniverse(스마트폰 완결)** — 전 상품 우선 처리(현장에서 즉시 복원 품질 1차 확인).
+2. **2차 nerfstudio `splatfacto`** — 3.7절 판정에서 반사 재질·인쇄 글씨 불량 시 또는 고정밀 복원이 필요할 때 실행. **집 데스크톱(Windows + RTX 4070)에서 구동하며, 맥북에서 원격 데스크톱(RDP/Parsec)·SSH로 조작한다**(D3 확정).
+   - 명령어: `ns-process-data images --data capture/products/{id}/raw --output-dir capture/products/{id}/processed` → `ns-train splatfacto --data capture/products/{id}/processed` → `ns-export gaussian-splat --load-config ... --output-dir capture/products/{id}/scans/`.
+   - **NeRF(`nerfacto`) 비교 학습 병행(9.3절 연계)**: 비교 실험 대상 상품(최소 2종: 매트 1·반사 1)은 완전히 동일한 `processed`(COLMAP 카메라 포즈·test split 동일) 폴더에 대해 `ns-train nerfacto`를 연속 실행하여 NeRF 모델을 함께 확보한다(D9).
+3. **플랜 B(예비)** — RTX 4070 데스크톱에 일시적으로 접근할 수 없는 상황에서만 Colab GPU 런타임으로 `splatfacto`를 실행한다.
+
+macOS는 CUDA 미지원으로 `splatfacto` 학습이 불가하므로 **SuperSplat 정제·`GaussianSplatAsset` 변환 검수·CSV 데이터 관리**를 담당하고, 학습·VR 빌드는 RTX 4070 데스크톱 1대로 일원화한다(2.6절).
+
+### 3.4 S3 정제(SuperSplat) 및 S4 런타임 에셋 변환
+
+1. **SuperSplat 정제(macOS)**: `scans/`의 SPZ/PLY 불러오기 → 배경 박스/브러시 컷아웃 → 플로터(떠다니는 점) 및 낮은 불투명도(Alpha < 0.1~0.2) 노이즈 제거 → 원점(피벗)을 상품 중심 하단 또는 정중심으로 정렬 → `capture/products/{id}/cleaned/{id}.ply`로 내보내기. 수작업 예산 상품당 20~40분(G1 게이트 실측으로 보정).
+2. **Unity `GaussianSplatAsset` 생성**: 정제된 `.ply`를 `Assets/GaussianSplats/Products/{id}.ply`로 복사한 뒤, Unity `Tools → Gaussian Splats → Create GaussianSplatAsset`(또는 프리팹 빌더의 `GaussianSplatAssetCreator` 자동 호출)로 `Assets/GaussianSplats/Products/{id}.asset`을 생성한다(기본 프리셋: `Medium` 품질, 가우시안 수 10만 이하 확인).
+
+### 3.5 S4 상품 표 기입
+
+스키마는 (4장) 참조. 여기서 채우는 값: `id`·`name`·`price`, 실측 3축(`size_cm`), `barcode_face`(촬영 로그 대조), `retake_count`(**2 초과, 즉 총 촬영 3회** 도달에도 기준 미달인 행은 `status=dropped`로 전환해 프리팹 생성에서 제외 — D5·해소 대장 10번), 변환된 스플랫 에셋 경로(`splat_path`). 상품 구성은 무광·인쇄 위주 + 반사 2~4종 수준의 **비율**을 유지한다(총 수량 상한은 없음 — D5).
+
+### 3.6 S5 자동 프리팹 — 팀 인터페이스
+
+입력 `Assets/GaussianSplats/Products/{id}.asset` + 상품 표 1행 → 출력 `Assets/Prefabs/Products/P_{id}.prefab`(4겹 구조·생성 로직은 4장). "상품 1종 추가 = 촬영 + 표 한 줄" 주장은 실제 절차로 수정(객관분석 권고 8, D8): **촬영 → 학습 → 수동 정제 → 스플랫 에셋 변환 → 표 기입 → 자동 프리팹 → 진열대 재병합(7장)**. 전체 7단계 절차와 자동 검증 게이트의 상세 정의는 4.6절 참조.
+
+### 3.7 품질 판정·재촬영 규칙 (게이트 기준 전체는 9장)
+
+| 항목 | 합격 기준 |
+|---|---|
+| 형태 | 외곽 왜곡·구멍(Hole)·파손 없음 |
+| 인쇄 | 계산대 파지 거리(~50cm)에서 브랜드명·가격·바코드 영역 식별 가능(9.1절 G1-a) |
+| 반사 | 표면 재질 식별 가능, 강한 하이라이트 번짐으로 라벨 전면 가림 없음 |
+| 잔여 | 정제 후 플로터·배경 잔여 없음, 정제 후 가우시안 수 예산(게이트 ≤15만, 최적화 목표 ≤10만) 이내 |
+
+불합격 → 재촬영 **최대 2회**(무광 스프레이/편광 필터·조명·장수 조정 + `splatfacto` 학습), 초과 시 해당 종목을 목록에서 제외(`status=dropped`)하고 스캔 우호적인 다른 실물 편의점 상품으로 대체한다(D5·D9 — 폴리곤 메시로 대체하지 않고 전 상품 3DGS 원칙 고수). G1 게이트 시험 3종 = 매트(과자 봉지)·인쇄(삼각김밥 랩)·반사(페트병·캔) 각 1종(9.1절 준거).
+
+### 3.8 상품당 시간 예산 실측 양식 (객관분석 권고 7)
+
+| id | 촬영(분) | 학습 경로·소요(분) | 정제·변환(분) | 재촬영 횟수 | 합계(시간) |
+|---|---|---|---|---|---|
+
+목표 상품당 총 1.5~2시간(상시 목표이며, 게이트 Go 기준은 9.1절 G1-b의 ≤3시간). G1 게이트에서 3종 실측 후 보정하고, 그 값으로 지속 반입 속도(주당 반입 가능 상품 수)를 산정한다 — 상품 수 상한이 없으므로(D5) 이 실측치가 유일한 물량 관리 근거다.
+
+### 3.9 라이선스·IP (D6)
+
+- **실제 상품 사용 확정(D6, 2026-10-25)** — 프로젝트는 교내 과제로 외부 공개 대상이 아니므로 실제 브랜드 상품의 촬영·재현을 그대로 사용한다. 외부 공개·영상 게시로 전환하는 경우에만 가상 브랜드 라벨 교체를 검토한다.
+- **INRIA 상업 라이선스 요건(D6)**: 3DGS 렌더링에 쓰는 `UnityGaussianSplatting`은 MIT/INRIA 병기 라이선스 저장소다(2.1절). 원본 3DGS(가우시안 래스터화) 관련 INRIA 계열 코드는 비상업 조건이 포함되어 있으므로, **상업적 이용 시 INRIA 상업 라이선스를 별도 취득해야 한다**. 본 프로젝트는 비공개 학술/교내 과제 범위이므로 해당하지 않으며, 상업 전환 검토 시 이 요건 확인이 선행된다.
+- 확인 절차: P0 환경 세팅 시 고정 커밋의 `LICENSE` 파일로 INRIA 계열 라이선스 문구를 확인·보존한다(2.2절 6번).
+
+---
+
+## 4. 데이터 구조 — 상품 표(CSV) 스키마와 프리팹 4겹 구조
+
+> 결정 근거: D5, D8, D9 (2026-10-25 확정), D10 (2026-11-06) — 1장 결정 표.
+
+이 장은 제안서 슬라이드 7·8·14의 "상품 표(CSV) + 정제 스플랫 → 자동 프리팹"을 구현 가능한 계약으로 확정한다. **상품 표(CSV)와 정제·변환된 3DGS 스플랫 에셋은 2인 팀의 유일한 연결 인터페이스다.** 촬영·학습·정제 담당(권도훈)은 이 규격대로 파일을 납품하고, 프리팹 생성기 담당(이민건)은 이 규격만 읽어 프리팹을 만든다. 상품 수 상한은 없다(계속 추가 — D5 확정). 대신 스플랫 수 예산(7.2절)과 재촬영 상한이 반입 관리 장치다.
+
+### 4.1 상품 표 CSV 스키마 v1
+
+파일: `Data/products.csv` — UTF-8, 콤마 구분, 첫 줄 헤더, `#` 시작 줄은 주석. 한 행 = 상품 1종.
+
+| 컬럼 | 타입 | 예시 | 설명 |
+|---|---|---|---|
+| `id` | string | `ramen_cup_01` | 프리팹·스플랫 에셋·SO 파일명의 키. 규칙 `[품종]_[형태]_[2자리 번호]` |
+| `name` | string | `컵라면` | 게임 내 표시명(주문 HUD·POS) |
+| `price` | int | `1500` | 원 단위 |
+| `size_cm` | W·D·H | `12·12·10` | 실측 크기(cm). 구분자 `·`/`x`/`X` 허용, 파서가 trim |
+| `barcode_face` | enum | `bottom` | `bottom` \| `back` \| `side` (4.4절) |
+| `splat_path` | path | `Assets/GaussianSplats/Products/ramen_cup_01.asset` | 정제 후 변환된 Unity `GaussianSplatAsset` 상대경로(동일 경로의 `.ply` 소스에서 생성 — 3.1·3.4절, 해소 대장 8번) |
+| `scan_source` | enum | `scaniverse` | `scaniverse` \| `splatfacto` — D3 2단계 경로 추적 |
+| `retake_count` | int | `1` | 재촬영 횟수. 2 초과(총 촬영 3회)면 생성기가 경고 후 제외(D5 트리거 — 해소 대장 10번) |
+| `status` | enum | `prefab` | 4.2절 상태 머신 |
+
+```csv
+# schema=v1
+id,name,price,size_cm,barcode_face,splat_path,scan_source,retake_count,status
+ramen_cup_01,컵라면,1500,12·12·10,bottom,Assets/GaussianSplats/Products/ramen_cup_01.asset,scaniverse,0,live
+kimbap_tri_01,삼각김밥,1300,10·4·10,back,Assets/GaussianSplats/Products/kimbap_tri_01.asset,scaniverse,1,prefab
+water_500_01,생수500ml,1000,7·7·21,side,Assets/GaussianSplats/Products/water_500_01.asset,splatfacto,2,cleaned
+```
+
+제안서 예시(슬라이드 7)의 5컬럼(`크기(cm)`은 `size_cm`으로 개명)에 `splat_path`·`scan_source`·`retake_count`·`status` 4컬럼을 추가했다(객관분석 권고 6·8: 디스코프 트리거 '재촬영 2회 초과'를 데이터로 추적하고, '표 한 줄' 주장을 실제 절차로 수정하기 위함). 만약 `splat_path`에 `.ply` 경로가 적혀 있으면 프리팹 빌더가 자동으로 `GaussianSplatAssetCreator`를 호출해 동명의 `.asset`을 생성·연결한다.
+
+### 4.2 status 상태 머신
+
+`draft`(행 등록) → `scanned`(스캔 원본 확보 — Scaniverse SPZ 또는 splatfacto PLY) → `cleaned`(배경 컷아웃·플로터 제거 및 `GaussianSplatAsset` 변환 완료, `splat_path` 유효) → `prefab`(4겹 프리팹 생성·자동 검증 통과) → `live`(매장 배치·주문 카탈로그 등록). 재촬영 상한 초과(D5, 8.5절 T2) 시 `dropped`(목록 제외 — 흡수 상태, 이후 전이 없음). 생성기는 **`cleaned` 행만** 처리하며 나머지는 로그를 남기고 건너뛴다. 주문 시나리오 샘플링(6.5절)은 `live` 행만 대상이다. 뒤로 가는 전이는 두 경우뿐이다: 스케일 검증 실패 시 `cleaned`로 복귀(4.3절), 재촬영 시 `draft`로 복귀(`retake_count` +1). `dropped` 등 enum 추가는 스키마 변경이므로 4.7절 절차(2인 확인)를 따른다.
+
+### 4.3 프리팹 4겹 계약
+
+```
+P_{id}  (루트: Rigidbody + XRGrabInteractable + ProductPrefab[Data=ProductData SO] — 레이어 Interactable)
+├─ Splat            ① GaussianSplatRenderer (GaussianSplatAsset 할당) — 레이어 Splat
+├─ (루트) BoxCollider ② 프록시 콜라이더 — size_cm 환산 (레이어 Interactable)
+├─ BarcodeTrigger   ③ BoxCollider(IsTrigger=true, 레이어 BarcodeFace, 태그 Barcode)
+└─ Assets/Data/SO/{id}.asset  ④ ProductData ScriptableObject (ProductPrefab.Data 필드에 연결)
+```
+
+- **① 3DGS 스플랫(`Splat`)**: 보이는 외형만 담당(`GaussianSplatRenderer`). 스플랫에는 메시·충돌 정보가 없으므로(슬라이드 8) 레이어 `Splat`을 물리 충돌 매트릭스에서 완전히 분리해 레이캐스트·물리 충돌 대상에서 제외한다.
+- **② 프록시 박스 콜라이더**: 루트(`P_{id}`, 레이어 `Interactable`)에 부착, 크기 = `size_cm`÷100(12cm→0.12m). 잡기·던지기·내려놓기는 XR Interaction Toolkit이 이 콜라이더 기준으로 처리한다(5장).
+- **③ 바코드 트리거(`BarcodeTrigger`)**: `barcode_face`가 지정한 면에 붙는 얇은 자식 박스 콜라이더(`isTrigger=true`, **레이어 `BarcodeFace`, 태그 `Barcode`** — 전 장 명칭 통일, 해소 대장 19번). 규격: 해당 면적 100% × 두께 0.02m, 프록시 내부 면 중심 정렬. 계산대 스캐너(`Scanner` 레이어)와의 트리거 충돌만 계산으로 인정한다.
+- **④ ProductData(ScriptableObject) + `ProductPrefab`(MonoBehaviour)**: `ProductData` SO는 필드 `Id, Name, Price, SizeCm(Vector3), BarcodeFace(enum), SplatAsset(GaussianSplatAsset), OrderCatalogFlags`를 갖는다. 루트에 부착된 `ProductPrefab` 컴포넌트가 `public ProductData Data;` 참조와 런타임 상태(`IsExpired`, `IsProcessed`, `LastScannedTime`)를 보유한다(5.3절 스캐너 스크립트는 `GetComponentInParent<ProductPrefab>().Data`로 접근).
+
+### 4.4 바코드 면 열거형과 배치 규칙
+
+`BarcodeFace { Bottom, Back, Side }`. 제안서 예시엔 bottom/back만 등장하지만 페트병·캔 등 바코드가 **옆면**인 상품을 위해 `side`를 추가한다(상품 구성에 음료류가 필수로 들어가기 때문). 면→로컬 방향 매핑: `bottom=-Y`, `back=-Z`, `side=+X`(앞면=+Z, 진열 방향 기준). `BarcodeTrigger`는 프록시 박스의 해당 면 안쪽에 붙이고, 검증에서 "트리거가 프록시 바운딩 박스 내부에 완전 포함되는지"를 반드시 확인한다(밖으로 돌출되면 손이나 테이블에 닿는 순간 오인식 위험).
+
+### 4.5 스케일 보정 규칙(실측 cm 기준)
+
+1. 생성기가 `GaussianSplatAsset`을 로드한 뒤 에셋의 로컬 바운딩 박스 크기 `B = asset.boundsMax - asset.boundsMin`(미터)과 중심 오프셋 `C = (asset.boundsMin + asset.boundsMax) * 0.5f`를 읽는다.
+2. 축별 비율 `r = size_m / B`를 구하고 **균일 스케일 `s = median(rx, ry, rz)`**를 자식 `Splat.transform.localScale = Vector3.one * s`에 적용하며, 중심 오프셋을 보정하기 위해 `Splat.transform.localPosition = -C * s`로 맞춘다. 축별 비율 편차가 ±10%를 넘으면 스캔 정제 영역이 찌그러진 것이므로 경고 후 `status`를 `cleaned`로 되돌린다(비균일 스케일은 3D 가우시안 타원체 왜곡·정렬 불량을 일으키므로 금지).
+3. 루트의 ② 프록시 콜라이더 크기는 스캔 결과와 무관하게 항상 `size_m`(`size_cm / 100f`) 그대로 생성한다 — 실측값이 물리·배치의 절대 기준이다(제안서 비기능 "실측 크기 반영").
+4. 검증: 스케일 보정 후 스플랫 월드 바운딩 박스와 프록시 콜라이더 크기 차이가 축별 ±5% 이내면 통과.
+
+### 4.6 '상품 표 한 줄 추가 → 프리팹 자동 생성' 실제 절차와 검증
+
+제안서의 "표 한 줄 = 상품 추가" 주장은 수동 정제·에셋 변환·재병합을 생략한 요약이므로 다음 7단계 실제 절차로 정의한다(D8).
+① 촬영·학습(3.2·3.3절) → ② SuperSplat 수동 정제 후 `capture/products/{id}/cleaned/{id}.ply` 저장 및 `Assets/GaussianSplats/Products/{id}.ply` 복사(3.4절) → ③ Unity `Create GaussianSplatAsset`으로 `Assets/GaussianSplats/Products/{id}.asset` 생성 → ④ 상품 표(`Data/products.csv`) 행 기입(`status=cleaned`) → ⑤ Unity 에디터 메뉴 `Tools/Product Prefab Builder` 실행 → ⑥ 자동 검증 게이트 통과 시 `Assets/Prefabs/Products/P_{id}.prefab`과 `Assets/Data/SO/{id}.asset` 자동 생성(`status=prefab`) → ⑦ 매장 배치 + 해당 진열대 칸 재병합(7.3절) 후 `status=live`.
+
+**입고 대상 상품의 추가 단계(D10 — 5.7절)**: `Data/deliveries.csv`에 등장하는 상품은 ③ 직후 **경량본 `Assets/GaussianSplats/Products/{id}_LOD1.asset`**을 함께 만든다 — 정제 `.ply`를 SuperSplat에서 가우시안 수 35% 이하(**≤3.5만**)로 Decimation → `{id}_LOD1.ply` → `Create GaussianSplatAsset`(SH `VeryLow`). 경로는 `id`에서 규칙으로 정해지므로 상품 표 컬럼은 추가하지 않는다(스키마 v1 유지). 용도는 박스 내용물 표시와 입고 대상 칸 병합본의 뒷열 유닛이다(7.2절). 경량본이 없으면 `DeliveryLoader`가 경고하고 박스 내용물을 원본(LOD0)으로 표시하며, 예산 초과를 콘솔에 남긴다.
+
+자동 검증 게이트(실패 시 생성 중단 + 콘솔 요약):
+
+- [ ] 4겹 모두 존재(`Splat`의 `GaussianSplatRenderer`+유효한 `GaussianSplatAsset` · 루트 프록시 `BoxCollider` · 자식 `BarcodeTrigger` · `ProductPrefab.Data` SO 연결)
+- [ ] 정제 스플랫의 가우시안 수가 예산 상한(게이트 ≤15만, 상시 목표 ≤10만) 이하
+- [ ] 스케일 오차 축별 ±5% 이내 및 중심 정렬 완료(4.5절)
+- [ ] `BarcodeTrigger`가 프록시 박스 내부에 완전 포함(4.4절)
+- [ ] SO 필드가 상품 표 행과 일치(`id`·`name`·`price`·`barcode_face`·`size_cm`)
+- [ ] `retake_count ≤ 2` (초과면 `status=dropped` 전환 후 목록 제외 — D5)
+
+### 4.7 소유권과 변경 절차
+
+- **데이터 값**(가격·크기·상태·행 추가): 권도훈 소유. **스키마(컬럼 정의)와 생성기 코드**: 이민건 소유(제안서 슬라이드 14 분담 그대로).
+- 스키마 변경(컬럼 추가·타입 변경·열거값 추가)은 **2인 모두 확인 후 커밋**하며 커밋 메시지에 `schema:` 접두사를 붙인다.
+- 생성기는 알 수 없는 컬럼을 만나면 경고하고, 필수 컬럼 누락 행은 건너뛴 뒤 `"처리 N건 / 스킵 M건(사유)"` 요약 로그를 남긴다.
+
+---
+
+## 5. VR 인터랙션 — 잡기·회전, 바코드 판정, 봉투·결제
+
+> 소유자: 이민건(제안서 슬라이드 14). 결정 근거: D2(2026-11-06 갱신), D4, D9, D10 — 1장 결정 표.
+
+XR 리그·텔레포트는 (2장), 프리팹 4겹은 (4장), 근무 루프는 (6장) 참조.
+
+### 5.1 씬 계층·텔레포트 앵커·레이어 매트릭스
+
+- **평시 개발과 HMD 실기기 검증의 결합(D2·D9)**: 평일 기능 구현 중에는 XR Device Simulator(XRI 샘플 — 2.2절 3번)로 헤드·양손 컨트롤러 입력을 시뮬레이션하고, 확보된 HMD(Quest 2 Link) 세션에서 양안 입체시·실제 손목 회전 각도·햅틱 피드백·멀미 유무를 필수 검증한다(8.3절).
+- **멀미 최소화 이동 설계(고정 `TeleportationAnchor` 6개소 — 구 보류 ④ 해소, ⑥은 D10 추가)**:
+  - 연속 이동(Continuous Move)과 부드러운 회전(Continuous Turn)은 멀미 유발 원인이므로 비활성화한다(슬라이드 5 비기능 요구사항).
+  - 매장 바닥에 고정 **`TeleportationAnchor` 6개소**를 배치하여 계산대⇄진열대⇄창고 입구 왕복 업무를 멀미 없이 수행한다:
+    ① **계산대 정면(기본 위치)** ② **진열대 A 앞(라면·과자)** ③ **진열대 B/C 앞(즉석식품·생활용품)** ④ **음료 냉장고 앞** ⑤ **전자레인지·온수기·폐기함 앞** ⑥ **창고 입구(입고 카트·빈 박스 수거함 — 5.7절)**.
+  - 방향 전환은 `Snap Turn(45°)`만 허용한다. 상품·박스를 손에 든 채 텔레포트할 수 있다(5.7절 B1).
+- **상호작용 구역 트리거(모두 `isTrigger=true`)**:
+  - 계산대: `ScannerZone`(바코드 스캐너)·`BagZone`(비닐봉투)·`CardSlotZone`(카드 단말기)·`CashDrawer`/`ChangeTray`(현금 서랍·거스름돈 접시)와 POS 월드스페이스 캔버스(`XRPokeInteractor` 및 `XRRayInteractor` 조작 지원).
+  - 매장 내(2·3일차 과제용 — 6.4절): 진열대 칸별 `ShelfSlotZone`(입고 상품 진열 — 5.7절)·`DisposalBinZone`(폐기함)·`MicrowaveZone`(전자레인지)·`WaterDispenserZone`(온수기).
+  - 입고(5.7절): `BoxStandSocket`(앵커 ②③ 앞 박스 거치대 — `XRSocketInteractor`)·`TapeCutPath`(박스 테이프 체크포인트, 레이어 `Zone`)·`BoxRecycleZone`(앵커 ⑥ 빈 박스 수거함).
+- **레이어 매트릭스(오탐 충돌 원천 차단)**:
+  - `Splat` 레이어: 모든 물리 레이어와 충돌/레이캐스트 **해제(OFF)**.
+  - `BarcodeFace` 레이어(자식 `BarcodeTrigger`): 오직 **`Scanner` 레이어(`ScannerZone`)와만** 충돌 허용.
+  - `Interactable` 레이어(루트 ② 프록시 콜라이더·박스·커터 몸통): 플레이어 손(`DirectInteractor`)·환경 바닥/계산대·`BagZone`·`CashDrawer`·`ChangeTray`·`ShelfSlotZone`·`DisposalBinZone`·`MicrowaveZone`·`WaterDispenserZone`·`BoxStandSocket`·`BoxRecycleZone`과 충돌 허용.
+  - **`Tool` 레이어(신설 — 커터 날 `CutterBlade`)**: 오직 **`Zone` 레이어(`TapeCutPath` 체크포인트)와만** 충돌 허용. 손·상품·박스 몸통은 테이프 판정에 반응하지 않는다(P0에서 만든 레이어 8~12 다음 번호 13에 등록).
+- **오디오(3D 공간음)**: '삑'(스캔)·'띠르릉'(카드 승인)·'철컥'(현금 서랍)·'땡'(오류/조리 완료)·매장 환경음(잔잔한 백색소음/입구 도어벨). 입고(5.7절): '툭'(박스 거치)·'찌익'(테이프 절단 진행)·'펄럭'(플랩 개방)·'착'(진열 수용)·'털썩'(빈 박스 수거).
+
+### 5.2 잡기·회전·내려놓기 — 프록시 콜라이더 기준
+
+3DGS에 충돌 정보가 없으므로(슬라이드 8) 상호작용은 전부 루트의 ② 프록시 `BoxCollider`에서 일어난다.
+
+| 컴포넌트 | 설정 |
+|---|---|
+| `Rigidbody` | 무게 0.1~1.0kg, Interpolate, Collision Detection: Continuous Dynamic |
+| `BoxCollider`(②프록시) | 루트(`P_{id}`, 레이어 `Interactable`), 상품 표 실측 크기(cm)÷100 그대로, Center=무게중심 |
+| `XRGrabInteractable` | Movement Type: Velocity Tracking, Throw On Detach ON, Attach Transform=무게중심, Select Mode: Single |
+| 자식 ③`BarcodeTrigger` | `isTrigger=true`, **레이어 `BarcodeFace`, 태그 `Barcode`**, **면적 100% × 두께 0.02m, 프록시 내부 완전 포함**(4.3·4.4절 프리팹 계약 규격 — 해소 대장 9·19번) |
+
+- **잡기**: 그립 Select + 햅틱(강도 0.3 / 0.05초 — 스캔 햅틱과 구분). 진열대에서 집는 순간 해당 슬롯의 `GaussianSplatCutout`이 켜지고 손에 든 상품의 `GaussianSplatRenderer.m_RenderOrder`가 `10`으로 상향된다(7.3절).
+- **회전**: 6자유도 손목 회전으로 바코드 면을 찾아 스캐너를 향하게 한다(슬라이드 3·11).
+- **놓기**: 그립 해제 → Velocity Tracking 자연 낙하, 바닥 낙하 시 3초 후 원래 바구니(또는 꺼낸 입고 박스의 유닛 자리 — 5.7절) 위치로 자동 리스폰(플레이 흐름 끊김 방지).
+
+### 5.3 바코드 판정 및 스캔 취소 — '바코드 찾기가 곧 게임 규칙'
+
+몸통 프록시 콜라이더(`Interactable`)는 스캐너에 무반응이며, 자식 `BarcodeTrigger`(레이어 `BarcodeFace`)만 `ScannerZone`(레이어 `Scanner`)과 충돌 시 인식한다(슬라이드 8).
+
+```csharp
+// ScannerZone.cs — OnTriggerEnter(Collider c)
+// Physics Layer Matrix에 의해 BarcodeFace 레이어(BarcodeTrigger)만 진입함
+var product = c.GetComponentInParent<ProductPrefab>(); // 루트의 MonoBehaviour 홀더
+if (product == null || product.Data == null) return;
+if (!product.TryMarkScanned(Time.time, cooldownSec: 0.8f)) return; // 인스턴스별 재진입 쿨타임
+
+ProductData item = product.Data;                       // ④ ProductData SO(id, name, price)
+posController.AddScannedItem(item, product);           // 동일 id는 수량+1, POS·주문 HUD 갱신
+audioSource.PlayOneShot(beepClip);
+scannerLight.Flash();
+hapticController.SendHapticImpulse(0.6f, 0.1f);
+```
+
+- **판정 조건**: 충돌만으로 즉시 판정(속도·각도 제한 없음) — 난이도는 상품마다 다른 바코드 면(`bottom`/`back`/`side`)을 찾아 돌리는 물리 동작이 담당한다.
+- **스캔 취소(구 보류 ④ 해소)**: 오스캔(주문 외 상품 스캔 또는 초과 스캔) 회복을 위해 POS 모니터 월드스페이스 캔버스의 각 품목 행 우측에 **`[−]` 취소 버튼**을 배치한다. 플레이어가 `XRPokeInteractor`(검지로 화면 터치) 또는 컨트롤러 레이 클릭으로 `[−]` 버튼을 누르면 해당 품목 스캔 수량이 1 차감되고 취소음('띡')이 재생된다.
+
+### 5.4 봉투 담기 — 스플랫↔반투명 블렌딩 불량 대응
+
+반투명 메시는 스플랫과 블렌딩 불량(공식 문서, 객관분석 §3-A) — Alpha Blend 비닐봉투는 담긴 3DGS 상품과 깊이 정렬이 뒤섞인다.
+
+1. 봉투는 **URP Lit + Alpha Clipping(컷아웃)** 불투명 패스만 사용하고 반투명(Transparent) 렌더 큐를 금지한다(공식 제약 직접 회피). 형태는 윗면이 트인 사다리꼴 메시로 제작해 시선 겹침을 최소화한다.
+2. **담기 판정**: 스캔(및 필요 시 조리)이 완료된 상품이 `BagZone` 진입 + 속도 0.5m/s 이하 0.3초 유지 → `Bagged` 상태로 전환. 상품은 봉투 하위로 페어런팅되고 `Rigidbody`·콜라이더는 비활성화하되, `GaussianSplatRenderer`는 봉투 안에서 보이도록 유지한다.
+3. 주문 HUD에 `"봉투 필요"`가 표시된 손님은 봉투에 담고, 미표기 손님은 계산대 위 완료 구역(또는 손님 바구니)에 놓는다(슬라이드 11).
+
+### 5.5 카드·현금 결제·거스름돈
+
+'손님의 지불'은 손님 캐릭터(D4)가 계산대에 도착한 뒤 계산대 접시에 카드 또는 지폐가 놓이는 것으로 표현한다. 카드·지폐·동전 소품도 5.2절 물리 프리팹 규칙을 따른다.
+
+| 결제 | 절차 | 판정 |
+|---|---|---|
+| 카드 | HUD `"카드 결제"` → 손님이 내민 카드를 집어 단말기 `CardSlotZone`에 삽입 → '띠르릉' | 슬롯 진입 0.5초 유지 시 승인 완료 |
+| 현금 | 받은 지폐를 집어 `CashDrawer`(서랍)에 넣음 → POS에 거스름돈 액수 표시 → 서랍 내 동전(100·500원)·지폐(1,000·5,000원)를 집어 `ChangeTray`(접시)에 놓음 | 접시 위 합계 금액 일치 후 0.5초 유지 시 완료, 과소·과다 시 '땡'+현재 놓인 액수 표시 |
+
+암산 부담을 줄이기 위해 받아야 할 총액과 거스름돈 액수는 POS 화면에 자동 계산되어 표시되며, 플레이어의 과제는 해당 금액만큼 화폐를 집어 놓는 VR 조작이다.
+
+### 5.6 1일차 튜토리얼 — 조작 체인 6단계와 실패 회복
+
+계산대 상단 월드스페이스 가이드 보드 + 음성 안내 6종(슬라이드 12 '튜토리얼·계산만, 손님 5명').
+
+| 단계 | 지시 | 완료 조건 | 실패 회복 |
+|---|---|---|---|
+| T1 잡기 | 바구니에서 컵라면 집기 | 그립 Select | 15초 무행동 시 아웃라인 점멸 |
+| T2 회전 | 손목을 돌려 바닥면 바코드 찾기 | `BarcodeTrigger` 법선이 스캐너/시선 쪽 ±60° 이내 1초 유지 | 15초 경과 시 바코드 면 방향 화살표 UI 표시 |
+| T3 스캔 | 스캐너 붉은 구역(`ScannerZone`)에 대기 | '삑' 스캔 성공 1회 | 20초 경과 시 스캐너 가이드 라이트 강조 |
+| T4 봉투 | 비닐봉투(`BagZone`)에 넣기 | `Bagged` 상태 전환 | 낙하 상품은 3초 후 바구니로 자동 리스폰(처벌 없음) |
+| T5 카드 | 카드를 집어 단말기에 꽂기 | '띠르릉' 승인음 | 카드 낙하 시 접시 위 즉시 리스폰 |
+| T6 현금 | 5,000원 지폐를 받고 3,500원 거슬러 주기 | `ChangeTray` 금액 일치 | 2회 오류 시 필요한 화폐 조합(1000×3 + 500×1) 하이라이트, 3회 오류 시 자동 완료(초심자 이탈 방지) |
+
+T6 완료 후 본 게임의 손님 5명이 순차 진입한다. 진행 상태는 `TutorialStep` enum으로 관리한다.
+
+### 5.7 입고 박스 개봉·진열 — 운반 → 테이프 절단 → 플랩 개방 → 한 개씩 진열 → 빈 박스 수거 (D10)
+
+> 결정 근거: D10 (2026-11-06 신설), D5, D9. **이 절이 입고 박스 기능의 원본이다** — 6.3~6.5절·7장·8장은 요약과 상호 참조만 둔다.
+
+2·3일차의 진열 과제(4차 개정의 '보충 박스에서 집어 빈 칸 채우기')를 실제 편의점 입고 업무로 구체화한다. 창고 입구의 입고 카트에 상품 박스가 쌓여 있고, 플레이어는 박스를 대상 진열대 앞 거치대로 옮겨 커터로 테이프를 자르고 플랩을 연 뒤, 안의 상품을 **한 개씩** 꺼내 지정 칸에 진열하고 빈 박스를 수거함에 버린다. 손님이 없는 Idle 구간(6.2절)에 하는 병행 과제이며, 손님이 오면 진행 상태를 그대로 둔 채 계산대로 돌아간다.
+
+#### 5.7.1 업무 흐름 — `StockBox` 상태 머신
+
+`Sealed`(입고 카트) → `Carried`(운반 중) → `Docked`(거치대 고정) → `TapeCut` → `Open` → `Empty` → `Recycled`
+
+`Empty`는 박스의 모든 유닛이 **진열 수용**됐을 때만 전이한다(꺼냈지만 낙하·오진열로 리스폰 대기 중인 상품이 있으면 `Open` 유지). `Docked` 이후 박스를 거치대에서 다시 들어 올려도 `TapeCut`·`Open` 진행은 유지된다.
+
+| 단계 | 플레이어 조작 | 시스템 판정 | 피드백 | 실패 회복 |
+|---|---|---|---|---|
+| **B1 고르기·운반** | 입고 카트(앵커 ⑥)에서 박스 측면 라벨(상품명 ×수량, 대상 칸 코드 예: `A-2`)을 보고 고른 뒤, 측면 손잡이 구멍을 그립으로 잡고 대상 진열대 앵커로 텔레포트 | 박스는 손잡이(`HandleL/R`) 콜라이더로만 잡힌다. 잡은 채 텔레포트 허용 → `Carried` | 잡기 햅틱(0.3 / 0.05초), 대상 칸 노란 하이라이트 점등 | 바닥 낙하 시 3초 후 마지막 소켓(입고 카트 또는 거치대)으로 리스폰 |
+| **B2 거치** | 진열대 앞 허리 높이(0.8m) 박스 거치대에 올려놓기 | `BoxStandSocket`(`XRSocketInteractor`)에 들어가면 정위치·정방향으로 스냅 → `Docked`. 대상 칸이 다른 진열대에 있어도 거치는 허용(하이라이트로만 안내) | '툭' | — |
+| **B3 테이프 자르기** | 거치대 옆 홀더의 박스 커터를 집어 윗면 테이프 선을 따라 긋기 | 테이프 선 위 체크포인트 트리거 6개(`TapeCutPath`, 레이어 `Zone`)를 커터 날(`CutterBlade`, 레이어 `Tool`)이 한쪽 끝부터 순서대로 통과(양방향 허용, 체크포인트 간 2초 이내). 6/6 통과 → `TapeCut`. **`Docked` 상태에서만 판정**(공중에서 두 손으로 자르는 조작 배제) | 체크포인트마다 햅틱 틱(0.2 / 0.03초) + '찌익' 진행음, 완료 시 테이프 메시 2분할 | 간격 2초 초과 시 진행 리셋. 20초 경과 시 테이프 선 가이드 화살표 점멸. 커터를 놓으면 1초 후 홀더로 자동 복귀 |
+| **B4 플랩 열기** | 주 플랩 2장의 가장자리를 잡아 바깥으로 젖히기 | `BoxFlap`: 손 위치를 힌지 축 수직 평면에 투영한 각도로 플랩 회전(0~210° 클램프). 놓을 때 110° 이상이면 완전 개방(210°)으로 스냅, 미만이면 닫힘(0°)으로 복귀. 보조 플랩 2장은 주 플랩과 연동 자동 개방. 주 플랩 2장 개방 → `Open` | '펄럭', `Open` 진입 시 박스 내부 상품 3DGS 표시 | 15초 무행동 시 플랩 가장자리 아웃라인 점멸 |
+| **B5 꺼내기** | 박스 안 상품을 하나 집기 | 내부 상품은 단층 유닛 자리(`BoxUnit`)에 놓인 경량 3DGS(`{id}_LOD1`)다. 유닛을 잡으면 그 유닛 렌더러를 끄고 풀(Pool)의 개별 4겹 프리팹(원본 LOD0)을 손 위치에 꺼내 선택을 이양한다(아래 코드). 손에 든 상품은 `m_RenderOrder = 10` | 잡기 햅틱 | 바닥 낙하 시 3초 후 꺼낸 유닛 자리로 리스폰(유닛 렌더러 재점등) |
+| **B6 진열** | 대상 칸(`ShelfSlotZone`, 노란 하이라이트) 안에서 그립 해제 | **수용 조건**: 상품 `id` = 칸 `productId` + 칸 잔여 용량 > 0 + 칸 존(칸 부피 + 5cm 여유) 안에서 SelectExit(던져서 들어온 경우는 손을 떠난 상태로 존 안에서 속도 ≤ 0.5m/s를 0.3초 유지). 수용 시 0.15초 보간으로 다음 빈 유닛 자리·정방향에 스냅한 뒤 개별 프리팹을 풀에 반환하고 그 유닛의 `GaussianSplatCutout`을 끈다(병합 진열대에 상품이 나타남 — 7.3절). 놓는 순간 상품 앞면(+Z, 4.4절)이 통로 쪽 ±60° 안이면 '정면 진열'로 가산 | '착' + 칸 진열 수량 표시(예: `4/6`) | **오진열**(다른 상품 칸·만석 칸): '땡' + 오진열 카운트 +1, 상품은 꺼낸 유닛 자리로 리스폰 |
+| **B7 빈 박스 수거** | 비워진 박스(`Empty`)를 들고 창고 입구(앵커 ⑥) 빈 박스 수거함에 넣기 | `BoxRecycleZone` 진입 → `Recycled`(디스폰), 정리 카운트 +1 | '털썩' | 일차 종료 시 남은 빈 박스는 '정리 미흡'으로 정산에 반영(6.5절) |
+
+```csharp
+// BoxUnit.cs — 박스 안 유닛 1자리. XRSimpleInteractable.selectEntered에 연결
+public void OnUnitGrabbed(SelectEnterEventArgs args) {
+    if (box.State != StockBoxState.Open) return;                 // 개봉 전에는 꺼낼 수 없음
+    unitSplat.enabled = false;                                   // 박스 안 경량 스플랫(LOD1) 숨김
+    var product = productPool.Get(box.Product);                  // 개별 4겹 프리팹(LOD0)
+    product.transform.SetPositionAndRotation(transform.position, transform.rotation);
+    product.SetSplatRenderOrder(10);
+    product.ReturnUnit = this;                                   // 낙하·오진열 시 이 자리로 리스폰
+    var interactor = args.interactorObject;
+    interactionManager.SelectExit(interactor, unitInteractable);
+    interactionManager.SelectEnter(interactor, product.GrabInteractable); // 선택을 손의 상품으로 이양
+}
+
+// ShelfSlotZone.cs — 칸 존 안에서 상품을 놓았을 때(SelectExit)
+bool TryAccept(ProductPrefab p) {
+    if (p.Data.Id != productId || filled >= capacity) { Reject(p); return false; } // '땡' + 유닛 자리로 리스폰
+    bool faceUp = Vector3.Angle(p.transform.forward, aisleForward) <= 60f;
+    StartCoroutine(SnapThenCommit(p, unitPoses[filled], faceUp)); // 0.15초 보간 후 Commit
+    return true;
+}
+void Commit(ProductPrefab p, bool faceUp) {
+    if (renderMode == SlotRenderMode.Merged) { unitCutouts[filled].enabled = false; productPool.Release(p); }
+    else p.FreezeOnShelf();                                      // 병합 전(7.3절 1단계): kinematic 고정
+    filled++;
+    intake.OnShelved(this, faceUp);                              // 진열·정면 진열 집계(6.5절)
+}
+```
+
+#### 5.7.2 규칙과 범위
+
+- **동시 개봉 1개**: `Open` 상태 박스가 이미 있으면 다른 박스의 B3 판정은 꺼지고 HUD에 "열린 박스를 먼저 비우세요"를 띄운다 — 동선 정리와 스플랫 예산(7.2절) 보호.
+- **박스 1개 = 상품 1종**, 입수 `case_qty ∈ {4, 6, 8}`을 **단층**(2×2·2×3·2×4)으로 배치한다. 위에서 모든 상품이 보이므로 적층·가림 판정이 필요 없다.
+- **재고 시뮬레이션 없음**: 진열 재고와 손님 주문(바구니에 담겨 도착 — 6.1절)은 서로 영향을 주지 않는다. 진열은 독립 과제로 정산한다(6.5절).
+- **손님 우선**: 진열 중 손님이 도착하면 도어벨 + 주문 HUD 점멸로 알린다. 박스·칸 진행 상태는 유지되며 계산 뒤 이어서 할 수 있다. 입고 대상 칸은 유통기한 폐기 대상(6.4절)에서 제외해 두 과제가 한 칸에서 섞이지 않게 한다.
+- **중간 도착**: `Data/deliveries.csv`의 `arrive_after_order = n`인 박스는 그 일차 n번째 손님이 끝난(Complete/Timeout) 직후 입고 카트에 나타나고, 배송 알림음 + HUD "입고 도착(창고 입구)"을 띄운다(6.5절).
+- **D9 정합**: 박스는 매장 집기(소모품) 메시이며 상품이 아니다. 상품 100% 3DGS 원칙의 대상인 박스 안 상품(경량 3DGS)·손에 든 상품(원본 3DGS)·진열 결과(병합 3DGS)는 모두 3DGS로 표시된다. 박스 측면 라벨은 TextMeshPro 월드스페이스 글자(상품명 ×수량·대상 칸 코드)로, 상품 외형을 대신하는 2D 사진 판이 아니다.
+- **범위 밖·확장 후보**(필수 항목이 P4 중반까지 끝났을 때만 착수, M3 이후 금지): ① 선입선출(기존 재고를 앞으로 당기고 새 상품을 뒤에 넣기) ② 음료 냉장고 입고(문 개폐 포함) ③ 빈 박스 접기 ④ 박스 2단 적재·두 손 운반.
+
+#### 5.7.3 컴포넌트·프리팹 계약
+
+```
+P_StockBox (루트: Rigidbody + XRGrabInteractable[colliders = HandleL/R] + StockBox — 레이어 Interactable)
+├─ Body        — 골판지 메시(바닥·벽 4면, 런타임 치수 적용) + BoxCollider 5장
+├─ HandleL/R   — 손잡이 구멍 BoxCollider(박스 잡기 전용)
+├─ Flaps/      — BoxFlap ×2(주) + 연동 보조 플랩 ×2, 힌지 피벗
+├─ Tape        — 테이프 메시(절단 시 2분할) + TapeCutPath(체크포인트 트리거 ×6, 레이어 Zone)
+├─ Units/      — BoxUnit ×case_qty: GaussianSplatRenderer({id}_LOD1, 닫힘 상태에선 비활성) + 유닛 프록시 BoxCollider(XRSimpleInteractable)
+└─ Label       — 측면 TextMeshPro(상품명 ×수량, 대상 칸 코드)
+```
+
+- **치수**: 내부 = (열 × W + 1cm) × (행 × D + 1cm) × (H + 1cm), 벽 두께 0.5cm. 상품 표의 `size_cm`(4.1절)으로 스폰 시 생성한다(`StockBox.Build(ProductData, caseQty)`) — 상품별 박스 프리팹은 만들지 않는다. 골판지 재질은 무지(브랜드 없음) 트라이플래너 텍스처.
+- **박스 잡기**: `XRGrabInteractable` Movement Type **Instantaneous**(잡은 채 텔레포트할 때 Velocity Tracking이 박스를 튕겨 내는 현상 방지 — P4 HMD 세션 확인 항목), 질량 2kg, Throw On Detach OFF. 이 방식이 실기기에서 불안정하면 입고 카트를 대상 진열대 앞에 두고 B1 운반을 생략하는 것으로 축소한다(기능 축소 — `docs/decisions.md` 기록).
+- **`BoxCutter`**: 루트 프록시(레이어 `Interactable`) + 자식 `CutterBlade`(트리거, 레이어 `Tool`). 거치대 홀더(`XRSocketInteractor`)에 기본 장착, 앵커 ②③에 1개씩.
+- **`ShelfSlotZone` 확장**: `slotId`(예: `A-2`), `productId`, `capacity`(4~8), `unitPoses[capacity]`, `unitCutouts[capacity]`(유닛별 `GaussianSplatCutout`, `m_Type = Box`, `m_Invert = true`), 채움 순서 = 앞열 왼쪽→오른쪽 → 뒷열. `SlotRenderMode { Individual, Merged }` — 병합 에셋이 나오기 전(7.3절 1단계)에는 스냅한 개별 프리팹을 kinematic으로 남기고, 병합 후에는 디스폰 + 유닛 컷아웃 해제로 동작한다. 덕분에 병합 에셋 완성 전에도 기능 구현·테스트를 진행할 수 있다.
+- **일차 시작 시 칸 초기화**: `DeliveryLoader`가 그 일차 대상 칸별 `case_qty` 합계만큼 유닛을 비운다(뒤쪽 유닛부터 컷아웃 켬). 합계가 `capacity`를 넘으면 로드 오류로 처리한다(6.5절 검증).
+
+#### 5.7.4 2일차 입고 안내 (미니 튜토리얼)
+
+2일차 첫 박스에서만 4단계 안내를 한다. 첫 손님의 스폰 타이머는 I4 완료(또는 안내 시작 후 90초 경과) 뒤에 시작한다. 진행 상태는 `IntakeTutorialStep` enum으로 관리한다.
+
+| 단계 | 지시 | 완료 조건 | 실패 회복 |
+|---|---|---|---|
+| I1 운반 | "창고 입구 카트에서 컵라면 박스를 들고 진열대 A로 가세요" | `Docked` | 20초 무행동 시 박스·대상 앵커 하이라이트 |
+| I2 자르기 | "커터로 테이프 선을 따라 그으세요" | `TapeCut` | 리셋 2회 시 체크포인트 구슬 표시, 4회 시 자동 절단(초심자 이탈 방지) |
+| I3 열기 | "플랩을 바깥으로 젖히세요" | `Open` | 15초 시 플랩 아웃라인 점멸 |
+| I4 진열 | "상품을 하나 꺼내 노란 칸에 놓으세요" | 진열 1개 수용 | 낙하·오진열 상품은 유닛 자리로 리스폰(처벌 없음) |
+
+나머지 상품과 이후 박스는 근무 중 Idle 구간에 플레이어가 알아서 처리한다.
+
+---
+
+## 6. 게임플레이 루프 — 손님 캐릭터·근무 흐름·정산·3일차 시나리오
+
+> 소유자: 이민건(제안서 슬라이드 14 '손님·근무 루프, 점수·정산'). 주문 시나리오·입고 데이터는 권도훈(6.5절). 결정 근거: D4, D5, D9 (2026-10-25 확정), D10 (2026-11-06) — 1장 결정 표.
+
+### 6.1 손님 시스템 — 3D 캐릭터 + 주문 3요소
+
+손님은 **3D 사람 캐릭터로 등장한다**(D4 확정). 2인 팀 공수를 지키기 위해 캐릭터는 **무료 에셋 조달 + 최소 애니메이션**을 원칙으로 하고 커스텀 모델링·리깅은 하지 않는다.
+
+| 요소 | 구현 | 비고 |
+|---|---|---|
+| 캐릭터 | 무료 3D 인간형 에셋 — Unity Asset Store 스타일라이즈드 NPC 또는 Mixamo 캐릭터(+기본 리깅). 실사 3DGS 상품과 조화되는 깔끔한 캐주얼 스타일 | 에셋 확정은 P2 착수 시(8.2절) |
+| 애니메이션(최소) | `idle`(계산대 앞 대기)·`walk`(이동)·`leave`(퇴장) 3종 | 여유 시: 지폐 내밀기·바구니 내려놓기 포즈 추가 |
+| 이동 | `NavMeshAgent` — 입구 스폰 → 계산대 앞 대기 지점 → 완료/이탈 시 걸어서 퇴장. 동시 등장 1명(순차 스폰 유지) | 대기열 2~3명 시각화는 여유 시 옵션 |
+| 바구니 | 캐릭터 손/팔에 페어런팅되어 이동하다가 계산대 앞 도착 시 카운터 정위치에 분리 배치(내부에 주문 상품 3DGS 프리팹 스폰) | 목업 5번 |
+| 주문 HUD | 월드스페이스 캔버스 — 손님 번호·주문 목록(스캔 시 라인 체크)·남은 시간·요구사항(봉투·결제수단·특수 요청) | POS 상단, 점원 시선 고정(목업 1번) |
+| 음성 | 사전 녹음 클립 — 인사 2종·재촉 1종(남은 시간 50%)·이탈 1종·특수 요청 4종(객관분석 §3-I 사운드 보완) | 캐릭터 3D 위치에서 재생 |
+
+경계(범위 밖): 캐릭터가 개별 상품을 손가락으로 집는 정교한 IK 상호작용은 하지 않는다 — 상품은 바구니에 담겨 도착하고(목업과 동일), 지불은 접시에 생성되는 카드/지폐로 표현된다(5.5절).
+
+### 6.2 근무 흐름 상태 머신
+
+일차 상태(`GameManager`): `Intro(출근) → Shift(근무) → Settlement(정산) → DayEnd`. Shift 내부 루프(`GameManager` ↔ `CustomerDirector` — 2.3절 컴포넌트 명칭 통일, 해소 대장 19번):
+
+```text
+스폰 조건: 직전 주문 Complete/Timeout 후 spawn_after_prev_sec 경과
+  Arrived  : CustomerDirector가 캐릭터 입구 스폰 → 계산대 앞 이동 완료 + 인사 음성 + 바구니 배치 + HUD 갱신 → Waiting(타이머 시작)
+  Waiting  : POSController.OnItemScanned(id)   → 해당 주문 라인 체크(특수 요청 품목은 조리 완료 포함 시 체크)
+             POSController.OnPaymentCompleted  → Complete(캐릭터 퇴장·바구니 디스폰, 매출 가산)
+             타이머 0 도달                      → Timeout(이탈 음성 + 캐릭터 걸어서 퇴장, 매출 손실·이탈 카운트 +1)
+  Idle     : 손님 스폰 대기 구간 및 손님 처리 중 여가 시간 → 입고 박스 개봉·진열(5.7절)·유통기한 폐기 과제 수행(2·3일차)
+             IntakeDirector: 직전 손님 종료 시 arrive_after_order = 해당 순번인 박스를 입고 카트에 스폰
+  일차 주문 전부 소진(또는 이탈 3명 도달) → Settlement
+```
+
+스캔·결제 입력은 5장의 `POSController`가 발행하는 `OnItemScanned`·`OnPaymentCompleted` 이벤트를 `CustomerDirector`와 `GameManager`가 구독한다.
+
+### 6.3 3일차 시나리오 수치
+
+| 일차 | 손님 수 | 스폰(직전 완료 후) | 손님당 제한시간 | 추가 과제 | 일차 종료 조건 |
+|---|---|---|---|---|---|
+| 1일차 | 5명 | 10초 | 150초(목업 02:30) — 초과해도 이탈 없음, 경고음만 | 없음(튜토리얼 6단계 + 계산만) | 5명 완료 |
+| 2일차 | 8명 | 15초 | 120초 — 초과 시 이탈 | **입고 박스 2개**(6입·4입 → 10개 진열, 대상 칸 2개 — 시작 시 입고) + 입고 안내 4단계(5.7.4절), 유통기한 폐기 3개(6.4절) | 8명 소진(또는 이탈 3명) |
+| 3일차 | 12명 | 일반 20초 / 피크(9~12번째) 10초 | 일반 90초 / 피크 60초 | **입고 박스 2개**(6입 시작 시 입고 + 4입은 6번째 손님 뒤 중간 도착) + 폐기 + 특수 요청(전자레인지·온수기·1+1, 6.4절) | 12명 소진(또는 이탈 3명) |
+
+- 1일차 첫 손님 진입 전 5.6절의 6단계 튜토리얼을, 2일차 첫 손님 진입 전 5.7.4절의 입고 안내를 수행한다.
+- 이탈 3명 도달 시 해당 일차는 즉시 종료되고 정산(`Settlement`)으로 넘어간다(2·3일차만 해당, 별도 게임오버 화면 없이 정산 등급 C/D로 피드백). 진열을 다 못 끝내도 일차는 손님 기준으로 끝나며, 남은 진열은 완료율로 정산된다.
+- 설계 분배: 1일차 약 4분(+튜토리얼 1분), 2일차 약 5분(입고 안내 포함), 3일차 약 5분 = 총 약 15분(슬라이드 4 목표 10~15분의 상한). 진열 1개당 약 6~8초(꺼내기→칸 이동→놓기)와 박스당 개봉·운반·수거 약 40초를 기준으로 잡은 값이며, P4 플레이테스트에서 초과하면 `Data/deliveries.csv`의 박스 수·입수로 조정한다(코드 무변경).
+
+### 6.4 진열·폐기 및 특수 요청 구현 명세와 디스코프 트리거 (구 보류 ① 해소)
+
+2일차 진열·폐기와 3일차 특수 요청(전자레인지·온수기·1+1)은 모두 **복잡한 추가 애니메이션 없이 트리거 존(`Zone`) + 타이머 + 상태 플래그**만으로 간결하게 동작하도록 명세한다(입고 박스의 플랩 회전·테이프 분할만 예외적으로 단순 트랜스폼 애니메이션을 쓴다 — 5.7절):
+
+| 기능 구분 | 등장 | VR 조작 및 시스템 판정 명세 |
+|---|---|---|
+| **입고 박스 진열(`restock`)** | 2·3일차 | **상세 원본 5.7절(D10).** 창고 입구 입고 카트의 박스를 대상 진열대 앞 거치대(`BoxStandSocket`)로 운반 → 커터로 테이프 절단(`TapeCutPath`) → 플랩 개방 → 상품을 한 개씩 꺼내 대상 칸(`ShelfSlotZone`, 노란 하이라이트)에 놓으면 다음 빈 유닛 자리에 스냅된 뒤 개별 프리팹이 디스폰되고 해당 유닛의 `GaussianSplatCutout`이 비활성화(병합 진열대 스플랫에서 상품 나타남)되며 진열 카운트 +1 → 빈 박스는 수거함(`BoxRecycleZone`)으로. 다른 상품 칸·만석 칸에 놓으면 '땡' + 오진열 카운트 +1, 상품은 박스로 리스폰. |
+| **유통기한 폐기(`dispose`)** | 2·3일차 | 일차 시작 시 무작위 3개 진열 슬롯(그 일차 입고 대상 칸 제외) 상품에 유통기한 경과 마커(`ProductPrefab.IsExpired = true`, 상단 보라/적색 만료 아이콘 태그)가 부여됨. 플레이어가 텔레포트해 해당 상품을 집어 폐기함(`DisposalBinZone`)에 넣으면 폐기 완료 +1(만료가 아닌 정상 상품을 넣으면 '땡' 경고음 + 폐기 오탐 감점). |
+| **1+1 행사(`oneplus`)** | 3일차 | 주문 시나리오에서 `special=oneplus`가 지정된 품목은 손님 바구니에 동일 상품 2개가 담겨 오며, 2개 모두 바코드 스캔해야 완료되지만 `POSController` 합산 시 1개 가격만 청구(할인 자동 적용)됨. |
+| **전자레인지(`microwave`)** | 3일차 | 주문 HUD에 `"전자레인지 데우기"` 표기. 해당 상품(도시락·삼각김밥 등)을 바코드 스캔한 뒤 `MicrowaveZone` 트리거에 넣으면 3초간 작동음+조명 점등 후 '땡' 완료음과 함께 `product.IsProcessed = true`로 변경됨. 이후 꺼내어 봉투/바구니에 담아야 결제 활성화. |
+| **컵라면 온수(`hotwater`)** | 3일차 | 주문 HUD에 `"온수 붓기"` 표기. 컵라면을 바코드 스캔한 뒤 온수기(`WaterDispenserZone`) 트리거에 2초간 거치하면 물 붓는 효과음 재생 후 `product.IsProcessed = true`로 변경됨. |
+
+- **디스코프 순서 트리거 T1(D5)**: 특수 요청 3종(`oneplus`·`microwave`·`hotwater`)은 요구사항표상 '확장' 기능이므로 **MVP(M2) 완료 후에만 착수**한다. 만약 P4 진입 시점에 M2가 미완결이면 `Data/scenarios.csv`의 `special` 열 값을 `none`으로 일괄 변경하여 3일차를 피크타임(스폰 10초·제한 60초) + 진열·폐기 구성만으로 완주한다(코드 수정 불필요, 8.5절 T1).
+
+### 6.5 정산과 시나리오 데이터 (`Data/scenarios.csv` — 구 보류 ① 해소)
+
+- **Settlement(정산) 항목**: 일차 매출 합계, 이탈 손님 수(매출 차감), 오스캔(취소) 횟수, 폐기 오탐 횟수, 진열·폐기 과제 완료율 → 종합 등급 **S / A / B / C** 산출. 3일차 종료 시 1~3일차 누적 정산 리포트를 표시한다.
+- **입고 진열 정산 항목(D10 — 5.7절)**: 진열 완료율(수용 개수 ÷ 그 일차 입고 총 개수), 오진열 횟수, 정면 진열 비율(앞면 ±60° 수용 비율 — 가산점만, 감점 없음), 미수거 빈 박스 수. 진열 완료율은 위 '진열·폐기 과제 완료율'에 합산하고, 오진열·미수거는 폐기 오탐과 같은 감점 항목으로 처리한다(등급 경계값은 P4 플레이테스트로 확정).
+- **주문 시나리오 CSV 파일 경로**: **`Data/scenarios.csv`** (권도훈 작성, `DayScenarioLoader`가 로드 — 상품 표 `Data/products.csv`와 동일 폴더에 배치).
+
+```csv
+# file: Data/scenarios.csv
+order_id,day,seq,spawn_after_prev_sec,time_limit_sec,payment,bag,special,items
+c01_01,1,1,10,150,card,1,none,ramen_cup_01x1|kimbap_tri_01x2
+c02_04,2,4,15,120,cash,1,none,water_500_01x2|ramen_cup_01x1
+c03_09,3,9,10,60,cash,0,microwave,kimbap_tri_01x1
+```
+
+`items`의 `product_id`는 4장 상품 표(`Data/products.csv`)의 `status=live` 행과 조인한다(수량 상한 없음 — D5, 4.2절). `special` 허용 열거값: `none | microwave | hotwater | oneplus`.
+
+- **입고 CSV 파일 경로(D10)**: **`Data/deliveries.csv`** (권도훈 작성, `DeliveryLoader`가 로드). 한 행 = 박스 1개. 소유권·스키마 변경 절차는 4.7절을 따른다(데이터 값=권도훈, 스키마=이민건).
+
+```csv
+# file: Data/deliveries.csv
+# case_qty 허용값: 4|6|8 (단층 2×2·2×3·2×4 — 5.7.2절)
+# target_slot: 씬 ShelfSlotZone.slotId (진열대 문자-칸 번호, 예: A-2)
+# arrive_after_order: 0=일차 시작 시 입고 카트에 적재, n=해당 일차 n번째 손님 종료 직후 도착
+delivery_id,day,box_seq,product_id,case_qty,target_slot,arrive_after_order
+d02_01,2,1,ramen_cup_01,6,A-2,0
+d02_02,2,2,kimbap_tri_01,4,B-1,0
+d03_01,3,1,ramen_cup_01,6,A-2,0
+d03_02,3,2,kimbap_tri_01,4,B-1,6
+```
+
+`DeliveryLoader` 로드 검증(실패 행은 건너뛰고 `"처리 N건 / 스킵 M건(사유)"` 요약 로그 — 4.7절 생성기 규칙과 동일): ① `product_id`가 상품 표 `status=live` 행 ② `target_slot`이 씬에 존재하고 그 칸의 `productId`와 일치 ③ `case_qty ∈ {4, 6, 8}` ④ 같은 일차·같은 칸의 `case_qty` 합계 ≤ 칸 `capacity` ⑤ `arrive_after_order` ≤ 그 일차 손님 수 ⑥ 경량본 `{id}_LOD1.asset` 존재(없으면 경고만 — 4.6절). 1일차 행은 무시한다(1일차는 계산만 — 6.3절).
+
+---
+
+## 7. 렌더링 성능 최적화 — 진열대 병합·Invert 컷아웃·원거리 3DGS 경량화·72fps
+
+> 결정 근거: D2(2026-11-06 갱신), D5, D9, D10 — 1장 결정 표.
+
+### 7.1 목표·측정 기준 — 72fps의 정의
+
+- **목표**: Meta Quest 2 **Link(PCVR, 유선)** 실기기에서 **72fps 유지(프레임타임 ≤ 13.9ms)**. 측정 기준 PC는 Link에 연결된 **RTX 4070 데스크톱**(D2·D3)이며, 매 측정 로그에 GPU 모델·드라이버·Meta Quest Link 앱 Render Resolution·헤드셋 펌웨어 버전을 함께 기록한다(2.7절). 그래픽 API는 DX12 고정(2장).
+- **평시 에디터 추세 측정과 HMD 실기기 절대 판정의 결합(D2·D9)**:
+  - 평일 개발 중(시뮬레이터 모드)에는 에디터 게임뷰(DX12) + Unity Profiler로 병합 전후·완화책 전후·상품 추가에 따른 **상대 프레임타임 추세**를 상시 기록(`device=editor`)한다.
+  - **절대 성능 판정(게이트 G1-H의 평균 72fps 및 상시 최적화의 p95 ≤ 13.5ms)은 반드시 확보된 HMD 실기기(`device=quest2-link`)에서 측정·확정**한다(8.3절·9.1절).
+- **고정 대표 장면 3개** — 매주 같은 시점(고정 카메라 트랜스폼 포즈)에서 재현 가능해야 한다.
+  - **S1 진열대 근접**: 진열대 A 한 칸 앞 약 30cm, 칸이 시야 대부분을 덮는 시점. 최악 오버드로 시나리오(업스트림 이슈 #145 유형)의 재현 지점.
+  - **S2 계산대 시점**: 슬라이드 11 목업 시점(바구니·POS 근거리 + 음료 냉장고·진열대 원거리). 실플레이 평균 부하.
+  - **S1b 입고 진열 시점(D10 추가)**: 앵커 ②에 서서 거치대의 개봉 박스(8입, 경량본 8개)를 내려다보며 대상 칸(유닛 컷아웃 활성 상태)을 50cm 앞에 두고 손에 상품 1개(원본)를 든 시점. 박스 내용물 + 컷아웃 판정 비용이 더해지는 최대 부하 지점. 입고 기능 구현(P4) 이후부터 측정한다.
+- **프로토콜**(상시 최적화 측정, HMD 실기기): Oculus Debug Tool 성능 오버레이 및 Unity Profiler로 장면당 60초 × 3회 측정. 기록: 프레임타임 `ms_p50/p95/p99`, 드롭 프레임률(`drop_pct`), 가시 스플랫 합계(`splat_count`), 렌더 스케일. 결과는 `docs/perf/perf_log.csv`에 누적한다(9.5절 통합 스키마). 게이트 판정 측정은 9.1절 G1-H 프로토콜(30초×3회)을 따른다(용도 분리 — 해소 대장 4번).
+- **판정 기준**: 상시 최적화 단계에서 **p95 프레임타임 ≤ 13.5ms이고 드롭률 < 1%**면 통과(게이트 G1-H 통과 기준은 평균 72fps·드롭 <5% — 9.1절).
+
+### 7.2 스플랫 수 예산 (D5·D9)
+
+이슈 #145는 15만~17.5만(소량)에서도 급락을 보고했으므로 핵심 병목은 오버드로지만, GPU 정렬(Radix Sort)·데이터 대역폭 비용은 가우시안 수에 비례하므로 명확한 상한을 둔다.
+
+| 항목 | 상한(최적화 목표) | 근거 |
+|---|---|---|
+| 상품 1종(정제 후 개별본) | **10만 가우시안** | Scaniverse/splatfacto 원본 수백만 → SuperSplat 배경 제거·알파 컬링·decimation(3.4절) |
+| 진열대 칸 병합본(칸당 2~3종 진열) | **30만 가우시안** | 상품 예산 × 칸 진열 수량 |
+| 장면 가시 합계(매장 전체) | **150만 가우시안** | 초기 15종 상당 × 칸 수, 원거리 경량화본 포함 — 상품 계속 추가(D5) 시 초과분은 원거리 3DGS Decimation으로 상쇄 |
+| 원거리 칸(3.5m+) | **3DGS 축소본(가우시안 수 25~50% + `VeryLow` SH 압축)** | **2D 사진 판(Quad) 대체 금지(D9 하드 제약)** — 원거리도 100% 3DGS 입체 에셋 유지(7.3절 4단계) |
+| 상품 경량본 `{id}_LOD1`(D10) | **3.5만 가우시안**(원본의 35% 이하 + `VeryLow` SH) | 박스 내용물·입고 대상 칸 뒷열 유닛 전용(4.6절) |
+| 입고 박스 내용물(개봉 상태) | **28만 가우시안**(경량본 3.5만 × 최대 8입) | 동시 개봉 1개 규칙(5.7.2절)으로 장면당 1박스만 가산. 닫힌 박스는 내용물 렌더러 비활성, 개봉 박스도 카메라 3m 밖이면 비활성 |
+| 입고 대상 칸 병합본(용량 4~8유닛) | **30만 가우시안 유지** | 용량 전체가 진열된 상태로 병합하되 앞열 유닛은 상품당 5만 이하로 Decimation, 뒷열 유닛은 경량본으로 배치(예: 6유닛 = 5만×3 + 3.5만×3 = 25.5만) |
+
+초과 시 대응 순서: 알파 컬링 임계값 상향 → SuperSplat decimation(가우시안 솎아내기) → `Create GaussianSplatAsset` 시 SH(구면조화함수) 포맷 경량화(`VeryLow`) → 마지막 수단 재촬영(2회 초과 시 다른 실물 상품으로 대체 — D5). 본 표는 게이트 통과 이후 최적화 목표 예산이며, 게이트 통과 기준 예산은 9.1절(상품 15만·매장 200만)을 따른다(용도 분리 — 해소 대장 6번).
+
+### 7.3 4단계 전략 — 단계별 절차·체크리스트
+
+#### 1단계 개별 배치, 베이스라인 측정 (G1 게이트)
+
+1. 확보 상품 전부를 개별 `GaussianSplatRenderer` 프리팹(4겹, 4장)으로 진열대에 배치.
+2. S1/S2 측정 — 모든 비교의 기준선(평시 에디터 추세 + G1-H HMD 실기기 기준선).
+3. 체크: S1에서 이미 p95 > 13.5ms면(HMD 실기기) 오버드로 병목 확정. 에디터 추세에서도 급격한 프레임타임 상승이 보이면 **2단계를 기다리지 않고 7.4절 완화책을 즉시 병행**한다(병합은 드로우콜·정렬 횟수만 줄일 뿐 오버드로는 줄이지 않으므로).
+
+#### 2단계 진열대 Merge 병합
+
+1. 진열대 칸 단위로 개별 상품 `.ply`들을 하나로 병합 — SuperSplat 멀티 임포트 후 트랜스폼 배치·단일 `.ply` 내보내기 → Unity `Create GaussianSplatAsset`으로 `Assets/GaussianSplats/Merged/Shelf_{shelfId}_{slotGroup}.asset` 생성. 칸당 `GaussianSplatRenderer` 1개(`m_RenderOrder = 0`).
+2. 맞닿은 상품 간 로컬 배치(앞뒤 어긋남 정렬)를 병합 시점에 고정하여 다중 렌더러 간 깊이 역전 현상을 원천 제거.
+3. S1/S2 재측정 후 드로우콜·정렬 비용 감소 효과를 `perf_log.csv`에 기록.
+4. 개별 원본(`Products/{id}.asset`)과 병합본(`Merged/*.asset`) 2벌을 유지하고, 신규 상품 추가 시 해당 칸 재병합까지가 '상품 추가의 실제 절차'다(3.6절·4.6절).
+
+#### 3단계 집는 순간 `GaussianSplatCutout`(Invert) 분리 + `m_RenderOrder` 제어 (해소 대장 16번)
+
+- **구성**: `UnityGaussianSplatting`의 실제 컴포넌트 규격에 맞춰, 진열대 병합 `GaussianSplatRenderer`의 `m_Cutouts` 배열에 각 상품 슬롯 위치의 **`GaussianSplatCutout` 컴포넌트(`m_Type = GaussianSplatCutout.Type.Box`, `m_Invert = true`)**를 사전 등록하고 초기에는 비활성(`cutout.enabled = false`) 상태로 둔다(구 문서의 '컷아웃 텍스처' 오기 삭제).
+- **작동**: 플레이어가 슬롯 상품을 집는 순간(`SelectEnter`), 해당 슬롯의 `GaussianSplatCutout`을 활성화(`enabled = true`)하여 병합 진열대에서 그 상품 영역의 가우시안만 즉시 마스킹(숨김)하고, 플레이어 손에는 개별 상품 3DGS 프리팹을 활성화한다. 동시에 **손에 쥔 개별 상품 렌더러의 `m_RenderOrder = 10`(진열대 병합본은 `0`)으로 설정**하여 손과 진열대가 겹쳐 보일 때 항상 손에 든 상품이 앞쪽에 렌더링되도록 보장한다(2.4절).
+
+```csharp
+// SplatShelfSlot.cs — XR Interaction Toolkit Select 이벤트에 연결
+public GaussianSplatCutout slotCutout;          // m_Type = Box, m_Invert = true (병합 렌더러 m_Cutouts에 등록됨)
+public ProductPrefab individualProductInstance; // 개별 3DGS 상품 프리팹
+
+public void OnGrabbed(SelectEnterEventArgs _) {
+    slotCutout.enabled = true;                  // 진열대 병합 스플랫에서 해당 슬롯 영역 숨김
+    individualProductInstance.SetSplatRenderOrder(10); // 손에 든 개별 스플랫 정렬 우선순위 상향
+}
+
+public void OnReturnedToSlot(SelectExitEventArgs _) {
+    individualProductInstance.gameObject.SetActive(false);
+    slotCutout.enabled = false;                 // 진열대 병합 스플랫에서 다시 표시
+}
+```
+
+- **입고 대상 칸의 유닛 컷아웃(D10 — 5.7절)**: 입고 대상 칸은 칸 단위 컷아웃 1개 대신 **유닛마다 `GaussianSplatCutout`(`m_Type = Box`, `m_Invert = true`)**을 병합 렌더러 `m_Cutouts`에 등록한다. 일차 시작 시 비울 유닛의 컷아웃을 켜고(`enabled = true` — 숨김), 상품이 수용될 때마다 하나씩 끈다(`enabled = false` — 표시). 컷아웃 판정은 스플랫마다 등록된 컷아웃 수만큼 반복되므로 **병합 렌더러 1개당 등록 컷아웃은 16개 이하**로 제한하고, 비용은 S1b 장면에서 컷아웃 0개 대비 프레임타임 차이로 측정해 `perf_log.csv` `notes`에 기록한다.
+- **불투명 박스 벽의 가림 확인(D10)**: 박스 안 경량 스플랫이 박스 벽(불투명 메시) 뒤에서 올바르게 가려지는지(스플랫 합성이 불투명 깊이를 존중하는지)를 P4 착수 시 칸 1개·박스 1개 규모로 먼저 확인한다. 가림이 깨지면 박스 벽 높이를 상품 높이 이하로 낮추고(윗부분이 트인 트레이형) 내용물 렌더러를 `Open` 상태에서만 켜는 것으로 대응한다.
+- **경계 리스크 검증**(객관분석 §3-F): 컷아웃 박스 경계에 걸친 가우시안이 인접 상품을 베거나 잔여 꼬리를 남길 수 있으므로, P2 단계에서 칸 1개 규모로 박스 크기를 상품 실측 경계 + 5~10mm 마진으로 조정하며 S1 시점 캡처를 비교 검증한다.
+
+#### 4단계 원거리 3DGS 경량화 (2D 사진 판 배제 — D9)
+
+- **100% 3DGS LOD 원칙(D9)**: 계산대에서 3.5m 이상 떨어진 원거리 칸(음료 냉장고·후방 진열대 일부)도 **2D 사진 판(Quad)으로 대체하지 않고 반드시 3DGS 입체 에셋을 유지**한다.
+- **구현 방식**: 원거리용 병합 에셋(`Shelf_{id}_LOD1.asset`)은 ① SuperSplat에서 가우시안 수를 25~50%로 Decimation(축소)하고, ② Unity `Create GaussianSplatAsset` 변환 시 색상/방향성(SH) 압축 옵션을 **`VeryLow`(SH 계수 제거, 용량·대역폭 ~70% 절감)**로 생성한다.
+- **교체 히스테리시스**: 카메라-칸 거리 트리거에 **히스테리시스(3.0m 이내 진입 시 원본 `LOD0` / 4.0m 밖 이탈 시 경량 `LOD1`)**를 두어 경계선 근처에서 렌더러가 깜빡이는 팝핑(Popping) 현상을 방지한다.
+
+### 7.4 오버드로 근본 대응 — 이슈 #145 보고 완화책
+
+배경: 업스트림 이슈 #145 — VR에서 72fps가 최저 10fps까지 급락, 원인은 화면을 덮는 큰 스플랫의 프래그먼트 셰이더 부담(오버드로), 상류 수정 없음("not planned"). 다음 셋이 이슈에서 검증된 실제 완화책이다.
+
+1. **렌더 해상도 축소** — OpenXR / URP 설정의 Render Scale(또는 Viewport Scale)을 `1.0 → 0.85 → 0.7` 단계로 낮춰가며 S1에서 측정하고 단계별 결과로 최적 인자를 고른다.
+2. **알파 컬링 임계값 상향** — S3 정제 단계(3.4절)에서 불투명도(Alpha)가 임계값(0.15~0.3) 이하인 반투명 외곽 가우시안을 제거한다. 낮은 알파 스플랫은 시각 기여 대비 프래그먼트 오버드로 비용이 가장 크다.
+3. **FSR 업스케일링** — URP Asset에서 Upscaling Filter를 **FSR(FidelityFX Super Resolution)**로 활성화하여 1번의 해상도 축소로 인한 라벨 텍스트 선명도 저하를 보정한다.
+
+### 7.5 측정 일정 — 최적화 검증을 앞당긴다
+
+제안서는 진열대 최적화를 마지막 주에 몰아 1단계 "먼저 프레임을 측정한다"와 상충했다(객관분석 §3-A). 순서 기반 일정(8장)에서 **G1 게이트(P1)에 1차 베이스라인 측정**(에디터 추세 + G1-H HMD 실기기 절대 판정)을 수행하고, **M2(MVP) 이후 매주 통합 빌드 점검 때 S1/S2 고정 측정(입고 기능 구현 후 S1b 추가)**을 반복해 `docs/perf/perf_log.csv`(9.5절 통합 스키마)에 시계열로 누적한다. 기능 동결(M3) 시점에는 누적된 실기기 데이터를 바탕으로 최종 렌더 스케일·FSR·LOD 거리를 확정한다.
+
+---
+
+## 8. 일정·마일스톤 — 순서 기반 계획(날짜 없음)
+
+> 소유자: 권도훈(팀장, 제안서 슬라이드 14 일정·리스크 관리). 결정 근거: D1, D2, D5, D9 (2026-10-25 확정) — 1장 결정 표.
+
+### 8.1 계획 원칙 (D1·D9)
+
+- **구체적 날짜를 두지 않고 순서·의존 관계로만 계획한다**(사용자 결정, 2026-10-25). 진행 상태는 각 단계의 완료 기준으로 판정한다.
+- **스캔 테스트는 아직 실시하지 않았다**(사용자 확인, 2026-10-25) → G1 게이트가 전체 순서의 첫 판정 단계다.
+- **절대 제약 수호(D9)**: 지연이나 기술 난관이 발생해도 **3D 공간 + HMD(VR) 실기기 + NeRF/3DGS 활용**은 절대 타협하지 않는다. 일정 지연은 8.5절의 디스코프 트리거(특수 요청 제외·재촬영 초과 종목 교체)로만 흡수하며, 3DGS를 포기하는 메시 폴백이나 HMD를 포기하는 에디터 단독 발표는 금지한다.
+- 상품 수 상한이 없으므로(D5) 물량 관리는 '게이트에서 실측한 상품당 처리 시간(9.1절 G1-b) × 가용 시간'으로 한다.
+
+### 8.2 단계×담당 (순서)
+
+각 단계는 이전 단계의 완료 기준(또는 게이트 판정)을 만족하면 시작한다. P2의 상품 반입은 이후 단계에서도 **상시 병행 트랙**으로 계속된다(D5 — 계속 추가).
+
+| 단계 | 권도훈 · 3DGS · 콘텐츠 | 이민건 · VR · 시스템 | 완료 기준(마일스톤) |
+|---|---|---|---|
+| **P0 환경 세팅** | 촬영 환경 구축(부스·조명·편광/무광 스프레이), HMD 3중 확보 경로 가동(2.6·8.3절) | Unity 6.3+XR 리그+`UnityGaussianSplatting(v1.1.0)` 셋업(2.2절), XR Device Simulator 구동 확인, RTX 4070 원격 학습 환경(conda+nerfstudio, D3), 6.0(6000.0.23f1) 폴백 준비 | 전 항목 체크리스트 통과 |
+| **P1 G1 게이트** | 시험 스캔 3종(매트·인쇄·반사 각 1종 — 9.1절): 촬영→Scaniverse/splatfacto→SuperSplat 정제→`.asset` 변환 + 상품당 시간 실측 | 스캔 3종 에디터 배치·DX12 렌더링 검증, 6.3/6.0 비교 스크리닝, **G1-H HMD 실기기 양안·프레임 검증**(8.3절) | **M0 게이트 판정**(9.1절 Go/No-go) |
+| **P2 파이프라인 가동** | 게이트 통과 기법 기반 지속 스캔(첫 물량 목표 ~8종, 이후 계속 추가), 반사 재질 `splatfacto` 학습(D3), 상품 표(`Data/products.csv`) 확정(4장) | 잡기·회전, 바코드 판정(5장), 자동 프리팹 도구(4장), 손님 3D 캐릭터 에셋 선정·테스트 배치(6.1절) | **M1 상품 자동 반입**(표 1행→프리팹→씬 시연, 누적 ~11종) |
+| **P3 MVP** | 주문 시나리오 CSV(`Data/scenarios.csv`, 6.5절), 매장 레이아웃 확정 | 계산대(봉투·카드·현금·거스름돈·스캔 취소), 1일차 근무 흐름+튜토리얼, 손님 캐릭터 최소 구현(스폰·이동·퇴장), 3D 매장 제작 | **M2 MVP·1일차 플레이 완주** |
+| **P4 알파·확장·최적화** | 상품 추가 지속(상시 트랙), 캐릭터 애니메이션 보강, NeRF(`nerfacto`)·3DGS(`splatfacto`) 비교 학습 착수, **입고 데이터(`Data/deliveries.csv`)·상품 경량본 `{id}_LOD1`·입고 대상 칸 병합본 제작**(5.7·7.2절) | **입고 박스 개봉·진열(5.7절)**·폐기·2·3일차, 특수 요청(**M2 완료 전제** — T1), 진열대 병합·`GaussianSplatCutout`·원거리 3DGS 경량화(7장), **HMD 실기기 72fps 최적화 완료** | **M3 기능 동결**(신규 기능 금지·HMD 72fps 검증 완료) |
+| **P5 마무리·발표** | NeRF·3DGS 비교 실험 결과표 완성(9.3절), 발표 자료 작성 | **HMD 실기기 최종 빌드·리허설**, HMD 착용 실재감·멀미 설문(≥5인, 9.4절), HMD 플레이 시연 영상 촬영 | **M4 최종 발표**(HMD 실기기 시연 완수) |
+
+P4는 제안서의 알파·최적화 2주를 합친 단계라 밀도 위험이 최대다(안전장치 8.5절 T1). P1 게이트에서 상품당 처리 시간이 잡히면 P2 이후의 주당 반입 물량을 그 수치로 정한다.
+
+### 8.3 HMD 개발·검증 이원화 및 실기기 의무 확보 (D2·D9)
+
+상시 HMD 보유가 불확실하더라도 **최종 결과물과 핵심 검증에서 HMD(VR) 활용은 필수(D9)**다. 따라서 평시 개발이 장비 대여 일정에 블로킹되지 않도록 작업을 분리하되, 핵심 관문에서는 3중 확보 경로로 실기기 검증을 반드시 완수한다.
+
+- **평시 개발 트랙(에디터 + XR Device Simulator — 장비 대기 없이 상시 진행)**: 3DGS 스캔·정제·변환 파이프라인 전체, 3D 매장·손님 캐릭터·게임 로직, 잡기·바코드·결제·입고 박스 개봉·진열·폐기 인터랙션 구현, DX12 게임뷰 렌더링 확인, 병합 전후 상대 성능 추세 비교.
+- **HMD 실기기 필수 검증 트랙(Quest 2 Link — 3중 경로로 반드시 수행)**:
+  1. **G1-H(P1~P2 초입)**: 실기기 양안 입체 정렬(`GaussianSplatURPFeature` + OpenXR Stereo Mode)·컨트롤러 6자유도 트래킹·초기 72fps 기준선·Quest 2 라벨/HUD 판독성(2.7절) 확정(9.1절).
+  2. **M3 기능 동결(P4 말)**: 진열대 병합·컷아웃·원거리 3DGS LOD·FSR 적용 상태에서 S1/S2/S1b 대표 장면 **p95 ≤ 13.5ms(72fps)** 실측 통과(7.1절). 같은 세션에서 입고 박스 운반(잡은 채 텔레포트)·커터 긋기·플랩 젖히기의 실기기 조작감도 확인한다(5.7절).
+  3. **M4 리허설·발표(P5)**: HMD 착용 3일차 전체 루프 완주 리허설, 체험자 ≥5인 실재감(IPQ)·멀미(SSQ) 설문(9.4절), HMD 실기 시연 및 시연 영상 녹화.
+- **3중 확보 실행 규칙**: P0에서 ① 학과/교내 실습실 대여 신청 → 반출 불가 시 ② 교내 유관 연구실·실습실 장비 방문 측정 예약 → 일정 충돌 시 ③ 민간 VR 단기 렌탈(G1-H 주간 3일, M3~M4 주간 7일)을 즉시 발주하여 **'HMD 미확보로 인한 비-VR 발표' 가능성을 0%로 차단**한다.
+
+### 8.4 G1 게이트 판정·No-go 플랜 B (3D · HMD · 3DGS/NeRF 고수 원칙 — D9)
+
+게이트 항목·수치 기준은 9.1절(G1-a~d + G1-H)이 원본이다. 일부 항목 미달 시 아래 **하드 제약 준수 플랜 B**를 즉시 적용하고 다음 단계를 시작한다(폴리곤 메시 폴백 및 2D 사진 판 대체는 일절 금지 — D9).
+
+| 미달 항목 | 즉시 조치 (3D · HMD · 3DGS/NeRF 범위 내 해결) | 잔존 스코프 조정 |
+|---|---|---|
+| 반사 재질 스캔 품질 | ① 촬영 시 **무광 스캔 스프레이(매트 코팅) 또는 CPL 편광 필터** 적용 후 재촬영 ② RTX 4070 `splatfacto` 30k step 정밀 학습(D3) | 총 3회 촬영 후에도 라벨 판독 불량인 특정 용기는 `status=dropped` 처리 후 스캔 우호적 실물 편의점 상품으로 종목 대체(**전 상품 100% 3DGS 유지**) |
+| 프레임 미달(HMD 실기기 — G1-H) | ① Render Viewport Scale `0.85 → 0.7` + URP FSR 업스케일링 ② S3 정제 시 알파 컬링 임계값 상향(`0.2~0.3`) ③ `Create GaussianSplatAsset` 시 SH 압축 `Low`/`VeryLow` 적용 | 지속 미달 시 상품당 가우시안 예산을 5만~7만으로 추가 Decimation 및 원거리 3DGS LOD 전환 거리 단축(`3.5m → 2.5m`, **2D 사진 판 사용 금지**) |
+| Unity 6.3 VR 호환 오류 | **Unity 6.0 LTS(6000.0.23f1)**로 즉시 프로젝트 이식(2.5절) + OpenXR Stereo Rendering Mode(`Multi-pass` ↔ `Single Pass Instanced`) 전환 검증 | 프리팹 빌더 작성 1일 순연, 전체 마일스톤 및 3DGS VR 렌더링 100% 유지 |
+| 셰이더/렌더 패스 결함 | `UnityGaussianSplatting(v1.1.0)`을 `Packages/org.nesnausk.gaussian-splatting`으로 로컬 임베드 후 `GaussianSplatURPFeature` 렌더 패스/정렬 코드 직접 패치 | 상동(**어떠한 경우에도 폴리곤 메시 폴백 금지**) |
+
+### 8.5 디스코프 트리거 발동·기록 절차 (D5)
+
+**T1 — 특수 요청은 MVP(M2) 완료 후에만 착수(순서 기반).** P4 진입 시점에 M2(1일차 플레이: 잡기→스캔→봉투·결제→정산+튜토리얼)가 불완결이면 발동 → `Data/scenarios.csv`의 `special` 열을 일괄 `none`으로 변경(6.4절, 코드 무변경), 3일차는 피크타임 파라미터(스폰 10초·제한 60초)와 진열·폐기만으로 성립한다.
+
+**T2 — 재촬영 2회 초과 → 목록 제외 및 대체.** 상품 표 `retake_count`(4장)에 재촬영마다 +1을 기록하고, 최초 촬영 1회+재촬영 2회(총 3회) 후에도 3.7절 기준 미달 시 해당 행을 `status=dropped`(4.2절)로 전환해 프리팹 생성에서 제외한다(재촬영 무한 루프 차단). 제외된 상품은 다른 실물 상품으로 대체하여 계속 3DGS로 반입한다(D5·D9).
+
+발동 즉시 `docs/decisions.md`에 일시·사유·영향 범위를 기록한다(팀장 판단·2인 합의).
+
+### 8.6 주 2회 통합 빌드 점검
+
+주 2회(화·금 권장) 정기 점검, 각 30분. 화=`main` 병합+빌드, 금=체크리스트: ① Windows DX12 빌드 성공(평시 시뮬레이터 + HMD 확보 세션에서 Quest 2 Link 실기기 구동) ② 씬 로드·잡기·스캔·손님 1명·프레임 기록 ③ `build_log.md` 1줄 요약 기록(커밋·fps·차질) — 권도훈 ④ 차질은 차기 점검 전 수정 또는 GitHub Issues 버그 대장(9.2절) 등록. 성능 측정 수치의 원본은 `docs/perf/perf_log.csv`(9.5절 통합 스키마)다.
+
+---
+
+## 9. 테스트·평가 계획 — 게이트 판정 기준·통합 빌드 점검·NeRF·3DGS 비교 실험
+
+> 결정 근거: D1~D10 (2026-10-25 확정, D2 갱신·D10 신설 2026-11-06) — 1장 결정 표. 목표 런타임은 **Meta Quest 2 + Link/PCVR(HMD 실기기 검증·시연 필수 — D2·D9)**이며, 72fps 절대 판정 기준 GPU는 **RTX 4070 데스크톱**(D3)으로 확정하고 9.5절 시트 `gpu` 칸에 기록한다. 분담은 제안서 슬라이드 14대로 품질 검증·NeRF/3DGS 비교 실험·FPS 측정=권도훈, 빌드·실기기 테스트=이민건.
+
+### 9.1 G1 Go/No-go 게이트 (P1 단계 — 8.4절) — 수치 판정
+
+시험 스캔 3종 = **매트(과자 봉지)·인쇄(삼각김밥 랩)·반사(페트병·캔)** 각 1종. 제안서의 "스캔 가능 여부 판정"(원문 222)을 아래 항목으로 수치화한다(객관분석 권고 2 이행). **본 절이 게이트 수치 판정의 원본이다**(1.3절 원본 우선순위 규칙).
+
+| ID | 항목 | Go 조건 | 부분/미달 조건 | 조치 (D9 준수 — 메시/2D/비-VR 폴백 금지) |
+|---|---|---|---|---|
+| G1-a | 스캔 품질 | 3종 모두 **계산대 파지 거리(~50cm 시점)에서 들어 올린 3DGS 상품의 브랜드명+가격 숫자 판독** 성공(에디터 확대 캡처로 복원 품질 1차 확인 + G1-H Quest 2 착용 판독 확정 — 두 결과를 따로 기록, 2.7절) | 반사 재질만 실패 | 부분 Go — 반사 재질에 무광 스프레이/편광 필터 적용 + RTX 4070 `splatfacto` 경로(D3) 전환 후 3일 내 재검 |
+| G1-b | 처리 시간 | 촬영+학습+SuperSplat 수동 정제+`.asset` 변환 합계 **≤3시간/상품**(재촬영 제외, 실측 로그 근거) | 초과 | 정제 작업 2인 분담 + 초기 반입 목표 조정(상시 반입 트랙 유지 — D5) |
+| G1-c | 3DGS 렌더링 | DX12 환경에서 스플랫 3종 정상 렌더(검은 화면·왜곡 없음, `GaussianSplatURPFeature` 정상 동작), 상대 프레임 추세 기록 | 렌더 오류 | Render Graph 호환 모드 OFF 확인 → Unity 6.0(6000.0.23f1) 즉시 전환 또는 로컬 패키지 패치(8.4절) |
+| G1-d | 엔진·인터랙션 | Unity 6.3 에디터·XR Device Simulator에서 잡기·회전·바코드 트리거 정상 작동 | 미동작 징후 | Unity 6.0(6000.0.23f1) 폴백 확정 — 1장 엔진 항목(D7) 갱신 |
+| **G1-H** | **HMD 실기기 검증(필수)** | **Quest 2 Link(유선)·DX12**, 대표 장면(진열대 1칸 정면 1m + 상품 2개 파지 근접 30cm) **30초×3회 평균 72fps·프레임 드롭 <5%**, 양안 입체 정렬·컨트롤러 트래킹 정상, 5분 착용 멀미 유무 확인 | 프레임 미달 | Viewport Scale `0.85 → 0.7` → 알파 컬링 상향 → URP FSR → SH `VeryLow` 압축 순차 적용 후 재측정(7.4절·8.4절) |
+
+G1-H 측정 절차: Windows DX12 빌드 → Quest 2를 유선 Link로 연결, Meta Quest Link 앱 Refresh Rate 72Hz 고정(Render Resolution 값 기록) → 측정 포즈 고정 → Oculus Debug Tool / Unity Profiler 연결 녹화. **게이트 스플랫 예산**: 정제 후 상품당 **15만 가우시안**·매장 전체 **200만 가우시안** 상한(본 예산이 게이트 통과 기준이며, 게이트 통과 후 상시 최적화 목표는 7.2절의 상품 10만·매장 150만 예산을 적용한다 — 해소 대장 6번).
+
+### 9.2 주 2회 통합 빌드 점검 (슬라이드 14 "주 2회 통합 빌드 점검", 원문 337)
+
+공통 체크리스트(매점검 동일 순서, 15분):
+
+1. Windows DX12 빌드 성공 + XR Device Simulator 및 Quest 2 Link(HMD 세션) 구동 확인
+2. 씬 로드 10초 이내, 3DGS 스플랫 누락·양안 정렬 이상 없음(진열대 칸 수 및 `m_RenderOrder` 확인)
+3. 핵심 체인 1회 완주: 텔레포트 이동 → 잡기 → 회전 → 바코드 스캔 → 스캔 취소 테스트 → 봉투 → 카드/현금 결제 (입고 기능 구현 후 추가: 박스 운반 → 거치 → 테이프 절단 → 플랩 개방 → 상품 2개 진열(정상 1·오진열 1) → 빈 박스 수거)
+4. Profiler 30초 녹화 → `docs/perf/perf_log.csv`(9.5절 시트)에 1행 추가(`device=editor` 또는 `device=quest2-link`)
+5. 신규 버그 대장 등록, S0/S1 담당 배정
+
+**버그 대장 = GitHub Issues 템플릿**(원문 145): `id / 발견일 / 빌드# / 씬·포즈 / 재현절차 / 심각도 / 상태 / 담당 / 수정 빌드# / HMD-only 여부`. 심각도 SLA: **S0** 진행 불가(당일), **S1** 핵심 루프 깨짐(다음 점검 전), **S2** 기능 저하, **S3** 외관. 단계 판정 관문: P2 종료 상품 자동 반입(누적 ~11종 — 8.2절), P3 종료 MVP 1일차 완주, P4 기능 동결(신규 기능 금지·HMD 72fps 달성·S1 이상만 수정). 디스코프 트리거 T1·T2(D5) 발동 여부도 이 점검에서 선언한다.
+
+### 9.3 NeRF(`nerfacto`) · 3DGS(`splatfacto` / `Scaniverse`) 비교 실험 (필수 수행 — D3·D9)
+
+과목 핵심 요건인 **NeRF와 3D 가우시안 스플래팅의 실질적 활용 및 비교 검증**을 위해 M2 이후 확정된 상품 촬영 데이터셋으로 아래 비교 실험을 필수로 수행한다(슬라이드 6·10·13, 원문 143·226·304).
+
+- **비교 대상(3경로 × 최소 2종 상품[매트 1·반사 1])**:
+  1. **NeRF 경로**: `nerfstudio nerfacto` (RTX 4070 데스크톱 학습)
+  2. **PC 3DGS 경로**: `nerfstudio splatfacto` (RTX 4070 데스크톱 학습)
+  3. **모바일 3DGS 경로**: `Scaniverse` (스마트폰 온디바이스 생성)
+- **통제 변인**: `nerfacto` vs `splatfacto`는 **완전히 동일한 원본 사진 세트(100~150장) + 동일한 COLMAP 카메라 포즈 + 동일한 평가용 test split(8장)**을 RTX 4070에 투입한다. Scaniverse는 동일 조명·회전 궤도로 촬영한 세트를 사용하며 온디바이스 특성을 결과표에 병기한다.
+- **정량·정성 비교 지표(4종)**:
+  1. **시각 품질(정량·정성)**: `ns-eval`을 통한 **PSNR(dB) · SSIM · LPIPS** 정량 측정(`nerfacto` vs `splatfacto`) + 동일 시점 렌더링 이미지에서의 **상품 라벨 텍스트·바코드 가독성 비교 캡처**
+  2. **학습·후처리 소요 시간**: 동일 RTX 4070 GPU 기준 학습 시간(분) 및 정제 소요 시간 비교
+  3. **산출물 용량 및 구조**: NeRF 체크포인트/메시 추출 크기(MB) vs 3DGS PLY/Unity `.asset` 크기(MB) 및 가우시안 개수
+  4. **실시간 VR 렌더링 적합성**: 프레임당 렌더링 소요 시간(`ms/frame` 및 FPS) — NeRF(`nerfacto` 볼륨 렌더링의 낮은 프레임레이트 및 실시간 VR HMD 72fps 구동 한계) vs 3DGS(`UnityGaussianSplatting`을 통한 Quest 2 72fps 실시간 양안 렌더링 달성)를 실측 수치로 대비하여 **"왜 실시간 VR 시뮬레이터에서 3DGS가 필수적인가"**를 실험 데이터로 입증한다.
+
+### 9.4 실재감·멀미 설문 (P5 리허설, 체험자 ≥5인 — HMD 실기기 착용 필수, D2·D9)
+
+3중 확보 경로(2.6·8.3절)로 확보한 **Meta Quest 2 HMD 실기기를 착용**한 상태에서 체험자 최소 5인을 대상으로 실시한다(비-VR 영상 시청 설문으로 대체하지 않음 — D9). 착용 전 체험자별로 IPD 3단계(58·63·68mm) 중 가장 선명한 단계를 고르고, 안경 착용자는 안경 스페이서를 끼운다(2.7절).
+
+- **실재감**: IPQ(Igroup Presence Questionnaire) 14문항 7점 척도 — 총점 + 공간적 존재감(Spatial Presence)·몰입(Involvement)·실재감(Experienced Realism) 3요인. 3DGS 상품 특화 3문항 추가: ① `"3DGS로 복원된 상품이 실제 편의점 상품처럼 입체적으로 느껴졌다"` ② `"손에 든 상품의 라벨 글씨와 바코드를 자연스럽게 읽을 수 있었다"` ③ `"상품의 크기와 비율이 실제와 같게 느껴졌다"`.
+- **멀미**: SSQ(Simulator Sickness Questionnaire) 16문항 **플레이 사전·사후 2회** 측정, 고정 텔레포트 앵커(5.1절)와 72fps 최적화(7장)를 통한 멀미 최소화 달성 여부를 정량 검증한다.
+- **프로토콜**: 10~15분(1~3일차 플레이) HMD 착용 체험 직전·직후 기록. 시트 컬럼: `체험자ID / 날짜 / VR경험빈도 / 플레이시간 / IPQ_요인별 / SSQ_전후 / 가장 진짜 같았던·아쉬웠던 3DGS 상품(자유기술)`. 결과 표는 최종 발표 슬라이드에 직접 인용한다.
+
+### 9.5 측정 기록 통합 스키마 (모든 성능 측정의 단일 원본)
+
+파일 경로: `docs/perf/perf_log.csv`
+
+```csv
+date,build,git_rev,unity_version,gpu,device,scene_pose,splat_count,render_scale,viewport_scale,fsr,ms_p50,ms_p95,ms_p99,avg_fps,drop_pct,duration_s,measurer,notes
+```
+
+본 스키마는 7장(`perf_log.csv`)과 9장의 모든 성능 기록을 일원화한 단일 원본이다(해소 대장 12번). 게이트(P1 G1-c·G1-H)·주 2회 통합 점검(9.2절)·4단계 최적화 전후(7.3절)·비교 실험(9.3절)이 동일한 스키마에 시계열로 누적되므로, 72fps 목표의 달성 과정과 완화책(Viewport Scale·알파 컬링·FSR·3DGS LOD)의 정량 효과가 완벽히 추적된다. 측정 환경은 `device` 열(`editor` | `quest2-link`)로 구분하며, 최종 판정(G1-H·M3·M4)은 `device=quest2-link` 행으로 확정한다. `scene_pose`는 `S1` | `S2` | `S1b` | `G1-c` | `G1-H` 중 하나이고, HMD 행의 `notes`에는 Meta Quest Link 앱 Render Resolution·헤드셋 펌웨어 버전을 적는다(2.7절).
+
+---
+
+## 10. 전체 마일스톤 요약
+
+8장 8.2절·8.4절, 9장 기준 요약. 판정·관문의 상세 기준은 각 절 참조. 실제 개발 시 각 단계별로 체크하며 실행할 상세 백로그와 완료 조건(DoD)은 [VR편의점_알바_시뮬레이터_마일스톤.md](file:///Users/lmg/Projects/vr-convenience-store-simulator/docs/VR편의점_알바_시뮬레이터_마일스톤.md)에 별도 문서화했다. **날짜는 두지 않는다(D1)** — 순서와 완료 기준만으로 관리하며, **전 과정에서 3D · HMD(VR) · NeRF/3DGS 필수 활용 원칙(D9)을 준수**한다.
+
+| 마일스톤 | 단계 | 완료·판정 기준 | 상세 |
+|---|---|---|---|
+| **M0** G1 게이트 판정 | P1 | 3DGS 스캔 품질 3종·상품당 시간(≤3h)·DX12 렌더링·엔진 호환(G1-a~d) + **G1-H HMD 실기기 양안·72fps 검증**. 미달 항목은 8.4절 플랜 B(무광/편광+`splatfacto`·Unity 6.0 전환·FSR 등) 즉시 적용(메시 폴백 금지) | 8.4절·9.1절 |
+| **M1** 상품 자동 반입 | P2 | 상품 표(`Data/products.csv`) 1행 + `.asset` → 자동 4겹 프리팹 → 씬 시연(누적 ~11종). 이후 3DGS 상품 반입은 상시 트랙으로 계속(D5) | 8.2절·9.2절 |
+| **M2** MVP·1일차 플레이 | P3 | 텔레포트·잡기→회전→바코드 스캔→봉투·결제→정산+튜토리얼 1일차 완주(3D 손님 캐릭터 최소 구현 포함). 미완결 시 디스코프 T1 적용(3일차 특수 요청 제외) | 8.2절·8.5절 |
+| **M3** 기능 동결 | P4 | 신규 기능 금지·S1 이상 버그만 수정. 2일차 입고 박스 개봉·진열(입고 안내 포함, 5.7절)·폐기와 3일차 확장을 포함한 1~3일차 완주. 진열대 병합·`GaussianSplatCutout`(유닛 컷아웃 포함)·원거리 3DGS 경량화 적용 후 **HMD 실기기 S1/S2/S1b 장면 72fps(p95 ≤ 13.5ms) 달성**, NeRF(`nerfacto`)·3DGS(`splatfacto`) 비교 실험 완료 | 7.1절·8.2절·9.3절 |
+| **M4** 최종 발표 | P5 | **HMD(Quest 2 Link) 실기기 최종 빌드·시연 리허설 완수**, HMD 착용 실재감(IPQ)·멀미(SSQ) 설문(≥5인), 시연 영상·발표 자료 완성 | 8.2절·8.3절·9.4절 |
+
+**상시 리듬**: 주 2회 통합 빌드 점검(평시 시뮬레이터 + HMD 실기기 세션 결합) — 8.6절·9.2절. **원칙**: 순서 고정(D1), 지연은 디스코프 트리거 T1·T2(D5)로만 흡수하고 **3D·HMD·NeRF/3DGS 하드 제약(D9)은 절대 타협하지 않는다**. 전체 결정(D1~D10)은 2026-10-25 확정(D2 갱신·D10 신설은 2026-11-06)이며 갱신은 1장 결정 표가 유일한 원본이다.

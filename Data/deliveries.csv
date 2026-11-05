@@ -1,0 +1,7 @@
+# file: Data/deliveries.csv
+# 한 행 = 입고 박스 1개 (D10 — 구현 문서 5.7·6.5절)
+# case_qty 허용값: 4|6|8 (단층 2×2·2×3·2×4)
+# target_slot: 씬 ShelfSlotZone.slotId (진열대 문자-칸 번호, 예: A-2)
+# arrive_after_order: 0=일차 시작 시 입고 카트에 적재, n=해당 일차 n번째 손님 종료 직후 도착
+# product_id는 Data/products.csv의 status=live 행과 조인, 같은 일차·같은 칸의 case_qty 합계 ≤ 칸 capacity
+delivery_id,day,box_seq,product_id,case_qty,target_slot,arrive_after_order
