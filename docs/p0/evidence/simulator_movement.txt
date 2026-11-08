@@ -1,0 +1,1 @@
+[P0 Movement] PASS synthetic Keyboard D -> XR Device Simulator -> camera: (0.0000, 1.3614, 0.0000) -> (0.5103, 1.3614, 0.0000); distance=0.5103m

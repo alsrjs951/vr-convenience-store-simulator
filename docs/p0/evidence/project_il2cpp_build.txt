@@ -1,0 +1,1 @@
+Unity 6000.3.26f1; actual project Windows x64 IL2CPP; result=Succeeded; errors=0; warnings=0; bytes=1461240412; duration=00:00:31.1248372; scenes=Assets/Scenes/TrainedSplatTest.unity, SplatTest

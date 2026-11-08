@@ -1,0 +1,28 @@
+{
+  "front_ply": "capture\\products\\capture_04\\session_front\\isolated\\isolated.ply",
+  "back_ply": "capture\\products\\capture_04\\session_back\\isolated_bg\\isolated.ply",
+  "input_sha256": {
+    "capture\\products\\capture_04\\session_front\\isolated\\isolated.ply": "7b192080aad5ce390bf24df8a5fb0bb72c941e952b2a8b297f33b04c23b2ca2c",
+    "capture\\products\\capture_04\\session_back\\isolated_bg\\isolated.ply": "34f47528dc7055948a8e569fa240e2531c8cf3f014db92c459dac4c93352a23c"
+  },
+  "front_kept": 63521,
+  "front_removed": 8253,
+  "back_kept": 53415,
+  "back_removed": 7301,
+  "merged": 116936,
+  "back_to_front_scale": 0.6666026918001855,
+  "front_rim_z": -0.026823577671391936,
+  "back_rim_z": -0.022779876644035774,
+  "front_extents": [
+    0.48012691202018826,
+    0.6051792584517917,
+    0.10826069328731192
+  ],
+  "back_extents_after_scale": [
+    0.48012691202018826,
+    0.5734595648819,
+    0.13905863838068297
+  ],
+  "all_attributes_finite": true,
+  "alignment": "ASSUMED: width match, centered outlines, shared rim plane. Sessions share no COLMAP link. Not measured."
+}

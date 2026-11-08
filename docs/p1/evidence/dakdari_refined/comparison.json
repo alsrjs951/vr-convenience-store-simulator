@@ -1,0 +1,50 @@
+{
+  "identical_ground_truth": true,
+  "frames": [
+    {
+      "frame": "frame_00011.jpg",
+      "roi_pixels": 191003,
+      "baseline_psnr": 20.578523454112826,
+      "candidate_psnr": 29.71248175658325
+    },
+    {
+      "frame": "frame_00021.jpg",
+      "roi_pixels": 107812,
+      "baseline_psnr": 20.441950210843277,
+      "candidate_psnr": 27.789217968738335
+    },
+    {
+      "frame": "frame_00032.jpg",
+      "roi_pixels": 194644,
+      "baseline_psnr": 20.274013564648264,
+      "candidate_psnr": 23.396608002673975
+    },
+    {
+      "frame": "frame_00042.jpg",
+      "roi_pixels": 219034,
+      "baseline_psnr": 23.92885762840157,
+      "candidate_psnr": 28.41615456997475
+    },
+    {
+      "frame": "frame_00053.jpg",
+      "roi_pixels": 262265,
+      "baseline_psnr": 21.63835297168413,
+      "candidate_psnr": 26.43158913547652
+    },
+    {
+      "frame": "frame_00063.jpg",
+      "roi_pixels": 197661,
+      "baseline_psnr": 18.151365439229505,
+      "candidate_psnr": 26.085521668856142
+    },
+    {
+      "frame": "frame_00073.jpg",
+      "roi_pixels": 217310,
+      "baseline_psnr": 19.101412994936002,
+      "candidate_psnr": 24.27431934354971
+    }
+  ],
+  "baseline_mean_object_roi_psnr": 20.58778232340794,
+  "candidate_mean_object_roi_psnr": 26.58655606369324,
+  "method": "Mean per-frame PSNR inside a fixed red-box convex-hull mask derived only from ground truth. Not a barcode decoding or geometry completeness test."
+}

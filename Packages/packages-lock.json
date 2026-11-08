@@ -199,15 +199,14 @@
       "url": "https://packages.unity.com"
     },
     "org.nesnausk.gaussian-splatting": {
-      "version": "https://github.com/aras-p/UnityGaussianSplatting.git?path=/package#v1.1.0",
+      "version": "file:org.nesnausk.gaussian-splatting",
       "depth": 0,
-      "source": "git",
+      "source": "embedded",
       "dependencies": {
         "com.unity.burst": "1.8.8",
         "com.unity.collections": "2.1.4",
         "com.unity.mathematics": "1.2.6"
-      },
-      "hash": "d2227009f6a5e2218655dae22e0b30bed2e75edd"
+      }
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

@@ -1,0 +1,19 @@
+{
+  "source_photo": "C:\\Projects\\vr-convenience-store-simulator\\capture\\products\\capture_01\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg",
+  "session": "capture\\products\\capture_01\\session_v01",
+  "source_hashes": {
+    "C:\\Projects\\vr-convenience-store-simulator\\capture\\products\\capture_01\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg": "55f619ce60433f1512938024a11e944137d91a6afe42a70a1ec085903eaeac93",
+    "capture\\products\\capture_01\\session_v01\\database.db": "af3cf9925b0ce07aca61c6ed2b4033c679ca02284d22a509edf34756997e6863",
+    "capture\\products\\capture_01\\session_v01\\sparse\\0\\images.bin": "7659d45d060cd1379cee0452b3bda648efb4f66bf9e185053d6cfc0a2eea6060"
+  },
+  "runs": [
+    {
+      "mode": "unique_detail",
+      "registered_images": 74,
+      "photo_registered": false,
+      "photo_keypoints": 2584,
+      "verified_pairs": []
+    }
+  ],
+  "originals_unchanged": true
+}

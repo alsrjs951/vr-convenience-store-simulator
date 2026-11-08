@@ -1,0 +1,1 @@
+PASS Unity=6000.3.26f1; GPU=NVIDIA GeForce RTX 4070; API=Direct3D12; splats=12970; synthetic W via XR Simulator: (0.0000, 1.3614, 0.0000) -> (0.0000, 1.3614, 0.2034); distance=0.2034; validRenderSetup=True

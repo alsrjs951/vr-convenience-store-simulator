@@ -1,0 +1,1 @@
+PASS: poster.ply -> poster.asset; splats=12970; bounds=(-4.02, -2.83, -3.38)..(4.09, 4.43, 1.75); scene=Assets/Scenes/TrainedSplatTest.unity

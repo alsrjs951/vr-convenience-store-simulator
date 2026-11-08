@@ -1,0 +1,17 @@
+{
+  "experiment_name": "goraebap-a",
+  "method_name": "splatfacto",
+  "checkpoint": "capture\\products\\capture_02\\session_a\\outputs\\goraebap-a\\splatfacto\\trial-10000\\nerfstudio_models\\step-000009999.ckpt",
+  "results": {
+    "psnr": 31.267423629760742,
+    "psnr_std": 4.212380409240723,
+    "ssim": 0.9250326156616211,
+    "ssim_std": 0.0482332743704319,
+    "lpips": 0.0995190218091011,
+    "lpips_std": 0.06434906274080276,
+    "num_rays_per_sec": 29774806.0,
+    "num_rays_per_sec_std": 11136731.0,
+    "fps": 57.60253143310547,
+    "fps_std": 21.545190811157227
+  }
+}

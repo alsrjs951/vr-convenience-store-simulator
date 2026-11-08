@@ -1,0 +1,12 @@
+Unity: 6000.3.26f1
+GPU: NVIDIA GeForce RTX 4070
+API: Direct3D12
+Keyboard: True
+Mouse: True
+Camera: Main Camera
+Position: (0.0000, 1.3614, 0.0000)
+Rotation: (47.0000, 20.2000, 0.0000)
+Splat: SampleSplat
+Splat position: (0.00, 1.30, 0.60)
+Count: 1200
+Splat viewport: (0.29, 1.25, 0.43)

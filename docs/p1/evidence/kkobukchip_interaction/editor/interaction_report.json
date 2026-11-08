@@ -1,0 +1,302 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, no barcode image decoding. FPS is desktop-only and not a VR measurement.",
+    "hmdRuntimeActive": false,
+    "averageFps": 670.7653198242188,
+    "peakMovingLagMeters": 0.036729682236909869,
+    "externalMouseMotion": 0.0,
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True; active=True",
+            "time": 3.0054030418395998
+        },
+        {
+            "name": "setup.render",
+            "pass": true,
+            "details": "splats=114574; api=Direct3D12",
+            "time": 3.006647825241089
+        },
+        {
+            "name": "setup.negative_scale_only_on_visual",
+            "pass": true,
+            "details": "root lossyScale=(1.000, 1.000, 1.000); splat lossyScale=(-0.2964, 0.2964, 0.2964); collider on root",
+            "time": 3.0067856311798097
+        },
+        {
+            "name": "setup.size_flagged_provisional",
+            "pass": true,
+            "details": "size_cm=(20.00, 23.76, 7.14); measured=False",
+            "time": 3.0068552494049074
+        },
+        {
+            "name": "setup.barcode_trigger_tagged",
+            "pass": true,
+            "details": "BarcodeTrigger layer/tag/isTrigger",
+            "time": 3.00759220123291
+        },
+        {
+            "name": "place.at_rest_on_bench",
+            "pass": true,
+            "details": "y=0.9688; expected=0.9688; speed=0.0000",
+            "time": 3.3046886920928957
+        },
+        {
+            "name": "input.look_down_via_mouse",
+            "pass": true,
+            "details": "camera forward=(0.000, -0.500, 0.866)",
+            "time": 4.10440731048584
+        },
+        {
+            "name": "input.right_controller_manipulated",
+            "pass": true,
+            "details": "Y toggles the right controller",
+            "time": 4.231874942779541
+        },
+        {
+            "name": "input.mouse_translate_mode",
+            "pass": true,
+            "details": "mode=Translate",
+            "time": 4.240038871765137
+        },
+        {
+            "name": "input.hand_moved_by_mouse",
+            "pass": true,
+            "details": "(0.100, 1.311, 0.300) -> (0.051, 0.974, 0.499)",
+            "time": 4.928160667419434
+        },
+        {
+            "name": "grab.hover_before_grip",
+            "pass": true,
+            "details": "hovered=True; hovers=1",
+            "time": 5.128655433654785
+        },
+        {
+            "name": "grab.first.selected_by_right_near",
+            "pass": true,
+            "details": "selected=True; region=Near; interactors=1",
+            "time": 5.431424617767334
+        },
+        {
+            "name": "grab.first.physics_driven_hold",
+            "pass": true,
+            "details": "movement=VelocityTracking; kinematic=False",
+            "time": 5.4315924644470219
+        },
+        {
+            "name": "grab.first.no_pose_jump",
+            "pass": true,
+            "details": "product moved 0.0000m on grab; hand moved 0.0000m; real mouse motion 0 units",
+            "time": 5.431665897369385
+        },
+        {
+            "name": "hold.lift_follows",
+            "pass": true,
+            "details": "rose 0.194m",
+            "time": 6.364378452301025
+        },
+        {
+            "name": "hold.lift_tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 6.36489725112915
+        },
+        {
+            "name": "rotate.yaw_90",
+            "pass": true,
+            "details": "product turned 90.00 deg; requested 90 deg; still held=True",
+            "time": 8.28001594543457
+        },
+        {
+            "name": "rotate.yaw_90.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 8.280180931091309
+        },
+        {
+            "name": "rotate.yaw_180",
+            "pass": true,
+            "details": "product turned 90.00 deg; requested 90 deg; still held=True",
+            "time": 9.895378112792969
+        },
+        {
+            "name": "rotate.yaw_180.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 9.895560264587403
+        },
+        {
+            "name": "rotate.yaw_270",
+            "pass": true,
+            "details": "product turned 90.00 deg; requested 90 deg; still held=True",
+            "time": 11.47562313079834
+        },
+        {
+            "name": "rotate.yaw_270.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 11.475805282592774
+        },
+        {
+            "name": "rotate.yaw_360",
+            "pass": true,
+            "details": "product turned 90.00 deg; requested 90 deg; still held=True",
+            "time": 13.054779052734375
+        },
+        {
+            "name": "rotate.yaw_360.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 13.054999351501465
+        },
+        {
+            "name": "rotate.pitch_underside",
+            "pass": true,
+            "details": "product turned 90.00 deg; requested 90 deg; still held=True",
+            "time": 14.641019821166993
+        },
+        {
+            "name": "rotate.pitch_underside.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 14.641192436218262
+        },
+        {
+            "name": "rotate.pitch_top",
+            "pass": true,
+            "details": "product turned 180.00 deg; requested 180 deg; still held=True",
+            "time": 16.554838180541993
+        },
+        {
+            "name": "rotate.pitch_top.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 16.55507469177246
+        },
+        {
+            "name": "rotate.pitch_upright",
+            "pass": true,
+            "details": "product turned 90.00 deg; requested 90 deg; still held=True",
+            "time": 18.144086837768556
+        },
+        {
+            "name": "rotate.pitch_upright.tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 18.144262313842775
+        },
+        {
+            "name": "barcode.clear_of_zone",
+            "pass": true,
+            "details": "scans=0",
+            "time": 20.360370635986329
+        },
+        {
+            "name": "barcode.body_entry_does_not_scan",
+            "pass": true,
+            "details": "body entries=1; scans=0",
+            "time": 20.892515182495118
+        },
+        {
+            "name": "barcode.face_entry_scans_once",
+            "pass": true,
+            "details": "scans=1; last=dev_kkobukchip_01",
+            "time": 21.35976791381836
+        },
+        {
+            "name": "release.first.deselected",
+            "pass": true,
+            "details": "selected=False",
+            "time": 22.57914161682129
+        },
+        {
+            "name": "release.rests_on_bench",
+            "pass": true,
+            "details": "pos=(0.215, 0.969, 0.496); speed=0.0000; angular=0.0000",
+            "time": 23.016691207885743
+        },
+        {
+            "name": "grab.second.selected_by_right_near",
+            "pass": true,
+            "details": "selected=True; region=Near; interactors=1",
+            "time": 23.69226837158203
+        },
+        {
+            "name": "grab.second.physics_driven_hold",
+            "pass": true,
+            "details": "movement=VelocityTracking; kinematic=False",
+            "time": 23.692453384399415
+        },
+        {
+            "name": "grab.second.no_pose_jump",
+            "pass": true,
+            "details": "product moved 0.0000m on grab; hand moved 0.0000m; real mouse motion 0 units",
+            "time": 23.69251823425293
+        },
+        {
+            "name": "hold.second_lift_follows",
+            "pass": true,
+            "details": "rose 0.144m",
+            "time": 24.546371459960939
+        },
+        {
+            "name": "hold.second_tracking",
+            "pass": true,
+            "details": "settled hand-relative error: 0.0000m, 0.00 deg",
+            "time": 24.546554565429689
+        },
+        {
+            "name": "hold.proxy_blocked_by_bench",
+            "pass": true,
+            "details": "stopped 0.106m above hand target; penetration into bench=0.0021m",
+            "time": 25.627790451049806
+        },
+        {
+            "name": "release.over_floor.deselected",
+            "pass": true,
+            "details": "selected=False",
+            "time": 27.626575469970704
+        },
+        {
+            "name": "respawn.fell_to_floor",
+            "pass": true,
+            "details": "lowest y=0.119",
+            "time": 31.076379776000978
+        },
+        {
+            "name": "respawn.returned_home",
+            "pass": true,
+            "details": "respawns=1; after 3.45s; distance from home=0.0020",
+            "time": 31.07656478881836
+        },
+        {
+            "name": "grab.after_respawn.selected_by_right_near",
+            "pass": true,
+            "details": "selected=True; region=Near; interactors=1",
+            "time": 32.94015884399414
+        },
+        {
+            "name": "grab.after_respawn.physics_driven_hold",
+            "pass": true,
+            "details": "movement=VelocityTracking; kinematic=False",
+            "time": 32.940338134765628
+        },
+        {
+            "name": "grab.after_respawn.no_pose_jump",
+            "pass": true,
+            "details": "product moved 0.0000m on grab; hand moved 0.0000m; real mouse motion 0 units",
+            "time": 32.94040298461914
+        },
+        {
+            "name": "release.after_respawn.deselected",
+            "pass": true,
+            "details": "selected=False",
+            "time": 33.241722106933597
+        }
+    ]
+}

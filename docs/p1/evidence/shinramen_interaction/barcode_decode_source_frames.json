@@ -1,0 +1,687 @@
+{
+  "summary": {
+    "opencv": "4.10.0",
+    "images": 79,
+    "correct": 21,
+    "wrong": 1,
+    "expected": "8801043014809"
+  },
+  "results": [
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0001.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0002.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0003.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0004.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0005.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0006.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0007.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0008.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0009.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0010.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0011.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0012.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0013.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0014.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0015.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "40508108"
+      ],
+      "scale": 3,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0016.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0017.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0018.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0019.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0020.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0021.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0022.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0023.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0024.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0025.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0026.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0027.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0028.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0029.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0030.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0031.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0032.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0033.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0034.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0035.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0036.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0037.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0038.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0039.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0040.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0041.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0042.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0043.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0044.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0045.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0046.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0047.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0048.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0049.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0050.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0051.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0052.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0053.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0054.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0055.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0056.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0057.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0058.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0059.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0060.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0061.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0062.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0063.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0064.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0065.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0066.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0067.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0068.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0069.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0070.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0071.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0072.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0073.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0074.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0075.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0076.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0077.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0078.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    },
+    {
+      "image": "capture/products/capture_03/session_back/frames/frame_0079.jpg",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [
+        "8801043014809"
+      ],
+      "scale": 1,
+      "correct": true
+    }
+  ]
+}

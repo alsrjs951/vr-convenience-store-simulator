@@ -29,15 +29,26 @@ public static class P0XRSceneSetup
         }
     }
 
-    [MenuItem("Tools/P0/Add XR Rig to SplatTest")]
+    [MenuItem("Tools/P0/Add XR Rig to SplatTest %#F8")]
     static void RunFromMenu() => Run();
 
     static void Setup()
     {
+        if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            return;
         var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
 
         Instantiate(OriginPrefab, Vector3.zero);
         Instantiate(SimulatorPrefab, Vector3.zero);
+
+        // Starter Assets locomotion applies gravity. Without a collider the rig
+        // falls below the sample immediately, making a valid splat look invisible.
+        var floor = GameObject.Find("P0 Floor");
+        if (floor == null) floor = new GameObject("P0 Floor");
+        floor.transform.position = new Vector3(0f, -0.05f, 0f);
+        var floorCollider = floor.GetComponent<BoxCollider>();
+        if (floorCollider == null) floorCollider = floor.AddComponent<BoxCollider>();
+        floorCollider.size = new Vector3(20f, 0.1f, 20f);
 
         foreach (var go in scene.GetRootGameObjects())
         {

@@ -1,0 +1,1016 @@
+{
+ "summary": {
+  "label": "old_c07_front",
+  "frames": 107,
+  "ground_inlier_fraction": 0.456,
+  "product_thin_axis_vs_ground_normal_deg": 2.9,
+  "elevation_deg": {
+   "p5": 49.486,
+   "p25": 51.548,
+   "p50": 54.318,
+   "p75": 61.427,
+   "p95": 68.571
+  },
+  "elevation_bands": {
+   "0-20": {
+    "frames": 0,
+    "azimuth_bins_of_36": 0
+   },
+   "20-35": {
+    "frames": 0,
+    "azimuth_bins_of_36": 0
+   },
+   "35-50": {
+    "frames": 10,
+    "azimuth_bins_of_36": 8
+   },
+   "50-65": {
+    "frames": 77,
+    "azimuth_bins_of_36": 25
+   },
+   "65-90": {
+    "frames": 20,
+    "azimuth_bins_of_36": 9
+   }
+  },
+  "azimuth_bins_of_36_all": 27,
+  "distance_x_size": {
+   "p5": 1.66,
+   "p50": 1.907,
+   "p95": 2.494
+  },
+  "product_bbox_coverage": {
+   "p5": 0.126,
+   "p50": 0.238,
+   "p95": 0.391
+  },
+  "frames_coverage_over_25pct": 48,
+  "brightness_median": 87.0,
+  "sharpness_median": 113.8
+ },
+ "frames": [
+  {
+   "frame": 1,
+   "elevation_deg": 55.045464867759215,
+   "azimuth_deg": 45.440758498891604,
+   "distance_x_size": 1.5731419238941187,
+   "product_bbox_coverage": 0.33589200715791284,
+   "brightness": 72.10012152777777,
+   "sharpness_lapvar": 138.11439231017312
+  },
+  {
+   "frame": 2,
+   "elevation_deg": 54.15565034762058,
+   "azimuth_deg": 46.54571818112744,
+   "distance_x_size": 1.5952886070002055,
+   "product_bbox_coverage": 0.33968192605053443,
+   "brightness": 72.9151601080247,
+   "sharpness_lapvar": 130.0527465372889
+  },
+  {
+   "frame": 3,
+   "elevation_deg": 55.880334117261626,
+   "azimuth_deg": 50.720379884648835,
+   "distance_x_size": 1.6184463738856205,
+   "product_bbox_coverage": 0.3546320649600946,
+   "brightness": 75.9733236882716,
+   "sharpness_lapvar": 122.25182093758337
+  },
+  {
+   "frame": 4,
+   "elevation_deg": 55.63991893155965,
+   "azimuth_deg": 54.361255634305806,
+   "distance_x_size": 1.6874504079940311,
+   "product_bbox_coverage": 0.3544145449648552,
+   "brightness": 79.69205054012346,
+   "sharpness_lapvar": 75.61369984137743
+  },
+  {
+   "frame": 5,
+   "elevation_deg": 55.18810951339487,
+   "azimuth_deg": 57.0030218198399,
+   "distance_x_size": 1.6745754632617669,
+   "product_bbox_coverage": 0.3890132902226522,
+   "brightness": 81.5806500771605,
+   "sharpness_lapvar": 91.52767360819375
+  },
+  {
+   "frame": 6,
+   "elevation_deg": 54.1123345989317,
+   "azimuth_deg": 59.36485168633812,
+   "distance_x_size": 1.6613518955003872,
+   "product_bbox_coverage": 0.42125567900880173,
+   "brightness": 82.32630401234567,
+   "sharpness_lapvar": 128.94523716965296
+  },
+  {
+   "frame": 7,
+   "elevation_deg": 54.75775214934205,
+   "azimuth_deg": 66.09563856510489,
+   "distance_x_size": 1.676954866780396,
+   "product_bbox_coverage": 0.4308958720284097,
+   "brightness": 84.8528298611111,
+   "sharpness_lapvar": 77.04368241675105
+  },
+  {
+   "frame": 8,
+   "elevation_deg": 58.680946976826114,
+   "azimuth_deg": 79.96030043191605,
+   "distance_x_size": 1.6592113425942163,
+   "product_bbox_coverage": 0.42520124347068455,
+   "brightness": 86.72855902777778,
+   "sharpness_lapvar": 77.97986266619495
+  },
+  {
+   "frame": 9,
+   "elevation_deg": 62.00612991914593,
+   "azimuth_deg": 97.78931168930664,
+   "distance_x_size": 1.6564465905626093,
+   "product_bbox_coverage": 0.38220543788911937,
+   "brightness": 86.99139274691358,
+   "sharpness_lapvar": 98.91155078587903
+  },
+  {
+   "frame": 10,
+   "elevation_deg": 62.73875315341451,
+   "azimuth_deg": 114.21428129432174,
+   "distance_x_size": 1.6583587209874096,
+   "product_bbox_coverage": 0.32037595452681494,
+   "brightness": 85.88876543209877,
+   "sharpness_lapvar": 86.76728201406972
+  },
+  {
+   "frame": 11,
+   "elevation_deg": 65.07297656986835,
+   "azimuth_deg": 122.76629149014049,
+   "distance_x_size": 1.689020888060036,
+   "product_bbox_coverage": 0.28534220733650684,
+   "brightness": 86.05462384259259,
+   "sharpness_lapvar": 108.50829281112098
+  },
+  {
+   "frame": 12,
+   "elevation_deg": 67.49195082514878,
+   "azimuth_deg": 129.74063234871105,
+   "distance_x_size": 1.6755434331929226,
+   "product_bbox_coverage": 0.294681906875163,
+   "brightness": 87.06842206790124,
+   "sharpness_lapvar": 82.73985307754499
+  },
+  {
+   "frame": 13,
+   "elevation_deg": 68.11280209795993,
+   "azimuth_deg": 134.49461384427624,
+   "distance_x_size": 1.6666669497977604,
+   "product_bbox_coverage": 0.29804571133628044,
+   "brightness": 87.00003858024691,
+   "sharpness_lapvar": 124.29366880464053
+  },
+  {
+   "frame": 14,
+   "elevation_deg": 68.53021081573846,
+   "azimuth_deg": 135.2413099037599,
+   "distance_x_size": 1.670061479731936,
+   "product_bbox_coverage": 0.29779228326351215,
+   "brightness": 87.10711805555556,
+   "sharpness_lapvar": 183.13554976098334
+  },
+  {
+   "frame": 15,
+   "elevation_deg": 67.74883256326886,
+   "azimuth_deg": 136.56394815331765,
+   "distance_x_size": 1.662213003023549,
+   "product_bbox_coverage": 0.3082296291842661,
+   "brightness": 87.89053819444445,
+   "sharpness_lapvar": 179.3000038278838
+  },
+  {
+   "frame": 16,
+   "elevation_deg": 66.04920304932529,
+   "azimuth_deg": 141.80457653179724,
+   "distance_x_size": 1.6942669162786466,
+   "product_bbox_coverage": 0.3243005692696008,
+   "brightness": 88.20909336419753,
+   "sharpness_lapvar": 113.31185166546625
+  },
+  {
+   "frame": 17,
+   "elevation_deg": 63.21029417991168,
+   "azimuth_deg": 149.91937583472125,
+   "distance_x_size": 1.7067714541022179,
+   "product_bbox_coverage": 0.35205041061195963,
+   "brightness": 88.17845679012346,
+   "sharpness_lapvar": 138.8937612697039
+  },
+  {
+   "frame": 18,
+   "elevation_deg": 59.6948652333432,
+   "azimuth_deg": 155.32546917984988,
+   "distance_x_size": 1.7747682672587748,
+   "product_bbox_coverage": 0.3480489238775538,
+   "brightness": 88.65632330246913,
+   "sharpness_lapvar": 107.03493805727025
+  },
+  {
+   "frame": 19,
+   "elevation_deg": 56.78807790937645,
+   "azimuth_deg": 162.9310810357471,
+   "distance_x_size": 1.8588704435212342,
+   "product_bbox_coverage": 0.3292460726485002,
+   "brightness": 88.94255979938272,
+   "sharpness_lapvar": 78.5520696485052
+  },
+  {
+   "frame": 20,
+   "elevation_deg": 54.94891113482016,
+   "azimuth_deg": 165.1174857974251,
+   "distance_x_size": 1.9202159931524623,
+   "product_bbox_coverage": 0.31163428009632543,
+   "brightness": 89.13727816358025,
+   "sharpness_lapvar": 58.26401041582943
+  },
+  {
+   "frame": 21,
+   "elevation_deg": 53.18006406545153,
+   "azimuth_deg": 170.61225613415317,
+   "distance_x_size": 1.9047382959494836,
+   "product_bbox_coverage": 0.3141768082836096,
+   "brightness": 88.96185570987655,
+   "sharpness_lapvar": 92.26124185379277
+  },
+  {
+   "frame": 22,
+   "elevation_deg": 53.80066931798533,
+   "azimuth_deg": 182.77309371409478,
+   "distance_x_size": 1.85092219993903,
+   "product_bbox_coverage": 0.3234027601810408,
+   "brightness": 89.28988618827161,
+   "sharpness_lapvar": 98.28164282407405
+  },
+  {
+   "frame": 23,
+   "elevation_deg": 55.4857646816011,
+   "azimuth_deg": 193.49534709089966,
+   "distance_x_size": 1.8574290121834798,
+   "product_bbox_coverage": 0.30098208449736075,
+   "brightness": 90.3892438271605,
+   "sharpness_lapvar": 113.8014558584782
+  },
+  {
+   "frame": 24,
+   "elevation_deg": 56.45408213600964,
+   "azimuth_deg": 198.0202451142812,
+   "distance_x_size": 1.8088299115452806,
+   "product_bbox_coverage": 0.3018376552072146,
+   "brightness": 91.3473649691358,
+   "sharpness_lapvar": 129.4539057211254
+  },
+  {
+   "frame": 25,
+   "elevation_deg": 55.79898245997288,
+   "azimuth_deg": 200.3560875261317,
+   "distance_x_size": 1.7925214663448192,
+   "product_bbox_coverage": 0.28961240177402153,
+   "brightness": 91.25826774691357,
+   "sharpness_lapvar": 168.7579357167204
+  },
+  {
+   "frame": 26,
+   "elevation_deg": 54.09916444215044,
+   "azimuth_deg": 204.76240208876985,
+   "distance_x_size": 1.8247798805696123,
+   "product_bbox_coverage": 0.2619683017743525,
+   "brightness": 90.97410879629629,
+   "sharpness_lapvar": 136.16159528112
+  },
+  {
+   "frame": 27,
+   "elevation_deg": 55.16859966451512,
+   "azimuth_deg": 212.7019291272816,
+   "distance_x_size": 1.8920389400060662,
+   "product_bbox_coverage": 0.2313924458534105,
+   "brightness": 93.4622048611111,
+   "sharpness_lapvar": 65.33721961474748
+  },
+  {
+   "frame": 28,
+   "elevation_deg": 54.549486366322135,
+   "azimuth_deg": 219.50176335697336,
+   "distance_x_size": 1.9315646131573228,
+   "product_bbox_coverage": 0.20674184815172808,
+   "brightness": 93.34760995370371,
+   "sharpness_lapvar": 96.47177801769867
+  },
+  {
+   "frame": 29,
+   "elevation_deg": 53.82787211971082,
+   "azimuth_deg": 229.11471280852538,
+   "distance_x_size": 1.9289181928412167,
+   "product_bbox_coverage": 0.21304521854751993,
+   "brightness": 93.10808449074074,
+   "sharpness_lapvar": 88.39003611466846
+  },
+  {
+   "frame": 30,
+   "elevation_deg": 52.96164302940126,
+   "azimuth_deg": 243.98187351716086,
+   "distance_x_size": 1.9204579249982856,
+   "product_bbox_coverage": 0.24747715284942456,
+   "brightness": 92.15469521604938,
+   "sharpness_lapvar": 101.73727816354678
+  },
+  {
+   "frame": 31,
+   "elevation_deg": 54.3179075685037,
+   "azimuth_deg": 254.3246397688671,
+   "distance_x_size": 1.9309816981849162,
+   "product_bbox_coverage": 0.2757935956840608,
+   "brightness": 92.31822530864197,
+   "sharpness_lapvar": 59.71820959308556
+  },
+  {
+   "frame": 32,
+   "elevation_deg": 51.523148369942305,
+   "azimuth_deg": 260.63403570096926,
+   "distance_x_size": 1.935585312296344,
+   "product_bbox_coverage": 0.2983308566941876,
+   "brightness": 88.72492283950618,
+   "sharpness_lapvar": 47.87999028509718
+  },
+  {
+   "frame": 33,
+   "elevation_deg": 50.25190155794586,
+   "azimuth_deg": 267.9521503113084,
+   "distance_x_size": 1.9505465016092123,
+   "product_bbox_coverage": 0.3031239459969616,
+   "brightness": 84.69186921296296,
+   "sharpness_lapvar": 117.03176696673522
+  },
+  {
+   "frame": 34,
+   "elevation_deg": 49.684345952216326,
+   "azimuth_deg": 275.9788573952145,
+   "distance_x_size": 2.000932383752416,
+   "product_bbox_coverage": 0.27616325738399305,
+   "brightness": 83.01643132716049,
+   "sharpness_lapvar": 137.9916692381473
+  },
+  {
+   "frame": 35,
+   "elevation_deg": 50.14835064224144,
+   "azimuth_deg": 281.7089045751143,
+   "distance_x_size": 2.047823691103414,
+   "product_bbox_coverage": 0.24870410650153388,
+   "brightness": 82.96380015432099,
+   "sharpness_lapvar": 130.98112071669578
+  },
+  {
+   "frame": 36,
+   "elevation_deg": 50.97041701381075,
+   "azimuth_deg": 285.9663278437389,
+   "distance_x_size": 2.073703587040246,
+   "product_bbox_coverage": 0.2297761304265852,
+   "brightness": 83.82793016975309,
+   "sharpness_lapvar": 144.47494970563216
+  },
+  {
+   "frame": 37,
+   "elevation_deg": 51.1162773271419,
+   "azimuth_deg": 289.22821543109944,
+   "distance_x_size": 2.11991613505875,
+   "product_bbox_coverage": 0.21050963605687378,
+   "brightness": 84.11379822530864,
+   "sharpness_lapvar": 185.28307465896967
+  },
+  {
+   "frame": 38,
+   "elevation_deg": 51.72606411848159,
+   "azimuth_deg": 292.0140806919819,
+   "distance_x_size": 2.133828805058969,
+   "product_bbox_coverage": 0.1999250774689405,
+   "brightness": 84.80029320987654,
+   "sharpness_lapvar": 144.0462962948079
+  },
+  {
+   "frame": 39,
+   "elevation_deg": 51.64438955789736,
+   "azimuth_deg": 295.790680510839,
+   "distance_x_size": 2.138876360142593,
+   "product_bbox_coverage": 0.1882362522212937,
+   "brightness": 85.78484567901235,
+   "sharpness_lapvar": 134.64066695601855
+  },
+  {
+   "frame": 40,
+   "elevation_deg": 51.572495492149656,
+   "azimuth_deg": 298.3868902876484,
+   "distance_x_size": 2.1430627907119066,
+   "product_bbox_coverage": 0.1810759714763231,
+   "brightness": 86.47179398148148,
+   "sharpness_lapvar": 168.64809411651234
+  },
+  {
+   "frame": 41,
+   "elevation_deg": 51.632265699966624,
+   "azimuth_deg": 298.36495175464296,
+   "distance_x_size": 2.1255119045585724,
+   "product_bbox_coverage": 0.18351761614875,
+   "brightness": 86.45875192901235,
+   "sharpness_lapvar": 210.5769517889208
+  },
+  {
+   "frame": 42,
+   "elevation_deg": 51.60200390102307,
+   "azimuth_deg": 296.0792278752229,
+   "distance_x_size": 2.118929700925481,
+   "product_bbox_coverage": 0.18816243775936958,
+   "brightness": 86.18128472222222,
+   "sharpness_lapvar": 213.0386031771399
+  },
+  {
+   "frame": 43,
+   "elevation_deg": 51.87018868519751,
+   "azimuth_deg": 291.9483040724246,
+   "distance_x_size": 2.1408215021001427,
+   "product_bbox_coverage": 0.19339528919796115,
+   "brightness": 86.15097608024692,
+   "sharpness_lapvar": 147.61262692737137
+  },
+  {
+   "frame": 44,
+   "elevation_deg": 51.92924335059734,
+   "azimuth_deg": 286.48461371411946,
+   "distance_x_size": 2.1891477571771834,
+   "product_bbox_coverage": 0.1968913717571303,
+   "brightness": 86.66204668209876,
+   "sharpness_lapvar": 150.80218932020395
+  },
+  {
+   "frame": 45,
+   "elevation_deg": 51.89536438716504,
+   "azimuth_deg": 279.52560283849317,
+   "distance_x_size": 2.2289499013694365,
+   "product_bbox_coverage": 0.20364224943941098,
+   "brightness": 87.96845486111111,
+   "sharpness_lapvar": 125.97380207365478
+  },
+  {
+   "frame": 46,
+   "elevation_deg": 52.72666895786146,
+   "azimuth_deg": 273.1914512561035,
+   "distance_x_size": 2.2904167945711063,
+   "product_bbox_coverage": 0.20555170656248511,
+   "brightness": 90.95008294753086,
+   "sharpness_lapvar": 76.7938821753901
+  },
+  {
+   "frame": 47,
+   "elevation_deg": 52.49915505982373,
+   "azimuth_deg": 264.95527443341376,
+   "distance_x_size": 2.2787014057355583,
+   "product_bbox_coverage": 0.2124865115209715,
+   "brightness": 92.35750578703704,
+   "sharpness_lapvar": 143.3108988795058
+  },
+  {
+   "frame": 48,
+   "elevation_deg": 52.78717485639419,
+   "azimuth_deg": 254.05881867773894,
+   "distance_x_size": 2.2688403966386415,
+   "product_bbox_coverage": 0.21181184738039033,
+   "brightness": 92.42677276234568,
+   "sharpness_lapvar": 86.261408167343
+  },
+  {
+   "frame": 49,
+   "elevation_deg": 52.65063096665835,
+   "azimuth_deg": 243.8326373236165,
+   "distance_x_size": 2.271334836350334,
+   "product_bbox_coverage": 0.1953151236691702,
+   "brightness": 92.66102816358024,
+   "sharpness_lapvar": 67.72301303577724
+  },
+  {
+   "frame": 50,
+   "elevation_deg": 52.9973683661395,
+   "azimuth_deg": 238.60851235746986,
+   "distance_x_size": 2.3401771062269128,
+   "product_bbox_coverage": 0.16694657195127444,
+   "brightness": 95.6641763117284,
+   "sharpness_lapvar": 77.07444246958457
+  },
+  {
+   "frame": 51,
+   "elevation_deg": 51.89238342564917,
+   "azimuth_deg": 233.13622337734859,
+   "distance_x_size": 2.4054772624228953,
+   "product_bbox_coverage": 0.1412039294151461,
+   "brightness": 97.24744020061729,
+   "sharpness_lapvar": 73.33296450855062
+  },
+  {
+   "frame": 52,
+   "elevation_deg": 49.917893208374004,
+   "azimuth_deg": 228.27602444186996,
+   "distance_x_size": 2.5464865671494126,
+   "product_bbox_coverage": 0.11867324967307784,
+   "brightness": 98.42293402777777,
+   "sharpness_lapvar": 124.16345645074526
+  },
+  {
+   "frame": 53,
+   "elevation_deg": 50.25186451161106,
+   "azimuth_deg": 223.13765142509368,
+   "distance_x_size": 2.641175176338796,
+   "product_bbox_coverage": 0.10501213328478269,
+   "brightness": 100.06420331790123,
+   "sharpness_lapvar": 131.65570358915372
+  },
+  {
+   "frame": 54,
+   "elevation_deg": 50.08305461702136,
+   "azimuth_deg": 214.63464143631376,
+   "distance_x_size": 2.5740295971000817,
+   "product_bbox_coverage": 0.11246264587696943,
+   "brightness": 100.6156500771605,
+   "sharpness_lapvar": 130.64097162684808
+  },
+  {
+   "frame": 55,
+   "elevation_deg": 50.38990086911691,
+   "azimuth_deg": 204.89883738321618,
+   "distance_x_size": 2.5346931035509885,
+   "product_bbox_coverage": 0.12551798767731498,
+   "brightness": 100.32366512345679,
+   "sharpness_lapvar": 98.47267134720074
+  },
+  {
+   "frame": 56,
+   "elevation_deg": 49.73591298819625,
+   "azimuth_deg": 200.89723381606092,
+   "distance_x_size": 2.372537803038626,
+   "product_bbox_coverage": 0.14936415100989728,
+   "brightness": 99.35944830246913,
+   "sharpness_lapvar": 140.20416980428863
+  },
+  {
+   "frame": 57,
+   "elevation_deg": 50.49013112975757,
+   "azimuth_deg": 201.61840779884366,
+   "distance_x_size": 2.1770081727498214,
+   "product_bbox_coverage": 0.17979870853267085,
+   "brightness": 98.12997492283951,
+   "sharpness_lapvar": 147.6899786535099
+  },
+  {
+   "frame": 58,
+   "elevation_deg": 51.131653983604735,
+   "azimuth_deg": 201.49102221545817,
+   "distance_x_size": 2.0302759218134376,
+   "product_bbox_coverage": 0.20995650365193844,
+   "brightness": 96.67445601851851,
+   "sharpness_lapvar": 173.65290315062708
+  },
+  {
+   "frame": 59,
+   "elevation_deg": 51.49955627673035,
+   "azimuth_deg": 201.37299629257308,
+   "distance_x_size": 1.9798161461015316,
+   "product_bbox_coverage": 0.2300856674616971,
+   "brightness": 94.51228395061729,
+   "sharpness_lapvar": 192.16150855668425
+  },
+  {
+   "frame": 60,
+   "elevation_deg": 52.4750010202795,
+   "azimuth_deg": 198.44641990490965,
+   "distance_x_size": 1.89344289277101,
+   "product_bbox_coverage": 0.27366555796846487,
+   "brightness": 92.56061921296296,
+   "sharpness_lapvar": 121.38113357122997
+  },
+  {
+   "frame": 61,
+   "elevation_deg": 52.278414127955756,
+   "azimuth_deg": 187.62411226902935,
+   "distance_x_size": 1.7338667960441059,
+   "product_bbox_coverage": 0.35417013958668353,
+   "brightness": 89.51916473765432,
+   "sharpness_lapvar": 55.21177409598386
+  },
+  {
+   "frame": 62,
+   "elevation_deg": 53.54493207908048,
+   "azimuth_deg": 173.01828705935006,
+   "distance_x_size": 1.6806753578393274,
+   "product_bbox_coverage": 0.4006195152163845,
+   "brightness": 87.38399305555555,
+   "sharpness_lapvar": 76.31413769352264
+  },
+  {
+   "frame": 63,
+   "elevation_deg": 55.29312041064034,
+   "azimuth_deg": 165.05616977972142,
+   "distance_x_size": 1.7000262675503728,
+   "product_bbox_coverage": 0.3994035873092941,
+   "brightness": 87.19568672839506,
+   "sharpness_lapvar": 96.4294109791129
+  },
+  {
+   "frame": 64,
+   "elevation_deg": 54.6642795549238,
+   "azimuth_deg": 156.17328059152942,
+   "distance_x_size": 1.7441098523430671,
+   "product_bbox_coverage": 0.357011087419472,
+   "brightness": 85.62338927469136,
+   "sharpness_lapvar": 69.30614368096263
+  },
+  {
+   "frame": 65,
+   "elevation_deg": 56.86133662484672,
+   "azimuth_deg": 145.99816588453177,
+   "distance_x_size": 1.8377855917312558,
+   "product_bbox_coverage": 0.28493387316936497,
+   "brightness": 86.23852044753086,
+   "sharpness_lapvar": 63.324341789190946
+  },
+  {
+   "frame": 66,
+   "elevation_deg": 60.08494356241841,
+   "azimuth_deg": 129.74266452833982,
+   "distance_x_size": 1.8190451221190782,
+   "product_bbox_coverage": 0.25481507559884076,
+   "brightness": 88.22463348765432,
+   "sharpness_lapvar": 52.69134399832684
+  },
+  {
+   "frame": 67,
+   "elevation_deg": 60.08499588589269,
+   "azimuth_deg": 118.54369942504195,
+   "distance_x_size": 1.8486487632314599,
+   "product_bbox_coverage": 0.23841400830923237,
+   "brightness": 88.55173225308641,
+   "sharpness_lapvar": 135.00440352749905
+  },
+  {
+   "frame": 68,
+   "elevation_deg": 59.58405693518937,
+   "azimuth_deg": 118.1552857277685,
+   "distance_x_size": 1.841248993692581,
+   "product_bbox_coverage": 0.23099044334484425,
+   "brightness": 87.23572337962963,
+   "sharpness_lapvar": 97.836836867173
+  },
+  {
+   "frame": 69,
+   "elevation_deg": 60.37692503044874,
+   "azimuth_deg": 115.23452132236704,
+   "distance_x_size": 1.8762510338206406,
+   "product_bbox_coverage": 0.24539017194880314,
+   "brightness": 85.70273726851852,
+   "sharpness_lapvar": 129.89348324759945
+  },
+  {
+   "frame": 70,
+   "elevation_deg": 61.76013238119733,
+   "azimuth_deg": 105.89117253402544,
+   "distance_x_size": 1.8788745421635935,
+   "product_bbox_coverage": 0.29534247377210154,
+   "brightness": 85.1948398919753,
+   "sharpness_lapvar": 118.60194058588388
+  },
+  {
+   "frame": 71,
+   "elevation_deg": 61.74194144395716,
+   "azimuth_deg": 99.80814581964225,
+   "distance_x_size": 1.8503604368438364,
+   "product_bbox_coverage": 0.3453472710014931,
+   "brightness": 83.2103086419753,
+   "sharpness_lapvar": 38.66024248957797
+  },
+  {
+   "frame": 72,
+   "elevation_deg": 67.80255845506989,
+   "azimuth_deg": 89.7712309107345,
+   "distance_x_size": 1.7847473438077113,
+   "product_bbox_coverage": 0.39122267287024826,
+   "brightness": 83.37874421296296,
+   "sharpness_lapvar": 45.39989159901728
+  },
+  {
+   "frame": 73,
+   "elevation_deg": 70.63053033709558,
+   "azimuth_deg": 70.36573381329906,
+   "distance_x_size": 1.7845851790858478,
+   "product_bbox_coverage": 0.3532412364461777,
+   "brightness": 81.97436728395061,
+   "sharpness_lapvar": 96.02231852989017
+  },
+  {
+   "frame": 74,
+   "elevation_deg": 70.37640621260739,
+   "azimuth_deg": 62.159870204136645,
+   "distance_x_size": 1.8133828341535574,
+   "product_bbox_coverage": 0.28601101947607666,
+   "brightness": 79.44959683641976,
+   "sharpness_lapvar": 87.69375751229747
+  },
+  {
+   "frame": 75,
+   "elevation_deg": 71.57937520177428,
+   "azimuth_deg": 53.358529596779505,
+   "distance_x_size": 1.8721147657559263,
+   "product_bbox_coverage": 0.24385997386843997,
+   "brightness": 74.93922839506173,
+   "sharpness_lapvar": 96.88832661229934
+  },
+  {
+   "frame": 76,
+   "elevation_deg": 70.50438189440702,
+   "azimuth_deg": 47.67399471352257,
+   "distance_x_size": 1.874069894858126,
+   "product_bbox_coverage": 0.25260937708852943,
+   "brightness": 70.06296296296296,
+   "sharpness_lapvar": 177.4556205817877
+  },
+  {
+   "frame": 77,
+   "elevation_deg": 68.58611952767436,
+   "azimuth_deg": 43.55844975304215,
+   "distance_x_size": 1.8512667647035779,
+   "product_bbox_coverage": 0.2587094814041734,
+   "brightness": 69.66857831790124,
+   "sharpness_lapvar": 130.21304584065274
+  },
+  {
+   "frame": 78,
+   "elevation_deg": 65.18916971284125,
+   "azimuth_deg": 39.66968932327499,
+   "distance_x_size": 1.889798725033093,
+   "product_bbox_coverage": 0.24471984684717432,
+   "brightness": 69.40276427469136,
+   "sharpness_lapvar": 110.48045098366232
+  },
+  {
+   "frame": 79,
+   "elevation_deg": 61.803098355942076,
+   "azimuth_deg": 36.2455413453479,
+   "distance_x_size": 1.985073117111063,
+   "product_bbox_coverage": 0.21800518606640443,
+   "brightness": 69.63143711419752,
+   "sharpness_lapvar": 141.5345543241692
+  },
+  {
+   "frame": 80,
+   "elevation_deg": 59.04868497022798,
+   "azimuth_deg": 36.11822369975839,
+   "distance_x_size": 2.0747413563835866,
+   "product_bbox_coverage": 0.19733289307037621,
+   "brightness": 68.40509837962964,
+   "sharpness_lapvar": 136.37868420280293
+  },
+  {
+   "frame": 81,
+   "elevation_deg": 55.884569074624444,
+   "azimuth_deg": 36.76001479653307,
+   "distance_x_size": 2.1862826014134815,
+   "product_bbox_coverage": 0.17361880283443273,
+   "brightness": 67.2283275462963,
+   "sharpness_lapvar": 118.87136573925231
+  },
+  {
+   "frame": 82,
+   "elevation_deg": 52.66628827792076,
+   "azimuth_deg": 37.72622353296093,
+   "distance_x_size": 2.3262154275527043,
+   "product_bbox_coverage": 0.1466396682581053,
+   "brightness": 67.78388695987654,
+   "sharpness_lapvar": 104.83759434313784
+  },
+  {
+   "frame": 83,
+   "elevation_deg": 50.696467643915,
+   "azimuth_deg": 39.62583604510998,
+   "distance_x_size": 2.437964083466591,
+   "product_bbox_coverage": 0.12842730740387331,
+   "brightness": 70.05584683641975,
+   "sharpness_lapvar": 109.7814409659671
+  },
+  {
+   "frame": 84,
+   "elevation_deg": 50.06551332287068,
+   "azimuth_deg": 43.267802893780114,
+   "distance_x_size": 2.510905644829294,
+   "product_bbox_coverage": 0.1189898466553404,
+   "brightness": 73.41088541666667,
+   "sharpness_lapvar": 107.5190508916324
+  },
+  {
+   "frame": 85,
+   "elevation_deg": 50.029177670597264,
+   "azimuth_deg": 46.31790092854451,
+   "distance_x_size": 2.5282442608381976,
+   "product_bbox_coverage": 0.1193575672279011,
+   "brightness": 77.49853202160494,
+   "sharpness_lapvar": 54.41777176002954
+  },
+  {
+   "frame": 86,
+   "elevation_deg": 50.53679162191136,
+   "azimuth_deg": 50.87767525973151,
+   "distance_x_size": 2.453998295178229,
+   "product_bbox_coverage": 0.14534127003576777,
+   "brightness": 80.44302469135802,
+   "sharpness_lapvar": 65.33208679102842
+  },
+  {
+   "frame": 87,
+   "elevation_deg": 51.20776475847235,
+   "azimuth_deg": 57.76500615487938,
+   "distance_x_size": 2.3463178509052534,
+   "product_bbox_coverage": 0.1825130206868182,
+   "brightness": 83.06314429012346,
+   "sharpness_lapvar": 119.42823880606863
+  },
+  {
+   "frame": 88,
+   "elevation_deg": 50.48496893464353,
+   "azimuth_deg": 66.10608645602711,
+   "distance_x_size": 2.1862324684905636,
+   "product_bbox_coverage": 0.2255574608876212,
+   "brightness": 86.46351080246913,
+   "sharpness_lapvar": 86.28002890437085
+  },
+  {
+   "frame": 89,
+   "elevation_deg": 49.401064042866835,
+   "azimuth_deg": 75.56364976731525,
+   "distance_x_size": 2.047723883384189,
+   "product_bbox_coverage": 0.26183878646147274,
+   "brightness": 88.39848379629629,
+   "sharpness_lapvar": 123.39215059915111
+  },
+  {
+   "frame": 90,
+   "elevation_deg": 49.23823406408345,
+   "azimuth_deg": 84.04467283091702,
+   "distance_x_size": 1.9845981217177202,
+   "product_bbox_coverage": 0.28139408755965895,
+   "brightness": 90.37119020061728,
+   "sharpness_lapvar": 76.02288191942387
+  },
+  {
+   "frame": 91,
+   "elevation_deg": 49.75501282027539,
+   "azimuth_deg": 96.87388068533635,
+   "distance_x_size": 1.917166647444555,
+   "product_bbox_coverage": 0.2833367172075133,
+   "brightness": 90.61933641975308,
+   "sharpness_lapvar": 108.3122660436634
+  },
+  {
+   "frame": 92,
+   "elevation_deg": 48.74142486190251,
+   "azimuth_deg": 108.75565245734995,
+   "distance_x_size": 1.8846387082513325,
+   "product_bbox_coverage": 0.2535738022207716,
+   "brightness": 89.66816358024691,
+   "sharpness_lapvar": 112.20926519341326
+  },
+  {
+   "frame": 93,
+   "elevation_deg": 47.614077960249844,
+   "azimuth_deg": 113.88266373323953,
+   "distance_x_size": 1.89891016548742,
+   "product_bbox_coverage": 0.2243900120321886,
+   "brightness": 88.68721643518519,
+   "sharpness_lapvar": 131.32741691386224
+  },
+  {
+   "frame": 94,
+   "elevation_deg": 47.181878791985,
+   "azimuth_deg": 117.14456018245274,
+   "distance_x_size": 1.9275734448718815,
+   "product_bbox_coverage": 0.1991410384385876,
+   "brightness": 88.12739583333334,
+   "sharpness_lapvar": 79.08055490539203
+  },
+  {
+   "frame": 95,
+   "elevation_deg": 48.70558499599488,
+   "azimuth_deg": 118.4324527611398,
+   "distance_x_size": 1.9190621566236952,
+   "product_bbox_coverage": 0.1987397221999251,
+   "brightness": 87.17463348765432,
+   "sharpness_lapvar": 91.43746910292298
+  },
+  {
+   "frame": 96,
+   "elevation_deg": 53.00437219231995,
+   "azimuth_deg": 120.33788959126898,
+   "distance_x_size": 1.901638620192412,
+   "product_bbox_coverage": 0.20885868696322185,
+   "brightness": 87.11436921296297,
+   "sharpness_lapvar": 77.2151791665327
+  },
+  {
+   "frame": 97,
+   "elevation_deg": 56.71739176598726,
+   "azimuth_deg": 120.19030345838159,
+   "distance_x_size": 1.9077210099131732,
+   "product_bbox_coverage": 0.21373437395951944,
+   "brightness": 87.2748013117284,
+   "sharpness_lapvar": 124.24241001058803
+  },
+  {
+   "frame": 98,
+   "elevation_deg": 59.50722504132862,
+   "azimuth_deg": 121.329777372194,
+   "distance_x_size": 1.8968669057745349,
+   "product_bbox_coverage": 0.21932244442665055,
+   "brightness": 87.05377893518518,
+   "sharpness_lapvar": 111.27948878484355
+  },
+  {
+   "frame": 99,
+   "elevation_deg": 61.11191743428548,
+   "azimuth_deg": 120.12533596032053,
+   "distance_x_size": 1.884828670849332,
+   "product_bbox_coverage": 0.2211740430065138,
+   "brightness": 86.51320794753086,
+   "sharpness_lapvar": 135.56372247333613
+  },
+  {
+   "frame": 100,
+   "elevation_deg": 64.02273767137882,
+   "azimuth_deg": 120.380591209994,
+   "distance_x_size": 1.8978928779924096,
+   "product_bbox_coverage": 0.2262692754708309,
+   "brightness": 86.02310763888889,
+   "sharpness_lapvar": 113.16497685185185
+  },
+  {
+   "frame": 101,
+   "elevation_deg": 65.95185558660891,
+   "azimuth_deg": 121.10342103465776,
+   "distance_x_size": 1.9087280576991215,
+   "product_bbox_coverage": 0.22548021517532707,
+   "brightness": 86.01595486111111,
+   "sharpness_lapvar": 157.7229797197358
+  },
+  {
+   "frame": 102,
+   "elevation_deg": 66.8450965246646,
+   "azimuth_deg": 123.27418509967202,
+   "distance_x_size": 1.9111695524153325,
+   "product_bbox_coverage": 0.22499516746336634,
+   "brightness": 85.89360532407407,
+   "sharpness_lapvar": 153.4203276148239
+  },
+  {
+   "frame": 103,
+   "elevation_deg": 67.62668941886554,
+   "azimuth_deg": 125.75308063128453,
+   "distance_x_size": 1.9166021323082028,
+   "product_bbox_coverage": 0.22354520683503232,
+   "brightness": 85.88516203703703,
+   "sharpness_lapvar": 177.14766328909408
+  },
+  {
+   "frame": 104,
+   "elevation_deg": 67.85775059851021,
+   "azimuth_deg": 128.3449435997082,
+   "distance_x_size": 1.9145951097836893,
+   "product_bbox_coverage": 0.2234556223690657,
+   "brightness": 85.4391724537037,
+   "sharpness_lapvar": 169.786010218943
+  },
+  {
+   "frame": 105,
+   "elevation_deg": 68.34040386911566,
+   "azimuth_deg": 130.4913729731589,
+   "distance_x_size": 1.907295220206471,
+   "product_bbox_coverage": 0.22547486657224333,
+   "brightness": 85.27344907407408,
+   "sharpness_lapvar": 164.53444030346452
+  },
+  {
+   "frame": 106,
+   "elevation_deg": 68.53734193796302,
+   "azimuth_deg": 129.84812099490208,
+   "distance_x_size": 1.8904498131001235,
+   "product_bbox_coverage": 0.2299400756587622,
+   "brightness": 85.15981674382716,
+   "sharpness_lapvar": 197.82895824508407
+  },
+  {
+   "frame": 107,
+   "elevation_deg": 68.87270654216319,
+   "azimuth_deg": 129.53748858937493,
+   "distance_x_size": 1.884693474540227,
+   "product_bbox_coverage": 0.23204302093227994,
+   "brightness": 85.04447145061728,
+   "sharpness_lapvar": 201.73631976725255
+  }
+ ]
+}

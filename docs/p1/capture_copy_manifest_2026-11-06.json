@@ -1,0 +1,352 @@
+[
+  {
+    "media_id": "P01",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg",
+    "working_copy": "capture\\products\\capture_01\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg",
+    "sha256": "55f619ce60433f1512938024a11e944137d91a6afe42a70a1ec085903eaeac93",
+    "bytes": 4156100
+  },
+  {
+    "media_id": "P02",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-33 002.jpeg",
+    "working_copy": "capture\\products\\capture_02\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-33 002.jpeg",
+    "sha256": "5f6dbf02696cc0fd7f4599ed9f08e099f11e17b8b828e5a9bc4d941f1da37a68",
+    "bytes": 5514719
+  },
+  {
+    "media_id": "P03",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-34 003.jpeg",
+    "working_copy": "capture\\products\\capture_04\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-34 003.jpeg",
+    "sha256": "606b7189c184dc5fa01dcdaf503f3fbb3432f80f54aca0f83089040a0c750a42",
+    "bytes": 2444887
+  },
+  {
+    "media_id": "P04",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-34 004.jpeg",
+    "working_copy": "capture\\products\\capture_04\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-34 004.jpeg",
+    "sha256": "63956dff47fef817e72befabc41cb78d93f61b7d022475ac6d37b34c42aed118",
+    "bytes": 4161445
+  },
+  {
+    "media_id": "P05",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-35 005.jpeg",
+    "working_copy": "capture\\products\\capture_03\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-35 005.jpeg",
+    "sha256": "b81ed1ecf55d6239cb4a5adc030c9fe7e2a4154164c057e46ad9f72f25f5fcd8",
+    "bytes": 2608818
+  },
+  {
+    "media_id": "P06",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-35 006.jpeg",
+    "working_copy": "capture\\products\\capture_03\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-35 006.jpeg",
+    "sha256": "05fae61f7175a2d89ac3765fffa603525b73903a50aa1ea593cd83c837cfea84",
+    "bytes": 4156004
+  },
+  {
+    "media_id": "P07",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-36 007.jpeg",
+    "working_copy": "capture\\products\\capture_04\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-36 007.jpeg",
+    "sha256": "ab9f0096f241f842bab467e6357615ea4559999bdd4b7fd1473a68d56f55a741",
+    "bytes": 4947609
+  },
+  {
+    "media_id": "P08",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-36 008.jpeg",
+    "working_copy": "capture\\products\\capture_04\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-36 008.jpeg",
+    "sha256": "7dccf22730da6446275742d03afe74442389a80a5484708c52b538371c1a252b",
+    "bytes": 4719873
+  },
+  {
+    "media_id": "P09",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-37 009.jpeg",
+    "working_copy": "capture\\products\\capture_03\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-37 009.jpeg",
+    "sha256": "3e5d4a520705f36aa2f856152b1e685ca3772af58a918fe508b1bebd6504b3b2",
+    "bytes": 4378336
+  },
+  {
+    "media_id": "P10",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-37 010.jpeg",
+    "working_copy": "capture\\products\\capture_03\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-37 010.jpeg",
+    "sha256": "0f110a40b3790094891cbed8fcfe1ba482a7704cba4e076fb6b3208bdc626d48",
+    "bytes": 4575329
+  },
+  {
+    "media_id": "P11",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-38 011.jpeg",
+    "working_copy": "capture\\products\\capture_05\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-38 011.jpeg",
+    "sha256": "4471a4d36e1da108f776cf00dcccf9117dc348c8a3ea27dc22c798e2b9610497",
+    "bytes": 4507798
+  },
+  {
+    "media_id": "P12",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-39 012.jpeg",
+    "working_copy": "capture\\products\\capture_05\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-39 012.jpeg",
+    "sha256": "a15103a501251a79ee2c8c9a8388a51b2893b296f584a10d6dabe450038d05fc",
+    "bytes": 4263275
+  },
+  {
+    "media_id": "P13",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-39 013.jpeg",
+    "working_copy": "capture\\products\\capture_06\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-39 013.jpeg",
+    "sha256": "0ec94cd6dd7acd9a8ae56c6539a5c39de88435a6d3f72f4a7d15a293f78c26b0",
+    "bytes": 3277812
+  },
+  {
+    "media_id": "P14",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-40 014.jpeg",
+    "working_copy": "capture\\products\\capture_06\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-40 014.jpeg",
+    "sha256": "4cf420464b649ac87774d20abd845de239896895d561fda77a2867af0e39206c",
+    "bytes": 4887110
+  },
+  {
+    "media_id": "P15",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-40 015.jpeg",
+    "working_copy": "capture\\products\\capture_07\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-40 015.jpeg",
+    "sha256": "6d55e504d3eed119be6f84ad6a824549b92aa6ab7aa0c15c6841fd1eea5b2cb1",
+    "bytes": 5140989
+  },
+  {
+    "media_id": "P16",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-45-41 016.jpeg",
+    "working_copy": "capture\\products\\capture_07\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-41 016.jpeg",
+    "sha256": "e8555e633ec87ddf2e2480a9b0cae225cf6e98f9e1212726d11ce015ee38345c",
+    "bytes": 4552423
+  },
+  {
+    "media_id": "P17",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-21 001.jpeg",
+    "working_copy": "capture\\products\\capture_08\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-21 001.jpeg",
+    "sha256": "e11420e3bffdd6638493f16aad2102951733f5dc0a9a0ef0bba6ce5860bb37da",
+    "bytes": 3321617
+  },
+  {
+    "media_id": "P18",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-22 002.jpeg",
+    "working_copy": "capture\\products\\capture_08\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-22 002.jpeg",
+    "sha256": "b237152fdf75b6f4e706f4177bfd4ef7441576c493a9d96ee190e35dc1500324",
+    "bytes": 4534236
+  },
+  {
+    "media_id": "P19",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-23 003.jpeg",
+    "working_copy": "capture\\products\\capture_09\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-23 003.jpeg",
+    "sha256": "866b32528557c40e32464dd4cd4a5ef849e17dbb3a7f80622eff905d81327908",
+    "bytes": 4232252
+  },
+  {
+    "media_id": "P20",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-23 004.jpeg",
+    "working_copy": "capture\\products\\capture_09\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-23 004.jpeg",
+    "sha256": "838baae0e7391dba681b40c44043bbb860f898f824bd0f1f4e5b9ae67f6009d7",
+    "bytes": 2661205
+  },
+  {
+    "media_id": "P21",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-24 005.jpeg",
+    "working_copy": "capture\\products\\capture_10\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-24 005.jpeg",
+    "sha256": "827de3a4cf9c2d614736120f9f3d4e298ad6abc4c93276b9e01b4a1a852a7c2f",
+    "bytes": 4572336
+  },
+  {
+    "media_id": "P22",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-24 006.jpeg",
+    "working_copy": "capture\\products\\capture_10\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-24 006.jpeg",
+    "sha256": "f1eb153bead53314351f49781969988c9efb4eeac4e6b93f6e5e5a41654bdb13",
+    "bytes": 4666489
+  },
+  {
+    "media_id": "P23",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-25 007.jpeg",
+    "working_copy": "capture\\products\\capture_11\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-25 007.jpeg",
+    "sha256": "05b1f1785785e08d577f335bd0fa5bbeb131c2c7f7585de3fd461538bbb0e9f7",
+    "bytes": 4777971
+  },
+  {
+    "media_id": "P24",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-25 008.jpeg",
+    "working_copy": "capture\\products\\capture_11\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-25 008.jpeg",
+    "sha256": "b46667290cf3c63655b5e1038431c85317f1980bf12ba9e398f91584b7430414",
+    "bytes": 3578231
+  },
+  {
+    "media_id": "P25",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-26 009.jpeg",
+    "working_copy": "capture\\products\\capture_12\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-26 009.jpeg",
+    "sha256": "f251a29cc2b63a23f4bd72a109752be56bc36882925cbdfc50309a022d243767",
+    "bytes": 4906563
+  },
+  {
+    "media_id": "P26",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Photo_2026-10-25-01-47-27 010.jpeg",
+    "working_copy": "capture\\products\\capture_12\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-47-27 010.jpeg",
+    "sha256": "da0f42c1385a8845b16d65b5d95097f6d3088bb1681406f2666a68123eb5fbd1",
+    "bytes": 4385400
+  },
+  {
+    "media_id": "V01",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-45-53.mp4",
+    "working_copy": "capture\\products\\capture_01\\raw\\orbit_a\\KakaoTalk_Video_2026-10-25-01-45-53.mp4",
+    "sha256": "351851942e4b91fc40a6558595f09435faac3ec25352378937a1f6658e242166",
+    "bytes": 12387987
+  },
+  {
+    "media_id": "V02",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-46-01.mp4",
+    "working_copy": "capture\\products\\capture_01\\raw\\orbit_b\\KakaoTalk_Video_2026-10-25-01-46-01.mp4",
+    "sha256": "c9da1fa17d72d3cd8831628afc205951f22f0350921c5d9fc53c8f67a55e98d2",
+    "bytes": 16490063
+  },
+  {
+    "media_id": "V03",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-46-46.mp4",
+    "working_copy": "capture\\products\\capture_02\\raw\\orbit_a\\KakaoTalk_Video_2026-10-25-01-46-46.mp4",
+    "sha256": "18fe42bc7ce575b051c431692be545ef337030b8ec309ce6bd18d446b2bc2a2f",
+    "bytes": 15867758
+  },
+  {
+    "media_id": "V04",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-46-57.mp4",
+    "working_copy": "capture\\products\\capture_02\\raw\\orbit_b\\KakaoTalk_Video_2026-10-25-01-46-57.mp4",
+    "sha256": "830f1068d559c2ef2948f2d3bda5b02b3d10f8e1d3d053853f273be52618409e",
+    "bytes": 15331888
+  },
+  {
+    "media_id": "V05",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-02.mp4",
+    "working_copy": "capture\\products\\capture_03\\raw\\front\\KakaoTalk_Video_2026-10-25-01-47-02.mp4",
+    "sha256": "8e33978882844409050a00ba15157e5b40a4c4c9dad78568f41d50893caa075d",
+    "bytes": 12098838
+  },
+  {
+    "media_id": "V06",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-07.mp4",
+    "working_copy": "capture\\products\\capture_03\\raw\\back\\KakaoTalk_Video_2026-10-25-01-47-07.mp4",
+    "sha256": "d01b9ffceaa3e78e108663d8a79f4320041489f0a9e5ba3f8596ac9d6d6581ed",
+    "bytes": 12823623
+  },
+  {
+    "media_id": "V07",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-11.mp4",
+    "working_copy": "capture\\products\\capture_04\\raw\\front\\KakaoTalk_Video_2026-10-25-01-47-11.mp4",
+    "sha256": "24a67998595488f66bbf410e9b5b5a0ddd96e12cd50cfd76ab521eb6613fb227",
+    "bytes": 12962040
+  },
+  {
+    "media_id": "V08",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-33.mp4",
+    "working_copy": "capture\\products\\capture_04\\raw\\back\\KakaoTalk_Video_2026-10-25-01-47-33.mp4",
+    "sha256": "f2bad9846824bc0445258df241d0b855a945d626db71aa6a44e012d81049dc48",
+    "bytes": 12081010
+  },
+  {
+    "media_id": "V09",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-38.mp4",
+    "working_copy": "capture\\products\\capture_05\\raw\\front\\KakaoTalk_Video_2026-10-25-01-47-38.mp4",
+    "sha256": "293ad8b9d1081da7483bf5b275d75b71fab61458b5f4bc9924c6294566e992f3",
+    "bytes": 11348440
+  },
+  {
+    "media_id": "V10",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-42.mp4",
+    "working_copy": "capture\\products\\capture_05\\raw\\back\\KakaoTalk_Video_2026-10-25-01-47-42.mp4",
+    "sha256": "14869a66e35a8421f5c1c61bd1d7801057f04a124beb89a6acdd0f79914e5f57",
+    "bytes": 12223780
+  },
+  {
+    "media_id": "V11",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-46.mp4",
+    "working_copy": "capture\\products\\capture_06\\raw\\front\\KakaoTalk_Video_2026-10-25-01-47-46.mp4",
+    "sha256": "bef131db78ef0711703be2db4064b167a3ca4e1d89eb19fc7ec135e162e78459",
+    "bytes": 13793856
+  },
+  {
+    "media_id": "V12",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-50.mp4",
+    "working_copy": "capture\\products\\capture_06\\raw\\back\\KakaoTalk_Video_2026-10-25-01-47-50.mp4",
+    "sha256": "89c6a033849dba190d1c2a394740ac49c4b148cd657138b18d1fd81539ef1545",
+    "bytes": 11751000
+  },
+  {
+    "media_id": "V13",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-54.mp4",
+    "working_copy": "capture\\products\\capture_07\\raw\\back\\KakaoTalk_Video_2026-10-25-01-47-54.mp4",
+    "sha256": "24f41d5b5bb621d1238096b210d019263ee9f72c1653dd2dba432e3d99449334",
+    "bytes": 12804432
+  },
+  {
+    "media_id": "V14",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-47-58.mp4",
+    "working_copy": "capture\\products\\capture_07\\raw\\front\\KakaoTalk_Video_2026-10-25-01-47-58.mp4",
+    "sha256": "41bfd2c04ab9afeb7587863c899a960a5fdd8e193d1a0489662265aa8ea666bc",
+    "bytes": 17001195
+  },
+  {
+    "media_id": "V15",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-01.mp4",
+    "working_copy": "capture\\products\\capture_08\\raw\\front\\KakaoTalk_Video_2026-10-25-01-48-01.mp4",
+    "sha256": "ecdfc4789a2a754dc65a4a19a54e808f01eb1b7415d1e9958edac4a280e1e321",
+    "bytes": 14769173
+  },
+  {
+    "media_id": "V16",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-05.mp4",
+    "working_copy": "capture\\products\\capture_08\\raw\\back\\KakaoTalk_Video_2026-10-25-01-48-05.mp4",
+    "sha256": "5556c41793a6495ba3f1e518e628b28ca1f855b84d53560557ae5ef948d3072f",
+    "bytes": 13156989
+  },
+  {
+    "media_id": "V17",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-09.mp4",
+    "working_copy": "capture\\products\\capture_09\\raw\\back\\KakaoTalk_Video_2026-10-25-01-48-09.mp4",
+    "sha256": "8f52d5792e97a1234e74ee01cabcc722d8756537891c5ef5074a961bcbe461b5",
+    "bytes": 12664288
+  },
+  {
+    "media_id": "V18",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-14.mp4",
+    "working_copy": "capture\\products\\capture_09\\raw\\front\\KakaoTalk_Video_2026-10-25-01-48-14.mp4",
+    "sha256": "6e0cc857186b35095ae4576275581aa2351b427d21d3b71cbda8e50d95409031",
+    "bytes": 11860474
+  },
+  {
+    "media_id": "V19",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-19.mp4",
+    "working_copy": "capture\\products\\capture_10\\raw\\back\\KakaoTalk_Video_2026-10-25-01-48-19.mp4",
+    "sha256": "dc1055c3fe3b4c1c4f130b1a02a1f61e36ccf08198c909c081776537facab7ec",
+    "bytes": 12745430
+  },
+  {
+    "media_id": "V20",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-26.mp4",
+    "working_copy": "capture\\products\\capture_10\\raw\\front\\KakaoTalk_Video_2026-10-25-01-48-26.mp4",
+    "sha256": "eef4906089427a76d520dfd8695d33ecd540ef2d373a8c8ac31e847bc9cac59f",
+    "bytes": 13567203
+  },
+  {
+    "media_id": "V21",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-30.mp4",
+    "working_copy": "capture\\products\\capture_11\\raw\\back\\KakaoTalk_Video_2026-10-25-01-48-30.mp4",
+    "sha256": "8ee73bd5f0165e7972c397c14619d8b9d928fc119fa0e0c2bfdcffc2675ad857",
+    "bytes": 11571941
+  },
+  {
+    "media_id": "V22",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-34.mp4",
+    "working_copy": "capture\\products\\capture_11\\raw\\front\\KakaoTalk_Video_2026-10-25-01-48-34.mp4",
+    "sha256": "3d6c26fca724700bc9de3598d4832d6079265f76a38a9e8707106400d00f90b3",
+    "bytes": 13679050
+  },
+  {
+    "media_id": "V23",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-38.mp4",
+    "working_copy": "capture\\products\\capture_12\\raw\\front\\KakaoTalk_Video_2026-10-25-01-48-38.mp4",
+    "sha256": "5cbe33e642445e7d4884022eb407a3248c79698937db46759922053bf000926e",
+    "bytes": 10457795
+  },
+  {
+    "media_id": "V24",
+    "source": "C:\\Users\\LeeMinGeon\\Downloads\\drive-download-20261105T202857Z-1-001\\KakaoTalk_Video_2026-10-25-01-48-44.mp4",
+    "working_copy": "capture\\products\\capture_12\\raw\\back\\KakaoTalk_Video_2026-10-25-01-48-44.mp4",
+    "sha256": "ff07a33cbaf9e4c4dbca6688e3aeb0ca9a6f250cf2e2fe6e5ab03b93456732cc",
+    "bytes": 12847028
+  }
+]

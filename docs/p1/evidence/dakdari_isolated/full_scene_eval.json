@@ -1,0 +1,17 @@
+{
+  "experiment_name": "dakdari-v01",
+  "method_name": "splatfacto",
+  "checkpoint": "capture\\products\\capture_01\\session_v01\\outputs\\dakdari-v01\\splatfacto\\trial-3000\\nerfstudio_models\\step-000002999.ckpt",
+  "results": {
+    "psnr": 23.445844650268555,
+    "psnr_std": 1.5436617136001587,
+    "ssim": 0.8108699321746826,
+    "ssim_std": 0.01924731582403183,
+    "lpips": 0.21498961746692657,
+    "lpips_std": 0.028992068022489548,
+    "num_rays_per_sec": 52866676.0,
+    "num_rays_per_sec_std": 24066562.0,
+    "fps": 102.27621459960938,
+    "fps_std": 46.559326171875
+  }
+}

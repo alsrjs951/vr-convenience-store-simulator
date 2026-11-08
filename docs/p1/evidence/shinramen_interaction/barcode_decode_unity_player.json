@@ -1,0 +1,19 @@
+{
+  "summary": {
+    "opencv": "4.10.0",
+    "images": 1,
+    "correct": 0,
+    "wrong": 0,
+    "expected": "8801043014809"
+  },
+  "results": [
+    {
+      "image": "docs/p1/evidence/shinramen_interaction/player/04_held_back.png",
+      "width": 1920,
+      "height": 1080,
+      "decoded": [],
+      "scale": null,
+      "correct": false
+    }
+  ]
+}

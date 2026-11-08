@@ -1,0 +1,466 @@
+{
+  "source_photo": "C:\\Projects\\vr-convenience-store-simulator\\capture\\products\\capture_01\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg",
+  "session": "capture\\products\\capture_01\\session_v01",
+  "source_hashes": {
+    "C:\\Projects\\vr-convenience-store-simulator\\capture\\products\\capture_01\\raw\\reference_photo\\KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg": "55f619ce60433f1512938024a11e944137d91a6afe42a70a1ec085903eaeac93",
+    "capture\\products\\capture_01\\session_v01\\database.db": "af3cf9925b0ce07aca61c6ed2b4033c679ca02284d22a509edf34756997e6863",
+    "capture\\products\\capture_01\\session_v01\\sparse\\0\\images.bin": "7659d45d060cd1379cee0452b3bda648efb4f66bf9e185053d6cfc0a2eea6060"
+  },
+  "runs": [
+    {
+      "mode": "full_photo",
+      "registered_images": 75,
+      "photo_registered": true,
+      "photo_keypoints": 9031,
+      "verified_pairs": [
+        {
+          "other": "frame_0070.jpg",
+          "verified_matches": 211
+        },
+        {
+          "other": "frame_0069.jpg",
+          "verified_matches": 197
+        },
+        {
+          "other": "frame_0060.jpg",
+          "verified_matches": 170
+        },
+        {
+          "other": "frame_0068.jpg",
+          "verified_matches": 167
+        },
+        {
+          "other": "frame_0063.jpg",
+          "verified_matches": 165
+        },
+        {
+          "other": "frame_0067.jpg",
+          "verified_matches": 164
+        },
+        {
+          "other": "frame_0061.jpg",
+          "verified_matches": 161
+        },
+        {
+          "other": "frame_0058.jpg",
+          "verified_matches": 151
+        },
+        {
+          "other": "frame_0062.jpg",
+          "verified_matches": 150
+        },
+        {
+          "other": "frame_0064.jpg",
+          "verified_matches": 150
+        },
+        {
+          "other": "frame_0066.jpg",
+          "verified_matches": 149
+        },
+        {
+          "other": "frame_0065.jpg",
+          "verified_matches": 140
+        },
+        {
+          "other": "frame_0059.jpg",
+          "verified_matches": 137
+        },
+        {
+          "other": "frame_0071.jpg",
+          "verified_matches": 133
+        },
+        {
+          "other": "frame_0057.jpg",
+          "verified_matches": 93
+        },
+        {
+          "other": "frame_0003.jpg",
+          "verified_matches": 92
+        },
+        {
+          "other": "frame_0004.jpg",
+          "verified_matches": 74
+        },
+        {
+          "other": "frame_0002.jpg",
+          "verified_matches": 72
+        },
+        {
+          "other": "frame_0035.jpg",
+          "verified_matches": 69
+        },
+        {
+          "other": "frame_0037.jpg",
+          "verified_matches": 58
+        },
+        {
+          "other": "frame_0036.jpg",
+          "verified_matches": 57
+        },
+        {
+          "other": "frame_0005.jpg",
+          "verified_matches": 56
+        },
+        {
+          "other": "frame_0049.jpg",
+          "verified_matches": 56
+        },
+        {
+          "other": "frame_0072.jpg",
+          "verified_matches": 55
+        },
+        {
+          "other": "frame_0074.jpg",
+          "verified_matches": 55
+        },
+        {
+          "other": "frame_0034.jpg",
+          "verified_matches": 53
+        },
+        {
+          "other": "frame_0008.jpg",
+          "verified_matches": 52
+        },
+        {
+          "other": "frame_0040.jpg",
+          "verified_matches": 51
+        },
+        {
+          "other": "frame_0001.jpg",
+          "verified_matches": 48
+        },
+        {
+          "other": "frame_0007.jpg",
+          "verified_matches": 48
+        },
+        {
+          "other": "frame_0041.jpg",
+          "verified_matches": 45
+        },
+        {
+          "other": "frame_0009.jpg",
+          "verified_matches": 43
+        },
+        {
+          "other": "frame_0048.jpg",
+          "verified_matches": 43
+        },
+        {
+          "other": "frame_0006.jpg",
+          "verified_matches": 42
+        },
+        {
+          "other": "frame_0039.jpg",
+          "verified_matches": 39
+        },
+        {
+          "other": "frame_0046.jpg",
+          "verified_matches": 36
+        },
+        {
+          "other": "frame_0056.jpg",
+          "verified_matches": 32
+        },
+        {
+          "other": "frame_0073.jpg",
+          "verified_matches": 32
+        },
+        {
+          "other": "frame_0025.jpg",
+          "verified_matches": 31
+        },
+        {
+          "other": "frame_0032.jpg",
+          "verified_matches": 31
+        },
+        {
+          "other": "frame_0038.jpg",
+          "verified_matches": 29
+        },
+        {
+          "other": "frame_0019.jpg",
+          "verified_matches": 27
+        },
+        {
+          "other": "frame_0020.jpg",
+          "verified_matches": 25
+        },
+        {
+          "other": "frame_0026.jpg",
+          "verified_matches": 25
+        },
+        {
+          "other": "frame_0033.jpg",
+          "verified_matches": 25
+        },
+        {
+          "other": "frame_0054.jpg",
+          "verified_matches": 23
+        },
+        {
+          "other": "frame_0055.jpg",
+          "verified_matches": 23
+        },
+        {
+          "other": "frame_0053.jpg",
+          "verified_matches": 21
+        },
+        {
+          "other": "frame_0021.jpg",
+          "verified_matches": 20
+        },
+        {
+          "other": "frame_0024.jpg",
+          "verified_matches": 19
+        },
+        {
+          "other": "frame_0042.jpg",
+          "verified_matches": 19
+        },
+        {
+          "other": "frame_0011.jpg",
+          "verified_matches": 18
+        },
+        {
+          "other": "frame_0018.jpg",
+          "verified_matches": 18
+        },
+        {
+          "other": "frame_0031.jpg",
+          "verified_matches": 18
+        },
+        {
+          "other": "frame_0028.jpg",
+          "verified_matches": 17
+        },
+        {
+          "other": "frame_0017.jpg",
+          "verified_matches": 16
+        },
+        {
+          "other": "frame_0027.jpg",
+          "verified_matches": 15
+        },
+        {
+          "other": "frame_0050.jpg",
+          "verified_matches": 15
+        }
+      ],
+      "photo_camera_id": 2,
+      "photo_qvec": [
+        0.902956308789956,
+        0.4229896893446342,
+        -0.04708919282384633,
+        0.05943260926247339
+      ],
+      "photo_tvec": [
+        0.04968982226043341,
+        -1.8488543691714359,
+        -0.9099730459711517
+      ],
+      "photo_3d_correspondences": 253
+    },
+    {
+      "mode": "product_mask",
+      "registered_images": 75,
+      "photo_registered": true,
+      "photo_keypoints": 6612,
+      "verified_pairs": [
+        {
+          "other": "frame_0068.jpg",
+          "verified_matches": 167
+        },
+        {
+          "other": "frame_0067.jpg",
+          "verified_matches": 162
+        },
+        {
+          "other": "frame_0066.jpg",
+          "verified_matches": 150
+        },
+        {
+          "other": "frame_0065.jpg",
+          "verified_matches": 140
+        },
+        {
+          "other": "frame_0069.jpg",
+          "verified_matches": 128
+        },
+        {
+          "other": "frame_0063.jpg",
+          "verified_matches": 125
+        },
+        {
+          "other": "frame_0064.jpg",
+          "verified_matches": 119
+        },
+        {
+          "other": "frame_0062.jpg",
+          "verified_matches": 100
+        },
+        {
+          "other": "frame_0003.jpg",
+          "verified_matches": 94
+        },
+        {
+          "other": "frame_0061.jpg",
+          "verified_matches": 83
+        },
+        {
+          "other": "frame_0002.jpg",
+          "verified_matches": 75
+        },
+        {
+          "other": "frame_0004.jpg",
+          "verified_matches": 75
+        },
+        {
+          "other": "frame_0035.jpg",
+          "verified_matches": 69
+        },
+        {
+          "other": "frame_0070.jpg",
+          "verified_matches": 67
+        },
+        {
+          "other": "frame_0037.jpg",
+          "verified_matches": 61
+        },
+        {
+          "other": "frame_0058.jpg",
+          "verified_matches": 59
+        },
+        {
+          "other": "frame_0060.jpg",
+          "verified_matches": 59
+        },
+        {
+          "other": "frame_0005.jpg",
+          "verified_matches": 58
+        },
+        {
+          "other": "frame_0036.jpg",
+          "verified_matches": 58
+        },
+        {
+          "other": "frame_0049.jpg",
+          "verified_matches": 57
+        },
+        {
+          "other": "frame_0074.jpg",
+          "verified_matches": 56
+        },
+        {
+          "other": "frame_0034.jpg",
+          "verified_matches": 54
+        },
+        {
+          "other": "frame_0071.jpg",
+          "verified_matches": 53
+        },
+        {
+          "other": "frame_0008.jpg",
+          "verified_matches": 52
+        },
+        {
+          "other": "frame_0001.jpg",
+          "verified_matches": 51
+        },
+        {
+          "other": "frame_0007.jpg",
+          "verified_matches": 49
+        },
+        {
+          "other": "frame_0040.jpg",
+          "verified_matches": 48
+        },
+        {
+          "other": "frame_0041.jpg",
+          "verified_matches": 48
+        },
+        {
+          "other": "frame_0048.jpg",
+          "verified_matches": 47
+        },
+        {
+          "other": "frame_0009.jpg",
+          "verified_matches": 46
+        },
+        {
+          "other": "frame_0039.jpg",
+          "verified_matches": 43
+        },
+        {
+          "other": "frame_0006.jpg",
+          "verified_matches": 42
+        },
+        {
+          "other": "frame_0059.jpg",
+          "verified_matches": 39
+        },
+        {
+          "other": "frame_0046.jpg",
+          "verified_matches": 38
+        },
+        {
+          "other": "frame_0056.jpg",
+          "verified_matches": 37
+        },
+        {
+          "other": "frame_0032.jpg",
+          "verified_matches": 31
+        },
+        {
+          "other": "frame_0057.jpg",
+          "verified_matches": 30
+        },
+        {
+          "other": "frame_0073.jpg",
+          "verified_matches": 30
+        },
+        {
+          "other": "frame_0038.jpg",
+          "verified_matches": 27
+        },
+        {
+          "other": "frame_0033.jpg",
+          "verified_matches": 25
+        },
+        {
+          "other": "frame_0054.jpg",
+          "verified_matches": 22
+        },
+        {
+          "other": "frame_0053.jpg",
+          "verified_matches": 21
+        },
+        {
+          "other": "frame_0055.jpg",
+          "verified_matches": 21
+        },
+        {
+          "other": "frame_0042.jpg",
+          "verified_matches": 19
+        },
+        {
+          "other": "frame_0072.jpg",
+          "verified_matches": 18
+        }
+      ],
+      "photo_camera_id": 2,
+      "photo_qvec": [
+        0.6735895724250924,
+        0.3836975312714307,
+        0.4179214061275464,
+        0.47370348396097534
+      ],
+      "photo_tvec": [
+        0.0823428315283866,
+        0.9681019142038791,
+        1.1335368003955126
+      ],
+      "photo_3d_correspondences": 72
+    }
+  ],
+  "originals_unchanged": true
+}

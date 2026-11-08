@@ -1,0 +1,24 @@
+{
+  "source": "capture\\products\\capture_05\\session_back\\export-ds1\\splat.ply",
+  "source_sha256": "7da2d667b8fccadfd1bc1635bd3b12b89c2321d9ba3f4990729170255aa8fc83",
+  "source_count": 158910,
+  "seeds": 28936,
+  "clusters": 57,
+  "largest_cluster_seeds": 18783,
+  "second_cluster_seeds": 85,
+  "kept": 70313,
+  "removed": 88597,
+  "hull_margin": 0.02,
+  "min_saturation": 0.45,
+  "min_value": 0.25,
+  "min_opacity": 0.5,
+  "background_distance": 0.4,
+  "median_scene_color": [
+    0.36608089572411673,
+    0.3618044285451109,
+    0.34662347847779906
+  ],
+  "cluster_eps": 0.04030461254379719,
+  "all_attributes_finite": true,
+  "limitations": "Color-seeded heuristic. Removes Gaussians only; cannot create unseen faces. Check the review render."
+}

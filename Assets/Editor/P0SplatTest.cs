@@ -14,6 +14,17 @@ public static class P0SplatTest
     const string kOutputFolder = "Assets/GaussianSplats/Sample";
     const string kScreenshot = "splat_check.png";
 
+    [MenuItem("Tools/P0/Reimport Sample Splat %#F7")]
+    static void ReimportSample()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            throw new InvalidOperationException("Exit Play mode before reimporting the sample.");
+        var asset = CreateSplatAsset();
+        if (asset == null || asset.splatCount != 1200)
+            throw new Exception("Expected the 1200-splat P0 sample.");
+        Debug.Log($"[P0 Import] PASS {SystemInfo.graphicsDeviceType}: {kInputPly} -> {asset.name}, splats={asset.splatCount}");
+    }
+
     public static void Run()
     {
         try

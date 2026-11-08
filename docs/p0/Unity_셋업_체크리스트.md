@@ -1,5 +1,7 @@
 # Unity 셋업 체크리스트 (P0-L1~L3)
 
+> **2026-11-06 Windows 갱신**: DX12 PLY 변환·렌더·시뮬레이터 이동 확인 완료. `Active Input Handling = Both`는 실제 누락돼 이번에 적용·재시작했다. 최신 실측 결과와 IL2CPP·HMD 등 남은 항목은 [Windows 검증 보고서](Windows_검증_2026-11-06.md)를 우선 참조한다. 아래 2026-10-25 기록은 당시 이력을 포함한다.
+
 > 담당: 이민건 트랙. 마일스톤 `docs/VR편의점_알바_시뮬레이터_마일스톤.md`의 P0-L1(프로젝트·패키지 고정), P0-L2(그래픽스·URP·OpenXR 설정), P0-L3(레이어·태그)를 **위에서 아래로 순서대로** 수행한다.
 > 대응 종료 기준: ① 샘플 `.ply` → `GaussianSplatAsset` 변환·씬 렌더링 + XR Device Simulator 카메라 이동, ② INRIA 비상업 조항 확인.
 > 검증 기준일: 2026-10-25. "기록란"은 실제 설치한 값을 반드시 적는다. 순서를 바꾸면(특히 6번 이전에 5번) 렌더링 누락이 발생한다.
@@ -85,7 +87,7 @@
   - Scaniverse 내보내기(.ply 또는 .spz — 플러그인은 PLY와 Scaniverse SPZ 입력을 지원, v1.1.0 readme 확인).
 - [x] Unity 메뉴 **Tools → Gaussian Splats → Create GaussianSplatAsset** 실행 → `Input PLY/SPZ File`에 샘플 파일 지정 → 압축 옵션(우선 기본/Very Low)과 출력 폴더(`Assets/GaussianSplats/` 권장 — LFS 추적 경로와 일치) 지정 → **Create Asset**. *(2026-10-25 — batch 자동 변환, `sample_sphere.asset` + `_pos/_oth/_col/_shs.bytes` 생성, splats=1200)*
 - [x] 씬에 GameObject 추가 → **GaussianSplatRenderer** 컴포넌트 부착 → Asset 필드에 방금 만든 에셋 지정 → 에디터 뷰에서 스플랫이 정상 렌더링되는지 확인. *(2026-10-25 — macOS Metal(Apple M5)에서 렌더 성공, 증거: `docs/p0/splat_render_check_macos_metal.png`. **Windows DX12에서의 동일 확인과 XR Device Simulator 카메라 이동 확인은 미수행** — 사용자 조치 1·6번)*
-- [ ] XR Device Simulator 샘플(4번에서 임포트)로 카메라 이동이 가능한지 확인(종료 기준 1의 두 번째 요건).
+- [x] XR Device Simulator 샘플로 카메라 이동 확인(2026-11-06): 마우스 회전 및 합성 키보드 D → XRI 입력을 통한 수평 이동 0.5103m PASS. 바닥 충돌체 추가로 낙하 해결. [기록](evidence/simulator_movement.txt).
 - [ ] 결과 기록: 변환한 파일명 `______________`, 에셋 크기 `______________`, 렌더 확인 일자 `______________`, 발생 이슈 `______________`
 
 ## 10. 라이선스 확인 (종료 기준 2 — INRIA 비상업 조항)

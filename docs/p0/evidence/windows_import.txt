@@ -1,0 +1,1 @@
+[P0 Import] PASS Direct3D12: Assets/GaussianSplats/Sample/sample_sphere.ply -> sample_sphere, splats=1200

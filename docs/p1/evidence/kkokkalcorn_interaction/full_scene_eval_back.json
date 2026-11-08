@@ -1,0 +1,17 @@
+{
+  "experiment_name": "capture_07-back",
+  "method_name": "splatfacto",
+  "checkpoint": "capture\\products\\capture_07\\session_back\\outputs\\capture_07-back\\splatfacto\\trial-10000-ds1\\nerfstudio_models\\step-000009999.ckpt",
+  "results": {
+    "psnr": 29.473508834838867,
+    "psnr_std": 3.1153244972229004,
+    "ssim": 0.9316524863243103,
+    "ssim_std": 0.01713625155389309,
+    "lpips": 0.17457683384418488,
+    "lpips_std": 0.036777738481760025,
+    "num_rays_per_sec": 68737464.0,
+    "num_rays_per_sec_std": 26726892.0,
+    "fps": 33.19686508178711,
+    "fps_std": 12.907794952392578
+  }
+}

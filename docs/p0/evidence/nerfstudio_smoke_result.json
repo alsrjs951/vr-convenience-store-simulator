@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "runId": "2026-11-06_050617",
+  "iterations": 150,
+  "methods": [
+    "nerfacto",
+    "splatfacto"
+  ],
+  "config": "C:\\Users\\LeeMinGeon\\nerfstudio-work\\outputs\\p0-smoke\\splatfacto\\2026-11-06_050617\\config.yml",
+  "ply": "C:\\Users\\LeeMinGeon\\nerfstudio-work\\exports\\2026-11-06_050617\\splat.ply"
+}

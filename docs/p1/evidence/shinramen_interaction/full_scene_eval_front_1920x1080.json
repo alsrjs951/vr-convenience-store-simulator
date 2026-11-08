@@ -1,0 +1,17 @@
+{
+  "experiment_name": "shin-front",
+  "method_name": "splatfacto",
+  "checkpoint": "capture\\products\\capture_03\\session_front\\outputs\\shin-front\\splatfacto\\trial-10000-full\\nerfstudio_models\\step-000009999.ckpt",
+  "results": {
+    "psnr": 29.930856704711914,
+    "psnr_std": 2.680574417114258,
+    "ssim": 0.9269368648529053,
+    "ssim_std": 0.016196396201848984,
+    "lpips": 0.17069417238235474,
+    "lpips_std": 0.02226988598704338,
+    "num_rays_per_sec": 59473760.0,
+    "num_rays_per_sec_std": 25194484.0,
+    "fps": 28.722946166992188,
+    "fps_std": 12.167716026306152
+  }
+}

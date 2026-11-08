@@ -1,0 +1,17 @@
+{
+  "experiment_name": "potato-back",
+  "method_name": "splatfacto",
+  "checkpoint": "capture\\products\\capture_06\\session_back\\outputs\\potato-back\\splatfacto\\trial-10000\\nerfstudio_models\\step-000009999.ckpt",
+  "results": {
+    "psnr": 31.00872230529785,
+    "psnr_std": 2.7074568271636963,
+    "ssim": 0.9245894551277161,
+    "ssim_std": 0.02842140756547451,
+    "lpips": 0.09618072956800461,
+    "lpips_std": 0.024025283753871918,
+    "num_rays_per_sec": 48969004.0,
+    "num_rays_per_sec_std": 22756854.0,
+    "fps": 94.73574829101562,
+    "fps_std": 44.02555465698242
+  }
+}

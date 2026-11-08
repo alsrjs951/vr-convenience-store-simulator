@@ -1,0 +1,11 @@
+{
+  "source": "capture\\products\\capture_01\\session_v01\\export\\splat.ply",
+  "source_count": 162146,
+  "kept": 34417,
+  "removed": 127729,
+  "silhouettes": 16,
+  "minimum_views": 6,
+  "minimum_support": 0.9,
+  "method": "red convex-hull multiview center filtering + largest DBSCAN component (eps=2.5% robust extent, min_samples=12); Gaussian extents are not clipped",
+  "limitations": "Bottom is unobserved; not evidence of watertight geometry; inspect thin edges and residual splat tails."
+}

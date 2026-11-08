@@ -1,0 +1,51 @@
+﻿media_id,source_filename,candidate_product_id,candidate_product_name,view_group,label_status,width,height,duration_s,inspection
+P01,KakaoTalk_Photo_2026-10-25-01-45-32 001.jpeg,capture_01,닭다리,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P02,KakaoTalk_Photo_2026-10-25-01-45-33 002.jpeg,capture_02,고래밥,reference_photo,tentative_side_only,4000,3000,0,contact sheet; P21 also enlarged
+P03,KakaoTalk_Photo_2026-10-25-01-45-34 003.jpeg,capture_04,썬칩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P04,KakaoTalk_Photo_2026-10-25-01-45-34 004.jpeg,capture_04,썬칩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P05,KakaoTalk_Photo_2026-10-25-01-45-35 005.jpeg,capture_03,신라면,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P06,KakaoTalk_Photo_2026-10-25-01-45-35 006.jpeg,capture_03,신라면,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P07,KakaoTalk_Photo_2026-10-25-01-45-36 007.jpeg,capture_04,썬칩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P08,KakaoTalk_Photo_2026-10-25-01-45-36 008.jpeg,capture_04,썬칩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P09,KakaoTalk_Photo_2026-10-25-01-45-37 009.jpeg,capture_03,신라면,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P10,KakaoTalk_Photo_2026-10-25-01-45-37 010.jpeg,capture_03,신라면,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P11,KakaoTalk_Photo_2026-10-25-01-45-38 011.jpeg,capture_05,오징어땅콩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P12,KakaoTalk_Photo_2026-10-25-01-45-39 012.jpeg,capture_05,오징어땅콩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P13,KakaoTalk_Photo_2026-10-25-01-45-39 013.jpeg,capture_06,포테토칩 오리지널,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P14,KakaoTalk_Photo_2026-10-25-01-45-40 014.jpeg,capture_06,포테토칩 오리지널,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P15,KakaoTalk_Photo_2026-10-25-01-45-40 015.jpeg,capture_07,꼬깔콘 고소한맛,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P16,KakaoTalk_Photo_2026-10-25-01-45-41 016.jpeg,capture_07,꼬깔콘 고소한맛,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P17,KakaoTalk_Photo_2026-10-25-01-47-21 001.jpeg,capture_08,콘칩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P18,KakaoTalk_Photo_2026-10-25-01-47-22 002.jpeg,capture_08,콘칩,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P19,KakaoTalk_Photo_2026-10-25-01-47-23 003.jpeg,capture_09,치토스,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P20,KakaoTalk_Photo_2026-10-25-01-47-23 004.jpeg,capture_09,치토스,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P21,KakaoTalk_Photo_2026-10-25-01-47-24 005.jpeg,capture_10,꼬북칩 콘스프맛,reference_photo,visual_candidate,3000,4000,0,contact sheet; P21 also enlarged
+P22,KakaoTalk_Photo_2026-10-25-01-47-24 006.jpeg,capture_10,꼬북칩 콘스프맛,reference_photo,visual_candidate,3000,4000,0,contact sheet; P21 also enlarged
+P23,KakaoTalk_Photo_2026-10-25-01-47-25 007.jpeg,capture_11,오감자,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P24,KakaoTalk_Photo_2026-10-25-01-47-25 008.jpeg,capture_11,오감자,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P25,KakaoTalk_Photo_2026-10-25-01-47-26 009.jpeg,capture_12,안성탕면,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+P26,KakaoTalk_Photo_2026-10-25-01-47-27 010.jpeg,capture_12,안성탕면,reference_photo,visual_candidate,4000,3000,0,contact sheet; P21 also enlarged
+V01,KakaoTalk_Video_2026-10-25-01-45-53.mp4,capture_01,닭다리,orbit_a,visual_candidate,1920,1080,24.728,4 sampled frames (5/35/65/95%)
+V02,KakaoTalk_Video_2026-10-25-01-46-01.mp4,capture_01,닭다리,orbit_b,visual_candidate,1920,1080,33.092,4 sampled frames (5/35/65/95%)
+V03,KakaoTalk_Video_2026-10-25-01-46-46.mp4,capture_02,고래밥,orbit_a,visual_candidate,1920,1080,32.064,4 sampled frames (5/35/65/95%)
+V04,KakaoTalk_Video_2026-10-25-01-46-57.mp4,capture_02,고래밥,orbit_b,visual_candidate,1920,1080,31.367,4 sampled frames (5/35/65/95%)
+V05,KakaoTalk_Video_2026-10-25-01-47-02.mp4,capture_03,신라면,front,visual_candidate,1920,1080,25.707,4 sampled frames (5/35/65/95%)
+V06,KakaoTalk_Video_2026-10-25-01-47-07.mp4,capture_03,신라면,back,visual_candidate,1920,1080,26.367,4 sampled frames (5/35/65/95%)
+V07,KakaoTalk_Video_2026-10-25-01-47-11.mp4,capture_04,썬칩,front,visual_candidate,1920,1080,26.038,4 sampled frames (5/35/65/95%)
+V08,KakaoTalk_Video_2026-10-25-01-47-33.mp4,capture_04,썬칩,back,visual_candidate,1920,1080,24.169,4 sampled frames (5/35/65/95%)
+V09,KakaoTalk_Video_2026-10-25-01-47-38.mp4,capture_05,오징어땅콩,front,visual_candidate,1920,1080,23.002,4 sampled frames (5/35/65/95%)
+V10,KakaoTalk_Video_2026-10-25-01-47-42.mp4,capture_05,오징어땅콩,back,visual_candidate,1920,1080,25.282,4 sampled frames (5/35/65/95%)
+V11,KakaoTalk_Video_2026-10-25-01-47-46.mp4,capture_06,포테토칩 오리지널,front,visual_candidate,1920,1080,28.877,4 sampled frames (5/35/65/95%)
+V12,KakaoTalk_Video_2026-10-25-01-47-50.mp4,capture_06,포테토칩 오리지널,back,visual_candidate,1920,1080,24.306,4 sampled frames (5/35/65/95%)
+V13,KakaoTalk_Video_2026-10-25-01-47-54.mp4,capture_07,꼬깔콘 고소한맛,back,visual_candidate,1920,1080,26.664,4 sampled frames (5/35/65/95%)
+V14,KakaoTalk_Video_2026-10-25-01-47-58.mp4,capture_07,꼬깔콘 고소한맛,front,visual_candidate,1920,1080,35.74,4 sampled frames (5/35/65/95%)
+V15,KakaoTalk_Video_2026-10-25-01-48-01.mp4,capture_08,콘칩,front,visual_candidate,1920,1080,29.848,4 sampled frames (5/35/65/95%)
+V16,KakaoTalk_Video_2026-10-25-01-48-05.mp4,capture_08,콘칩,back,visual_candidate,1920,1080,26.919,4 sampled frames (5/35/65/95%)
+V17,KakaoTalk_Video_2026-10-25-01-48-09.mp4,capture_09,치토스,back,visual_candidate,1920,1080,26.818,4 sampled frames (5/35/65/95%)
+V18,KakaoTalk_Video_2026-10-25-01-48-14.mp4,capture_09,치토스,front,visual_candidate,1920,1080,26.91,4 sampled frames (5/35/65/95%)
+V19,KakaoTalk_Video_2026-10-25-01-48-19.mp4,capture_10,꼬북칩 콘스프맛,back,visual_candidate,1080,1920,26.107,4 sampled frames (5/35/65/95%)
+V20,KakaoTalk_Video_2026-10-25-01-48-26.mp4,capture_10,꼬북칩 콘스프맛,front,visual_candidate,1920,1080,28.116,4 sampled frames (5/35/65/95%)
+V21,KakaoTalk_Video_2026-10-25-01-48-30.mp4,capture_11,오감자,back,visual_candidate,1920,1080,25.115,4 sampled frames (5/35/65/95%)
+V22,KakaoTalk_Video_2026-10-25-01-48-34.mp4,capture_11,오감자,front,visual_candidate,1920,1080,28.563,4 sampled frames (5/35/65/95%)
+V23,KakaoTalk_Video_2026-10-25-01-48-38.mp4,capture_12,안성탕면,front,visual_candidate,1920,1080,22.469,4 sampled frames (5/35/65/95%)
+V24,KakaoTalk_Video_2026-10-25-01-48-44.mp4,capture_12,안성탕면,back,visual_candidate,1920,1080,26.167,4 sampled frames (5/35/65/95%)

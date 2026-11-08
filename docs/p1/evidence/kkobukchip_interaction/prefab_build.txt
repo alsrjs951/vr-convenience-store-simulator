@@ -1,0 +1,4 @@
+PASS gates: layers ok; splats=114574<=150000; root scale +1; splat localScale=(-0.29637, 0.29637, 0.29637); BarcodeTrigger inside proxy; scale gate NOT APPLIED (no measured size)
+provisional size_m=(0.2000, 0.2376, 0.0714) (width is a placeholder; height/depth follow reconstruction ratios)
+uniform scale=0.29637; mass_kg=0.1 (placeholder)
+preserved unchanged: Assets/Scenes/DakdariRefined.unity, Assets/GaussianSplats/Products/dev_kkobukchip_01.ply
