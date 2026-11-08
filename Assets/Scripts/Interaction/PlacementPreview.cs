@@ -239,7 +239,7 @@ public class PlacementPreview : MonoBehaviour
     GameObject GhostFor(ProductPrefab product)
     {
         if (ghosts.TryGetValue(product.Data, out var existing) && existing != null) return existing;
-        var copy = VisualCopy(product, GhostOpacity, GhostRenderOrder, transform);
+        var copy = VisualCopy(product, GhostOpacity, GhostRenderOrder, transform, product.Data.LightSplat);
         copy.name = $"Ghost {product.Data.Id}";
         copy.SetActive(false);
         ghosts[product.Data] = copy;
@@ -247,7 +247,7 @@ public class PlacementPreview : MonoBehaviour
     }
 
     /// <summary>A copy of a product that only draws: made under an inactive parent so no physics or XRI component wakes up.</summary>
-    public static GameObject VisualCopy(ProductPrefab product, float opacity, int renderOrder, Transform parent)
+    public static GameObject VisualCopy(ProductPrefab product, float opacity, int renderOrder, Transform parent, GaussianSplatAsset asset = null)
     {
         var holder = new GameObject("Visual Copy Holder (inactive)");
         holder.SetActive(false);
@@ -261,6 +261,7 @@ public class PlacementPreview : MonoBehaviour
         {
             splat.m_OpacityScale = opacity;
             splat.m_RenderOrder = renderOrder;
+            if (asset != null) splat.m_Asset = asset;
         }
         copy.transform.SetParent(parent, false);
         Destroy(holder);

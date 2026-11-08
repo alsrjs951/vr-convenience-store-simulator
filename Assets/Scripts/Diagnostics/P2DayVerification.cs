@@ -1127,6 +1127,13 @@ public partial class P2DayVerification : MonoBehaviour
             if (slot == null) continue;
             capacity += slot.Capacity;
             if (slot.HighlightShown || slot.IsTarget) highlighted++;
+            if (slot.Merged != null)
+            {
+                displays += slot.Merged.ShownUnits;
+                if (slot.Merged.Active.isActiveAndEnabled && slot.Merged.Active.m_Asset != null) renderers += slot.Merged.ShownUnits;
+                physical += slot.Merged.GetComponentsInChildren<Collider>().Length + slot.Merged.GetComponentsInChildren<ProductPrefab>().Length;
+                continue;
+            }
             foreach (var display in slot.Displays)
             {
                 if (display == null) continue;

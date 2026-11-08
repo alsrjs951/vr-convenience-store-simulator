@@ -30,7 +30,9 @@ public static class P2StoreBuilder
     const string ScenarioSource = "Data/scenarios.csv";
     const string ScenarioPath = "Assets/Data/Generated/scenarios.csv";
     const int ScenarioDays = 3;
-    const string DeliveriesPath = "Assets/Data/Provisional/day2_deliveries.csv";
+    // Doc 6.5: the intake boxes are Data/deliveries.csv at the repository root; the build copies it in like the scenario.
+    const string DeliveriesSource = "Data/deliveries.csv";
+    const string DeliveriesPath = "Assets/Data/Generated/deliveries.csv";
     const string ManifestFolder = "Assets/Data/Provisional";
     const string MaterialFolder = "Assets/Materials/P2";
     const string Evidence = "docs/p2/evidence/day1";
@@ -249,6 +251,7 @@ public static class P2StoreBuilder
             var product = prefab.GetComponent<ProductPrefab>();
             product.Data.Name = manifest.display_name;
             product.Data.Price = manifest.price;
+            product.Data.LightSplat = AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"Assets/GaussianSplats/Products/{manifest.id}_LOD1.asset");
             EditorUtility.SetDirty(product.Data);
             catalog.Products.Add(product);
         }
@@ -823,6 +826,9 @@ public static class P2StoreBuilder
 
         var intake = new GameObject("IntakeDirector").AddComponent<IntakeDirector>();
         intake.transform.SetParent(systems, false);
+        if (!File.Exists(DeliveriesSource)) throw new Exception("Deliveries missing: " + DeliveriesSource);
+        File.Copy(DeliveriesSource, DeliveriesPath, true);
+        AssetDatabase.ImportAsset(DeliveriesPath);
         intake.Deliveries = AssetDatabase.LoadAssetAtPath<TextAsset>(DeliveriesPath) ?? throw new Exception("Deliveries missing: " + DeliveriesPath);
         intake.Catalog = catalog;
         intake.Audio = audio;
@@ -940,6 +946,9 @@ public static class P2StoreBuilder
         slot.Green = green;
         slot.Red = red;
         slot.Audio = audio;
+        // Empty until P4ShelfSplats.Generate has run; the slot then simply draws each product.
+        slot.MergedNear = AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"{P4ShelfSplats.MergedFolder}/Shelf_{id}_LOD0.asset");
+        slot.MergedFar = AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"{P4ShelfSplats.MergedFolder}/Shelf_{id}_LOD1.asset");
         var zone = go.GetComponent<BoxCollider>();
         zone.isTrigger = true;
         float height = size.y + 0.03f;

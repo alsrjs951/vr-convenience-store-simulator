@@ -18,6 +18,7 @@ MonoBehaviour:
   SizeCm: {x: 20, y: 29.528957, z: 9.894738}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: fe9a89e32b9f1864488318720a779bd3, type: 2}
+  LightSplat: {fileID: 11400000, guid: 3719fd6d97b7e074f8cd7d6c9cd33504, type: 2}
   OrderCatalogFlags: 0
   SizeIsMeasured: 0
   BarcodeLocalNormal: {x: 0, y: 0, z: -1}

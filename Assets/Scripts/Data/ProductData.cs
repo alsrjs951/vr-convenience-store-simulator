@@ -13,6 +13,8 @@ public class ProductData : ScriptableObject
     public Vector3 SizeCm;
     public BarcodeFace BarcodeFace;
     public GaussianSplatAsset SplatAsset;
+    [Tooltip("Lighter copy for box contents and the placement ghost (doc 4.6). Empty keeps the full one there too.")]
+    public GaussianSplatAsset LightSplat;
     public int OrderCatalogFlags;
 
     [Tooltip("False while SizeCm is a development placeholder, not a tape measurement.")]

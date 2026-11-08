@@ -135,6 +135,8 @@ public class IntakeDirector : MonoBehaviour
             slot.SetTarget(targetsNow.Contains(slot.SlotId));
             var prefab = Catalog.Find(slot.ProductId);
             if (prefab == null) continue;
+            // Made now, not at the first product shelved: waking a renderer in the middle of the shift would show as a hitch.
+            slot.PrepareMerged(prefab);
             var empty = new HashSet<int>();
             for (int row = slot.Rows - 1; row >= 0 && empty.Count < toEmpty; row--)
                 for (int column = slot.Columns - 1; column >= 0 && empty.Count < toEmpty; column--)
@@ -227,8 +229,9 @@ public class IntakeDirector : MonoBehaviour
             {
                 var splat = slot.Display(prefab, unit);
                 DisplayCount++;
-                if (splat.m_Asset != null) DisplayGaussians += splat.m_Asset.splatCount;
+                if (slot.Merged == null && splat.m_Asset != null) DisplayGaussians += splat.m_Asset.splatCount;
             }
+            if (slot.Merged != null) DisplayGaussians += slot.Merged.Active.m_Asset.splatCount;
         }
         Debug.Log($"[Intake] Day {Day}: no intake; display stock={DisplayCount} on {Slots.Length} slots, gaussians={DisplayGaussians}");
     }

@@ -339,6 +339,8 @@ public partial class P2DayVerification
         Check("d2.setup.three_expired_not_in_targets", Intake.ShelfStock.Count == 6 && Intake.ExpiredAtStart.Count == 3 && Intake.ExpiredTotal == 3
                 && !expiredSlots.Contains("A-2") && !expiredSlots.Contains("B-1") && Intake.ExpiredAtStart.TrueForAll(p => p.IsExpired && p.GetComponentInChildren<Canvas>() != null),
             $"stock={Intake.ShelfStock.Count}; expired in [{string.Join(", ", expiredSlots)}]");
+        Check("p4.setup.merged_slots", Array.TrueForAll(Intake.Slots, s => s.Merged != null && s.Merged.ShownUnits == (s.IsTarget ? 0 : s.Capacity)) && Intake.ShelfStock.TrueForAll(p => !p.Splat.enabled),
+            string.Join("; ", Array.ConvertAll(Intake.Slots, s => $"{s.SlotId} shown {s.Merged?.ShownUnits}/{s.Capacity} near={s.Merged?.ShowingNear}")));
         Check("d2.setup.guide_shows_step1", Game.BoardText.Contains("입고 1/4") && Intake.GuideTexts.Length == 3 && Array.TrueForAll(Intake.GuideTexts, t => t.text.Contains("입고 1/4") && t.transform.parent.gameObject.activeInHierarchy),
             $"board={Game.BoardText}");
         Check("d2.setup.no_customer_before_tutorial", !director.ShiftRunning && director.Present.Count == 0 && Game.State == DayState.Tutorial, $"shift={director.ShiftRunning}; present={director.Present.Count}; state={Game.State}");
@@ -563,6 +565,7 @@ public partial class P2DayVerification
         var product = unit.Product;
         yield return GrabAt(product.transform.position, () => product.Grab.interactorsSelecting.Contains(rightInteractor), "d2.i4.grab_unit");
         Check("d2.i4.full_product_in_hand", product.Splat != null && product.Splat.m_RenderOrder == 10 && !product.Body.isKinematic, $"order={product.Splat?.m_RenderOrder}; kinematic={product.Body.isKinematic}");
+        Check("p4.hand_full_copy", product.Data.LightSplat != null && product.Splat.m_Asset.splatCount > product.Data.LightSplat.splatCount, $"hand={product.Splat.m_Asset.splatCount}; light={product.Data.LightSplat?.splatCount}");
         yield return MoveProduct(product, product.transform.position + Vector3.up * 0.3f, "d2.i4.lift");
         yield return MoveProduct(product, new Vector3(product.transform.position.x, product.transform.position.y, slot.transform.position.z - 0.15f), "d2.i4.to_aisle");
         int right = slot.NextFreeInColumn(slot.Columns - 1);
@@ -571,6 +574,7 @@ public partial class P2DayVerification
         Check("d2.i4.ghost_at_held_product", Preview.GhostVisible && Preview.Slot == slot && Preview.Unit == right && !Preview.UsedHeadRay && slot.GreenUnit == right
                 && Preview.Ghost != null && Mathf.Approximately(Preview.Ghost.m_OpacityScale, PlacementPreview.GhostOpacity) && Preview.Ghost.m_RenderOrder == PlacementPreview.GhostRenderOrder && !slot.RejectShown,
             $"ghost={Preview.GhostVisible}; slot={Preview.Slot?.SlotId}; unit={Preview.Unit} wanted={right}; headRay={Preview.UsedHeadRay}; opacity={Preview.Ghost?.m_OpacityScale}; order={Preview.Ghost?.m_RenderOrder}");
+        Check("p4.ghost_light_copy", Preview.Ghost != null && Preview.Ghost.m_Asset == product.Data.LightSplat, $"ghost gaussians={Preview.Ghost?.m_Asset?.splatCount}");
         yield return CaptureFrom("d2_20_ghost_preview", slot.transform.position + new Vector3(0.25f, 0.35f, -0.65f), slot.transform.position + new Vector3(0f, 0.1f, 0.05f), 50f);
         // From the side, so the product in the hand does not hide the faint copy on the shelf.
         var ghostAt = slot.UnitPosition(right);
@@ -588,6 +592,8 @@ public partial class P2DayVerification
         Check("d2.i4.snapped_into_place", Vector3.Distance(product.transform.position, slot.RootPosition(product, target)) < 0.005f && Quaternion.Angle(product.transform.rotation, slot.UnitRotation) < 1f
                 && product.Body.isKinematic && !product.Grab.enabled && unit.Done && slot.CountText.Contains("1/6") && Intake.Shelved == 1,
             $"off {Vector3.Distance(product.transform.position, slot.RootPosition(product, target)):0.0000} m; count={slot.CountText}; shelved={Intake.Shelved}");
+        Check("p4.shelved_drawn_by_merged", slot.Merged != null && slot.Merged.IsUnitShown(target) && !product.Splat.enabled && slot.Merged.ShownUnits == 1 && slot.Merged.ShowingNear,
+            $"unit shown={slot.Merged?.IsUnitShown(target)}; own splat={product.Splat.enabled}; shown units={slot.Merged?.ShownUnits}; near copy={slot.Merged?.ShowingNear}; switches={slot.Merged?.LodSwitches}");
         yield return WaitUntil(() => IntakeTutorial.Step == IntakeTutorialStep.Done && Game.State == DayState.Shift, 3f, "d2.i4.tutorial_done_shift_starts");
         details.tutorialStartedAt = IntakeTutorial.StartedAt;
         details.tutorialDoneAt = IntakeTutorial.DoneAt;
@@ -658,9 +664,11 @@ public partial class P2DayVerification
         var home = stock.transform.position;
         int errors = Game.Pos.Audio.CountOf(StoreSound.Error);
         int filled = slot.Filled;
+        int stockUnit = Array.IndexOf(other.Occupants, stock);
         yield return Go("SA1");
         yield return GrabAt(stock.transform.position, () => stock.Grab.interactorsSelecting.Contains(rightInteractor), "d2.rule.misplace.grab");
         yield return MoveProduct(stock, stock.transform.position + new Vector3(0f, 0.05f, -0.25f), "d2.rule.misplace.out");
+        Check("p4.stock_taken_hidden_on_shelf", !other.Merged.IsUnitShown(stockUnit) && stock.Splat.enabled, $"unit {stockUnit} shown={other.Merged.IsUnitShown(stockUnit)}; own splat={stock.Splat.enabled}");
         yield return MoveProduct(stock, slot.UnitPosition(slot.NextFreeInColumn(1)) + new Vector3(0f, 0.08f, -0.1f), "d2.rule.misplace.to_wrong_slot");
         yield return new WaitForSeconds(0.4f);
         Check("d2.rule.wrong_slot_red_outline", Preview.RejectVisible && !Preview.GhostVisible && Preview.Slot == slot && slot.RejectShown && slot.GreenUnit < 0,
@@ -671,6 +679,7 @@ public partial class P2DayVerification
         Check("d2.rule.misplaced_counted_and_returned", Intake.Misplaced == 1 && Game.Pos.Audio.CountOf(StoreSound.Error) == errors + 1 && Vector3.Distance(stock.transform.position, home) < 0.01f
                 && stock.Body.isKinematic && slot.Filled == filled && !slot.RejectShown,
             $"misplaced={Intake.Misplaced}; errors +{Game.Pos.Audio.CountOf(StoreSound.Error) - errors}; off home {Vector3.Distance(stock.transform.position, home):0.000} m; A-2 {slot.CountText}");
+        Check("p4.stock_returned_shown_on_shelf", other.Merged.IsUnitShown(stockUnit) && !stock.Splat.enabled, $"unit {stockUnit} shown={other.Merged.IsUnitShown(stockUnit)}; own splat={stock.Splat.enabled}");
         yield return MoveHand(rightHand.position + Vector3.up * 0.05f, "d2.rule.misplace.hand_back");
     }
 
@@ -886,6 +895,10 @@ public partial class P2DayVerification
         Check("d2.day.intake_counts", Intake.Shelved == 10 && Intake.DeliveredTotal == 10 && Intake.Disposed == 3 && Intake.ExpiredTotal == 3 && Intake.Misplaced == 1 && Intake.FalseDisposals == 1
                 && Intake.Recycled == 2 && Intake.UnrecycledEmptyBoxes == 0 && Game.Pos.CancelCount == 0,
             $"shelved {Intake.Shelved}/{Intake.DeliveredTotal}; disposed {Intake.Disposed}/{Intake.ExpiredTotal}; misplaced {Intake.Misplaced}; false {Intake.FalseDisposals}; recycled {Intake.Recycled}; unrecycled {Intake.UnrecycledEmptyBoxes}; cancels {Game.Pos.CancelCount}");
+        Check("p4.end_of_day_shelves", Intake.SlotsById["A-2"].Merged.ShownUnits == 6 && Intake.SlotsById["B-1"].Merged.ShownUnits == 4
+                && Intake.SlotsById["A-1"].Merged.ShownUnits + Intake.SlotsById["A-3"].Merged.ShownUnits + Intake.SlotsById["B-2"].Merged.ShownUnits == 3,
+            string.Join("; ", Array.ConvertAll(Intake.Slots, s => $"{s.SlotId} shown {s.Merged?.ShownUnits}/{s.Capacity}")));
+        Check("p4.peak_gaussians_in_budget", details.gaussiansAtPeak > 0 && details.gaussiansAtPeak <= 1500000, $"peak={details.gaussiansAtPeak}; renderers={details.splatRenderersAtPeak}");
         float salesRate = (float)director.Sales / Game.PossibleSales;
         float accuracy = 1f - 0.1f * (Intake.Misplaced + Intake.FalseDisposals);
         float satisfaction = 0f;

@@ -1,0 +1,44 @@
+{
+ "goraebap-matte/splatfacto": {
+  "psnr": 30.3137,
+  "ssim": 0.925,
+  "lpips": 0.1569,
+  "fps": 30.8218,
+  "num_rays_per_sec": 63819632.0,
+  "train_minutes": 7.9,
+  "checkpoint_mb": 150.2,
+  "test_images": 9,
+  "gaussians": 208424
+ },
+ "goraebap-matte/nerfacto": {
+  "psnr": 27.2219,
+  "ssim": 0.8876,
+  "lpips": 0.1986,
+  "fps": 0.328,
+  "num_rays_per_sec": 680098.5,
+  "train_minutes": 30.0,
+  "checkpoint_mb": 167.8,
+  "test_images": 9
+ },
+ "cheetos-glossy/splatfacto": {
+  "psnr": 30.0926,
+  "ssim": 0.9283,
+  "lpips": 0.1569,
+  "fps": 31.0293,
+  "num_rays_per_sec": 64249216.0,
+  "train_minutes": 9.7,
+  "checkpoint_mb": 104.5,
+  "test_images": 8,
+  "gaussians": 140832
+ },
+ "cheetos-glossy/nerfacto": {
+  "psnr": 26.1764,
+  "ssim": 0.903,
+  "lpips": 0.1662,
+  "fps": 0.3143,
+  "num_rays_per_sec": 651805.5625,
+  "train_minutes": 22.3,
+  "checkpoint_mb": 167.8,
+  "test_images": 8
+ }
+}

@@ -29,6 +29,10 @@ public class ShelfSlotZone : MonoBehaviour
     public float ProductHeight = 0.25f;
     public Material Yellow, Green, Red;
     public GameAudio Audio;
+    /// <summary>Doc 7.3: one merged splat for all places. Without them, or with -individual-shelves, every product draws itself.</summary>
+    public GaussianSplatAsset MergedNear, MergedFar;
+    public SplatShelfSlot Merged { get; private set; }
+    static readonly bool IndividualOnly = Array.IndexOf(Environment.GetCommandLineArgs(), "-individual-shelves") >= 0;
 
     public int Capacity => Columns * Rows;
     public int Filled { get; private set; }
@@ -111,7 +115,9 @@ public class ShelfSlotZone : MonoBehaviour
     /// <summary>Stocks a place at day start, standing still and grabbable (shelf stock, possibly expired).</summary>
     public ProductPrefab Stock(ProductPrefab prefab, int unit)
     {
-        var product = Instantiate(prefab, RootPosition(prefab, unit), UnitRotation);
+        bool merged = EnsureMerged(prefab);
+        var product = ProductPrefab.Spawn(prefab, RootPosition(prefab, unit), UnitRotation, p => { if (merged) p.DrawOnShelf(this, unit); });
+        if (merged) Merged.SetUnitShown(unit, true);
         product.RestHere();
         Occupants[unit] = product;
         product.Grabbed += OnStockTaken;
@@ -126,6 +132,11 @@ public class ShelfSlotZone : MonoBehaviour
     /// </summary>
     public GaussianSplatRenderer Display(ProductPrefab prefab, int unit)
     {
+        if (EnsureMerged(prefab))
+        {
+            Merged.SetUnitShown(unit, true);
+            return Merged.Active;
+        }
         var holder = new GameObject($"Display {SlotId} #{unit + 1}").transform;
         holder.SetPositionAndRotation(RootPosition(prefab, unit), UnitRotation);
         holder.SetParent(transform, true);
@@ -137,6 +148,22 @@ public class ShelfSlotZone : MonoBehaviour
         splat.gameObject.name = "Splat";
         displays.Add(holder.gameObject);
         return splat;
+    }
+
+    public void PrepareMerged(ProductPrefab product) => EnsureMerged(product);
+
+    bool EnsureMerged(ProductPrefab product)
+    {
+        if (Merged != null) return true;
+        if (IndividualOnly || MergedNear == null || MergedFar == null) return false;
+        Merged = SplatShelfSlot.Create(this, product, MergedNear, MergedFar);
+        return true;
+    }
+
+    /// <summary>A place of the merged splat, shown or hidden. Does nothing when every product draws itself.</summary>
+    public void ShowOnShelf(int unit, bool shown)
+    {
+        if (Merged != null) Merged.SetUnitShown(unit, shown);
     }
 
     void OnStockTaken(ProductPrefab product)
@@ -173,6 +200,11 @@ public class ShelfSlotZone : MonoBehaviour
             yield return null;
         }
         product.transform.SetPositionAndRotation(toPosition, toRotation);
+        if (EnsureMerged(product))
+        {
+            product.DrawOnShelf(this, unit);
+            Merged.SetUnitShown(unit, true);
+        }
         if (Audio) Audio.PlayAt(StoreSound.Place, toPosition);
         if (Filled >= Capacity) highlightFrame.SetActive(false);
         RefreshCount();
@@ -204,6 +236,7 @@ public class ShelfSlotZone : MonoBehaviour
         foreach (var display in displays)
             if (display != null) Destroy(display);
         displays.Clear();
+        if (Merged != null) Merged.HideAll();
         Filled = 0;
         ShowReject(false);
         ShowUnit(-1);

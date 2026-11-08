@@ -41,6 +41,10 @@ public class ProductPrefab : MonoBehaviour
     Quaternion homeRotation;
     int restRenderOrder;
     float floorContactTime = -1f;
+    GaussianSplatAsset fullSplat;
+    ShelfSlotZone shelfHome;
+    int shelfUnit = -1;
+    static Transform waitingToWake;
 
     public Rigidbody Body => body;
     /// <summary>Every enabled product, so day 2 code can find the held one without searching the scene each frame.</summary>
@@ -70,6 +74,42 @@ public class ProductPrefab : MonoBehaviour
         Grab.selectEntered.RemoveListener(OnGrabbed);
         Grab.selectExited.RemoveListener(OnReleased);
         Enabled.Remove(this);
+    }
+
+    /// <summary>A copy that wakes up after setup has run, so a splat switched off or swapped there never builds its GPU data first.</summary>
+    public static ProductPrefab Spawn(ProductPrefab prefab, Vector3 position, Quaternion rotation, Action<ProductPrefab> setup)
+    {
+        if (waitingToWake == null)
+        {
+            var holder = new GameObject("Products Waiting To Wake");
+            holder.SetActive(false);
+            waitingToWake = holder.transform;
+        }
+        var product = Instantiate(prefab, position, rotation, waitingToWake);
+        setup(product);
+        product.transform.SetParent(null, true);
+        return product;
+    }
+
+    /// <summary>The shelf's merged splat draws this one from now on (doc 7.3). Its own splat comes back when a hand takes it.</summary>
+    public void DrawOnShelf(ShelfSlotZone slot, int unit)
+    {
+        shelfHome = slot;
+        shelfUnit = unit;
+        if (Splat) Splat.enabled = false;
+    }
+
+    /// <summary>Doc 5.7.1 B5: what stands in a box is the light copy, and the hand gets the full one.</summary>
+    public void UseLightSplat()
+    {
+        if (!Splat || !Data || !Data.LightSplat) return;
+        if (fullSplat == null) fullSplat = Splat.m_Asset;
+        Splat.m_Asset = Data.LightSplat;
+    }
+
+    public void UseFullSplat()
+    {
+        if (Splat && fullSplat != null) Splat.m_Asset = fullSplat;
     }
 
     public bool TryMarkScanned(float time, float cooldownSec)
@@ -133,6 +173,12 @@ public class ProductPrefab : MonoBehaviour
     void OnGrabbed(SelectEnterEventArgs args)
     {
         floorContactTime = -1f;
+        UseFullSplat();
+        if (shelfHome != null)
+        {
+            if (Splat) Splat.enabled = true;
+            shelfHome.ShowOnShelf(shelfUnit, false);
+        }
         SetSplatRenderOrder(HeldRenderOrder);
         if (args.interactorObject is XRBaseInputInteractor hand) hand.SendHapticImpulse(0.3f, 0.05f);
         // Out of the box for good: letting go must not put it back under the box (XRI re-parents by default).
@@ -171,6 +217,11 @@ public class ProductPrefab : MonoBehaviour
             return;
         }
         TeleportTo(homePosition, homeRotation);
+        if (shelfHome != null)
+        {
+            if (Splat) Splat.enabled = false;
+            shelfHome.ShowOnShelf(shelfUnit, true);
+        }
         if (RestsKinematic) body.isKinematic = true;
         RespawnCount++;
     }

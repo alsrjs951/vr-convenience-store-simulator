@@ -516,7 +516,7 @@ public class BoxUnit
     public void Spawn(ProductPrefab prefab)
     {
         var rotation = Box.transform.rotation * Quaternion.Euler(0f, 180f, 0f);
-        Product = UnityEngine.Object.Instantiate(prefab, Box.transform.TransformPoint(Local) - rotation * prefab.Proxy.center, rotation);
+        Product = ProductPrefab.Spawn(prefab, Box.transform.TransformPoint(Local) - rotation * prefab.Proxy.center, rotation, p => p.UseLightSplat());
         Product.name = $"{prefab.name} (box {Box.Delivery.BoxSequence} unit {Index + 1})";
         Box.IgnoreBody(Product.Proxy);
         Product.RestHere();
@@ -539,6 +539,7 @@ public class BoxUnit
         var rotation = Box.transform.rotation * Quaternion.Euler(0f, 180f, 0f);
         product.transform.SetParent(Box.transform, true);
         product.TeleportTo(Box.transform.TransformPoint(Local) - rotation * product.Proxy.center, rotation);
+        product.UseLightSplat();
         Taken = false;
         return true;
     }
