@@ -168,6 +168,28 @@ def effects(out_dir):
     loop[:m] = room[:m] * fade_in + room[n:n + m] * (1 - fade_in)
     save(out_dir, 'amb_store_loop', finish(loop, -18, fade=0))
 
+    # Day 3 requests. Added after everything above so the random draws of the older sounds stay the same.
+    # Microwave running: mains hum with a faint fan and a slow turntable wobble, crossfaded to loop.
+    seconds, xf = 2.0, 0.25
+    n, m = int(seconds * SR), int(xf * SR)
+    t = np.arange(n + m) / SR
+    hum = (np.sin(2 * np.pi * 120 * t) * 0.5 + np.sin(2 * np.pi * 240 * t) * 0.3 + np.sin(2 * np.pi * 360 * t) * 0.12) * (1 + 0.12 * np.sin(2 * np.pi * 3 * t))
+    run = hum + noise(seconds + xf, 300, 1800, order=2) * 0.25
+    loop = run[:n].copy()
+    fade_in = np.linspace(0, 1, m)
+    loop[:m] = run[:m] * fade_in + run[n:n + m] * (1 - fade_in)
+    save(out_dir, 'sfx_microwave_hum', finish(loop, -10, fade=0))
+
+    # Microwave done "땡": one clear bell strike.
+    save(out_dir, 'sfx_microwave_ding', finish(tone(1760, 1.2, bell, release=0.45), -5))
+
+    # Hot water pouring: bubbling band noise with a quick flutter, crossfaded to loop.
+    t = np.arange(n + m) / SR
+    pour = noise(seconds + xf, 500, 4200, order=2) * (0.75 + 0.25 * np.sin(2 * np.pi * 17 * t) * np.sin(2 * np.pi * 2.3 * t))
+    loop = pour[:n].copy()
+    loop[:m] = pour[:m] * fade_in + pour[n:n + m] * (1 - fade_in)
+    save(out_dir, 'sfx_water_pour', finish(loop, -9, fade=0))
+
 
 # ---------- voices ----------
 

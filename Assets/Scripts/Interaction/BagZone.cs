@@ -37,6 +37,16 @@ public class BagZone : MonoBehaviour
             }
             return;
         }
+        // A bagged product can no longer be picked up, so one still to be heated must stay out of the bag.
+        if (AcceptOverride == null && Pos.NeedsCooking(product))
+        {
+            if (warned.Add(product))
+            {
+                if (Audio) Audio.PlayError();
+                Pos.SetNotice(Pos.CookFirstNotice);
+            }
+            return;
+        }
         if (product.GetComponent<Rigidbody>().linearVelocity.magnitude > MaxSpeed)
         {
             settling.Remove(product);

@@ -27,6 +27,8 @@ public class PaymentDesk : MonoBehaviour
     public PaymentProp CustomerCard { get; private set; }
     public PaymentProp CustomerBill { get; private set; }
     public readonly Dictionary<int, PaymentProp> StockItems = new Dictionary<int, PaymentProp>();
+    /// <summary>What to say when a card or bill comes too early. Set for customers' orders; the tutorial keeps the default.</summary>
+    public Func<string> NotReadyNotice;
 
     readonly List<PaymentProp> spawned = new List<PaymentProp>();
     Action done;
@@ -97,7 +99,10 @@ public class PaymentDesk : MonoBehaviour
         CustomerCard = null;
         CustomerBill = null;
         done = null;
+        NotReadyNotice = null;
     }
+
+    string NotReadyText => NotReadyNotice != null ? NotReadyNotice() : "스캔과 봉투 담기를 먼저 끝내세요.";
 
     void Update()
     {
@@ -131,7 +136,7 @@ public class PaymentDesk : MonoBehaviour
     void OnPaymentNotReady()
     {
         // The card stays in the hand. Taking it away would feel like a glitch.
-        notify?.Invoke("스캔과 봉투 담기를 먼저 끝내세요.");
+        notify?.Invoke(NotReadyText);
     }
 
     void OnBillReceived(PaymentProp bill)
@@ -139,7 +144,7 @@ public class PaymentDesk : MonoBehaviour
         if (ready != null && !ready())
         {
             if (Audio) Audio.PlayError();
-            notify?.Invoke("스캔과 봉투 담기를 먼저 끝내세요.");
+            notify?.Invoke(NotReadyText);
             bill.ReturnHome();
             Drawer.Expected = bill;
             return;

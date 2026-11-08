@@ -1,5 +1,7 @@
-# Development placeholder for Day 2 deliveries (doc 6.3: two boxes, 6 and 4, two target slots, all on the cart at the start). Same schema as Data/deliveries.csv (doc 6.5).
-# case_qty: 4|6|8 (one layer, 2x2 / 2x3 / 2x4). target_slot: ShelfSlotZone.slotId in StoreScene. arrive_after_order: 0 = on the cart at the start.
+# Development placeholder for the deliveries of Days 2 and 3 (doc 6.3: two boxes a day, 6 and 4; Day 3's second box comes after customer 6). Same schema as Data/deliveries.csv (doc 6.5).
+# case_qty: 4|6|8 (one layer, 2x2 / 2x3 / 2x4). target_slot: ShelfSlotZone.slotId in StoreScene. arrive_after_order: 0 = on the cart at the start, n = right after customer n.
 delivery_id,day,box_seq,product_id,case_qty,target_slot,arrive_after_order
 dev_d02_01,2,1,dev_shinramen_01,6,A-2,0
 dev_d02_02,2,2,dev_goraebap_01,4,B-1,0
+dev_d03_01,3,1,dev_shinramen_01,6,A-2,0
+dev_d03_02,3,2,dev_goraebap_01,4,B-1,6

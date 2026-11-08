@@ -1,24 +1,40 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
 public enum DayState { Intro, Tutorial, Shift, Settlement, DayEnd }
 
+/// <summary>One day's settlement, kept for the report after the last day (doc 6.5).</summary>
+public class DayResult
+{
+    public int Day, Sales, PossibleSales, Paid, Orders, Left, Cancels;
+    public int Shelved, Delivered, Disposed, Expired;
+    public float Score;
+    public string Grade;
+}
+
 /// <summary>
 /// Runs the days: Intro, the Day 1 tutorial or the Day 2 intake tutorial, Shift, then Settlement (doc 6.2, game design 11).
 /// After a day's settlement a "N일차 시작" button under the board starts the next day (user decision 2026-11-08: a button
-/// pressed with the ray and trigger, like the POS [-]). -start-day 2 starts at Day 2.
+/// pressed with the ray and trigger, like the POS [-]); after the last day the board adds the report of all days.
+/// -start-day 2 starts at Day 2.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
     const float IntroSeconds = 3f;
     const float BoardMetersPerPixel = 0.0009f;
+    const float BoardWidth = 1500f, BoardHeight = 220f, ReportBoardHeight = 560f;
     // Doc 5.7.4: the first customer comes when the intake tutorial is done, or this long after it began.
     public const float IntakeTutorialMaxSeconds = 90f;
+    const int IntakeTutorialDay = 2;
+    const float BriefSeconds = 7f;
+    const float RequestGuideSeconds = 12f;
 
     public int Day = 1;
-    public int LastDay = 2;
+    public int LastDay = 3;
     public TextAsset Scenario;
     /// <summary>More rows of the same schema (doc 6.5), for later days.</summary>
     public TextAsset[] MoreScenarios = new TextAsset[0];
@@ -44,14 +60,21 @@ public class GameManager : MonoBehaviour
     public string BoardText => board != null ? board.text : "";
     public Button NextDayButton { get; private set; }
     public int NextDayPresses { get; private set; }
+    /// <summary>Every finished day, in order.</summary>
+    public readonly List<DayResult> Results = new List<DayResult>();
 
+    RectTransform boardPanel;
     Text board;
     Text nextDayLabel;
     bool nextDayPressed;
+    Coroutine intakeTutorialRun, briefMessage;
+    string shiftText = "";
+    int peakStartsAt = -1;
 
     void Awake()
     {
-        var panel = WorldUi.CreatePanel(BoardAnchor, "Guide Board", BoardAnchor.position, BoardAnchor.rotation, new Vector2(1500f, 220f), BoardMetersPerPixel, WorldUi.Palette.Panel);
+        boardPanel = WorldUi.CreatePanel(BoardAnchor, "Guide Board", BoardAnchor.position, BoardAnchor.rotation, new Vector2(BoardWidth, BoardHeight), BoardMetersPerPixel, WorldUi.Palette.Panel);
+        var panel = boardPanel;
         board = WorldUi.AddText(panel, 40f, 18f, 1420f, 190f, 46, TextAnchor.MiddleCenter);
         Tutorial.Board = board;
         if (IntakeTutorial) IntakeTutorial.Board = board;
@@ -72,6 +95,15 @@ public class GameManager : MonoBehaviour
         var args = Environment.GetCommandLineArgs();
         int index = Array.IndexOf(args, "-start-day");
         if (index >= 0 && index + 1 < args.Length && int.TryParse(args[index + 1], out int start) && start >= 1) Day = start;
+        Director.OrderArrived += OnOrderArrived;
+        Director.OrderEnded += OnOrderEnded;
+    }
+
+    void OnDestroy()
+    {
+        if (Director == null) return;
+        Director.OrderArrived -= OnOrderArrived;
+        Director.OrderEnded -= OnOrderEnded;
     }
 
     IEnumerator Start()
@@ -80,10 +112,63 @@ public class GameManager : MonoBehaviour
         {
             yield return RunDay(Day);
             DaysFinished++;
-            if (Day >= LastDay || ParseOrders(Day + 1).Count == 0) yield break;
+            if (Day >= LastDay || ParseOrders(Day + 1).Count == 0)
+            {
+                ShowFinalReport();
+                yield break;
+            }
             yield return WaitForNextDay(Day + 1);
             Day++;
         }
+    }
+
+    // ---------- Day 3: what the shift announces on the board ----------
+
+    /// <summary>Game design 10.3: the first time a request comes up, the board says what to do about it.</summary>
+    void OnOrderArrived(Order order, bool firstOfItsKind)
+    {
+        if (!firstOfItsKind) return;
+        string guide = order.Special == Order.Microwave ? "특수 요청  전자레인지\n스캔 → 오른쪽 벽 전자레인지에 넣기 → '땡' 뒤 꺼내기"
+            : order.Special == Order.HotWater ? "특수 요청  온수\n스캔 → 오른쪽 벽 온수기 탭 아래에 2초"
+            : "특수 요청  1+1 행사\n2개 모두 스캔하면 1개 값만 계산됩니다";
+        ShowBriefly(guide, RequestGuideSeconds);
+    }
+
+    /// <summary>Doc 5.7.2: a mid-day box arrives right after its customer. The last moment before the peak gets a warning too.</summary>
+    void OnOrderEnded(Order order, bool paid)
+    {
+        if (Intake != null && Intake.ReceiveMidDayBoxes(order.Sequence))
+        {
+            ShowBriefly("입고 도착 (창고 입구)\n손님이 없을 때 진열", BriefSeconds);
+            Director.Announce("입고 도착 (창고 입구)");
+        }
+        else if (order.Sequence + 1 == peakStartsAt)
+        {
+            ShowBriefly("피크 타임\n손님이 몰려옵니다", BriefSeconds);
+        }
+    }
+
+    /// <summary>A message on the board for a while, then back to the day's line (unless the shift is over by then).</summary>
+    void ShowBriefly(string text, float seconds)
+    {
+        if (briefMessage != null) StopCoroutine(briefMessage);
+        briefMessage = StartCoroutine(Brief(text, seconds));
+    }
+
+    IEnumerator Brief(string text, float seconds)
+    {
+        Say(text);
+        yield return new WaitForSeconds(seconds);
+        briefMessage = null;
+        if (State == DayState.Shift) Say(shiftText);
+    }
+
+    /// <summary>The first order whose time limit is shorter than the day's first: the scenario's peak (doc 6.3). -1 when there is none.</summary>
+    static int FindPeakStart(List<Order> orders)
+    {
+        foreach (var order in orders)
+            if (order.TimeLimitSeconds < orders[0].TimeLimitSeconds) return order.Sequence;
+        return -1;
     }
 
     System.Collections.Generic.List<Order> ParseOrders(int day)
@@ -113,9 +198,8 @@ public class GameManager : MonoBehaviour
         var orders = ParseOrders(day);
         OrderCount = orders.Count;
         PossibleSales = 0;
-        foreach (var order in orders)
-            foreach (var line in order.Lines)
-                PossibleSales += line.Product.Data.Price * line.Quantity;
+        foreach (var order in orders) PossibleSales += order.TotalPrice;
+        peakStartsAt = orders.Count > 0 ? FindPeakStart(orders) : -1;
         if (day > 1 || DaysFinished > 0)
         {
             Pos.ResetDay();
@@ -128,7 +212,9 @@ public class GameManager : MonoBehaviour
             intake = Intake.Active;
         }
 
-        board.text = intake ? $"{day}일차 출근\n입고 · 진열 · 폐기가 더해집니다" : $"{day}일차 출근\n계산대에서 손님을 맞습니다";
+        board.text = !intake ? $"{day}일차 출근\n계산대에서 손님을 맞습니다"
+            : day > IntakeTutorialDay ? $"{day}일차 출근\n피크 타임 · 특수 요청 · 중간 입고"
+            : $"{day}일차 출근\n입고 · 진열 · 폐기가 더해집니다";
         if (intake) Intake.SetGuide(board.text);
         yield return new WaitForSeconds(IntroSeconds);
 
@@ -138,11 +224,12 @@ public class GameManager : MonoBehaviour
             yield return Tutorial.Run();
         }
 
-        if (intake && IntakeTutorial != null)
+        bool guidedIntake = intake && day == IntakeTutorialDay && IntakeTutorial != null;
+        if (guidedIntake)
         {
             // Doc 5.7.4: the first box gets four steps of guidance; customers start when they are done or after 90 s.
             State = DayState.Tutorial;
-            StartCoroutine(IntakeTutorial.Run());
+            intakeTutorialRun = StartCoroutine(IntakeTutorial.Run());
             float begun = Time.time;
             while (IntakeTutorial.Step != IntakeTutorialStep.Done && Time.time - begun < IntakeTutorialMaxSeconds) yield return null;
         }
@@ -152,14 +239,18 @@ public class GameManager : MonoBehaviour
 
         State = DayState.Shift;
         ShiftStartedAt = Time.time;
-        if (!intake) board.text = $"{day}일차 근무 중";
-        else if (IntakeTutorial == null || IntakeTutorial.Step == IntakeTutorialStep.Done)
-            Say($"{day}일차 근무 중\n손님이 없을 때 진열 · 폐기");
+        shiftText = intake ? $"{day}일차 근무 중\n손님이 없을 때 진열 · 폐기" : $"{day}일차 근무 중";
+        if (!intake) board.text = shiftText;
+        else if (!guidedIntake || IntakeTutorial.Step == IntakeTutorialStep.Done) Say(shiftText);
         yield return Director.RunDay(orders);
 
         State = DayState.Settlement;
+        // A tutorial nobody finished must not go on writing on the board through the next day.
+        if (intakeTutorialRun != null) StopCoroutine(intakeTutorialRun);
+        intakeTutorialRun = null;
         if (intake) Intake.EndDay();
         CalculateScore(day, intake);
+        RecordResult(day, intake);
         if (intake)
         {
             board.fontSize = 36;
@@ -184,6 +275,54 @@ public class GameManager : MonoBehaviour
         if (Intake != null) Intake.SetGuide(text);
     }
 
+    void RecordResult(int day, bool intake)
+    {
+        Results.Add(new DayResult
+        {
+            Day = day, Sales = Director.Sales, PossibleSales = PossibleSales, Paid = Director.Paid, Orders = OrderCount, Left = Director.Left,
+            Cancels = Pos.CancelCount, Score = Score, Grade = Grade,
+            Shelved = intake ? Intake.Shelved : 0, Delivered = intake ? Intake.DeliveredTotal : 0,
+            Disposed = intake ? Intake.Disposed : 0, Expired = intake ? Intake.ExpiredTotal : 0,
+        });
+    }
+
+    /// <summary>Doc 6.5: after the last day the board grows and adds a line per day and the totals under that day's settlement.</summary>
+    void ShowFinalReport()
+    {
+        float scores = 0f;
+        var total = new DayResult();
+        foreach (var result in Results)
+        {
+            scores += result.Score;
+            total.Sales += result.Sales;
+            total.PossibleSales += result.PossibleSales;
+            total.Paid += result.Paid;
+            total.Orders += result.Orders;
+            total.Left += result.Left;
+            total.Cancels += result.Cancels;
+            total.Shelved += result.Shelved;
+            total.Delivered += result.Delivered;
+            total.Disposed += result.Disposed;
+            total.Expired += result.Expired;
+        }
+        float average = Results.Count > 0 ? scores / Results.Count : 0f;
+
+        var text = new StringBuilder(board.text);
+        text.Append($"\n\n{Results.Count}일 근무 리포트   {GradeFor(average)}  ·  평균 {average:0}점\n");
+        foreach (var result in Results)
+            text.Append($"{result.Day}일차  {result.Grade}  {result.Score:0}점  ·  매출 {result.Sales:N0} / {result.PossibleSales:N0}원  ·  손님 {result.Paid}/{result.Orders}\n");
+        text.Append($"합계 매출 {total.Sales:N0} / {total.PossibleSales:N0}원 · 손님 {total.Paid}/{total.Orders} · 이탈 {total.Left}명 · 취소 {total.Cancels} · 진열 {total.Shelved}/{total.Delivered} · 폐기 {total.Disposed}/{total.Expired}");
+
+        boardPanel.sizeDelta = new Vector2(BoardWidth, ReportBoardHeight);
+        board.rectTransform.sizeDelta = new Vector2(board.rectTransform.sizeDelta.x, ReportBoardHeight - 36f);
+        board.fontSize = 34;
+        board.text = text.ToString();
+        if (Intake != null) Intake.SetGuide(board.text);
+        Debug.Log($"[Game] Final report days={Results.Count} average={average:0.0} grade={GradeFor(average)} sales={total.Sales}/{total.PossibleSales} paid={total.Paid}/{total.Orders} left={total.Left} cancels={total.Cancels} shelved={total.Shelved}/{total.Delivered} disposed={total.Disposed}/{total.Expired}");
+    }
+
+    static string GradeFor(float score) => score >= 90f ? "S" : score >= 75f ? "A" : score >= 60f ? "B" : "C";
+
     /// <summary>Game design 11 [제안]: Day 1 without tasks, Days 2-3 with the task rate and the intake penalties.</summary>
     void CalculateScore(int day, bool intake)
     {
@@ -202,6 +341,6 @@ public class GameManager : MonoBehaviour
             TaskRate = Intake.TaskRate;
             Score = 40f * SalesRate + 25f * service + 15f * Accuracy + 20f * TaskRate;
         }
-        Grade = Score >= 90f ? "S" : Score >= 75f ? "A" : Score >= 60f ? "B" : "C";
+        Grade = GradeFor(Score);
     }
 }

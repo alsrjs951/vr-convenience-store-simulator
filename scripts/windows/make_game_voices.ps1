@@ -32,6 +32,10 @@ $lines = [ordered]@{
     "voice_intake_2"          = "거치대 앞의 커터를 집어서, 박스 위 테이프를 한쪽 끝에서 다른 쪽 끝까지 그어 주세요."
     "voice_intake_3"          = "박스 날개를 하나씩 잡고, 바깥쪽으로 끝까지 젖혀 주세요."
     "voice_intake_4"          = "상품을 하나 꺼내 들고 노란 칸을 바라보세요. 초록색 미리보기가 뜨면 손을 놓으면 돼요."
+    # Day 3: the first time each special request comes up (game design 10.3).
+    "voice_guide_microwave"   = "데워 달라는 손님이에요. 스캔한 다음 오른쪽 벽 전자레인지에 넣고, 땡 소리가 나면 꺼내 주세요."
+    "voice_guide_hotwater"    = "뜨거운 물을 부어 달라는 손님이에요. 스캔한 다음 오른쪽 벽 온수기 탭 아래에 잠깐 대 주세요."
+    "voice_guide_oneplus"     = "원 플러스 원 행사예요. 두 개 모두 스캔하면 한 개 값만 계산돼요."
 }
 
 foreach ($name in $lines.Keys) {

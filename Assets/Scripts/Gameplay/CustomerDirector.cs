@@ -82,6 +82,8 @@ public class CustomerDirector : MonoBehaviour
     public bool HudFlashing => Time.time < flashUntil;
     public string HudText => hud != null ? hud.text : "";
     public event Action<Order, bool> OrderEnded;
+    /// <summary>A customer stands at the counter with an order. The bool: its special request has not come up before.</summary>
+    public event Action<Order, bool> OrderArrived;
     public float Remaining => remaining;
     public bool ShiftRunning { get; private set; }
     public float ShiftStartedAt { get; private set; } = -1f;
@@ -104,8 +106,8 @@ public class CustomerDirector : MonoBehaviour
     public int BrowsersSpawned { get; private set; }
     public Transform CounterBasket { get; private set; }
 
-    Text hud, hudTitle, hudPayText, hudBagText;
-    Image hudPay, hudBag, hudTime;
+    Text hud, hudTitle, hudPayText, hudBagText, hudSpecialText;
+    Image hudPay, hudBag, hudTime, hudSpecial;
     Image hudBackground;
     Color hudColor;
     float flashUntil = -1f;
@@ -119,6 +121,7 @@ public class CustomerDirector : MonoBehaviour
     readonly Dictionary<CustomerCharacter, Coroutine> behaviours = new Dictionary<CustomerCharacter, Coroutine>();
     readonly Dictionary<Transform, CustomerCharacter> reservedSpots = new Dictionary<Transform, CustomerCharacter>();
     readonly Dictionary<CustomerCharacter, Transform> lastSpot = new Dictionary<CustomerCharacter, Transform>();
+    readonly HashSet<string> specialsSeen = new HashSet<string>();
 
     void Start()
     {
@@ -135,6 +138,10 @@ public class CustomerDirector : MonoBehaviour
         hudTime.type = Image.Type.Filled;
         hudTime.fillMethod = Image.FillMethod.Horizontal;
         hudTime.sprite = null;
+        // Added after the time bar: SetHudVisible finds the bar's background as the sibling just before it.
+        hudSpecial = WorldUi.AddBox(panel, 28f, 276f, 564f, 52f, WorldUi.Palette.Warn);
+        hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 30, TextAnchor.MiddleCenter);
+        hudSpecialText.fontStyle = FontStyle.Bold;
         SetHudVisible(false);
         hudBackground = panel.GetComponent<Image>();
         hudColor = hudBackground.color;
@@ -304,8 +311,10 @@ public class CustomerDirector : MonoBehaviour
             if (Audio) Audio.PlayAt(StoreSound.Bell, Mouth(customer));
             flashUntil = Time.time + 2f;
         }
-        if (Audio) StartCoroutine(SpeakOnArrival(customer, order));
+        bool firstOfItsKind = order.Special != Order.None && specialsSeen.Add(order.Special);
+        if (Audio) StartCoroutine(SpeakOnArrival(customer, order, firstOfItsKind));
         RefreshHud();
+        OrderArrived?.Invoke(order, firstOfItsKind);
 
         while (!orderPaid)
         {
@@ -367,8 +376,11 @@ public class CustomerDirector : MonoBehaviour
 
     static Vector3 Mouth(CustomerCharacter customer) => customer.transform.position + Vector3.up * MouthHeight;
 
-    /// <summary>Greeting, then the order's special request, then the bag request, each after the last one finished.</summary>
-    IEnumerator SpeakOnArrival(CustomerCharacter customer, Order order)
+    /// <summary>
+    /// Greeting, then the order's special request, then the bag request, each after the last one finished. The first time a
+    /// request comes up the narrator then says what to do about it (game design 10.3).
+    /// </summary>
+    IEnumerator SpeakOnArrival(CustomerCharacter customer, Order order, bool firstOfItsKind)
     {
         yield return new WaitForSeconds(order.Day > 1 ? GreetAfterBellSeconds : GreetDelaySeconds);
         if (AtCounter != customer) yield break;
@@ -377,9 +389,9 @@ public class CustomerDirector : MonoBehaviour
         var requests = new List<CustomerLine>();
         switch (order.Special)
         {
-            case "microwave": requests.Add(CustomerLine.Microwave); break;
-            case "hotwater": requests.Add(CustomerLine.HotWater); break;
-            case "oneplus": requests.Add(CustomerLine.OnePlus); break;
+            case Order.Microwave: requests.Add(CustomerLine.Microwave); break;
+            case Order.HotWater: requests.Add(CustomerLine.HotWater); break;
+            case Order.OnePlus: requests.Add(CustomerLine.OnePlus); break;
         }
         if (order.NeedsBag) requests.Add(CustomerLine.Bag);
         foreach (var line in requests)
@@ -388,6 +400,9 @@ public class CustomerDirector : MonoBehaviour
             if (AtCounter != customer) yield break;
             talking = Audio.Say(line, female, Mouth(customer));
         }
+        if (!firstOfItsKind) yield break;
+        yield return new WaitForSeconds(talking + LinePauseSeconds);
+        if (AtCounter == customer) Audio.NarrateSpecial(order.Special);
     }
 
     IEnumerator SayLater(CustomerCharacter customer, CustomerLine line, float seconds)
@@ -398,16 +413,22 @@ public class CustomerDirector : MonoBehaviour
 
     void BeginPayment(Order order)
     {
-        int orderTotal = 0;
-        foreach (var line in order.Lines) orderTotal += line.Product.Data.Price * line.Quantity;
+        Desk.NotReadyNotice = () => Pos.NotReadyNotice;
         if (order.Payment == PaymentMethod.Card)
         {
             Desk.BeginCard(() => Pos.ReadyForPayment, Pos.SetNotice, Pos.CompleteCard);
         }
         else
         {
-            Desk.BeginCash(PaymentDesk.BillFor(orderTotal), () => Pos.ReadyForPayment, () => Pos.Total, Pos.ReceiveCash, Pos.SetNotice, Pos.CompleteCash);
+            Desk.BeginCash(PaymentDesk.BillFor(order.TotalPrice), () => Pos.ReadyForPayment, () => Pos.Total, Pos.ReceiveCash, Pos.SetNotice, Pos.CompleteCash);
         }
+    }
+
+    /// <summary>A short line on the order card between customers, with the blink (doc 5.7.2: the mid-day delivery).</summary>
+    public void Announce(string text)
+    {
+        flashUntil = Time.time + 2f;
+        if (Pos.Current == null && hud != null) hud.text = text;
     }
 
     void OnPaid() => orderPaid = true;
@@ -754,8 +775,9 @@ public class CustomerDirector : MonoBehaviour
         hudTitle.color = hurried ? WorldUi.Palette.Warn : WorldUi.Palette.Text;
         var text = new StringBuilder();
         foreach (var line in Pos.Lines)
-            text.AppendLine($"{(line.Scanned == line.Ordered ? "✓" : "○")}  {WorldUi.Clean(line.Data.Name)}  {line.Scanned}/{line.Ordered}");
+            text.AppendLine($"{(Pos.LineDone(line) ? "✓" : "○")}  {WorldUi.Clean(line.Data.Name)}  {line.Scanned}/{line.Ordered}");
         hud.text = text.ToString();
+        RefreshSpecial(order);
         hudPayText.text = order.Payment == PaymentMethod.Card ? "카드" : "현금";
         hudBagText.text = order.NeedsBag ? (Pos.AllBagged ? "봉투 ✓" : "봉투") : "봉투 없음";
         hudBag.color = order.NeedsBag ? (Pos.AllBagged ? WorldUi.Palette.Good : WorldUi.Palette.Warn) : new Color(1f, 1f, 1f, 0.15f);
@@ -764,10 +786,24 @@ public class CustomerDirector : MonoBehaviour
         hudTime.color = share > 0.5f ? WorldUi.Palette.Good : share > 0.25f ? WorldUi.Palette.Warn : WorldUi.Palette.Bad;
     }
 
+    /// <summary>Doc 6.4: the request in words on the order card; green once it is done (1+1 needs no doing).</summary>
+    void RefreshSpecial(Order order)
+    {
+        bool any = order.Special != Order.None;
+        hudSpecial.gameObject.SetActive(any);
+        if (!any) return;
+        bool done = order.NeedsCooking && Pos.AllCooked;
+        hudSpecialText.text = order.Special == Order.Microwave ? (done ? "전자레인지 데우기 ✓" : "전자레인지 데우기")
+            : order.Special == Order.HotWater ? (done ? "온수 붓기 ✓" : "온수 붓기")
+            : "1+1 행사 · 1개 값만 받기";
+        hudSpecial.color = done ? WorldUi.Palette.Good : order.Special == Order.OnePlus ? WorldUi.Palette.Accent : WorldUi.Palette.Warn;
+    }
+
     /// <summary>Between customers the card shows only its title line (the day's message).</summary>
     void SetHudVisible(bool order)
     {
         if (hudPay == null) return;
+        if (!order) hudSpecial.gameObject.SetActive(false);
         hudPay.gameObject.SetActive(order);
         hudBag.gameObject.SetActive(order);
         hudTime.transform.parent.GetChild(hudTime.transform.GetSiblingIndex() - 1).gameObject.SetActive(order);

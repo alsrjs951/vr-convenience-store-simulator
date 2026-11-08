@@ -229,9 +229,18 @@ public static class P3StoreDressing
         Sign(root, "Topper Sign", new Vector3(x0 + depth * 0.5f - 0.012f, 1.885f, zc), Quaternion.Euler(0f, 90f, 0f), new Vector2(len - 0.1f, 0.15f), "생활용품", "", new Color(0, 0, 0, 0), Color.white, false);
     }
 
+    // Where Day 3's rule zones go (P2StoreBuilder.BuildCookingZones). The cabinet top is the floor the products rest on.
+    const float CabinetTop = 0.9f;
+    static readonly Vector3 MicrowaveCenter = new Vector3(InnerRight - 0.2f, CabinetTop + 0.15f, 1.45f);
+    static readonly Vector3 DispenserCenter = new Vector3(InnerRight - 0.17f, CabinetTop + 0.23f, 2.02f);
+    public static readonly Vector3 MicrowaveCavity = new Vector3(MicrowaveCenter.x - 0.015f, MicrowaveCenter.y, 1.515f);
+    public static readonly Vector3 MicrowaveCavitySize = new Vector3(0.35f, 0.3f, 0.38f);
+    public static readonly Vector3 UnderTap = DispenserCenter + new Vector3(-0.2f, -0.13f, 0f);
+    public static readonly Vector3 UnderTapSize = new Vector3(0.24f, 0.26f, 0.26f);
+
     static void MicrowaveCorner(Transform parent)
     {
-        const float z0 = 1.05f, z1 = 2.35f, depth = 0.5f, top = 0.9f;
+        const float z0 = 1.05f, z1 = 2.35f, depth = 0.5f, top = CabinetTop;
         float x0 = InnerRight - depth, xc = InnerRight - depth * 0.5f, zc = (z0 + z1) * 0.5f;
         var root = new GameObject("Microwave Cabinet").transform;
         root.SetParent(parent, false);
@@ -243,20 +252,49 @@ public static class P3StoreDressing
         collider.size = new Vector3(depth, top, z1 - z0);
         _ = body;
 
-        // Microwave: silver body, black glass door facing the aisle, keypad strip.
-        var mw = new Vector3(InnerRight - 0.2f, top + 0.15f, 1.45f);
-        Visual("Microwave Body", root, mw, new Vector3(0.36f, 0.3f, 0.52f), steel, 0.02f);
-        Visual("Microwave Door", root, mw + new Vector3(-0.181f, 0f, -0.05f), new Vector3(0.006f, 0.24f, 0.36f), graphite, 0.004f);
-        Visual("Microwave Keypad", root, mw + new Vector3(-0.181f, 0f, 0.19f), new Vector3(0.006f, 0.24f, 0.1f), navy, 0.004f);
-        Visual("Microwave Handle", root, mw + new Vector3(-0.192f, 0f, 0.125f), new Vector3(0.016f, 0.2f, 0.016f), steel, 0.006f);
+        // Microwave: a hollow steel box you can really put something into, opening toward the aisle, with the keypad on the
+        // clerk's right and the door hinged on the left. No colliders on it: a held product is not stopped by the walls, and
+        // one let go rests on the cabinet top, which is the oven's floor.
+        var mw = MicrowaveCenter;
+        Visual("Microwave Top", root, mw + new Vector3(0f, 0.14f, 0f), new Vector3(0.36f, 0.02f, 0.52f), steel, 0.008f);
+        Visual("Microwave Floor", root, mw + new Vector3(0f, -0.147f, 0f), new Vector3(0.36f, 0.006f, 0.52f), steel, 0.002f);
+        Visual("Microwave Back", root, mw + new Vector3(0.17f, 0f, 0f), new Vector3(0.02f, 0.28f, 0.52f), steel, 0.004f);
+        Visual("Microwave Far Side", root, mw + new Vector3(0f, 0f, 0.25f), new Vector3(0.36f, 0.28f, 0.02f), steel, 0.004f);
+        Visual("Microwave Keypad Block", root, mw + new Vector3(0f, 0f, -0.19f), new Vector3(0.36f, 0.28f, 0.14f), steel, 0.004f);
+        Visual("Microwave Keypad", root, mw + new Vector3(-0.181f, 0f, -0.19f), new Vector3(0.006f, 0.24f, 0.1f), navy, 0.004f);
+
+        // The door turns around its hinge; shut is the rotation it is built in. MicrowaveZone opens it for an order that asks.
+        var hinge = new GameObject("Microwave Door Hinge").transform;
+        hinge.SetParent(root, false);
+        hinge.position = mw + new Vector3(-0.185f, 0f, 0.255f);
+        float doorX = mw.x - 0.19f, doorZ = mw.z + 0.065f;
+        foreach (var (partName, offset, size) in new[]
+        {
+            ("Microwave Door Top", new Vector3(0f, 0.125f, 0f), new Vector3(0.012f, 0.024f, 0.36f)),
+            ("Microwave Door Bottom", new Vector3(0f, -0.125f, 0f), new Vector3(0.012f, 0.024f, 0.36f)),
+            ("Microwave Door Hinge Side", new Vector3(0f, 0f, 0.168f), new Vector3(0.012f, 0.226f, 0.024f)),
+            ("Microwave Door Free Side", new Vector3(0f, 0f, -0.168f), new Vector3(0.012f, 0.226f, 0.024f)),
+        })
+            Visual(partName, hinge, new Vector3(doorX, mw.y, doorZ) + offset, size, graphite, 0.003f);
+        Visual("Microwave Door Glass", hinge, new Vector3(doorX, mw.y, doorZ), new Vector3(0.004f, 0.23f, 0.31f), Tinted("P3_MicrowaveGlass", new Color(0.04f, 0.05f, 0.06f, 0.55f)), 0.001f);
+        Visual("Microwave Handle", hinge, new Vector3(doorX - 0.012f, mw.y, doorZ - 0.155f), new Vector3(0.016f, 0.2f, 0.016f), steel, 0.006f);
+
+        // On only while it runs (MicrowaveZone.LitParts): the oven light on the ceiling and a warm tint in the window.
+        var lit = new GameObject("Microwave Lit").transform;
+        lit.SetParent(root, false);
+        Visual("Microwave Lamp", lit, MicrowaveCavity + new Vector3(0f, 0.127f, 0f), new Vector3(0.14f, 0.006f, 0.14f), Emissive("P3_MicrowaveLamp", new Color(1f, 0.85f, 0.6f), new Color(2.4f, 1.8f, 0.9f)), 0.002f);
+        Visual("Microwave Glow", lit, new Vector3(doorX + 0.004f, mw.y, doorZ), new Vector3(0.002f, 0.23f, 0.31f), Tinted("P3_MicrowaveGlow", new Color(1f, 0.72f, 0.3f, 0.28f)), 0.0005f);
+        lit.gameObject.SetActive(false);
 
         // Hot water dispenser: white body, navy front with a chrome tap and a drip tray.
-        var hw = new Vector3(InnerRight - 0.17f, top + 0.23f, 2.02f);
+        var hw = DispenserCenter;
         Visual("Dispenser Body", root, hw, new Vector3(0.3f, 0.46f, 0.28f), white, 0.03f);
         Visual("Dispenser Front", root, hw + new Vector3(-0.151f, 0.08f, 0f), new Vector3(0.006f, 0.22f, 0.22f), navy, 0.005f);
         Visual("Dispenser Hot", root, hw + new Vector3(-0.156f, 0.13f, -0.05f), new Vector3(0.006f, 0.03f, 0.04f), Plain("P3_Red", new Color(0.85f, 0.18f, 0.16f), 0.5f), 0.004f);
         Visual("Dispenser Tap", root, hw + new Vector3(-0.17f, -0.05f, 0f), new Vector3(0.04f, 0.03f, 0.03f), steel, 0.008f);
         Visual("Dispenser Tray", root, hw + new Vector3(-0.17f, -0.215f, 0f), new Vector3(0.1f, 0.02f, 0.18f), grey, 0.005f);
+        // From the tap's mouth to the tray; shown while pouring (WaterDispenserZone.Stream).
+        Visual("Dispenser Water", root, hw + new Vector3(-0.17f, -0.135f, 0f), new Vector3(0.012f, 0.14f, 0.012f), Plain("P3_HotWater", new Color(0.82f, 0.91f, 1f), 0.92f), 0.005f).SetActive(false);
         Sign(root, "Corner Sign", new Vector3(InnerRight - 0.004f, 1.72f, zc), Quaternion.Euler(0f, 90f, 0f), new Vector2(1.2f, 0.2f), "전자레인지 · 온수", "", Navy, Color.white, false);
     }
 
@@ -619,6 +657,15 @@ public static class P3StoreDressing
         return material;
     }
 
+    /// <summary>Glass of another color and opacity.</summary>
+    static Material Tinted(string name, Color color)
+    {
+        var material = Glass(name);
+        material.SetColor("_BaseColor", color);
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
     static void Keyword(Material material, string keyword, bool on)
     {
         if (on) material.EnableKeyword(keyword);
@@ -715,6 +762,7 @@ public static class P3StoreDressing
             ("09_clerk_side_left", new Vector3(0.5f, 1.6f, 0.2f), new Vector3(-4.2f, 1.0f, -1.0f)),
             ("10_scanner_clerk", new Vector3(0.22f, 1.28f, 0.12f), new Vector3(0f, 1.0f, 0.62f)),
             ("11_scanner_side", new Vector3(0.6f, 1.12f, 0.42f), new Vector3(0f, 1.02f, 0.7f)),
+            ("12_microwave_corner", new Vector3(3.2f, 1.55f, 1.7f), new Vector3(4.3f, 1.05f, 1.7f)),
         };
         var go = new GameObject("P3 Shot Camera");
         var camera = go.AddComponent<Camera>();
@@ -724,7 +772,7 @@ public static class P3StoreDressing
         camera.targetTexture = target;
         var image = new Texture2D(1600, 900, TextureFormat.RGB24, false);
         camera.Render();  // warm-up frame
-        foreach (var (name, position, lookAt) in views)
+        void Shot(string name, Vector3 position, Vector3 lookAt)
         {
             go.transform.SetPositionAndRotation(position, Quaternion.LookRotation(lookAt - position));
             camera.Render();
@@ -733,8 +781,19 @@ public static class P3StoreDressing
             image.Apply();
             File.WriteAllBytes(Path.Combine(dir, name + ".png"), image.EncodeToPNG());
         }
+        foreach (var (name, position, lookAt) in views) Shot(name, position, lookAt);
+
+        // Day 3's corner as it looks during a request: door open, then running with the light on and the water pouring (not saved).
+        var hinge = Find(null, "Microwave Door Hinge").transform;
+        hinge.localRotation = Quaternion.Euler(0f, 105f, 0f);
+        Shot("13_microwave_door_open", new Vector3(3.3f, 1.4f, 1.55f), new Vector3(4.25f, 1.05f, 1.6f));
+        hinge.localRotation = Quaternion.identity;
+        Find(null, "Microwave Lit").SetActive(true);
+        Find(null, "Dispenser Water").SetActive(true);
+        Shot("14_running_and_pouring", new Vector3(3.3f, 1.4f, 1.75f), new Vector3(4.25f, 1.05f, 1.75f));
+
         RenderTexture.active = null;
         UnityEngine.Object.DestroyImmediate(go);
-        Debug.Log($"[P3] Rendered {views.Count} views to {dir}");
+        Debug.Log($"[P3] Rendered {views.Count + 2} views to {dir}");
     }
 }

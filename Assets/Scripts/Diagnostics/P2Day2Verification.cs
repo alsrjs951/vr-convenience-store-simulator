@@ -893,7 +893,7 @@ public partial class P2DayVerification
             $"score={Game.Score:0.00} expected={expected:0.00} grade={Game.Grade}; sales {director.Sales}/{Game.PossibleSales}");
         Check("d2.day.board_shows_intake", Game.BoardText.Contains("진열 10/10") && Game.BoardText.Contains("폐기 3/3") && Game.BoardText.Contains("오진열 1") && Game.BoardText.Contains("폐기 오탐 1"),
             $"board={Game.BoardText}");
-        Check("d2.day.no_next_day_button", Game.NextDayButton != null && !Game.NextDayButton.transform.parent.gameObject.activeSelf, "Day 2 is the last day built");
+        Check("d2.day.next_day_button_for_day3", Game.NextDayButton != null && Game.NextDayButton.transform.parent.gameObject.activeSelf && Game.NextDayButton.GetComponentInChildren<UnityEngine.UI.Text>().text == "3일차 시작", "Day 3 follows Day 2");
         Check("d2.day.counter_cleared", FindObjectsByType<PaymentProp>(FindObjectsSortMode.None).Length == 0 && director.OrderProducts.Count == 0, "no payment prop, no order product");
         Check("input.set_downs_were_still", report.maxHeldSpeedAtRelease < SettledSpeed, $"max speed at release={report.maxHeldSpeedAtRelease:0.000} m/s");
         FillDetails();

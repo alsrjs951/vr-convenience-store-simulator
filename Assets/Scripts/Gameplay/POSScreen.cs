@@ -68,8 +68,8 @@ public class POSScreen : MonoBehaviour
         {
             bool used = i < Pos.Lines.Count && Pos.Lines[i].Scanned > 0;
             CancelButtons[i].gameObject.SetActive(used);
-            rows[i].text = used ? $"{WorldUi.Clean(Pos.Lines[i].Data.Name)}  ×{Pos.Lines[i].Scanned}" : "";
-            prices[i].text = used ? $"{Pos.Lines[i].Data.Price * Pos.Lines[i].Scanned:N0}" : "";
+            rows[i].text = used ? $"{WorldUi.Clean(Pos.Lines[i].Data.Name)}  ×{Pos.Lines[i].Scanned}{(Pos.IsOnePlusLine(Pos.Lines[i]) ? "  1+1" : "")}" : "";
+            prices[i].text = used ? $"{Pos.LinePrice(Pos.Lines[i]):N0}" : "";
         }
         total.text = Pos.Current == null ? "" : $"{Pos.Total:N0}원";
         change.text = Pos.Current != null && Pos.Received > 0 ? $"받은 돈 {Pos.Received:N0} · 거스름 {Pos.ChangeDue:N0}" : "";

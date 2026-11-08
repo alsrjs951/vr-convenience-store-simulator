@@ -376,6 +376,7 @@ vr-convenience-store-simulator/
   - `microwave`(전자레인지): 스캔 완료 상품을 `MicrowaveZone`에 투입 시 3초 작동음+조명 후 '땡' 완료음과 함께 `IsProcessed = true` 부여.
   - `hotwater`(컵라면 온수): 스캔 완료 컵라면을 `WaterDispenserZone`에 투입 시 2초 물 붓는 효과음 후 `IsProcessed = true` 부여.
   - 손님 이탈 3명 도달 시 해당 일차 즉시 정산 전환 로직 연결.
+  - **진행 (2026-11-08, 코드·씬 재빌드만 — 인게임 테스트 안 함, 사용자 지시)**: 위 3종과 이탈 정산, 중간 입고(6번째 손님 뒤 박스), 피크 안내, 첫 등장 안내(보드·음성), 1~3일차 누적 리포트를 구현했다. 3일차를 실제로 플레이한 적은 아직 없어 체크하지 않았다. 데울 상품(삼각김밥·도시락·컵라면)이 없어 전자레인지는 닭다리, 온수는 안성탕면으로 임시 지정했다. 상세: `docs/p2/3일차_2026-11-08.md`.
 - [ ] **P4-L3. 진열대 `GaussianSplatCutout`(Invert) 분리 + `m_RenderOrder` + 원거리 3DGS LOD 구현 (`7.3절 3·4단계`)**:
   - `SplatShelfSlot.cs`: 진열대 병합 `GaussianSplatRenderer.m_Cutouts` 배열에 슬롯별 `GaussianSplatCutout`(`m_Type = Box`, `m_Invert = true`) 등록(경계 마진 +5~10mm 조절). 상품을 집는 순간 `slotCutout.enabled = true`로 칸에서 숨기고, 손에 든 개별 상품의 **`GaussianSplatRenderer.m_RenderOrder = 10`**(병합 진열대는 `0`)으로 상향해 겹침 역전 차단.
   - `SplatShelfLOD.cs`: 플레이어 카메라(XR Origin)와 진열대 칸 거리 기준 히스테리시스(**3.0m 진입 시 `LOD0` ↔ 4.0m 이탈 시 `LOD1`**) 자동 교체.

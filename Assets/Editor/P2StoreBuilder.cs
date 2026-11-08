@@ -505,6 +505,7 @@ public static class P2StoreBuilder
         var intake = BuildIntake(catalog, gameAudio, environment, systems);
         // P3-K1 looks (textures, ceiling, fridges, stock shelf) before the bake: the fridges and the shelf are solid.
         P3StoreDressing.Dress(environment);
+        BuildCookingZones(pos, gameAudio, environment);
         var navMesh = BakeNavMesh(environment);
         CheckNavMesh(navMesh, director);
         Directory.CreateDirectory(Path.GetDirectoryName(NavMeshPath));
@@ -539,7 +540,7 @@ public static class P2StoreBuilder
         game.BoardAnchor = boardAnchor;
 
         game.MoreScenarios = new TextAsset[0];
-        game.LastDay = 2;
+        game.LastDay = ScenarioDays;
         game.Intake = intake;
         var preview = new GameObject("PlacementPreview").AddComponent<PlacementPreview>();
         preview.transform.SetParent(systems, false);
@@ -616,10 +617,38 @@ public static class P2StoreBuilder
         audio.PlaceClip = Sound("sfx_place");
         audio.RecycleClip = Sound("sfx_box_recycle");
         audio.DisposeClip = Sound("sfx_dispose");
+        audio.DingClip = Sound("sfx_microwave_ding");
         audio.Female = Voice("f");
         audio.Male = Voice("m");
         audio.TutorialLines = Lines("voice_tutorial", 6);
         audio.IntakeLines = Lines("voice_intake", 4);
+        audio.SpecialGuideLines = new[] { Sound("voice_guide_microwave"), Sound("voice_guide_hotwater"), Sound("voice_guide_oneplus") };
+    }
+
+    /// <summary>
+    /// Day 3's requests (doc 6.4): the rule zones in the microwave and under the hot water tap of the corner the dressing
+    /// built, each with a one-line prompt above it, facing the aisle. The cabinet's own collider is the only solid part, so
+    /// customers' routes and the NavMesh do not change.
+    /// </summary>
+    static void BuildCookingZones(POSController pos, GameAudio audio, Transform environment)
+    {
+        var cabinet = environment.Find("Store Dressing/Microwave Cabinet") ?? throw new Exception("Microwave Cabinet missing.");
+        var towardWall = Quaternion.Euler(0f, 90f, 0f);
+
+        var microwave = Zone<MicrowaveZone>("MicrowaveZone", cabinet, P3StoreDressing.MicrowaveCavity, P3StoreDressing.MicrowaveCavitySize);
+        microwave.Pos = pos;
+        microwave.Audio = audio;
+        microwave.WorkingLoop = Sound("sfx_microwave_hum");
+        microwave.Door = cabinet.Find("Microwave Door Hinge") ?? throw new Exception("Microwave door missing.");
+        microwave.LitParts = (cabinet.Find("Microwave Lit") ?? throw new Exception("Microwave light missing.")).gameObject;
+        microwave.PromptAnchor = Marker("Microwave Prompt", new Vector3(4.02f, 1.3f, P3StoreDressing.MicrowaveCavity.z), towardWall, cabinet);
+
+        var dispenser = Zone<WaterDispenserZone>("WaterDispenserZone", cabinet, P3StoreDressing.UnderTap, P3StoreDressing.UnderTapSize);
+        dispenser.Pos = pos;
+        dispenser.Audio = audio;
+        dispenser.WorkingLoop = Sound("sfx_water_pour");
+        dispenser.Stream = (cabinet.Find("Dispenser Water") ?? throw new Exception("Dispenser water missing.")).gameObject;
+        dispenser.PromptAnchor = Marker("Water Prompt", new Vector3(4.05f, 1.44f, P3StoreDressing.UnderTap.z), towardWall, cabinet);
     }
 
     /// <summary>Copies Data/scenarios.csv into Assets and fails the build if any row of any day is skipped or a day is empty.</summary>

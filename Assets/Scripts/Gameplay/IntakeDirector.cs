@@ -114,20 +114,25 @@ public class IntakeDirector : MonoBehaviour
 
         Today.AddRange(DeliveryLoader.Parse(Deliveries.text, day, Catalog, SlotsById, orderCount, SkippedDeliveries));
         var emptied = new Dictionary<string, int>();
+        var targetsNow = new HashSet<string>();
         foreach (var delivery in Today)
         {
             emptied.TryGetValue(delivery.TargetSlot, out int n);
             emptied[delivery.TargetSlot] = n + delivery.CaseQuantity;
+            if (delivery.ArriveAfterOrder > 0) continue;
+            // A box still on its way counts from the moment it arrives, so a day cut short is not scored for it.
             DeliveredTotal += delivery.CaseQuantity;
+            targetsNow.Add(delivery.TargetSlot);
         }
 
         // Doc 5.7.3: a target slot loses as many places as the day's boxes bring, back row first, then the front row from
-        // the right, so what is left always fills each column from the front. Other slots are fully stocked.
+        // the right, so what is left always fills each column from the front. Other slots are fully stocked. A slot waiting
+        // for a mid-day box is already emptied but lights up only when the box comes.
         foreach (var slot in Slots)
         {
             if (slot == null) continue;
             emptied.TryGetValue(slot.SlotId, out int toEmpty);
-            slot.SetTarget(toEmpty > 0);
+            slot.SetTarget(targetsNow.Contains(slot.SlotId));
             var prefab = Catalog.Find(slot.ProductId);
             if (prefab == null) continue;
             var empty = new HashSet<int>();
@@ -151,15 +156,58 @@ public class IntakeDirector : MonoBehaviour
         }
         ExpiredTotal = ExpiredAtStart.Count;
 
-        var look = new StockBox.Look { Cardboard = Cardboard, Tape = Tape, Hole = Hole, Bead = Bead, Hint = Hint };
-        for (int i = 0; i < Today.Count; i++)
-        {
-            var spot = CartSpots.Length > 0 ? CartSpots[Mathf.Min(i, CartSpots.Length - 1)] : transform;
-            var lift = Vector3.up * (i >= CartSpots.Length ? 0.4f * (i - CartSpots.Length + 1) : 0f);
-            Boxes.Add(StockBox.Create(Today[i], this, spot.position + lift + Vector3.up * 0.002f, spot.rotation, look));
-        }
+        foreach (var delivery in Today)
+            if (delivery.ArriveAfterOrder == 0) PutOnCart(delivery);
         if (Audio && Boxes.Count > 0) Audio.PlayAt(StoreSound.Delivery, Boxes[0].transform.position + Vector3.up * 0.5f);
-        Debug.Log($"[Intake] Day {day}: boxes={Boxes.Count} delivered={DeliveredTotal} stock={ShelfStock.Count} expired={ExpiredTotal} skipped={SkippedDeliveries.Count}");
+        Debug.Log($"[Intake] Day {day}: boxes={Boxes.Count} of {Today.Count} delivered={DeliveredTotal} stock={ShelfStock.Count} expired={ExpiredTotal} skipped={SkippedDeliveries.Count}");
+    }
+
+    /// <summary>
+    /// Doc 5.7.2: a box with arrive_after_order = n comes onto the cart as soon as the n-th customer is done (paid or gone),
+    /// with the delivery sound. True when one came, so the caller can show "입고 도착".
+    /// </summary>
+    public bool ReceiveMidDayBoxes(int finishedOrder)
+    {
+        if (!Active) return false;
+        bool arrived = false;
+        var slots = SlotsById;
+        foreach (var delivery in Today)
+        {
+            if (delivery.ArriveAfterOrder != finishedOrder) continue;
+            arrived = true;
+            DeliveredTotal += delivery.CaseQuantity;
+            if (slots.TryGetValue(delivery.TargetSlot, out var slot)) slot.SetTarget(true);
+            var box = PutOnCart(delivery);
+            if (Audio) Audio.PlayAt(StoreSound.Delivery, box.transform.position + Vector3.up * 0.5f);
+            Debug.Log($"[Intake] Day {Day}: box {delivery.Id} arrived after customer {finishedOrder}; delivered={DeliveredTotal}");
+        }
+        return arrived;
+    }
+
+    StockBox PutOnCart(Delivery delivery)
+    {
+        int free = FreeCartSpot();
+        var spot = CartSpots.Length == 0 ? transform : CartSpots[free >= 0 ? free : CartSpots.Length - 1];
+        // No free place (both boxes still on the cart): on top of the last one.
+        var lift = Vector3.up * (free >= 0 ? 0f : 0.4f);
+        var look = new StockBox.Look { Cardboard = Cardboard, Tape = Tape, Hole = Hole, Bead = Bead, Hint = Hint };
+        var box = StockBox.Create(delivery, this, spot.position + lift + Vector3.up * 0.002f, spot.rotation, look);
+        Boxes.Add(box);
+        return box;
+    }
+
+    /// <summary>The first place on the cart with no box standing on it, or -1.</summary>
+    int FreeCartSpot()
+    {
+        const float occupied = 0.3f;
+        for (int i = 0; i < CartSpots.Length; i++)
+        {
+            bool taken = false;
+            foreach (var box in Boxes)
+                if (box != null && Vector3.Distance(box.transform.position, CartSpots[i].position) < occupied) taken = true;
+            if (!taken) return i;
+        }
+        return -1;
     }
 
     /// <summary>

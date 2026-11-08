@@ -52,8 +52,6 @@ public static class DeliveryLoader
                 else if (Array.IndexOf(CaseQuantities, qty) < 0) reason = "case_qty must be 4, 6 or 8";
                 else if (already + qty > slot.Capacity) reason = $"slot {c[5]} capacity {slot.Capacity} exceeded";
                 else if (after < 0 || after > orderCount) reason = "arrive_after_order beyond the day's orders";
-                // Mid-day arrival (doc 5.7.2) is Day 3's; Day 2 loads every box at the start.
-                else if (after != 0) reason = "arrive_after_order > 0 is not implemented yet (Day 3)";
                 else
                 {
                     perSlot[c[5]] = already + qty;

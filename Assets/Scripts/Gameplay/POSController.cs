@@ -27,16 +27,22 @@ public class POSController : MonoBehaviour
 
     readonly HashSet<ProductPrefab> scannedProducts = new HashSet<ProductPrefab>();
     readonly HashSet<ProductPrefab> baggedProducts = new HashSet<ProductPrefab>();
+    readonly HashSet<ProductPrefab> cookedProducts = new HashSet<ProductPrefab>();
 
     public int Total
     {
         get
         {
             int total = 0;
-            foreach (var line in Lines) total += line.Data.Price * line.Scanned;
+            foreach (var line in Lines) total += LinePrice(line);
             return total;
         }
     }
+
+    /// <summary>What the row costs now. On a 1+1 order only every other unit is charged (doc 6.4 oneplus).</summary>
+    public int LinePrice(Line line) => line.Data.Price * (Current != null ? Current.ChargedUnits(line.Ordered, line.Scanned) : line.Scanned);
+
+    public bool IsOnePlusLine(Line line) => Current != null && Current.Special == Order.OnePlus && line.Ordered >= 2;
 
     public int ChangeDue => Mathf.Max(0, Received - Total);
 
@@ -62,7 +68,21 @@ public class POSController : MonoBehaviour
         }
     }
 
-    public bool ReadyForPayment => AllScanned && AllBagged;
+    /// <summary>Doc 6.4: a heating request has to be done before the order can be paid for.</summary>
+    public bool AllCooked => Current == null || !Current.NeedsCooking || cookedProducts.Count >= Current.CookCount;
+
+    public bool ReadyForPayment => AllScanned && AllCooked && AllBagged;
+
+    /// <summary>This product is the one the order wants heated, and it has not been yet.</summary>
+    public bool NeedsCooking(ProductPrefab product) => Current != null && Current.NeedsCooking && product.Data == Current.CookTarget && !product.IsProcessed;
+
+    /// <summary>Doc 6.2: a row is ticked when it is scanned and, for the item of a heating request, heated too.</summary>
+    public bool LineDone(Line line) =>
+        line.Scanned == line.Ordered && (Current == null || !Current.NeedsCooking || line.Data != Current.CookTarget || AllCooked);
+
+    public string CookFirstNotice => Current != null && Current.Special == Order.HotWater ? "온수를 먼저 부으세요." : "전자레인지에 먼저 데우세요.";
+
+    public string NotReadyNotice => AllScanned && !AllCooked ? CookFirstNotice : "스캔과 봉투 담기를 먼저 끝내세요.";
 
     void OnEnable() { if (Scanner) Scanner.Scanned += AddScannedItem; }
     void OnDisable() { if (Scanner) Scanner.Scanned -= AddScannedItem; }
@@ -80,6 +100,7 @@ public class POSController : MonoBehaviour
         Lines.Clear();
         scannedProducts.Clear();
         baggedProducts.Clear();
+        cookedProducts.Clear();
         Received = 0;
         Notice = "";
         foreach (var line in order.Lines)
@@ -93,6 +114,7 @@ public class POSController : MonoBehaviour
         Lines.Clear();
         scannedProducts.Clear();
         baggedProducts.Clear();
+        cookedProducts.Clear();
         Received = 0;
         Notice = "";
         Changed?.Invoke();
@@ -109,7 +131,9 @@ public class POSController : MonoBehaviour
         }
         line.Scanned++;
         scannedProducts.Add(product);
-        Notice = line.Scanned > line.Ordered ? $"{product.Data.Name}: 주문보다 많이 찍혔습니다. [-]로 취소하세요." : "";
+        Notice = line.Scanned > line.Ordered ? $"{product.Data.Name}: 주문보다 많이 찍혔습니다. [-]로 취소하세요."
+            : NeedsCooking(product) ? (Current.Special == Order.HotWater ? "오른쪽 벽 온수기 아래에 두세요." : "오른쪽 벽 전자레인지에 넣으세요.")
+            : "";
         ItemScanned?.Invoke(product.Data);
         Changed?.Invoke();
     }
@@ -132,6 +156,14 @@ public class POSController : MonoBehaviour
     public void MarkBagged(ProductPrefab product)
     {
         baggedProducts.Add(product);
+        Changed?.Invoke();
+    }
+
+    /// <summary>A microwave or water dispenser finished with this product.</summary>
+    public void MarkCooked(ProductPrefab product)
+    {
+        cookedProducts.Add(product);
+        Notice = !AllCooked ? "" : Current.NeedsBag ? "다 됐습니다. 봉투에 담고 결제하세요." : "다 됐습니다. 결제하세요.";
         Changed?.Invoke();
     }
 

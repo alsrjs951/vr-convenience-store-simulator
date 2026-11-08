@@ -13,6 +13,8 @@ public class OrderLine
 
 public class Order
 {
+    public const string None = "none", Microwave = "microwave", HotWater = "hotwater", OnePlus = "oneplus";
+
     public string Id;
     public int Day;
     public int Sequence;
@@ -20,16 +22,34 @@ public class Order
     public float TimeLimitSeconds;
     public PaymentMethod Payment;
     public bool NeedsBag;
-    /// <summary>none, microwave, hotwater or oneplus (doc 6.4). Read and checked; Day 3 is where they come into play.</summary>
-    public string Special = "none";
+    /// <summary>none, microwave, hotwater or oneplus (doc 6.4). Day 3 is where they come into play.</summary>
+    public string Special = None;
     public readonly List<OrderLine> Lines = new List<OrderLine>();
+
+    public bool NeedsCooking => Special == Microwave || Special == HotWater;
+    /// <summary>A heating request is about the order's first item (every unit of it); the rest of the basket is plain.</summary>
+    public ProductData CookTarget => NeedsCooking ? Lines[0].Product.Data : null;
+    public int CookCount => NeedsCooking ? Lines[0].Quantity : 0;
+
+    /// <summary>What the customer is asked to pay for: 1+1 (doc 6.4) gives every second unit free on lines ordered in twos or more.</summary>
+    public int ChargedUnits(int ordered, int scanned) => Special == OnePlus && ordered >= 2 ? scanned - scanned / 2 : scanned;
+
+    public int TotalPrice
+    {
+        get
+        {
+            int total = 0;
+            foreach (var line in Lines) total += line.Product.Data.Price * ChargedUnits(line.Quantity, line.Quantity);
+            return total;
+        }
+    }
 }
 
 /// <summary>Parses the scenarios.csv schema (doc 6.5). Bad rows are skipped and reported, as doc 4.7 asks.</summary>
 public static class DayScenarioLoader
 {
     const int ExpectedColumns = 9;
-    static readonly string[] Specials = { "none", "microwave", "hotwater", "oneplus" };
+    static readonly string[] Specials = { Order.None, Order.Microwave, Order.HotWater, Order.OnePlus };
 
     public static List<Order> Parse(string csv, int day, ProductCatalog catalog) => Parse(csv, day, catalog, null);
 
@@ -88,6 +108,7 @@ public static class DayScenarioLoader
             if (product == null) { reason = "unknown product " + id; return false; }
             order.Lines.Add(new OrderLine { Product = product, Quantity = quantity });
         }
+        if (order.Special == Order.OnePlus && !order.Lines.Exists(l => l.Quantity >= 2)) { reason = "oneplus needs an item ordered at least twice"; return false; }
         reason = null;
         return true;
     }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery }
+public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding }
 
 /// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line and the four requests.</summary>
 public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus }
@@ -55,6 +55,9 @@ public class GameAudio : MonoBehaviour
     public AudioClip ThudClip;
     public AudioClip TapeClip, FlapClip, PlaceClip, RecycleClip, DisposeClip;
 
+    [Header("Requests (doc 6.4)")]
+    public AudioClip DingClip;
+
     [Header("Voices (doc 6.1, 5.6, 5.7.4)")]
     public CustomerVoice Female = new CustomerVoice();
     public CustomerVoice Male = new CustomerVoice();
@@ -62,6 +65,8 @@ public class GameAudio : MonoBehaviour
     public AudioClip[] TutorialLines = new AudioClip[0];
     /// <summary>Day 2 intake narration, I1 to I4.</summary>
     public AudioClip[] IntakeLines = new AudioClip[0];
+    /// <summary>Game design 10.3: the first time each request comes up. Microwave, hot water, 1+1.</summary>
+    public AudioClip[] SpecialGuideLines = new AudioClip[0];
 
     AudioSource speaker, narrator, ambience;
 
@@ -91,6 +96,7 @@ public class GameAudio : MonoBehaviour
         if (PlaceClip == null) PlaceClip = Tone("Place", 600f, 0.05f);
         if (RecycleClip == null) RecycleClip = Tone("Recycle", 110f, 0.22f);
         if (DisposeClip == null) DisposeClip = Tone("Dispose", 330f, 0.12f);
+        if (DingClip == null) DingClip = Chime("Ding", 1568f, 1568f, 0.6f);
 
         narrator = gameObject.AddComponent<AudioSource>();
         narrator.spatialBlend = 0f;
@@ -129,6 +135,7 @@ public class GameAudio : MonoBehaviour
             case StoreSound.Dispose: clip = DisposeClip; break;
             case StoreSound.Door: clip = DoorClip; break;
             case StoreSound.Delivery: clip = DeliveryClip; break;
+            case StoreSound.Ding: clip = DingClip; break;
             default: clip = ErrorClip; break;
         }
         if (clip != null) AudioSource.PlayClipAtPoint(clip, position, EffectVolume);
@@ -149,6 +156,10 @@ public class GameAudio : MonoBehaviour
 
     /// <summary>Intake step 1 to 4.</summary>
     public void NarrateIntake(int step) => Narrate(IntakeLines, step - 1);
+
+    /// <summary>The guide line for a request that has come up for the first time.</summary>
+    public void NarrateSpecial(string special) =>
+        Narrate(SpecialGuideLines, special == Order.Microwave ? 0 : special == Order.HotWater ? 1 : special == Order.OnePlus ? 2 : -1);
 
     void Narrate(AudioClip[] lines, int index)
     {
