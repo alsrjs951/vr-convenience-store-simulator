@@ -19,6 +19,9 @@ public class CustomerRecord
     /// <summary>Days 2 and 3: when the half-time hurry came, and whether the time ran out and the customer left.</summary>
     public float HurriedAt = -1f;
     public bool TimedOut;
+    /// <summary>Seconds off the time limit for waiting long in line; share of the limit left when paid; what that was worth.</summary>
+    public float LinePenalty, ShareLeft = -1f, Satisfaction;
+    public int Tip;
 }
 
 /// <summary>

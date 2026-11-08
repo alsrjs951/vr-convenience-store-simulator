@@ -53,10 +53,27 @@ public class CustomerDirector : MonoBehaviour
     const float BasketWall = 0.012f;
     const float BasketHeight = 0.14f;
 
+    // How the day rewards speed (game design 11, 2026-11-09, [제안] values for the 11/15 playtest). Finishing before the
+    // customer's half-time hurry is what counts as fast: full satisfaction and a tip. Later the satisfaction slides down.
+    public const float FastShare = 0.5f;
+    const float LowestPaidSatisfaction = 0.4f;
+    const float TipRate = 0.1f;
+    const int TipStep = 100;
+    // Days 2 and 3: time in line beyond the grace comes off the customer's limit, at this rate, up to this share of it. So
+    // slow service at the counter arrives as impatience from the people behind, which is what makes the peak pile up.
+    public const float LineGraceSeconds = 45f;
+    public const float LinePenaltyPerSecond = 0.5f;
+    public const float MaxLinePenaltyShare = 0.4f;
+    const float OutcomeSeconds = 1.8f;
+    const float OutcomeRise = 0.12f;
+    const float OutcomeMetersPerPixel = 0.0007f;
+
     public POSController Pos;
     public PaymentDesk Desk;
     public GameAudio Audio;
     public Transform Door, Counter, BasketAnchor;
+    /// <summary>Where the "+3,300원 · 팁 300원" card appears when a customer is done.</summary>
+    public Transform OutcomeAnchor;
     /// <summary>Front of the line first. Each marker's forward is the way the customer faces there.</summary>
     public Transform[] QueueSlots = new Transform[0];
     /// <summary>Spots in front of shelves. Each marker's forward looks at the shelf.</summary>
@@ -76,6 +93,12 @@ public class CustomerDirector : MonoBehaviour
     /// <summary>The day ended because LeaveLimit customers left (Days 2 and 3 only).</summary>
     public bool EndedEarly { get; private set; }
     public int Hurries { get; private set; }
+    /// <summary>The day's tips and satisfaction added over customers (each 0 to 1; one who left counts 0).</summary>
+    public int Tips { get; private set; }
+    public float SatisfactionTotal { get; private set; }
+    /// <summary>The last outcome card's words, for the checks.</summary>
+    public string LastOutcome { get; private set; } = "";
+    public event Action Hurried;
     /// <summary>Times a shelf spot was passed over because the clerk stood at it.</summary>
     public int SpotsSkippedForClerk { get; private set; }
     public int Bells { get; private set; }
@@ -108,7 +131,12 @@ public class CustomerDirector : MonoBehaviour
 
     Text hud, hudTitle, hudPayText, hudBagText, hudSpecialText;
     Image hudPay, hudBag, hudTime, hudSpecial;
-    Image hudBackground;
+    Image hudBackground, hudHalf;
+    RectTransform outcomePanel;
+    Text outcomeText;
+    CanvasGroup outcomeGroup;
+    Coroutine outcomeRun;
+    float linePenalty;
     Color hudColor;
     float flashUntil = -1f;
     bool hurried;
@@ -142,7 +170,10 @@ public class CustomerDirector : MonoBehaviour
         hudSpecial = WorldUi.AddBox(panel, 28f, 276f, 564f, 52f, WorldUi.Palette.Warn);
         hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 30, TextAnchor.MiddleCenter);
         hudSpecialText.fontStyle = FontStyle.Bold;
+        // Half way along the bar: finish while the bar is past this mark and it is a tip.
+        hudHalf = WorldUi.AddBox(panel, 28f + 564f * FastShare - 2f, 408f, 4f, 34f, Color.white);
         SetHudVisible(false);
+        BuildOutcomeCard();
         hudBackground = panel.GetComponent<Image>();
         hudColor = hudBackground.color;
         Pos.Changed += RefreshHud;
@@ -186,6 +217,9 @@ public class CustomerDirector : MonoBehaviour
         CustomerNumber = 0;
         EndedEarly = false;
         Hurries = Bells = 0;
+        Tips = 0;
+        SatisfactionTotal = 0f;
+        LastOutcome = "";
         Records.Clear();
         MaxPresent = MaxWaitingSeen = MaxLineSeen = MaxForOrdersInStore = MaxBrowsersSeen = MaxAtCounterSeen = 0;
         BrowsersSpawned = 0;
@@ -198,6 +232,13 @@ public class CustomerDirector : MonoBehaviour
         CustomerCharacter.ShortArrivalsAtClerk = 0;
         CustomerCharacter.StepAsides = 0;
         if (hud != null) hud.text = "";
+    }
+
+    /// <summary>Back to the title for the next person: the first-time guidance for the requests comes up again too.</summary>
+    public void ResetRun()
+    {
+        ResetDay();
+        specialsSeen.Clear();
     }
 
     public IEnumerator RunDay(List<Order> orders)
@@ -298,7 +339,9 @@ public class CustomerDirector : MonoBehaviour
         SpawnProducts(order);
         Pos.BeginOrder(order);
         BeginPayment(order);
-        remaining = order.TimeLimitSeconds;
+        linePenalty = order.Day > 1 && customer.Record.QueuedAt >= 0f ? LinePenalty(customer.Record.CalledAt - customer.Record.QueuedAt, order.TimeLimitSeconds) : 0f;
+        customer.Record.LinePenalty = linePenalty;
+        remaining = order.TimeLimitSeconds - linePenalty;
         customer.Record.ArrivedAt = Time.time;
         customer.Record.RemainingAtArrival = remaining;
         orderPaid = false;
@@ -331,6 +374,7 @@ public class CustomerDirector : MonoBehaviour
                     StartCoroutine(SayLater(customer, CustomerLine.Hurry, HurryVoiceDelay));
                 }
                 flashUntil = Time.time + 1.5f;
+                Hurried?.Invoke();
             }
             RefreshHud();
             if (remaining <= 0f)
@@ -346,15 +390,32 @@ public class CustomerDirector : MonoBehaviour
             yield return null;
         }
 
+        float shareLeft = order.TimeLimitSeconds > 0f ? Mathf.Clamp01(remaining / order.TimeLimitSeconds) : 0f;
+        customer.Record.ShareLeft = shareLeft;
         if (orderPaid)
         {
+            int total = Pos.Total;
             Paid++;
-            Sales += Pos.Total;
+            Sales += total;
+            bool fast = shareLeft >= FastShare;
+            int tip = fast ? TipFor(total) : 0;
+            float satisfaction = SatisfactionFor(shareLeft);
+            Tips += tip;
+            SatisfactionTotal += satisfaction;
+            customer.Record.Tip = tip;
+            customer.Record.Satisfaction = satisfaction;
+            ShowOutcome(fast ? $"+{total:N0}원  ·  팁 {tip:N0}원" : $"+{total:N0}원", fast ? WorldUi.Palette.Good : WorldUi.Palette.Text);
+            if (Audio)
+            {
+                Audio.Say(fast ? CustomerLine.ThanksFast : CustomerLine.Thanks, GameAudio.IsFemale(customer.Record.Avatar), Mouth(customer));
+                if (fast) Audio.PlayAt(StoreSound.Tip, Mouth(customer));
+            }
         }
         else
         {
             Left++;
             customer.Record.TimedOut = true;
+            ShowOutcome($"손님이 떠났습니다  ·  이탈 {Left}/{LeaveLimit}", WorldUi.Palette.Bad);
             if (Audio) Audio.Say(CustomerLine.Leave, GameAudio.IsFemale(customer.Record.Avatar), Mouth(customer));
         }
         customer.Record.DoneAt = Time.time;
@@ -370,6 +431,55 @@ public class CustomerDirector : MonoBehaviour
         AtCounter = null;
         behaviours[customer] = StartCoroutine(LeaveStore(customer, orderPaid));
         OrderEnded?.Invoke(order, orderPaid);
+    }
+
+    // ---------- What a customer is worth (game design 11) ----------
+
+    /// <summary>Full when paid before the half-time hurry, then down to 0.4 as the time runs out.</summary>
+    public static float SatisfactionFor(float shareLeft) => shareLeft >= FastShare ? 1f : Mathf.Lerp(LowestPaidSatisfaction, 1f, Mathf.Clamp01(shareLeft) / FastShare);
+
+    /// <summary>A tenth of the bill to the nearest 100 won, never less than 100 won.</summary>
+    public static int TipFor(int total) => Mathf.Max(TipStep, Mathf.RoundToInt(total * TipRate / TipStep) * TipStep);
+
+    public static float LinePenalty(float waitedInLine, float timeLimit) =>
+        Mathf.Clamp((waitedInLine - LineGraceSeconds) * LinePenaltyPerSecond, 0f, timeLimit * MaxLinePenaltyShare);
+
+    void BuildOutcomeCard()
+    {
+        if (OutcomeAnchor == null) return;
+        outcomePanel = WorldUi.CreatePanel(transform, "Outcome Card", OutcomeAnchor.position, OutcomeAnchor.rotation, new Vector2(620f, 120f), OutcomeMetersPerPixel, WorldUi.Palette.Panel);
+        outcomeText = WorldUi.AddText(outcomePanel, 10f, 0f, 600f, 120f, 46, TextAnchor.MiddleCenter);
+        outcomeText.fontStyle = FontStyle.Bold;
+        outcomeGroup = outcomePanel.gameObject.AddComponent<CanvasGroup>();
+        outcomePanel.gameObject.SetActive(false);
+    }
+
+    void ShowOutcome(string text, Color color)
+    {
+        LastOutcome = text;
+        if (outcomePanel == null) return;
+        outcomeText.text = text;
+        outcomeText.color = color;
+        if (outcomeRun != null) StopCoroutine(outcomeRun);
+        outcomeRun = StartCoroutine(FloatOutcome());
+    }
+
+    /// <summary>Rises a little over the counter and fades out, so it is seen at once and gone before the next customer.</summary>
+    IEnumerator FloatOutcome()
+    {
+        outcomePanel.gameObject.SetActive(true);
+        var start = OutcomeAnchor.position;
+        float elapsed = 0f;
+        while (elapsed < OutcomeSeconds)
+        {
+            elapsed += Time.deltaTime;
+            float k = Mathf.Clamp01(elapsed / OutcomeSeconds);
+            outcomePanel.position = start + Vector3.up * (OutcomeRise * k);
+            outcomeGroup.alpha = k < 0.7f ? 1f : Mathf.InverseLerp(1f, 0.7f, k);
+            yield return null;
+        }
+        outcomePanel.gameObject.SetActive(false);
+        outcomeRun = null;
     }
 
     // ---------- Voices (doc 6.1) ----------
@@ -771,8 +881,8 @@ public class CustomerDirector : MonoBehaviour
         if (Pos.Current == null || hud == null) return;
         var order = Pos.Current;
         SetHudVisible(true);
-        hudTitle.text = hurried ? $"손님 {CustomerNumber}   서둘러 주세요!" : $"손님 {CustomerNumber}";
-        hudTitle.color = hurried ? WorldUi.Palette.Warn : WorldUi.Palette.Text;
+        hudTitle.text = hurried ? $"손님 {CustomerNumber}   서둘러 주세요!" : linePenalty > 0f ? $"손님 {CustomerNumber}   오래 기다렸어요" : $"손님 {CustomerNumber}";
+        hudTitle.color = hurried || linePenalty > 0f ? WorldUi.Palette.Warn : WorldUi.Palette.Text;
         var text = new StringBuilder();
         foreach (var line in Pos.Lines)
             text.AppendLine($"{(Pos.LineDone(line) ? "✓" : "○")}  {WorldUi.Clean(line.Data.Name)}  {line.Scanned}/{line.Ordered}");
@@ -808,6 +918,7 @@ public class CustomerDirector : MonoBehaviour
         hudBag.gameObject.SetActive(order);
         hudTime.transform.parent.GetChild(hudTime.transform.GetSiblingIndex() - 1).gameObject.SetActive(order);
         hudTime.gameObject.SetActive(order);
+        if (hudHalf != null) hudHalf.gameObject.SetActive(order);
         if (!order) hudTitle.text = "";
     }
 }

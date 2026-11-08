@@ -65,13 +65,14 @@ public class PaymentDesk : MonoBehaviour
         return BillValues[BillValues.Length - 1];
     }
 
-    public void BeginCard(Func<bool> canPay, Action<string> onNotice, Action onDone)
+    /// <param name="label">What the card says on it: the customer's card, or the clerk's time card on the way in and out.</param>
+    public void BeginCard(Func<bool> canPay, Action<string> onNotice, Action onDone, string label = "카드")
     {
         ready = canPay;
         notify = onNotice;
         done = onDone;
         CardSlot.CanApprove = canPay;
-        CustomerCard = Spawn("Customer Card", CardSize, CardMaterial, 0, true, "카드", CustomerPlate.position);
+        CustomerCard = Spawn("Customer Card", CardSize, CardMaterial, 0, true, label, CustomerPlate.position);
     }
 
     public void BeginCash(int billValue, Func<bool> canPay, Func<int> due, Action<int> onReceived, Action<string> onNotice, Action onDone)

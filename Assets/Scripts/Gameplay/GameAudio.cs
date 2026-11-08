@@ -2,17 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding }
+public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip }
 
-/// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line and the four requests.</summary>
-public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus }
+/// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line, the four requests, and the two thanks.</summary>
+public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast }
+
+/// <summary>What the store manager says on the way in and at the end (game design 10.0, 2026-11-09).</summary>
+public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC }
 
 /// <summary>One voice's set of customer lines (the scene builder fills a female and a male set).</summary>
 [Serializable]
 public class CustomerVoice
 {
     public AudioClip[] Greet = new AudioClip[0];
-    public AudioClip Bag, Hurry, Leave, Microwave, HotWater, OnePlus;
+    public AudioClip Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast;
 
     public AudioClip Get(CustomerLine line, int variant)
     {
@@ -24,6 +27,8 @@ public class CustomerVoice
             case CustomerLine.Leave: return Leave;
             case CustomerLine.Microwave: return Microwave;
             case CustomerLine.HotWater: return HotWater;
+            case CustomerLine.Thanks: return Thanks;
+            case CustomerLine.ThanksFast: return ThanksFast;
             default: return OnePlus;
         }
     }
@@ -58,6 +63,9 @@ public class GameAudio : MonoBehaviour
     [Header("Requests (doc 6.4)")]
     public AudioClip DingClip;
 
+    [Header("Rewards (game design 11, 2026-11-09)")]
+    public AudioClip TipClip;
+
     [Header("Voices (doc 6.1, 5.6, 5.7.4)")]
     public CustomerVoice Female = new CustomerVoice();
     public CustomerVoice Male = new CustomerVoice();
@@ -67,6 +75,8 @@ public class GameAudio : MonoBehaviour
     public AudioClip[] IntakeLines = new AudioClip[0];
     /// <summary>Game design 10.3: the first time each request comes up. Microwave, hot water, 1+1.</summary>
     public AudioClip[] SpecialGuideLines = new AudioClip[0];
+    /// <summary>In the order of <see cref="ManagerLine"/>.</summary>
+    public AudioClip[] ManagerLines = new AudioClip[0];
 
     AudioSource speaker, narrator, ambience;
 
@@ -97,6 +107,7 @@ public class GameAudio : MonoBehaviour
         if (RecycleClip == null) RecycleClip = Tone("Recycle", 110f, 0.22f);
         if (DisposeClip == null) DisposeClip = Tone("Dispose", 330f, 0.12f);
         if (DingClip == null) DingClip = Chime("Ding", 1568f, 1568f, 0.6f);
+        if (TipClip == null) TipClip = Chime("Tip", 1568f, 2093f, 0.35f);
 
         narrator = gameObject.AddComponent<AudioSource>();
         narrator.spatialBlend = 0f;
@@ -136,6 +147,7 @@ public class GameAudio : MonoBehaviour
             case StoreSound.Door: clip = DoorClip; break;
             case StoreSound.Delivery: clip = DeliveryClip; break;
             case StoreSound.Ding: clip = DingClip; break;
+            case StoreSound.Tip: clip = TipClip; break;
             default: clip = ErrorClip; break;
         }
         if (clip != null) AudioSource.PlayClipAtPoint(clip, position, EffectVolume);
@@ -160,6 +172,8 @@ public class GameAudio : MonoBehaviour
     /// <summary>The guide line for a request that has come up for the first time.</summary>
     public void NarrateSpecial(string special) =>
         Narrate(SpecialGuideLines, special == Order.Microwave ? 0 : special == Order.HotWater ? 1 : special == Order.OnePlus ? 2 : -1);
+
+    public void NarrateManager(ManagerLine line) => Narrate(ManagerLines, (int)line);
 
     void Narrate(AudioClip[] lines, int index)
     {

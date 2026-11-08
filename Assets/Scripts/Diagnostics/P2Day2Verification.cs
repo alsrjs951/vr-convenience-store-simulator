@@ -820,8 +820,9 @@ public partial class P2DayVerification
         var director = Game.Director;
         var record = director.Records.Find(r => r.ForOrder && r.Sequence == number);
         if (!Check($"d2.order{number}.customer_record", record != null, "record")) return;
-        Check($"d2.order{number}.limit_120_from_counter_with_bell", Mathf.Approximately(record.RemainingAtArrival, 120f) && order.TimeLimitSeconds == 120f && director.Bells >= number,
-            $"limit at arrival={record.RemainingAtArrival:0.0}; bells={director.Bells}");
+        Check($"d2.order{number}.limit_120_from_counter_with_bell", Mathf.Approximately(record.RemainingAtArrival, 120f - record.LinePenalty)
+                && Mathf.Approximately(record.LinePenalty, record.QueuedAt >= 0f ? CustomerDirector.LinePenalty(record.CalledAt - record.QueuedAt, 120f) : 0f) && order.TimeLimitSeconds == 120f && director.Bells >= number,
+            $"limit at arrival={record.RemainingAtArrival:0.0}; off for the line={record.LinePenalty:0.0} (in line {(record.QueuedAt >= 0f ? record.CalledAt - record.QueuedAt : 0f):0.0}s); bells={director.Bells}");
     }
 
     /// <summary>A good product in the waste bin: error, a false disposal, and it is back in the basket.</summary>
@@ -861,8 +862,8 @@ public partial class P2DayVerification
             $"endedEarly={director.EndedEarly}; left={director.Left}; paid={director.Paid}; called={records.Count}; hurried=[{string.Join(", ", records.ConvertAll(r => (r.HurriedAt - r.ArrivedAt).ToString("0.0")))}]");
         bool timing = true;
         foreach (var r in records)
-            timing &= Mathf.Abs(r.DoneAt - r.ArrivedAt - 120f) < 0.3f && Mathf.Abs(r.HurriedAt - r.ArrivedAt - 60f) < 0.3f;
-        Check("d2.idle.timeout_120_hurry_60", timing, string.Join("; ", records.ConvertAll(r => $"#{r.Sequence} waited {r.DoneAt - r.ArrivedAt:0.00}s, hurried at {r.HurriedAt - r.ArrivedAt:0.00}s")));
+            timing &= Mathf.Abs(r.DoneAt - r.ArrivedAt - (120f - r.LinePenalty)) < 0.3f && Mathf.Abs(r.HurriedAt - r.ArrivedAt - (60f - r.LinePenalty)) < 0.3f;
+        Check("d2.idle.timeout_120_hurry_60", timing, string.Join("; ", records.ConvertAll(r => $"#{r.Sequence} waited {r.DoneAt - r.ArrivedAt:0.00}s, hurried at {r.HurriedAt - r.ArrivedAt:0.00}s, line penalty {r.LinePenalty:0.0}s")));
         Check("d2.idle.grade_c_with_reason", Game.Grade == "C" && Game.BoardText.Contains("이탈 3명") && director.HudText.Contains("마감"),
             $"grade={Game.Grade} score={Game.Score:0.0}; board={Game.BoardText}");
         yield return WaitUntil(() => director.Present.Count == 0, EmptyStoreTimeout, "d2.idle.store_empties");
@@ -877,7 +878,7 @@ public partial class P2DayVerification
         Check("d2.day.eight_processed_one_left", director.Paid + director.Left == 8 && director.Left == 1 && timedOut.Count == 1 && timedOut[0].Sequence == TimeoutOrder && !director.EndedEarly,
             $"paid={director.Paid}; left={director.Left}; timed out=[{string.Join(", ", timedOut.ConvertAll(r => r.Sequence.ToString()))}]");
         var leaver = timedOut.Count > 0 ? timedOut[0] : null;
-        Check("d2.day.leaver_hurried_and_no_wave", leaver != null && leaver.HurriedAt > 0f && Mathf.Abs(leaver.HurriedAt - leaver.ArrivedAt - 60f) < 0.3f && Mathf.Abs(leaver.DoneAt - leaver.ArrivedAt - 120f) < 0.3f && leaver.LeaveAnimationSeconds == 0f,
+        Check("d2.day.leaver_hurried_and_no_wave", leaver != null && leaver.HurriedAt > 0f && Mathf.Abs(leaver.HurriedAt - leaver.ArrivedAt - (60f - leaver.LinePenalty)) < 0.3f && Mathf.Abs(leaver.DoneAt - leaver.ArrivedAt - (120f - leaver.LinePenalty)) < 0.3f && leaver.LeaveAnimationSeconds == 0f,
             leaver == null ? "none" : $"hurried at {leaver.HurriedAt - leaver.ArrivedAt:0.00}s; left at {leaver.DoneAt - leaver.ArrivedAt:0.00}s; wave={leaver.LeaveAnimationSeconds}");
         var next = director.Records.Find(r => r.ForOrder && r.Sequence == TimeoutOrder + 1);
         Check("d2.day.next_called_15s_after_leaver", leaver != null && next != null && Mathf.Abs(next.CalledAt - leaver.DoneAt - 15f) < SpawnGapTolerance,
@@ -887,7 +888,9 @@ public partial class P2DayVerification
             $"shelved {Intake.Shelved}/{Intake.DeliveredTotal}; disposed {Intake.Disposed}/{Intake.ExpiredTotal}; misplaced {Intake.Misplaced}; false {Intake.FalseDisposals}; recycled {Intake.Recycled}; unrecycled {Intake.UnrecycledEmptyBoxes}; cancels {Game.Pos.CancelCount}");
         float salesRate = (float)director.Sales / Game.PossibleSales;
         float accuracy = 1f - 0.1f * (Intake.Misplaced + Intake.FalseDisposals);
-        float expected = 40f * salesRate + 25f * (1f - 1f / 8f) + 15f * accuracy + 20f * 1f;
+        float satisfaction = 0f;
+        foreach (var r in director.Records.FindAll(x => x.ForOrder)) satisfaction += r.TimedOut ? 0f : CustomerDirector.SatisfactionFor(r.ShareLeft);
+        float expected = 40f * salesRate + 25f * satisfaction / 8f + 15f * accuracy + 20f * 1f;
         Check("d2.day.score_formula", Mathf.Abs(Game.Score - expected) < 0.01f && Mathf.Approximately(Game.TaskRate, 1f) && Mathf.Approximately(Game.Accuracy, accuracy)
                 && Game.Grade == (expected >= 90f ? "S" : expected >= 75f ? "A" : expected >= 60f ? "B" : "C"),
             $"score={Game.Score:0.00} expected={expected:0.00} grade={Game.Grade}; sales {director.Sales}/{Game.PossibleSales}");

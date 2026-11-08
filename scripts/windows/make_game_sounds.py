@@ -190,6 +190,9 @@ def effects(out_dir):
     loop[:m] = pour[:m] * fade_in + pour[n:n + m] * (1 - fade_in)
     save(out_dir, 'sfx_water_pour', finish(loop, -9, fade=0))
 
+    # A tip: two quick bright notes, like a coin on a counter.
+    save(out_dir, 'sfx_tip', finish(cat(tone(1568, 0.09, chime, release=0.05), tone(2093, 0.22, chime, release=0.14)), -8))
+
 
 # ---------- voices ----------
 
@@ -242,7 +245,8 @@ def trim(x, sr, threshold=0.02, pad=0.06):
 
 # Lines said by customers come as a female (Heami) and a male (pitched down) version. Narration is Heami only.
 CUSTOMER_LINES = ['voice_greet_1', 'voice_greet_2', 'voice_bag', 'voice_hurry', 'voice_leave',
-                  'voice_special_microwave', 'voice_special_hotwater', 'voice_special_oneplus']
+                  'voice_special_microwave', 'voice_special_hotwater', 'voice_special_oneplus',
+                  'voice_thanks', 'voice_thanks_fast']
 MALE_FACTOR = 0.68   # about 200 Hz down to about 136 Hz
 
 

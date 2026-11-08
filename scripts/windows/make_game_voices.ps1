@@ -36,6 +36,16 @@ $lines = [ordered]@{
     "voice_guide_microwave"   = "데워 달라는 손님이에요. 스캔한 다음 오른쪽 벽 전자레인지에 넣고, 땡 소리가 나면 꺼내 주세요."
     "voice_guide_hotwater"    = "뜨거운 물을 부어 달라는 손님이에요. 스캔한 다음 오른쪽 벽 온수기 탭 아래에 잠깐 대 주세요."
     "voice_guide_oneplus"     = "원 플러스 원 행사예요. 두 개 모두 스캔하면 한 개 값만 계산돼요."
+    # Customers at the end of an order, and the store manager on the way in and out (game design 10.0, 11).
+    "voice_thanks"            = "감사합니다."
+    "voice_thanks_fast"       = "와, 빠르시네요. 감사합니다."
+    "voice_manager_welcome"   = "어서 와요, 점장이에요. 화살표를 따라 계산대 안쪽으로 들어오세요."
+    "voice_manager_punch_in"  = "왔어요? 계산대 위 출근 카드를 집어서, 단말기에 찍어 주세요."
+    "voice_manager_punch_out" = "수고 많았어요. 퇴근 카드 찍고 들어가세요."
+    "voice_ending_s"          = "정말 훌륭했어요. 다음 달부터 정식으로 같이 일해 볼래요?"
+    "voice_ending_a"          = "아주 잘했어요. 다음 주 근무표에도 이름 올려 둘게요."
+    "voice_ending_b"          = "수고했어요. 조금만 더 손에 익히면 금방 좋아질 거예요."
+    "voice_ending_c"          = "첫 알바는 원래 어려워요. 다음에 다시 한번 해 봐요."
 }
 
 foreach ($name in $lines.Keys) {

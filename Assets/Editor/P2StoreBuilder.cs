@@ -498,6 +498,8 @@ public static class P2StoreBuilder
             Marker("Browse Fridge R", new Vector3(0.6f, 0f, 3.98f), towardFront, customers),
         };
         director.Characters = characters;
+        var outcomePosition = new Vector3(0f, 1.28f, 0.98f);
+        director.OutcomeAnchor = Marker("Outcome Anchor", outcomePosition, Facing(outcomePosition), customers);
         director.BasketMaterial = Material("P2_Basket", new Color(0.78f, 0.12f, 0.1f));
         director.BodyMaterial = Material("P2_CustomerBody", new Color(0.35f, 0.5f, 0.65f));
 
@@ -550,6 +552,8 @@ public static class P2StoreBuilder
         intakeTutorial.Intake = intake;
         intakeTutorial.Preview = preview;
         game.IntakeTutorial = intakeTutorial;
+        game.Title = BuildTitle(desk, gameAudio, systems);
+        BuildWristWatch(game, director);
 
         var verification = new GameObject("P2 Day Verification").AddComponent<P2DayVerification>();
         verification.Intake = intake;
@@ -558,6 +562,7 @@ public static class P2StoreBuilder
         verification.Disposal = FindInScene<DisposalBinZone>();
         verification.RecycleBin = FindInScene<BoxRecycleZone>();
         verification.Game = game;
+        verification.Title = game.Title;
         verification.Screen = screen;
         verification.Scanner = scanner;
         verification.Bag = bagZone;
@@ -570,6 +575,93 @@ public static class P2StoreBuilder
     }
 
     static Quaternion Facing(Vector3 position) => Quaternion.LookRotation(position - EyePosition);
+
+    // ---------- The way in (game design 10.0, 2026-11-09) ----------
+
+    // On the porch, a metre from the closed door, which is where the title is read. The porch is 1.5 m deep and the door
+    // 2.4 m wide; the leaves slide into the wall either side of it and the title panel is on them.
+    static readonly Vector3 TitleStand = new Vector3(-5.55f, 0f, DoorCenter.z);
+    // Along the customers' side, round the counter's left end the check walks too (x = -1.6), to the clerk's start.
+    static readonly Vector3[] CommuteRoute = { new Vector3(-4.1f, 0f, 2.3f), new Vector3(-1.6f, 0f, 1.5f), new Vector3(-1.6f, 0f, 0.05f), new Vector3(-0.45f, 0f, 0f) };
+
+    /// <summary>
+    /// The door, the title's and guide's places, and the floor arrows. All of it is made after the NavMesh bake and left
+    /// switched off in the scene, so customers' routes and every check that runs without the title see the store as before.
+    /// </summary>
+    static TitleFlow BuildTitle(PaymentDesk desk, GameAudio audio, Transform systems)
+    {
+        var origin = UnityEngine.Object.FindFirstObjectByType<XROrigin>() ?? throw new Exception("XR Origin missing.");
+        var root = new GameObject("Title").transform;
+        var title = root.gameObject.AddComponent<TitleFlow>();
+        title.transform.SetParent(systems, false);
+        title.Rig = origin;
+        title.Move = origin.GetComponentInChildren<DynamicMoveProvider>(true);
+        title.Vignette = origin.GetComponentInChildren<TunnelingVignetteController>(true);
+        title.Desk = desk;
+        title.Audio = audio;
+        var towardStore = Quaternion.LookRotation(Vector3.right);
+        title.StandSpot = Marker("Title Stand", TitleStand, towardStore, root);
+        title.PanelAnchor = Marker("Title Panel Anchor", new Vector3(DoorCenter.x - 0.04f, 1.42f, DoorCenter.z), towardStore, root);
+        var guidePosition = new Vector3(-3.0f, 1.9f, 1.75f);
+        title.GuideAnchor = Marker("Commute Guide Anchor", guidePosition, Quaternion.LookRotation(guidePosition - new Vector3(DoorCenter.x, 1.5f, DoorCenter.z)), root);
+        title.CounterSpot = Marker("Counter Spot", Vector3.zero, Quaternion.identity, root);
+
+        // Dong-A grey (429C): the navy title panel has to stand out from the door it is on.
+        var doorMaterial = Material("P2_TitleDoor", new Color(0.635f, 0.667f, 0.678f));
+        title.DoorLeaves = new[]
+        {
+            Box("Title Door Near", new Vector3(DoorCenter.x, DoorHeight * 0.5f, DoorCenter.z - DoorWidth * 0.25f - 0.002f), new Vector3(0.06f, DoorHeight, DoorWidth * 0.5f), doorMaterial, root, true).transform,
+            Box("Title Door Far", new Vector3(DoorCenter.x, DoorHeight * 0.5f, DoorCenter.z + DoorWidth * 0.25f + 0.002f), new Vector3(0.06f, DoorHeight, DoorWidth * 0.5f), doorMaterial, root, true).transform,
+        };
+        foreach (var leaf in title.DoorLeaves) leaf.gameObject.SetActive(false);
+        title.LeafSlide = new Vector3(0f, 0f, DoorWidth * 0.5f - 0.02f);
+
+        var path = new GameObject("Commute Path").transform;
+        path.SetParent(root, false);
+        var yellow = UnlitMaterial("P2_OutlineYellow", new Color(1f, 0.85f, 0.1f));
+        var green = UnlitMaterial("P2_OutlineGreen", new Color(0.2f, 0.95f, 0.3f));
+        for (int i = 1; i < CommuteRoute.Length; i++)
+        {
+            var from = CommuteRoute[i - 1];
+            var along = CommuteRoute[i] - from;
+            int chevrons = Mathf.Max(1, Mathf.RoundToInt(along.magnitude / 0.55f));
+            for (int c = 0; c < chevrons; c++)
+                Chevron(path, from + along * ((c + 0.5f) / chevrons), along.normalized, yellow);
+        }
+        const float ringNear = -0.55f, ringFar = 0.25f, ringHalf = 0.5f, bar = 0.05f, lift = 0.008f;
+        Box("Ring Near", new Vector3(0f, lift, ringNear), new Vector3(ringHalf * 2f, 0.004f, bar), green, path, false);
+        Box("Ring Far", new Vector3(0f, lift, ringFar), new Vector3(ringHalf * 2f, 0.004f, bar), green, path, false);
+        Box("Ring L", new Vector3(-ringHalf, lift, (ringNear + ringFar) * 0.5f), new Vector3(bar, 0.004f, ringFar - ringNear), green, path, false);
+        Box("Ring R", new Vector3(ringHalf, lift, (ringNear + ringFar) * 0.5f), new Vector3(bar, 0.004f, ringFar - ringNear), green, path, false);
+        path.gameObject.SetActive(false);
+        title.CommutePath = path.gameObject;
+        return title;
+    }
+
+    /// <summary>A flat arrowhead on the floor, pointing along <paramref name="direction"/>. Opaque, so it never blends with splats.</summary>
+    static void Chevron(Transform parent, Vector3 center, Vector3 direction, Material material)
+    {
+        const float reach = 0.15f, length = 0.21f, width = 0.05f, lift = 0.008f;
+        var facing = Quaternion.LookRotation(direction, Vector3.up);
+        foreach (float side in new[] { -1f, 1f })
+        {
+            var arm = Box("Chevron Arm", center + Vector3.up * lift + facing * new Vector3(side * reach * 0.5f, 0f, -reach * 0.5f), new Vector3(width, 0.004f, length), material, parent, false);
+            arm.transform.rotation = facing * Quaternion.Euler(0f, -side * 45f, 0f);
+        }
+    }
+
+    /// <summary>On the back of the left hand, tilted toward the eyes. The canvas reads from behind its forward; its top is toward the fingers.</summary>
+    static void BuildWristWatch(GameManager game, CustomerDirector director)
+    {
+        var origin = UnityEngine.Object.FindFirstObjectByType<XROrigin>() ?? throw new Exception("XR Origin missing.");
+        var left = origin.transform.Find("Camera Offset/Left Controller") ?? throw new Exception("Left Controller missing.");
+        var watch = new GameObject("Wrist Watch").AddComponent<WristWatch>();
+        watch.transform.SetParent(left, false);
+        watch.transform.localPosition = new Vector3(0f, 0.04f, -0.1f);
+        watch.transform.localRotation = Quaternion.LookRotation(new Vector3(0f, -0.87f, 0.5f), new Vector3(0f, 0.5f, 0.87f));
+        watch.Game = game;
+        watch.Director = director;
+    }
 
     // P3-K3 sounds, made by scripts/windows/make_game_sounds.py (effects synthesized, voices from the Windows Korean TTS).
     const string SoundFolder = "Assets/Audio/Generated";
@@ -585,6 +677,8 @@ public static class P2StoreBuilder
     {
         Greet = new[] { Sound($"voice_greet_1_{gender}"), Sound($"voice_greet_2_{gender}") },
         Bag = Sound($"voice_bag_{gender}"),
+        Thanks = Sound($"voice_thanks_{gender}"),
+        ThanksFast = Sound($"voice_thanks_fast_{gender}"),
         Hurry = Sound($"voice_hurry_{gender}"),
         Leave = Sound($"voice_leave_{gender}"),
         Microwave = Sound($"voice_special_microwave_{gender}"),
@@ -618,11 +712,17 @@ public static class P2StoreBuilder
         audio.RecycleClip = Sound("sfx_box_recycle");
         audio.DisposeClip = Sound("sfx_dispose");
         audio.DingClip = Sound("sfx_microwave_ding");
+        audio.TipClip = Sound("sfx_tip");
         audio.Female = Voice("f");
         audio.Male = Voice("m");
         audio.TutorialLines = Lines("voice_tutorial", 6);
         audio.IntakeLines = Lines("voice_intake", 4);
         audio.SpecialGuideLines = new[] { Sound("voice_guide_microwave"), Sound("voice_guide_hotwater"), Sound("voice_guide_oneplus") };
+        audio.ManagerLines = new[]
+        {
+            Sound("voice_manager_welcome"), Sound("voice_manager_punch_in"), Sound("voice_manager_punch_out"),
+            Sound("voice_ending_s"), Sound("voice_ending_a"), Sound("voice_ending_b"), Sound("voice_ending_c"),
+        };
     }
 
     /// <summary>
