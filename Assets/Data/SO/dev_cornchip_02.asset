@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad13ab4d240a8aa49b24456cbb01bf9c, type: 3}
+  m_Name: dev_cornchip_02
+  m_EditorClassIdentifier: Assembly-CSharp::ProductData
+  Id: dev_cornchip_02
+  Name: "\uCF58\uCE69 (\uAC1C\uBC1C\uC6A9, 11/07 \uC7AC\uCD2C\uC601)"
+  Price: 0
+  SizeCm: {x: 20, y: 32.70199, z: 8.972839}
+  BarcodeFace: 1
+  SplatAsset: {fileID: 11400000, guid: 3d11582523c999a4d94f14b681692086, type: 2}
+  OrderCatalogFlags: 0
+  SizeIsMeasured: 0
+  BarcodeLocalNormal: {x: 0, y: 0, z: -1}

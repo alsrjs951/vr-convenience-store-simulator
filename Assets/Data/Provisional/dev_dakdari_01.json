@@ -1,0 +1,19 @@
+{
+  "id": "dev_dakdari_01",
+  "capture_id": "capture_01",
+  "display_name": "닭다리 (개발용)",
+  "price": 1500,
+  "splat_asset": "Assets/GaussianSplats/DakdariRefined/dakdari.asset",
+  "box_fit": "Assets/Data/Provisional/dev_dakdari_01.box_fit.json",
+  "scene": "Assets/Scenes/DakdariInteraction.unity",
+  "evidence_dir": "docs/p1/evidence/dakdari_interaction",
+  "provisional_width_m": 0.2,
+  "provisional_mass_kg": 0.1,
+  "barcode_face": "Side",
+  "barcode_local_normal": {
+    "x": -1,
+    "y": 0,
+    "z": 0
+  },
+  "note": "NOT measured. Width, mass and price are development placeholders (not real prices); height and depth follow the reconstruction's ratios. Do not copy to Data/products.csv."
+}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad13ab4d240a8aa49b24456cbb01bf9c, type: 3}
+  m_Name: dev_kkobukchip_01
+  m_EditorClassIdentifier: Assembly-CSharp::ProductData
+  Id: dev_kkobukchip_01
+  Name: "\uAF2C\uBD81\uCE69 \uCF58\uC2A4\uD504\uB9DB (\uAC1C\uBC1C\uC6A9)"
+  Price: 2000
+  SizeCm: {x: 20, y: 23.760872, z: 7.144931}
+  BarcodeFace: 1
+  SplatAsset: {fileID: 11400000, guid: 8a44def5ca8a5f84a901b8c1a64c8ef5, type: 2}
+  OrderCatalogFlags: 0
+  SizeIsMeasured: 0
+  BarcodeLocalNormal: {x: 0, y: 0, z: -1}

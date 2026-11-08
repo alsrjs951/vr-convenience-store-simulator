@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad13ab4d240a8aa49b24456cbb01bf9c, type: 3}
+  m_Name: dev_sunchip_01
+  m_EditorClassIdentifier: Assembly-CSharp::ProductData
+  Id: dev_sunchip_01
+  Name: "\uC36C\uCE69 (\uAC1C\uBC1C\uC6A9)"
+  Price: 1800
+  SizeCm: {x: 20, y: 26.200222, z: 7.2215214}
+  BarcodeFace: 1
+  SplatAsset: {fileID: 11400000, guid: 488d9c850f547bc4b9eef28dc5af73f3, type: 2}
+  OrderCatalogFlags: 0
+  SizeIsMeasured: 0
+  BarcodeLocalNormal: {x: 0, y: 0, z: -1}

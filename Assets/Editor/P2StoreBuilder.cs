@@ -1,0 +1,1088 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Unity.XR.CoreUtils;
+using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.EventSystems;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion.Turning;
+using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
+using UnityEngine.XR.Interaction.Toolkit.UI;
+
+/// <summary>
+/// Builds StoreScene: a counter-centered Day 1 layout. Sizes and layout are working values until the
+/// real layout (P3-K1) exists. Product data here is provisional and never comes from Data/products.csv.
+/// </summary>
+public static class P2StoreBuilder
+{
+    const string StoreScene = "Assets/Scenes/StoreScene.unity";
+    const string BaseScene = "Assets/Scenes/DakdariRefined.unity";
+    const string CatalogPath = "Assets/Data/SO/ProductCatalog.asset";
+    // Doc 6.5: the order scenario is Data/scenarios.csv at the repository root (designer-owned). The build copies it into
+    // the project as a TextAsset, after checking every row of every day parses against the catalog.
+    const string ScenarioSource = "Data/scenarios.csv";
+    const string ScenarioPath = "Assets/Data/Generated/scenarios.csv";
+    const int ScenarioDays = 3;
+    const string DeliveriesPath = "Assets/Data/Provisional/day2_deliveries.csv";
+    const string ManifestFolder = "Assets/Data/Provisional";
+    const string MaterialFolder = "Assets/Materials/P2";
+    const string Evidence = "docs/p2/evidence/day1";
+    const string PlayerPath = "Builds/Store/VRStore.exe";
+    const string SimulatorPrefab = "Assets/Samples/XR Interaction Toolkit/3.6.1/XR Device Simulator/XR Device Simulator.prefab";
+    const string VignettePrefab = "Assets/Samples/XR Interaction Toolkit/3.6.1/Starter Assets/TunnelingVignette/TunnelingVignette.prefab";
+
+    // Free movement, design doc D11 and 5.1.
+    const int PlayerLayer = 14;
+    const float MoveSpeed = 1.5f;
+    const float SnapTurnDegrees = 45f;
+    const float CapsuleRadius = 0.2f;
+    // The Starter Assets skin of 0.08 would keep the body 0.28 m from walls instead of the 0.2 m the doc asks for.
+    const float CapsuleSkin = 0.02f;
+
+    // Customers (doc 6.1, D12). Layout of 2026-11-08 (game design 4.2 as the clerk sees it): the door is in the left wall
+    // just in front of the counter, the drinks fridges fill the far (front) wall, gondolas A and B face the counter with the
+    // queue running between them, and the microwave/hot water corner and shelf C stand along the right wall.
+    const string NavMeshPath = "Assets/Data/Navigation/StoreNavMesh.asset";
+    const float AgentRadius = 0.25f;
+    const float CounterFar = 0.95f;
+    static readonly Vector3 DoorCenter = new Vector3(-4.5f, 0f, 2.4f);
+    // 2.4 m so a customer coming in and one going out can pass in the doorway (agents are 0.5 m across). At 1.4 m they
+    // could not (2026-11-08, IL2CPP player run); at 2.0 m in the left wall one still waited out a warp there.
+    const float DoorWidth = 2.4f, DoorHeight = 2.2f, VestibuleDepth = 1.5f;
+
+    const float CounterTop = 0.9f;
+
+    // Day 2 intake (doc 5.7, 6.4). Slot assignment is provisional (game design 19). Everything in the clerk's area keeps off
+    // the routes the locomotion check walks: along the back wall (z < -1.95), the start lane near x = 0, the walks from the
+    // start (+x along z = 0.05, the diagonal to (1.04, -1.01)), the room-scale walk to the right wall along z = -0.13 and
+    // the slide down that wall to z = -0.84 (x > 4.0), the lane up x = 1.6 past the counter's right end, and the way back
+    // round the counter's left end (x = -1.5, then z = 0). The stands sit at the gondolas' outer ends (by the walls) with the
+    // delivery slots beside them, so the clerk works away from the middle aisle the customers use: at the inner ends the
+    // standing clerk's NavMesh hole closed that crossing (three warps in the IL2CPP player run, 2026-11-08).
+    const float ShelfFront = 2.95f, ShelfBack = 3.45f, ShelfWidth = 1.5f, ShelfHeight = 1.8f;
+    const float ShelfAX = -2.2f, ShelfBX = 2.2f;
+    static readonly float[] ShelfBoardTops = { 0.55f, 1.0f, 1.4f };
+    const float StandTop = 0.8f;
+    static readonly Vector3 StandACenter = new Vector3(-3.2f, 0f, 3.25f), StandBCenter = new Vector3(3.2f, 0f, 3.25f);
+    static readonly Vector3 CartCenter = new Vector3(3.5f, 0f, -1.55f);
+    const float CartWidth = 1.1f, CartSpotOffset = 0.28f;
+    static readonly Vector3 RecycleCenter = new Vector3(2.6f, 0f, -1.575f);
+    static readonly Vector3 RecycleSize = new Vector3(0.6f, 0.7f, 0.65f);
+    static readonly Vector3 DisposalCenter = new Vector3(-1.0f, 0f, -0.7f);
+    // A card whose centre comes this close to its seat in the terminal slot is pulled in. The seat is half a card inside the
+    // face, so this starts about 3 cm before the card's front edge reaches the opening.
+    const float CardSnapMeters = 0.08f;
+    // Barcode roughly toward the pad. A product standing on the pad, with its barcode facing sideways, does not scan.
+    const float MaxBarcodeAngle = 50f;
+    static readonly Vector3 EyePosition = new Vector3(0f, 1.36f, 0f);
+
+    [Serializable] class Manifest { public string id, display_name; public int price; }
+
+    [MenuItem("Tools/P2/Build Store Scene")]
+    public static void Build()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Exit Play first.");
+        if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        Directory.CreateDirectory(MaterialFolder);
+        AssetDatabase.Refresh();
+        EnsurePlayerLayer();
+        var catalog = BuildCatalog();
+        var characters = P2CustomerSetup.Setup();
+        BuildScene(catalog, characters);
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[P2] Store scene built with {catalog.Products.Count} products.");
+    }
+
+    /// <summary>Every scene places this prefab, so the guard on it covers them all. Re-importing the XRI sample drops it.</summary>
+    [MenuItem("Tools/P2/Install Simulator HMD Guard")]
+    public static void InstallSimulatorGuard()
+    {
+        var root = PrefabUtility.LoadPrefabContents(SimulatorPrefab);
+        try
+        {
+            if (root.GetComponent<SimulatorHmdGuard>() != null)
+            {
+                Debug.Log("[P2] Simulator guard already installed.");
+                return;
+            }
+            root.AddComponent<SimulatorHmdGuard>();
+            PrefabUtility.SaveAsPrefabAsset(root, SimulatorPrefab);
+            Debug.Log("[P2] Simulator guard installed.");
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
+    /// <summary>Doc 5.1: the player's capsule touches only the environment, never what it carries or what lies around.</summary>
+    static void EnsurePlayerLayer()
+    {
+        var tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
+        var name = tagManager.FindProperty("layers").GetArrayElementAtIndex(PlayerLayer);
+        if (name.stringValue != "Player")
+        {
+            if (!string.IsNullOrEmpty(name.stringValue)) throw new Exception($"Layer {PlayerLayer} is already used by {name.stringValue}.");
+            name.stringValue = "Player";
+            tagManager.ApplyModifiedPropertiesWithoutUndo();
+        }
+        for (int other = 0; other < 32; other++)
+            Physics.IgnoreLayerCollision(PlayerLayer, other, other != 0);
+        EditorUtility.SetDirty(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/DynamicsManager.asset")[0]);
+    }
+
+    /// <summary>
+    /// The Starter Assets rig already has the left stick moving and the right stick snap turning. This sets the doc's
+    /// values, turns off everything the doc does not want (teleport, jump, climb, continuous turn, turn-around), and
+    /// adds the vignette, which the rig does not include.
+    /// </summary>
+    static void ConfigureLocomotion()
+    {
+        var origin = UnityEngine.Object.FindFirstObjectByType<XROrigin>() ?? throw new Exception("XR Origin missing.");
+        var root = origin.gameObject;
+        root.layer = PlayerLayer;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(root);
+
+        // Standing play: the counter and shelves are at real heights, so the player's real floor has to be the store's.
+        origin.RequestedTrackingOriginMode = XROrigin.TrackingOriginMode.Floor;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(origin);
+
+        var capsule = root.GetComponent<CharacterController>();
+        capsule.radius = CapsuleRadius;
+        capsule.skinWidth = CapsuleSkin;
+        capsule.center = new Vector3(0f, capsule.height * 0.5f + CapsuleSkin, 0f);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(capsule);
+
+        // Real walking: the capsule stops at obstacles instead of following the head into them.
+        var transformer = new SerializedObject(root.GetComponentInChildren<XRBodyTransformer>(true));
+        transformer.FindProperty("m_BodyPositionEvaluatorObject").objectReferenceValue = root.AddComponent<RoomScaleBody>();
+        transformer.ApplyModifiedPropertiesWithoutUndo();
+        var gravity = root.GetComponentInChildren<GravityProvider>(true);
+        gravity.updateCharacterControllerCenterEachFrame = false;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(gravity);
+
+        var move = root.GetComponentInChildren<DynamicMoveProvider>(true);
+        move.moveSpeed = MoveSpeed;
+        move.enableStrafe = true;
+        move.enableFly = false;
+        move.leftHandMovementDirection = DynamicMoveProvider.MovementDirection.HeadRelative;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(move);
+
+        var snap = root.GetComponentInChildren<SnapTurnProvider>(true);
+        snap.turnAmount = SnapTurnDegrees;
+        snap.enableTurnLeftRight = true;
+        snap.enableTurnAround = false;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(snap);
+
+        var continuousTurn = root.GetComponentInChildren<ContinuousTurnProvider>(true);
+        continuousTurn.enabled = false;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(continuousTurn);
+
+        // Doc 5.1: customers steer around the player; no physics between them.
+        root.AddComponent<NavMeshObstacle>();
+        root.AddComponent<PlayerNavObstacle>();
+
+        foreach (var path in new[]
+                 {
+                     "Locomotion/Teleportation", "Locomotion/Climb", "Locomotion/Jump", "Locomotion/Grab Move",
+                     "Camera Offset/Left Controller Teleport Stabilized Origin", "Camera Offset/Right Controller Teleport Stabilized Origin"
+                 })
+            Deactivate((root.transform.Find(path) ?? throw new Exception("Rig has no " + path)).gameObject);
+
+        foreach (var manager in root.GetComponentsInChildren<ControllerInputActionManager>(true))
+        {
+            var fields = new SerializedObject(manager);
+            var interactor = (Component)fields.FindProperty("m_TeleportInteractor").objectReferenceValue;
+            if (interactor == null) throw new Exception("No teleport interactor on " + manager.name);
+            Deactivate(interactor.gameObject);
+            // Without these, pushing the right stick forward would still try to aim a teleport.
+            fields.FindProperty("m_TeleportInteractor").objectReferenceValue = null;
+            fields.FindProperty("m_TeleportMode").objectReferenceValue = null;
+            fields.FindProperty("m_TeleportModeCancel").objectReferenceValue = null;
+            fields.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(VignettePrefab) ?? throw new Exception("Vignette prefab missing.");
+        var vignette = (GameObject)PrefabUtility.InstantiatePrefab(prefab, origin.Camera.transform);
+        vignette.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        var controller = vignette.GetComponent<TunnelingVignetteController>();
+        // A snap turn is over in a frame or two, too short to fade in unless the fade-in is allowed to finish.
+        var snapParameters = new VignetteParameters();
+        snapParameters.CopyFrom(controller.defaultParameters);
+        snapParameters.easeInTimeLock = true;
+        controller.locomotionVignetteProviders = new List<LocomotionVignetteProvider>
+        {
+            new LocomotionVignetteProvider { locomotionProvider = move, enabled = true },
+            new LocomotionVignetteProvider { locomotionProvider = snap, enabled = true, overrideDefaultParameters = true, overrideParameters = snapParameters },
+        };
+        PrefabUtility.RecordPrefabInstancePropertyModifications(controller);
+    }
+
+    static void Deactivate(GameObject target)
+    {
+        target.SetActive(false);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+    }
+
+    static ProductCatalog BuildCatalog()
+    {
+        var catalog = AssetDatabase.LoadAssetAtPath<ProductCatalog>(CatalogPath);
+        if (catalog == null)
+        {
+            catalog = ScriptableObject.CreateInstance<ProductCatalog>();
+            AssetDatabase.CreateAsset(catalog, CatalogPath);
+        }
+        catalog.Products.Clear();
+        foreach (var path in Directory.GetFiles(ManifestFolder, "dev_*.json"))
+        {
+            if (path.EndsWith(".box_fit.json")) continue;
+            var manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(path));
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{manifest.id}.prefab");
+            if (prefab == null) throw new Exception("Prefab missing for " + manifest.id);
+            var product = prefab.GetComponent<ProductPrefab>();
+            product.Data.Name = manifest.display_name;
+            product.Data.Price = manifest.price;
+            EditorUtility.SetDirty(product.Data);
+            catalog.Products.Add(product);
+        }
+        EditorUtility.SetDirty(catalog);
+        return catalog;
+    }
+
+    static void BuildScene(ProductCatalog catalog, CustomerCharacter[] characters)
+    {
+        var scene = EditorSceneManager.OpenScene(BaseScene, OpenSceneMode.Single);
+        foreach (var root in scene.GetRootGameObjects())
+            if (root.name == "Nerfstudio Coordinate Conversion" || root.name == "Trial Verification" || root.name == "TestCam")
+                UnityEngine.Object.DestroyImmediate(root);
+        P1InteractionTrial.EnableNearGrabOnProductLayer();
+        ConfigureLocomotion();
+
+        new GameObject("EventSystem", typeof(EventSystem), typeof(XRUIInputModule));
+        var light = new GameObject("Directional Light").AddComponent<Light>();
+        light.type = LightType.Directional;
+        light.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+
+        var floorCollider = GameObject.Find("P0 Floor") ?? throw new Exception("P0 Floor missing.");
+        floorCollider.AddComponent<ProductRespawnSurface>();
+
+        var white = Material("P2_Wall", new Color(0.78f, 0.78f, 0.74f));
+        var floor = Material("P2_Floor", new Color(0.42f, 0.43f, 0.45f));
+        var wood = Material("P2_Counter", new Color(0.62f, 0.5f, 0.38f));
+        var dark = Material("P2_Device", new Color(0.13f, 0.14f, 0.16f));
+        var shelf = Material("P2_Shelf", new Color(0.55f, 0.6f, 0.65f));
+        var red = Material("P2_ScannerPad", new Color(0.8f, 0.08f, 0.08f));
+        var bag = Material("P2_Bag", new Color(0.9f, 0.9f, 0.86f));
+
+        var environment = new GameObject("Environment").transform;
+        Box("Floor Visual", new Vector3(0f, -0.05f, 1.5f), new Vector3(9f, 0.1f, 8f), floor, environment, false);
+        Box("Back Wall", new Vector3(0f, 1.5f, -2.5f), new Vector3(9f, 3f, 0.1f), white, environment, true);
+        // The door customers come in by (D12) is in the left wall in front of the counter, so the clerk sees who comes in:
+        // an open doorway onto a short porch, so they walk in instead of appearing in the room. The locomotion check meets
+        // the left wall behind the counter (z = -2.2), clear of the door.
+        float doorNear = DoorCenter.z - DoorWidth * 0.5f, doorFar = DoorCenter.z + DoorWidth * 0.5f;
+        Box("Front Wall", new Vector3(0f, 1.5f, 5.5f), new Vector3(9f, 3f, 0.1f), white, environment, true);
+        Box("Left Wall Back", new Vector3(-4.5f, 1.5f, (-2.5f + doorNear) * 0.5f), new Vector3(0.1f, 3f, doorNear + 2.5f), white, environment, true);
+        Box("Left Wall Front", new Vector3(-4.5f, 1.5f, (doorFar + 5.5f) * 0.5f), new Vector3(0.1f, 3f, 5.5f - doorFar), white, environment, true);
+        Box("Door Lintel", new Vector3(-4.5f, (DoorHeight + 3f) * 0.5f, DoorCenter.z), new Vector3(0.1f, 3f - DoorHeight, DoorWidth), white, environment, true);
+        var porch = Material("P2_Porch", new Color(0.16f, 0.17f, 0.19f));
+        float porchX = -4.5f - VestibuleDepth * 0.5f;
+        Box("Porch Floor", new Vector3(porchX, -0.05f, DoorCenter.z), new Vector3(VestibuleDepth, 0.1f, DoorWidth + 0.2f), porch, environment, false);
+        Box("Porch Wall Near", new Vector3(porchX, 1.5f, doorNear - 0.1f), new Vector3(VestibuleDepth, 3f, 0.1f), porch, environment, true);
+        Box("Porch Wall Far", new Vector3(porchX, 1.5f, doorFar + 0.1f), new Vector3(VestibuleDepth, 3f, 0.1f), porch, environment, true);
+        Box("Porch Back", new Vector3(-4.5f - VestibuleDepth - 0.05f, 1.5f, DoorCenter.z), new Vector3(0.1f, 3f, DoorWidth + 0.3f), porch, environment, true);
+        Box("Porch Roof", new Vector3(porchX, DoorHeight + 0.05f, DoorCenter.z), new Vector3(VestibuleDepth, 0.1f, DoorWidth + 0.3f), porch, environment, false);
+        Box("Right Wall", new Vector3(4.5f, 1.5f, 1.5f), new Vector3(0.1f, 3f, 8f), white, environment, true);
+        // Gondolas with boards (Day 2 puts products on them), fronts toward the counter, the queue between them.
+        Gondola("Shelf A", ShelfAX, shelf, environment);
+        Gondola("Shelf B", ShelfBX, shelf, environment);
+        Box("Counter", new Vector3(0f, CounterTop * 0.5f, 0.65f), new Vector3(2f, CounterTop, 0.6f), wood, environment, true);
+
+        // ---------- Scanner: a solid pad with a thin zone on top, so only the face touching the pad can scan ----------
+        var padTop = CounterTop + 0.05f;
+        Box("Scanner Pad", new Vector3(0f, CounterTop + 0.025f, 0.55f), new Vector3(0.2f, 0.05f, 0.2f), dark, environment, true);
+        var scannerMark = Box("Scanner Red Mark", new Vector3(0f, padTop + 0.001f, 0.55f), new Vector3(0.18f, 0.002f, 0.18f), red, environment, false);
+        var scannerObject = new GameObject("ScannerZone") { layer = LayerMask.NameToLayer("Scanner") };
+        scannerObject.transform.position = new Vector3(0f, padTop + 0.004f, 0.55f);
+        var scannerCollider = scannerObject.AddComponent<BoxCollider>();
+        scannerCollider.isTrigger = true;
+        scannerCollider.size = new Vector3(0.18f, 0.008f, 0.18f);
+        var scanner = scannerObject.AddComponent<ScannerZone>();
+        scanner.Indicator = scannerMark.GetComponent<Renderer>();
+        scanner.MaxBarcodeAngle = MaxBarcodeAngle;
+        AddLabel(scannerObject.transform, "스캐너");
+
+        // ---------- Systems ----------
+        var systems = new GameObject("Systems").transform;
+        var audioObject = new GameObject("Counter Audio");
+        audioObject.transform.SetParent(systems, false);
+        audioObject.transform.position = new Vector3(0f, 1.1f, 0.7f);
+        var gameAudio = audioObject.AddComponent<GameAudio>();
+        AssignSounds(gameAudio, scanner);
+
+        var pos = new GameObject("POSController").AddComponent<POSController>();
+        pos.transform.SetParent(systems, false);
+        pos.Scanner = scanner;
+        pos.Audio = gameAudio;
+
+        // ---------- Bag ----------
+        var bagCenter = new Vector3(-0.4f, CounterTop, 0.56f);
+        var bagRoot = new GameObject("Bag").transform;
+        bagRoot.position = bagCenter;
+        const float bagWidth = 0.32f, bagDepth = 0.26f, wallHeight = 0.08f, wall = 0.008f;
+        Box("Bag Wall L", bagCenter + new Vector3(-bagWidth * 0.5f, wallHeight * 0.5f, 0f), new Vector3(wall, wallHeight, bagDepth), bag, bagRoot, true);
+        Box("Bag Wall R", bagCenter + new Vector3(bagWidth * 0.5f, wallHeight * 0.5f, 0f), new Vector3(wall, wallHeight, bagDepth), bag, bagRoot, true);
+        Box("Bag Wall F", bagCenter + new Vector3(0f, wallHeight * 0.5f, -bagDepth * 0.5f), new Vector3(bagWidth, wallHeight, wall), bag, bagRoot, true);
+        Box("Bag Wall B", bagCenter + new Vector3(0f, wallHeight * 0.5f, bagDepth * 0.5f), new Vector3(bagWidth, wallHeight, wall), bag, bagRoot, true);
+        var bagZoneObject = new GameObject("BagZone") { layer = LayerMask.NameToLayer("Zone") };
+        bagZoneObject.transform.SetParent(bagRoot, false);
+        bagZoneObject.transform.position = bagCenter + Vector3.up * 0.16f;
+        var bagCollider = bagZoneObject.AddComponent<BoxCollider>();
+        bagCollider.isTrigger = true;
+        bagCollider.size = new Vector3(bagWidth, 0.32f, bagDepth);
+        var bagZone = bagZoneObject.AddComponent<BagZone>();
+        bagZone.Pos = pos;
+        bagZone.Audio = gameAudio;
+        AddLabel(bagRoot, "비닐봉투");
+
+        // ---------- Payment ----------
+        // The card slot is a real opening in the face toward the clerk, so a card physically goes in. On Quest 2 a plain box
+        // with an invisible zone above it left the wearer guessing where and which way the card went.
+        var terminal = new Vector3(0.82f, CounterTop, 0.52f);
+        const float terminalWidth = 0.16f, terminalHeight = 0.08f, terminalDepth = 0.2f;
+        const float slotWidth = 0.09f, slotGap = 0.02f, slotDepth = 0.07f, slotBottom = 0.015f, frameBar = 0.006f;
+        float face = terminal.z - terminalDepth * 0.5f;
+        float slotTop = slotBottom + slotGap;
+        float slotMiddle = slotBottom + slotGap * 0.5f;
+        float sideWidth = (terminalWidth - slotWidth) * 0.5f;
+        float backDepth = terminalDepth - slotDepth;
+        var terminalScreen = Material("P2_TerminalScreen", new Color(0.35f, 0.5f, 0.55f));
+        var frameIdle = Material("P2_CardSlotFrame", new Color(0.95f, 0.78f, 0.2f));
+        var frameLit = Material("P2_CardSlotFrameLit", new Color(0.25f, 0.85f, 0.35f));
+        var terminalRoot = new GameObject("Card Terminal").transform;
+        terminalRoot.SetParent(environment, false);
+        terminalRoot.position = terminal + Vector3.up * 0.16f;
+        var terminalBody = new[]
+        {
+            Box("Terminal Base", terminal + Vector3.up * (slotBottom * 0.5f), new Vector3(terminalWidth, slotBottom, terminalDepth), dark, terminalRoot, true),
+            Box("Terminal Top", terminal + Vector3.up * ((slotTop + terminalHeight) * 0.5f), new Vector3(terminalWidth, terminalHeight - slotTop, terminalDepth), dark, terminalRoot, true),
+            Box("Terminal Side L", terminal + new Vector3(-(slotWidth + sideWidth) * 0.5f, slotMiddle, 0f), new Vector3(sideWidth, slotGap, terminalDepth), dark, terminalRoot, true),
+            Box("Terminal Side R", terminal + new Vector3((slotWidth + sideWidth) * 0.5f, slotMiddle, 0f), new Vector3(sideWidth, slotGap, terminalDepth), dark, terminalRoot, true),
+            Box("Terminal Slot Back", new Vector3(terminal.x, CounterTop + slotMiddle, face + slotDepth + backDepth * 0.5f), new Vector3(slotWidth, slotGap, backDepth), dark, terminalRoot, true),
+        };
+        Box("Terminal Screen", terminal + new Vector3(0f, terminalHeight + 0.0015f, 0.03f), new Vector3(0.12f, 0.003f, 0.09f), terminalScreen, terminalRoot, false);
+        float frameZ = face - 0.002f;
+        var slotFrame = new[]
+        {
+            Box("Slot Frame Top", new Vector3(terminal.x, CounterTop + slotTop + frameBar * 0.5f, frameZ), new Vector3(slotWidth + 2f * frameBar, frameBar, 0.004f), frameIdle, terminalRoot, false),
+            Box("Slot Frame Bottom", new Vector3(terminal.x, CounterTop + slotBottom - frameBar * 0.5f, frameZ), new Vector3(slotWidth + 2f * frameBar, frameBar, 0.004f), frameIdle, terminalRoot, false),
+            Box("Slot Frame L", new Vector3(terminal.x - (slotWidth + frameBar) * 0.5f, CounterTop + slotMiddle, frameZ), new Vector3(frameBar, slotGap, 0.004f), frameIdle, terminalRoot, false),
+            Box("Slot Frame R", new Vector3(terminal.x + (slotWidth + frameBar) * 0.5f, CounterTop + slotMiddle, frameZ), new Vector3(frameBar, slotGap, 0.004f), frameIdle, terminalRoot, false),
+        };
+
+        var cardObject = new GameObject("CardSlotZone") { layer = LayerMask.NameToLayer("Zone") };
+        // Inside the opening only, from 5 mm in: the card counts once it has gone in, not while it is held in front of the slot.
+        const float zoneDepth = 0.06f;
+        cardObject.transform.position = new Vector3(terminal.x, CounterTop + slotMiddle, face + 0.005f + zoneDepth * 0.5f);
+        var cardCollider = cardObject.AddComponent<BoxCollider>();
+        cardCollider.isTrigger = true;
+        cardCollider.size = new Vector3(slotWidth, slotGap, zoneDepth);
+        // Half in, half out, the way a card sits in a reader. The half inside is hidden by the terminal's top.
+        var guide = Box("Card Guide", new Vector3(terminal.x, CounterTop + slotMiddle, face), PaymentDesk.CardSize,
+            TransparentMaterial("P2_CardGuide", new Color(0.35f, 0.6f, 1f, 0.4f)), cardObject.transform, false);
+        guide.SetActive(false);
+
+        // Catches the card at the opening and seats it in the guide's pose, held or let go.
+        var socketObject = new GameObject("Card Slot Socket") { layer = LayerMask.NameToLayer("Zone") };
+        socketObject.transform.SetParent(terminalRoot, false);
+        socketObject.transform.position = new Vector3(terminal.x, CounterTop + slotMiddle, face - 0.03f);
+        var socketCollider = socketObject.AddComponent<BoxCollider>();
+        socketCollider.isTrigger = true;
+        socketCollider.size = new Vector3(0.14f, 0.08f, 0.1f);
+        var seat = new GameObject("Card Seat").transform;
+        seat.SetParent(socketObject.transform, false);
+        seat.SetPositionAndRotation(guide.transform.position, guide.transform.rotation);
+        var socket = socketObject.AddComponent<CardSlotSocket>();
+        socket.attachTransform = seat;
+        socket.hoverSocketSnapping = true;
+        socket.socketSnappingRadius = CardSnapMeters;
+        socket.showInteractableHoverMeshes = false;
+        socket.TerminalBody = Array.ConvertAll(terminalBody, part => part.GetComponent<Collider>());
+
+        var cardSlot = cardObject.AddComponent<CardSlotZone>();
+        cardSlot.Audio = gameAudio;
+        cardSlot.Guide = guide;
+        cardSlot.Frame = Array.ConvertAll(slotFrame, part => part.GetComponent<Renderer>());
+        cardSlot.FrameIdle = frameIdle;
+        cardSlot.FrameLit = frameLit;
+        AddLabel(terminalRoot, "카드 단말기");
+
+        var drawerCenter = new Vector3(-0.78f, CounterTop, 0.56f);
+        Box("Drawer Base", drawerCenter + Vector3.up * 0.002f, new Vector3(0.36f, 0.004f, 0.4f), dark, environment, false);
+        var drawerObject = new GameObject("CashDrawerZone") { layer = LayerMask.NameToLayer("Zone") };
+        drawerObject.transform.position = drawerCenter + Vector3.up * 0.1f;
+        var drawerCollider = drawerObject.AddComponent<BoxCollider>();
+        drawerCollider.isTrigger = true;
+        drawerCollider.size = new Vector3(0.36f, 0.2f, 0.4f);
+        var drawer = drawerObject.AddComponent<CashDrawerZone>();
+        AddLabel(drawerObject.transform, "현금 서랍");
+
+        var trayCenter = new Vector3(-0.3f, CounterTop, 0.84f);
+        Box("Change Tray", trayCenter + Vector3.up * 0.002f, new Vector3(0.3f, 0.004f, 0.2f), shelf, environment, false);
+        var trayObject = new GameObject("ChangeTrayZone") { layer = LayerMask.NameToLayer("Zone") };
+        trayObject.transform.position = trayCenter + Vector3.up * 0.07f;
+        var trayCollider = trayObject.AddComponent<BoxCollider>();
+        trayCollider.isTrigger = true;
+        trayCollider.size = new Vector3(0.3f, 0.14f, 0.2f);
+        var tray = trayObject.AddComponent<ChangeTrayZone>();
+        tray.Audio = gameAudio;
+        AddLabel(trayObject.transform, "거스름돈 접시");
+
+        var plate = new Vector3(0.14f, CounterTop, 0.84f);
+        Box("Customer Plate", plate + Vector3.up * 0.002f, new Vector3(0.24f, 0.004f, 0.18f), shelf, environment, false);
+        var plateMark = new GameObject("Customer Plate Anchor").transform;
+        plateMark.position = plate;
+        AddLabel(plateMark, "손님 접시");
+
+        var desk = new GameObject("PaymentDesk").AddComponent<PaymentDesk>();
+        desk.transform.SetParent(systems, false);
+        desk.CardSlot = cardSlot;
+        desk.Drawer = drawer;
+        desk.Tray = tray;
+        desk.Audio = gameAudio;
+        desk.CustomerPlate = plateMark;
+        desk.Stock100 = Marker("Stock 100", drawerCenter + new Vector3(-0.1f, 0f, -0.12f));
+        desk.Stock500 = Marker("Stock 500", drawerCenter + new Vector3(0.1f, 0f, -0.12f));
+        desk.Stock1000 = Marker("Stock 1000", drawerCenter + new Vector3(-0.09f, 0f, 0.1f));
+        desk.Stock5000 = Marker("Stock 5000", drawerCenter + new Vector3(0.09f, 0f, 0.1f));
+        desk.CardMaterial = Material("P2_Card", new Color(0.25f, 0.45f, 0.85f));
+        desk.BillMaterial = Material("P2_Bill", new Color(0.65f, 0.82f, 0.62f));
+        desk.CoinMaterial = Material("P2_Coin", new Color(0.82f, 0.74f, 0.45f));
+
+        // ---------- Customers (doc 2.3 Customers/, 6.1, D12), tutorial, game ----------
+        var basket = Marker("Basket Anchor", new Vector3(0.3f, CounterTop, 0.68f));
+        var directorPosition = new Vector3(0.62f, 1.32f, 0.98f);
+        var director = new GameObject("CustomerDirector").AddComponent<CustomerDirector>();
+        director.transform.SetPositionAndRotation(directorPosition, Facing(directorPosition));
+        director.Pos = pos;
+        director.Desk = desk;
+        director.Audio = gameAudio;
+        director.BasketAnchor = basket;
+        // Marker forward is the way a customer faces there: toward the clerk at the counter and in line, toward the shelf when browsing.
+        var customers = new GameObject("Customers").transform;
+        var towardClerk = Quaternion.Euler(0f, 180f, 0f);
+        var towardFront = Quaternion.identity;
+        director.Door = Marker("Door", new Vector3(DoorCenter.x - VestibuleDepth + 0.4f, 0f, DoorCenter.z), Quaternion.Euler(0f, 90f, 0f), customers);
+        director.Counter = Marker("Counter Front", new Vector3(0f, 0f, 1.35f), towardClerk, customers);
+        // The line stands along the counter on the side away from the door, so leaving customers do not cut through it. Not
+        // straight back toward the gondolas: a line there walls the store in two (2026-11-08 layout, customers stuck).
+        director.QueueSlots = new[]
+        {
+            Marker("Queue 1", new Vector3(0.85f, 0f, 1.5f), towardClerk, customers),
+            Marker("Queue 2", new Vector3(1.7f, 0f, 1.65f), towardClerk, customers),
+        };
+        director.BrowseSpots = new[]
+        {
+            // In front of the gondolas and in front of the fridges. Not in the 1 m aisles behind the gondolas: a customer
+            // standing there is a carved obstacle and closes the aisle (2026-11-08, two warps in the day 1 and 2 runs).
+            Marker("Browse Shelf A", new Vector3(ShelfAX, 0f, 2.45f), towardFront, customers),
+            Marker("Browse Fridge L", new Vector3(-0.6f, 0f, 3.98f), towardFront, customers),
+            Marker("Browse Shelf B", new Vector3(ShelfBX, 0f, 2.45f), towardFront, customers),
+            Marker("Browse Fridge R", new Vector3(0.6f, 0f, 3.98f), towardFront, customers),
+        };
+        director.Characters = characters;
+        director.BasketMaterial = Material("P2_Basket", new Color(0.78f, 0.12f, 0.1f));
+        director.BodyMaterial = Material("P2_CustomerBody", new Color(0.35f, 0.5f, 0.65f));
+
+        // The intake furniture (stands, bins, cart) goes in first: the NavMesh has to know the stands are solid.
+        var intake = BuildIntake(catalog, gameAudio, environment, systems);
+        // P3-K1 looks (textures, ceiling, fridges, stock shelf) before the bake: the fridges and the shelf are solid.
+        P3StoreDressing.Dress(environment);
+        var navMesh = BakeNavMesh(environment);
+        CheckNavMesh(navMesh, director);
+        Directory.CreateDirectory(Path.GetDirectoryName(NavMeshPath));
+        AssetDatabase.CreateAsset(navMesh, NavMeshPath);
+        var navObject = new GameObject("Store NavMesh").AddComponent<StoreNavMesh>();
+        navObject.transform.SetParent(environment, false);
+        navObject.Data = navMesh;
+
+        var screenPosition = new Vector3(-0.62f, 1.32f, 0.98f);
+        var screen = new GameObject("POSScreen").AddComponent<POSScreen>();
+        screen.transform.SetPositionAndRotation(screenPosition, Facing(screenPosition));
+        screen.Pos = pos;
+
+        var tutorial = new GameObject("TutorialController").AddComponent<TutorialController>();
+        tutorial.transform.SetParent(systems, false);
+        tutorial.Catalog = catalog;
+        tutorial.Scanner = scanner;
+        tutorial.Bag = bagZone;
+        tutorial.Desk = desk;
+        tutorial.BasketAnchor = basket;
+
+        var boardPosition = new Vector3(0f, 1.95f, 1.3f);
+        var boardAnchor = new GameObject("Board Anchor").transform;
+        boardAnchor.SetPositionAndRotation(boardPosition, Facing(boardPosition));
+        var game = new GameObject("GameManager").AddComponent<GameManager>();
+        game.transform.SetParent(systems, false);
+        game.Scenario = ImportScenario(catalog);
+        game.Catalog = catalog;
+        game.Pos = pos;
+        game.Director = director;
+        game.Tutorial = tutorial;
+        game.BoardAnchor = boardAnchor;
+
+        game.MoreScenarios = new TextAsset[0];
+        game.LastDay = 2;
+        game.Intake = intake;
+        var preview = new GameObject("PlacementPreview").AddComponent<PlacementPreview>();
+        preview.transform.SetParent(systems, false);
+        preview.Intake = intake;
+        var intakeTutorial = new GameObject("IntakeTutorial").AddComponent<IntakeTutorial>();
+        intakeTutorial.transform.SetParent(systems, false);
+        intakeTutorial.Intake = intake;
+        intakeTutorial.Preview = preview;
+        game.IntakeTutorial = intakeTutorial;
+
+        var verification = new GameObject("P2 Day Verification").AddComponent<P2DayVerification>();
+        verification.Intake = intake;
+        verification.Preview = preview;
+        verification.IntakeTutorial = intakeTutorial;
+        verification.Disposal = FindInScene<DisposalBinZone>();
+        verification.RecycleBin = FindInScene<BoxRecycleZone>();
+        verification.Game = game;
+        verification.Screen = screen;
+        verification.Scanner = scanner;
+        verification.Bag = bagZone;
+        verification.Desk = desk;
+        new GameObject("P2 Locomotion Verification").AddComponent<P2LocomotionVerification>();
+        // P3 counter devices and screens: looks only, after everything they sit around exists.
+        P3StoreDressing.DressCounter(environment, new Vector3(-0.62f, 1.32f, 0.98f), new Vector3(0.62f, 1.32f, 0.98f), EyePosition);
+
+        if (!EditorSceneManager.SaveScene(scene, StoreScene)) throw new Exception("Scene save failed.");
+    }
+
+    static Quaternion Facing(Vector3 position) => Quaternion.LookRotation(position - EyePosition);
+
+    // P3-K3 sounds, made by scripts/windows/make_game_sounds.py (effects synthesized, voices from the Windows Korean TTS).
+    const string SoundFolder = "Assets/Audio/Generated";
+
+    static AudioClip Sound(string name)
+    {
+        var clip = AssetDatabase.LoadAssetAtPath<AudioClip>($"{SoundFolder}/{name}.wav");
+        if (clip == null) throw new Exception($"Sound missing: {SoundFolder}/{name}.wav");
+        return clip;
+    }
+
+    static CustomerVoice Voice(string gender) => new CustomerVoice
+    {
+        Greet = new[] { Sound($"voice_greet_1_{gender}"), Sound($"voice_greet_2_{gender}") },
+        Bag = Sound($"voice_bag_{gender}"),
+        Hurry = Sound($"voice_hurry_{gender}"),
+        Leave = Sound($"voice_leave_{gender}"),
+        Microwave = Sound($"voice_special_microwave_{gender}"),
+        HotWater = Sound($"voice_special_hotwater_{gender}"),
+        OnePlus = Sound($"voice_special_oneplus_{gender}"),
+    };
+
+    static AudioClip[] Lines(string stem, int count)
+    {
+        var clips = new AudioClip[count];
+        for (int i = 0; i < count; i++) clips[i] = Sound($"{stem}_{i + 1}");
+        return clips;
+    }
+
+    static void AssignSounds(GameAudio audio, ScannerZone scanner)
+    {
+        scanner.BeepClip = Sound("sfx_scan");
+        audio.ErrorClip = Sound("sfx_error");
+        audio.ApprovedClip = Sound("sfx_card_approved");
+        audio.DrawerClip = Sound("sfx_drawer");
+        audio.CancelClip = Sound("sfx_cancel");
+        audio.BellClip = Sound("sfx_counter_bell");
+        audio.DoorClip = Sound("sfx_door_chime");
+        audio.HurryClip = Sound("sfx_hurry");
+        audio.DeliveryClip = Sound("sfx_delivery");
+        audio.Ambience = Sound("amb_store_loop");
+        audio.ThudClip = Sound("sfx_box_thud");
+        audio.TapeClip = Sound("sfx_tape");
+        audio.FlapClip = Sound("sfx_flap");
+        audio.PlaceClip = Sound("sfx_place");
+        audio.RecycleClip = Sound("sfx_box_recycle");
+        audio.DisposeClip = Sound("sfx_dispose");
+        audio.Female = Voice("f");
+        audio.Male = Voice("m");
+        audio.TutorialLines = Lines("voice_tutorial", 6);
+        audio.IntakeLines = Lines("voice_intake", 4);
+    }
+
+    /// <summary>Copies Data/scenarios.csv into Assets and fails the build if any row of any day is skipped or a day is empty.</summary>
+    static TextAsset ImportScenario(ProductCatalog catalog)
+    {
+        if (!File.Exists(ScenarioSource)) throw new Exception("Scenario missing: " + ScenarioSource);
+        var text = File.ReadAllText(ScenarioSource);
+        // A fresh list straight from the prefabs: the catalog's references can be stale after the character setup's imports.
+        _ = catalog;
+        catalog = ScriptableObject.CreateInstance<ProductCatalog>();
+        foreach (var path in Directory.GetFiles(ManifestFolder, "dev_*.json"))
+        {
+            if (path.EndsWith(".box_fit.json")) continue;
+            var id = JsonUtility.FromJson<Manifest>(File.ReadAllText(path)).id;
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{id}.prefab")?.GetComponent<ProductPrefab>();
+            if (prefab != null) catalog.Products.Add(prefab);
+        }
+        var skipped = new List<string>();
+        var counts = new List<string>();
+        for (int day = 1; day <= ScenarioDays; day++)
+        {
+            var orders = DayScenarioLoader.Parse(text, day, catalog, day == 1 ? skipped : null);
+            if (orders.Count == 0) throw new Exception($"{ScenarioSource} has no orders for day {day}.");
+            counts.Add($"day {day}: {orders.Count}");
+        }
+        if (skipped.Count > 0) throw new Exception($"{ScenarioSource}: {skipped.Count} rows skipped:\n" + string.Join("\n", skipped));
+        Directory.CreateDirectory(Path.GetDirectoryName(ScenarioPath));
+        File.WriteAllText(ScenarioPath, text);
+        AssetDatabase.ImportAsset(ScenarioPath);
+        Debug.Log($"[P2] Scenario imported from {ScenarioSource}: {string.Join(", ", counts)}");
+        return AssetDatabase.LoadAssetAtPath<TextAsset>(ScenarioPath) ?? throw new Exception("Scenario import failed: " + ScenarioPath);
+    }
+
+    static T FindInScene<T>() where T : UnityEngine.Object => UnityEngine.Object.FindFirstObjectByType<T>() ?? throw new Exception(typeof(T).Name + " missing.");
+
+    /// <summary>A double-sided gondola: base, spine, end panels, three boards and a top, inside the old block's footprint.</summary>
+    static void Gondola(string name, float centerX, Material material, Transform environment)
+    {
+        var root = new GameObject(name).transform;
+        root.SetParent(environment, false);
+        float z = (ShelfFront + ShelfBack) * 0.5f, depth = ShelfBack - ShelfFront;
+        Box(name + " Base", new Vector3(centerX, 0.05f, z), new Vector3(ShelfWidth, 0.1f, depth), material, root, true);
+        Box(name + " Spine", new Vector3(centerX, ShelfHeight * 0.5f, z), new Vector3(ShelfWidth, ShelfHeight, 0.03f), material, root, true);
+        Box(name + " End L", new Vector3(centerX - ShelfWidth * 0.5f + 0.01f, ShelfHeight * 0.5f, z), new Vector3(0.02f, ShelfHeight, depth), material, root, true);
+        Box(name + " End R", new Vector3(centerX + ShelfWidth * 0.5f - 0.01f, ShelfHeight * 0.5f, z), new Vector3(0.02f, ShelfHeight, depth), material, root, true);
+        foreach (var top in ShelfBoardTops)
+            Box($"{name} Board {top:0.00}", new Vector3(centerX, top - 0.01f, z), new Vector3(ShelfWidth, 0.02f, depth), material, root, true);
+        Box(name + " Top", new Vector3(centerX, ShelfHeight - 0.01f, z), new Vector3(ShelfWidth, 0.02f, depth), material, root, true);
+    }
+
+    /// <summary>
+    /// Day 2 intake (doc 5.7, 6.4): slots on the shelves' fronts, a stand with a cutter beside each shelf end, the delivery
+    /// cart and the empty-box bin at the warehouse door behind the counter, the waste bin next to the counter, and guide
+    /// panels by the shelves and the cart. The slot assignment is provisional (game design 19: 권도훈, 11/12).
+    /// </summary>
+    static IntakeDirector BuildIntake(ProductCatalog catalog, GameAudio audio, Transform environment, Transform systems)
+    {
+        var yellow = UnlitMaterial("P2_OutlineYellow", new Color(1f, 0.85f, 0.1f));
+        var green = UnlitMaterial("P2_OutlineGreen", new Color(0.2f, 0.95f, 0.3f));
+        var red = UnlitMaterial("P2_OutlineRed", new Color(0.95f, 0.15f, 0.12f));
+        var cardboard = Material("P2_Cardboard", new Color(0.72f, 0.56f, 0.38f));
+        var tape = Material("P2_Tape", new Color(0.55f, 0.42f, 0.25f));
+        var hole = Material("P2_HandHole", new Color(0.08f, 0.07f, 0.06f));
+        var standMaterial = Material("P2_Stand", new Color(0.3f, 0.33f, 0.36f));
+        var cutterMaterial = Material("P2_CutterHandle", new Color(0.95f, 0.55f, 0.1f));
+        var bladeMaterial = Material("P2_CutterBlade", new Color(0.75f, 0.78f, 0.8f));
+        var binMaterial = Material("P2_Bin", new Color(0.2f, 0.35f, 0.25f));
+        var recycleMaterial = Material("P2_RecycleBin", new Color(0.25f, 0.3f, 0.45f));
+
+        var intake = new GameObject("IntakeDirector").AddComponent<IntakeDirector>();
+        intake.transform.SetParent(systems, false);
+        intake.Deliveries = AssetDatabase.LoadAssetAtPath<TextAsset>(DeliveriesPath) ?? throw new Exception("Deliveries missing: " + DeliveriesPath);
+        intake.Catalog = catalog;
+        intake.Audio = audio;
+        intake.Cardboard = cardboard;
+        intake.Tape = tape;
+        intake.Hole = hole;
+        intake.Bead = yellow;
+        intake.Hint = yellow;
+
+        // Slots on the shelf fronts facing the counter. Two take deliveries on Day 2 (day2_deliveries.csv), three hold stock.
+        var slots = new GameObject("Shelf Slots").transform;
+        intake.Slots = new[]
+        {
+            // The delivery slots (A-2, B-1) on the halves by the stands.
+            Slot("A-1", "dev_cheetos_01", 2, 1, ShelfAX + 0.34f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
+            Slot("A-2", "dev_shinramen_01", 3, 2, ShelfAX - 0.24f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
+            Slot("A-3", "dev_squidpeanut_01", 2, 1, ShelfAX + 0.34f, ShelfBoardTops[2], catalog, yellow, green, red, audio, slots),
+            Slot("B-1", "dev_goraebap_01", 2, 2, ShelfBX + 0.35f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
+            Slot("B-2", "dev_ogamja_01", 2, 1, ShelfBX - 0.13f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
+        };
+
+        // Stands and cutters (doc 5.7.1 B2, B3; 5.7.3 one cutter per stand).
+        var stands = new List<BoxStandSocket>();
+        var cutters = new List<BoxCutter>();
+        foreach (var (letter, center) in new[] { ("A", StandACenter), ("B", StandBCenter) })
+        {
+            var standRoot = new GameObject("Box Stand " + letter).transform;
+            standRoot.SetParent(environment, false);
+            standRoot.position = center + Vector3.up * StandTop;
+            Box($"Stand {letter} Body", center + Vector3.up * (StandTop * 0.5f), new Vector3(0.5f, StandTop, 0.5f), standMaterial, standRoot, true);
+            var socketObject = new GameObject($"BoxStandSocket {letter}") { layer = LayerMask.NameToLayer("Zone") };
+            socketObject.transform.SetParent(standRoot, false);
+            socketObject.transform.position = center + Vector3.up * (StandTop + 0.17f);
+            var trigger = socketObject.AddComponent<BoxCollider>();
+            trigger.isTrigger = true;
+            trigger.size = new Vector3(0.7f, 0.42f, 0.5f);
+            var seat = new GameObject("Box Seat").transform;
+            seat.SetParent(socketObject.transform, false);
+            seat.SetPositionAndRotation(center + Vector3.up * StandTop, Quaternion.identity);
+            var socket = socketObject.AddComponent<BoxStandSocket>();
+            socket.Shelf = letter;
+            socket.attachTransform = seat;
+            socket.hoverSocketSnapping = false;
+            socket.showInteractableHoverMeshes = false;
+            stands.Add(socket);
+
+            // The cutter lies along the stand's aisle edge, in front of the box.
+            var holder = new GameObject($"Cutter Holder {letter}").transform;
+            holder.SetParent(standRoot, false);
+            holder.SetPositionAndRotation(center + new Vector3(0f, StandTop + 0.013f, -0.19f), Quaternion.identity);
+            cutters.Add(Cutter(letter, holder, cutterMaterial, bladeMaterial));
+        }
+        intake.Stands = stands.ToArray();
+        intake.Cutters = cutters.ToArray();
+
+        // Warehouse door, delivery cart and the empty-box bin behind the counter (zone 6).
+        var warehouse = new GameObject("Warehouse Door").transform;
+        warehouse.SetParent(environment, false);
+        warehouse.position = new Vector3(CartCenter.x, 2.1f, -2.35f);
+        Box("Warehouse Door Panel", new Vector3(CartCenter.x, 1.05f, -2.44f), new Vector3(1.2f, 2.1f, 0.02f), Material("P2_WarehouseDoor", new Color(0.32f, 0.27f, 0.22f)), warehouse, false);
+        AddBackLabel(warehouse, "창고 입구");
+        var cart = new GameObject("Intake Cart").transform;
+        cart.SetParent(environment, false);
+        cart.position = CartCenter + Vector3.up * StandTop;
+        Box("Cart Body", CartCenter + Vector3.up * 0.4f, new Vector3(CartWidth, 0.8f, 0.6f), standMaterial, cart, true);
+        intake.CartSpots = new[]
+        {
+            Marker("Cart Spot 1", CartCenter + new Vector3(-CartSpotOffset, StandTop, 0f), Quaternion.Euler(0f, 180f, 0f), cart),
+            Marker("Cart Spot 2", CartCenter + new Vector3(CartSpotOffset, StandTop, 0f), Quaternion.Euler(0f, 180f, 0f), cart),
+        };
+        // Beside the cart along the back, so the box walk ends where it began.
+        var recycle = OpenBin("Empty Box Bin", RecycleCenter, RecycleSize, recycleMaterial, environment, false);
+        var recycleZone = Zone<BoxRecycleZone>("BoxRecycleZone", recycle, RecycleCenter + Vector3.up * 0.4f, new Vector3(RecycleSize.x - 0.05f, 0.6f, RecycleSize.z - 0.05f));
+        recycleZone.Intake = intake;
+        AddBackLabel(recycle, "빈 박스 수거함");
+
+        // Waste bin by the counter on the clerk's side (zone 5).
+        var waste = OpenBin("Waste Bin", DisposalCenter, new Vector3(0.4f, 0.8f, 0.4f), binMaterial, environment, true);
+        var wasteZone = Zone<DisposalBinZone>("DisposalBinZone", waste, DisposalCenter + Vector3.up * 0.45f, new Vector3(0.36f, 0.62f, 0.36f));
+        wasteZone.Intake = intake;
+        AddBackLabel(waste, "폐기함");
+
+        // Guide panels where the work is: above each shelf, facing the aisle, and above the cart, facing the counter.
+        var guides = new GameObject("Intake Guides").transform;
+        guides.SetParent(systems, false);
+        intake.GuideAnchors = new[]
+        {
+            Marker("Intake Guide A", new Vector3(ShelfAX, 2.12f, ShelfFront - 0.02f), Quaternion.identity, guides),
+            Marker("Intake Guide B", new Vector3(ShelfBX, 2.12f, ShelfFront - 0.02f), Quaternion.identity, guides),
+            Marker("Intake Guide Cart", new Vector3(CartCenter.x, 1.85f, -2.05f), Quaternion.Euler(0f, 180f, 0f), guides),
+        };
+        return intake;
+    }
+
+    static ShelfSlotZone Slot(string id, string productId, int columns, int rows, float centerX, float boardTop, ProductCatalog catalog,
+        Material yellow, Material green, Material red, GameAudio audio, Transform parent)
+    {
+        // Straight from the prefab: the catalog's references can go stale after the character setup imports assets.
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{productId}.prefab")?.GetComponent<ProductPrefab>()
+                     ?? throw new Exception("Slot product missing: " + productId);
+        _ = catalog;
+        var size = prefab.Proxy.size;
+        var go = new GameObject("Slot " + id) { layer = LayerMask.NameToLayer("Zone") };
+        go.transform.SetParent(parent, false);
+        go.transform.SetPositionAndRotation(new Vector3(centerX, boardTop, ShelfFront + 0.005f), Quaternion.identity);
+        var slot = go.AddComponent<ShelfSlotZone>();
+        slot.SlotId = id;
+        slot.ProductId = productId;
+        slot.Columns = columns;
+        slot.Rows = rows;
+        slot.CellWidth = size.x + 0.02f;
+        slot.CellDepth = size.z + 0.02f;
+        slot.ProductHeight = size.y;
+        slot.Yellow = yellow;
+        slot.Green = green;
+        slot.Red = red;
+        slot.Audio = audio;
+        var zone = go.GetComponent<BoxCollider>();
+        zone.isTrigger = true;
+        float height = size.y + 0.03f;
+        zone.size = new Vector3(columns * slot.CellWidth, height, rows * slot.CellDepth);
+        zone.center = new Vector3(0f, height * 0.5f, rows * slot.CellDepth * 0.5f);
+        if (go.transform.position.z + rows * slot.CellDepth > (ShelfFront + ShelfBack) * 0.5f - 0.015f) throw new Exception($"Slot {id} is deeper than the shelf face.");
+        return slot;
+    }
+
+    static BoxCutter Cutter(string letter, Transform holder, Material handleMaterial, Material bladeMaterial)
+    {
+        var root = new GameObject($"Box Cutter {letter}") { layer = LayerMask.NameToLayer("Interactable") };
+        root.transform.SetPositionAndRotation(holder.position, holder.rotation);
+        var handle = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        handle.name = "Handle";
+        handle.layer = root.layer;
+        handle.transform.SetParent(root.transform, false);
+        handle.transform.localScale = new Vector3(0.12f, 0.024f, 0.03f);
+        handle.GetComponent<Renderer>().sharedMaterial = handleMaterial;
+        var blade = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        blade.name = "Blade";
+        UnityEngine.Object.DestroyImmediate(blade.GetComponent<Collider>());
+        blade.transform.SetParent(root.transform, false);
+        blade.transform.localPosition = new Vector3(0.08f, -0.004f, 0f);
+        blade.transform.localScale = new Vector3(0.04f, 0.014f, 0.002f);
+        blade.GetComponent<Renderer>().sharedMaterial = bladeMaterial;
+        var tip = new GameObject("Blade Tip").transform;
+        tip.SetParent(root.transform, false);
+        tip.localPosition = new Vector3(0.1f, -0.008f, 0f);
+        var body = root.AddComponent<Rigidbody>();
+        body.mass = 0.15f;
+        body.isKinematic = true;
+        body.interpolation = RigidbodyInterpolation.Interpolate;
+        var grab = root.AddComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        grab.movementType = UnityEngine.XR.Interaction.Toolkit.Interactables.XRBaseInteractable.MovementType.Instantaneous;
+        grab.throwOnDetach = false;
+        grab.useDynamicAttach = true;
+        var cutter = root.AddComponent<BoxCutter>();
+        cutter.Tip = tip;
+        cutter.Holder = holder;
+        root.transform.SetParent(holder.parent, true);
+        return cutter;
+    }
+
+    /// <summary>An open-top bin: floor and four walls. The floor returns dropped products on non-intake days.</summary>
+    static Transform OpenBin(string name, Vector3 center, Vector3 size, Material material, Transform environment, bool respawnFloor)
+    {
+        var root = new GameObject(name).transform;
+        root.SetParent(environment, false);
+        root.position = center + Vector3.up * size.y;
+        const float t = 0.02f;
+        var floor = Box(name + " Floor", center + Vector3.up * (t * 0.5f), new Vector3(size.x, t, size.z), material, root, true);
+        if (respawnFloor) floor.AddComponent<ProductRespawnSurface>();
+        Box(name + " Wall F", center + new Vector3(0f, size.y * 0.5f, -size.z * 0.5f + t * 0.5f), new Vector3(size.x, size.y, t), material, root, true);
+        Box(name + " Wall B", center + new Vector3(0f, size.y * 0.5f, size.z * 0.5f - t * 0.5f), new Vector3(size.x, size.y, t), material, root, true);
+        Box(name + " Wall L", center + new Vector3(-size.x * 0.5f + t * 0.5f, size.y * 0.5f, 0f), new Vector3(t, size.y, size.z), material, root, true);
+        Box(name + " Wall R", center + new Vector3(size.x * 0.5f - t * 0.5f, size.y * 0.5f, 0f), new Vector3(t, size.y, size.z), material, root, true);
+        return root;
+    }
+
+    static T Zone<T>(string name, Transform parent, Vector3 center, Vector3 size) where T : Component
+    {
+        var go = new GameObject(name) { layer = LayerMask.NameToLayer("Zone") };
+        go.transform.SetParent(parent, false);
+        go.transform.position = center;
+        var collider = go.AddComponent<BoxCollider>();
+        collider.isTrigger = true;
+        collider.size = size;
+        return go.AddComponent<T>();
+    }
+
+    static Material UnlitMaterial(string name, Color color)
+    {
+        var path = $"{MaterialFolder}/{name}.mat";
+        var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+        var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? throw new Exception("URP Unlit missing.");
+        if (material == null)
+        {
+            material = new Material(shader);
+            AssetDatabase.CreateAsset(material, path);
+        }
+        material.shader = shader;
+        material.SetColor("_BaseColor", color);
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
+    static void AddLabel(Transform target, string label) => target.gameObject.AddComponent<StationLabel>().Label = label;
+
+    static void AddBackLabel(Transform target, string label)
+    {
+        var station = target.gameObject.AddComponent<StationLabel>();
+        station.Label = label;
+        station.FacesBackWall = true;
+    }
+
+    static Transform Marker(string name, Vector3 position)
+    {
+        var marker = new GameObject(name).transform;
+        marker.position = position;
+        return marker;
+    }
+
+    static Transform Marker(string name, Vector3 position, Quaternion rotation, Transform parent)
+    {
+        var marker = new GameObject(name).transform;
+        marker.SetParent(parent, false);
+        marker.SetPositionAndRotation(position, rotation);
+        return marker;
+    }
+
+    /// <summary>
+    /// Bakes with the built-in NavMeshBuilder (AI module), no package. Customers may walk the store floor in front of the
+    /// counter and the porch; the clerk's side has no floor source, so they cannot path behind the counter. Every solid
+    /// box in Environment blocks and is not walkable on top.
+    /// </summary>
+    static NavMeshData BakeNavMesh(Transform environment)
+    {
+        var settings = NavMesh.GetSettingsByID(0);
+        settings.agentRadius = AgentRadius;
+        settings.agentHeight = 1.8f;
+        settings.agentClimb = 0.05f;
+        settings.agentSlope = 10f;
+        var sources = new List<NavMeshBuildSource>
+        {
+            FloorSource(new Vector3(-4.5f, 0f, CounterFar), new Vector3(4.5f, 0f, 5.5f)),
+            FloorSource(new Vector3(-4.5f - VestibuleDepth, 0f, DoorCenter.z - DoorWidth * 0.5f - 0.05f), new Vector3(-4.45f, 0f, DoorCenter.z + DoorWidth * 0.5f + 0.05f)),
+        };
+        // Customers keep out of the aisles behind the gondolas (too narrow for two to pass); the clerk may still walk there.
+        foreach (var x in new[] { ShelfAX, ShelfBX })
+            sources.Add(new NavMeshBuildSource
+            {
+                shape = NavMeshBuildSourceShape.Box,
+                size = new Vector3(ShelfWidth, 2f, 1.1f),
+                transform = Matrix4x4.Translate(new Vector3(x, 1f, ShelfBack + 0.55f)),
+                area = 1,
+            });
+        // Nor the strip between the counter and the line: a walker caught there when the customer at the counter and the
+        // two in line stood still was shut in with no way out (2026-11-08). The line places stay reachable from behind.
+        sources.Add(new NavMeshBuildSource
+        {
+            shape = NavMeshBuildSourceShape.Box,
+            size = new Vector3(2.25f, 2f, 0.2f),
+            transform = Matrix4x4.Translate(new Vector3(1.475f, 1f, CounterFar + 0.1f)),
+            area = 1,
+        });
+        foreach (var collider in environment.GetComponentsInChildren<BoxCollider>())
+        {
+            if (collider.isTrigger) continue;
+            sources.Add(new NavMeshBuildSource
+            {
+                shape = NavMeshBuildSourceShape.Box,
+                size = collider.size,
+                transform = collider.transform.localToWorldMatrix * Matrix4x4.Translate(collider.center),
+                area = 1,
+            });
+        }
+        var bounds = new Bounds(new Vector3(-0.75f, 1f, 1.5f), new Vector3(12.5f, 4f, 10f));
+        var data = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, Vector3.zero, Quaternion.identity);
+        if (data == null) throw new Exception("NavMesh bake failed.");
+        data.name = "StoreNavMesh";
+        return data;
+    }
+
+    static NavMeshBuildSource FloorSource(Vector3 min, Vector3 max)
+    {
+        var center = (min + max) * 0.5f;
+        center.y = -0.05f;
+        return new NavMeshBuildSource
+        {
+            shape = NavMeshBuildSourceShape.Box,
+            size = new Vector3(max.x - min.x, 0.1f, max.z - min.z),
+            transform = Matrix4x4.Translate(center),
+            area = 0,
+        };
+    }
+
+    /// <summary>Fails the build if a marker is off the NavMesh, unreachable from the door, or the clerk's side is walkable.</summary>
+    static void CheckNavMesh(NavMeshData data, CustomerDirector director)
+    {
+        var instance = NavMesh.AddNavMeshData(data);
+        try
+        {
+            var markers = new List<Transform> { director.Counter };
+            markers.AddRange(director.QueueSlots);
+            markers.AddRange(director.BrowseSpots);
+            var door = director.Door.position;
+            if (!NavMesh.SamplePosition(door, out var doorHit, 0.05f, NavMesh.AllAreas)) throw new Exception("Door marker is off the NavMesh.");
+            var path = new NavMeshPath();
+            var report = new List<string>();
+            foreach (var marker in markers)
+            {
+                if (!NavMesh.SamplePosition(marker.position, out var hit, 0.05f, NavMesh.AllAreas))
+                    throw new Exception($"Customer marker {marker.name} at {marker.position.ToString("F2")} is off the NavMesh.");
+                if (!NavMesh.CalculatePath(doorHit.position, hit.position, NavMesh.AllAreas, path) || path.status != NavMeshPathStatus.PathComplete)
+                    throw new Exception($"No path from the door to {marker.name}: {path.status}.");
+                float length = 0f;
+                for (int i = 1; i < path.corners.Length; i++) length += Vector3.Distance(path.corners[i - 1], path.corners[i]);
+                report.Add($"{marker.name} {length:0.00}m");
+            }
+            if (NavMesh.SamplePosition(new Vector3(0f, 0f, 0f), out var clerk, 0.5f, NavMesh.AllAreas))
+                throw new Exception($"The clerk's side is walkable for customers at {clerk.position.ToString("F2")}.");
+            var triangulation = NavMesh.CalculateTriangulation();
+            Debug.Log($"[P2] NavMesh baked: {triangulation.indices.Length / 3} triangles; paths from the door: {string.Join(", ", report)}");
+        }
+        finally
+        {
+            instance.Remove();
+        }
+    }
+
+    static GameObject Box(string name, Vector3 center, Vector3 size, Material material, Transform parent, bool collider)
+    {
+        var box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        box.name = name;
+        box.transform.SetParent(parent, false);
+        box.transform.position = center;
+        box.transform.localScale = size;
+        box.GetComponent<Renderer>().sharedMaterial = material;
+        if (!collider) UnityEngine.Object.DestroyImmediate(box.GetComponent<Collider>());
+        return box;
+    }
+
+    static Material Material(string name, Color color)
+    {
+        var path = $"{MaterialFolder}/{name}.mat";
+        var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (material == null)
+        {
+            var shader = Shader.Find("Universal Render Pipeline/Lit") ?? throw new Exception("URP Lit missing.");
+            material = new Material(shader);
+            AssetDatabase.CreateAsset(material, path);
+        }
+        material.SetColor("_BaseColor", color);
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
+    /// <summary>URP Lit set to alpha blending, as P1InteractionTrial does. The material asset carries the keyword into the player.</summary>
+    static Material TransparentMaterial(string name, Color color)
+    {
+        var material = Material(name, color);
+        material.SetFloat("_Surface", 1f);
+        material.SetFloat("_Blend", 0f);
+        material.SetFloat("_ZWrite", 0f);
+        material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        material.SetOverrideTag("RenderType", "Transparent");
+        material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
+    /// <summary>-executeMethod entry point. Add -p2-verify to play the whole day, or -p2-locomotion-verify to test free movement.</summary>
+    public static void VerifyEditor()
+    {
+        EditorSceneManager.OpenScene(StoreScene);
+        EditorApplication.isPlaying = true;
+    }
+
+    public static void BuildPlayer()
+    {
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.IL2CPP);
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+        {
+            scenes = new[] { StoreScene },
+            locationPathName = PlayerPath,
+            target = BuildTarget.StandaloneWindows64,
+            options = BuildOptions.Development
+        });
+        var summary = report.summary;
+        Directory.CreateDirectory(Evidence);
+        File.WriteAllText(Evidence + "/il2cpp_build.txt",
+            $"Unity {Application.unityVersion}; Windows x64 IL2CPP Development; result={summary.result}; errors={summary.totalErrors}; warnings={summary.totalWarnings}; bytes={summary.totalSize}; duration={summary.totalTime}; scene={StoreScene}; output={PlayerPath}\n");
+        if (summary.result != BuildResult.Succeeded) throw new Exception("Player build failed: " + summary.result);
+    }
+}

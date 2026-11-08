@@ -1,0 +1,9 @@
+newmtl FridgeCase
+Kd 0.8 0.8 0.8
+
+newmtl FridgeInterior
+Kd 0.8 0.8 0.8
+
+newmtl FridgeGlass
+Kd 0.8 0.8 0.8
+

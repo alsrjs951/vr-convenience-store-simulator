@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6598815579406187026}
   - component: {fileID: 8477477680821523469}
   - component: {fileID: 1689558038395899221}
+  - component: {fileID: 8583560367161104875}
   m_Layer: 0
   m_Name: XR Device Simulator
   m_TagString: Untagged
@@ -341,3 +342,15 @@ MonoBehaviour:
     m_Capture: {fileID: 11400000, guid: 2a7c8ca0feac7cc44a5c225164ef311d, type: 2}
     m_IsQuickAction: 0
   m_RestingHandExpressionCapture: {fileID: 11400000, guid: 5be099e6e6012c244bb41881b6c0ea07, type: 2}
+--- !u!114 &8583560367161104875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6598815579406187037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bb469cde372a834ab5770149a2974e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -2,4 +2,38 @@
 # items 형식: {product_id}x{수량}|{product_id}x{수량} ...
 # special 허용값: none|microwave|hotwater|oneplus
 # product_id는 Data/products.csv의 status=live 행과 조인
+#
+# 2026-11-08 기획(이민건, 사용자 지시로 P3-K2 대신 작성) — 근거와 설계는 docs/p2/주문시나리오_2026-11-08.md
+# - Data/products.csv에 아직 live 행이 없어(실측 전) product_id는 지금 게임에 있는 개발용 상품 12종(Assets/Data/Provisional/dev_*.json)의 id다.
+#   products.csv가 채워지면 id만 그 키로 바꾼다. 가격도 개발용 임시 가격이다.
+# - 1일차 5명·10초·150초(이탈 없음), 2일차 8명·15초·120초, 3일차 12명(1~8번 20초·90초, 9~12번 피크 10초·60초) — 구현 문서 6.3절.
+# - 현금 주문은 합계를 5,000원 이하로 두어 거스름돈이 화폐 2~5개로 끝나게 했다.
+# - 3일차 전자레인지(삼각김밥·도시락)·온수(컵라면) 요청은 해당 상품이 아직 없어 넣지 않았다. 상품이 들어오면 아래 TODO 두 줄을 바꾼다.
 order_id,day,seq,spawn_after_prev_sec,time_limit_sec,payment,bag,special,items
+c01_01,1,1,10,150,card,1,none,dev_shinramen_01x1|dev_potato_01x1
+c01_02,1,2,10,150,cash,0,none,dev_goraebap_01x1
+c01_03,1,3,10,150,card,0,none,dev_sunchip_01x1|dev_cheetos_01x1
+c01_04,1,4,10,150,cash,1,none,dev_ogamja_01x1|dev_kkobukchip_01x1
+c01_05,1,5,10,150,card,1,none,dev_ansungtangmyun_01x1
+c02_01,2,1,15,120,card,1,none,dev_kkokkalcorn_01x1|dev_cornchip_01x1
+c02_02,2,2,15,120,cash,0,none,dev_dakdari_01x1
+c02_03,2,3,15,120,cash,1,none,dev_potato_01x1|dev_sunchip_01x1
+c02_04,2,4,15,120,card,0,none,dev_kkobukchip_01x1
+c02_05,2,5,15,120,card,1,none,dev_ansungtangmyun_01x2
+c02_06,2,6,15,120,cash,0,none,dev_goraebap_01x1
+c02_07,2,7,15,120,card,1,none,dev_cheetos_01x1|dev_ogamja_01x1
+c02_08,2,8,15,120,cash,1,none,dev_shinramen_01x1|dev_ansungtangmyun_01x1
+c03_01,3,1,20,90,card,1,none,dev_kkokkalcorn_01x1|dev_squidpeanut_01x1|dev_shinramen_01x1
+c03_02,3,2,20,90,cash,0,none,dev_goraebap_01x1|dev_ansungtangmyun_01x1
+c03_03,3,3,20,90,card,0,none,dev_cheetos_01x2
+c03_04,3,4,20,90,cash,1,oneplus,dev_sunchip_01x2
+# TODO microwave: 삼각김밥·도시락이 반입되면 c03_05를 microwave + 그 상품으로 바꾼다.
+c03_05,3,5,20,90,card,1,none,dev_potato_01x1|dev_ogamja_01x1
+c03_06,3,6,20,90,cash,1,none,dev_kkobukchip_01x1|dev_cornchip_01x1
+c03_07,3,7,20,90,card,0,none,dev_dakdari_01x1|dev_shinramen_01x2
+c03_08,3,8,20,90,cash,0,none,dev_squidpeanut_01x1
+# TODO hotwater: 컵라면이 반입되면 c03_09를 hotwater + 컵라면으로 바꾼다.
+c03_09,3,9,10,60,card,0,none,dev_ansungtangmyun_01x1
+c03_10,3,10,10,60,cash,0,oneplus,dev_potato_01x2
+c03_11,3,11,10,60,card,1,none,dev_goraebap_01x1
+c03_12,3,12,10,60,cash,0,none,dev_cheetos_01x1|dev_shinramen_01x1

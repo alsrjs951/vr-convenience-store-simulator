@@ -1,0 +1,11 @@
+# SUPERSEDED 2026-11-08: the game now reads Data/scenarios.csv (same orders as c01_*/c02_* there). Kept for reference only; not used by the build.
+# Development placeholder for Day 2 (game design 9: 8 customers, 15 s after the previous one, 120 s each, leaving when it runs out). Same schema as Data/scenarios.csv (doc 6.5).
+order_id,day,seq,spawn_after_prev_sec,time_limit_sec,payment,bag,special,items
+dev02_01,2,1,15,120,card,1,none,dev_kkokkalcorn_01x1|dev_cornchip_01x1
+dev02_02,2,2,15,120,cash,0,none,dev_dakdari_01x1
+dev02_03,2,3,15,120,cash,1,none,dev_potato_01x1|dev_sunchip_01x1
+dev02_04,2,4,15,120,card,0,none,dev_kkobukchip_01x1
+dev02_05,2,5,15,120,card,1,none,dev_ansungtangmyun_01x2
+dev02_06,2,6,15,120,cash,0,none,dev_goraebap_01x1
+dev02_07,2,7,15,120,card,1,none,dev_cheetos_01x1|dev_ogamja_01x1
+dev02_08,2,8,15,120,cash,1,none,dev_shinramen_01x1|dev_ansungtangmyun_01x1

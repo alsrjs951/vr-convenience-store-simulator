@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad13ab4d240a8aa49b24456cbb01bf9c, type: 3}
+  m_Name: dev_goraebap_01
+  m_EditorClassIdentifier: Assembly-CSharp::ProductData
+  Id: dev_goraebap_01
+  Name: "\uACE0\uB798\uBC25 (\uAC1C\uBC1C\uC6A9)"
+  Price: 2500
+  SizeCm: {x: 20, y: 11.923959, z: 5.6675787}
+  BarcodeFace: 2
+  SplatAsset: {fileID: 11400000, guid: c048c03a55dd7aa4388b03c310d51d86, type: 2}
+  OrderCatalogFlags: 0
+  SizeIsMeasured: 0
+  BarcodeLocalNormal: {x: -1, y: 0, z: 0}

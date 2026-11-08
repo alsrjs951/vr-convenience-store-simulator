@@ -1,0 +1,19 @@
+{
+  "id": "dev_cornchip_01",
+  "capture_id": "capture_08",
+  "display_name": "콘칩 (개발용)",
+  "price": 1800,
+  "splat_asset": "Assets/GaussianSplats/Products/dev_cornchip_01.asset",
+  "box_fit": "Assets/Data/Provisional/dev_cornchip_01.box_fit.json",
+  "scene": "Assets/Scenes/CornChipInteraction.unity",
+  "evidence_dir": "docs/p1/evidence/cornchip_interaction",
+  "provisional_width_m": 0.2,
+  "provisional_mass_kg": 0.1,
+  "barcode_face": "Back",
+  "barcode_local_normal": {
+    "x": 0,
+    "y": 0,
+    "z": -1
+  },
+  "note": "NOT measured. Width, mass and price are development placeholders (not real prices); other sizes follow the reconstruction's ratios. Front and back are separate sessions joined by an ASSUMED alignment (scripts/windows/merge_bag_shells.py). Do not copy to Data/products.csv."
+}
