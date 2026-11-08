@@ -1,0 +1,875 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Player",
+    "scope": "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are placeholder bodies.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 143.44017028808595,
+    "maxHeldSpeedOnArrival": 0.8368218541145325,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "S",
+    "score": 98.0,
+    "sales": 13500,
+    "possibleSales": 13500,
+    "paid": 5,
+    "orders": 5,
+    "left": 0,
+    "cancels": 1,
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.0046844482421879
+        },
+        {
+            "name": "setup.product_names_readable",
+            "pass": true,
+            "details": "products=12; broken=",
+            "time": 4.004813194274902
+        },
+        {
+            "name": "input.look_down_via_mouse",
+            "pass": true,
+            "details": "camera forward=(0.000, -0.259, 0.966)",
+            "time": 4.56020450592041
+        },
+        {
+            "name": "input.ready",
+            "pass": true,
+            "details": "mode=Translate",
+            "time": 4.615776062011719
+        },
+        {
+            "name": "tutorial.grab_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.6574249267578129
+        },
+        {
+            "name": "tutorial.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 6.138067245483398
+        },
+        {
+            "name": "tutorial.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 6.338372230529785
+        },
+        {
+            "name": "tutorial.rotate_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 6.338489532470703
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_potato_01 angle from down=0.0",
+            "time": 7.526308059692383
+        },
+        {
+            "name": "tutorial.scan_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 8.672554969787598
+        },
+        {
+            "name": "tutorial.scan",
+            "pass": true,
+            "details": "dev_potato_01 scans 0->1 lowest=0.951",
+            "time": 9.853251457214356
+        },
+        {
+            "name": "tutorial.bag_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 10.01996898651123
+        },
+        {
+            "name": "tutorial.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 11.972545623779297
+        },
+        {
+            "name": "tutorial.card_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 12.527872085571289
+        },
+        {
+            "name": "tutorial.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 14.597660064697266
+        },
+        {
+            "name": "walk.holding_prop",
+            "pass": true,
+            "details": "held=True; settled off by 0.000 m; furthest 0.040 m while walking at 1.5 m/s",
+            "time": 16.7094669342041
+        },
+        {
+            "name": "walk.holding_prop.through_snap_turn",
+            "pass": true,
+            "details": "held=True; hand moved 0.652 m; held thing to hand 0.000 m",
+            "time": 17.515100479125978
+        },
+        {
+            "name": "walk.holding_prop.after_snap_turns",
+            "pass": true,
+            "details": "held=True; off by 0.000 m; hand back within 0.000 m",
+            "time": 18.320880889892579
+        },
+        {
+            "name": "walk.prop_inside_body_touches_nothing",
+            "pass": true,
+            "details": "prop off target by 0.013 m; rig moved 0.0000",
+            "time": 20.77303695678711
+        },
+        {
+            "name": "tutorial.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 23.732393264770509
+        },
+        {
+            "name": "tutorial.cash_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 23.93346405029297
+        },
+        {
+            "name": "tutorial.cash_bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 26.510799407958986
+        },
+        {
+            "name": "tutorial.cash_bill.received",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 29.769746780395509
+        },
+        {
+            "name": "tutorial.cash_change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 31.894166946411134
+        },
+        {
+            "name": "tutorial.cash_change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 37.2427978515625
+        },
+        {
+            "name": "tutorial.cash_change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 42.71623611450195
+        },
+        {
+            "name": "tutorial.cash_change.take500.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 48.38444519042969
+        },
+        {
+            "name": "tutorial.cash_change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 51.573081970214847
+        },
+        {
+            "name": "tutorial.cash_change.no_false_errors",
+            "pass": true,
+            "details": "errors=0; expected=0; pieces=4",
+            "time": 51.57318878173828
+        },
+        {
+            "name": "tutorial.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 51.57322311401367
+        },
+        {
+            "name": "order1.arrived",
+            "pass": true,
+            "details": "after 13.2s",
+            "time": 64.84959411621094
+        },
+        {
+            "name": "walk.before_order1",
+            "pass": true,
+            "details": "(0.000, 0.000, 0.000)->(0.506, 0.000, 0.000)",
+            "time": 65.63221740722656
+        },
+        {
+            "name": "rule.card_early.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 67.15341186523438
+        },
+        {
+            "name": "rule.card_rejected_before_scan",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 70.0708236694336
+        },
+        {
+            "name": "rule.card_early_not_paid",
+            "pass": true,
+            "details": "notice=스캔과 봉투 담기를 먼저 끝내세요.; stillHeld=True",
+            "time": 70.07093048095703
+        },
+        {
+            "name": "order1.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 74.86380767822266
+        },
+        {
+            "name": "order1.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 75.06511688232422
+        },
+        {
+            "name": "walk.holding_product",
+            "pass": true,
+            "details": "held=True; settled off by 0.000 m; furthest 0.040 m while walking at 1.5 m/s",
+            "time": 76.97529602050781
+        },
+        {
+            "name": "walk.holding_product.through_snap_turn",
+            "pass": true,
+            "details": "held=True; hand moved 0.543 m; held thing to hand 0.001 m",
+            "time": 77.78112030029297
+        },
+        {
+            "name": "walk.holding_product.after_snap_turns",
+            "pass": true,
+            "details": "held=True; off by 0.000 m; hand back within 0.000 m",
+            "time": 78.58698272705078
+        },
+        {
+            "name": "rule.upright_press_no_scan",
+            "pass": true,
+            "details": "scans 1->1; bodyEntries 1->2; angledBarcodeEntries 0->1; barcode angle from down=90; lowest=0.951; padTop=0.950",
+            "time": 80.7194595336914
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_shinramen_01 angle from down=0.0",
+            "time": 81.90735626220703
+        },
+        {
+            "name": "order1.item0.scan",
+            "pass": true,
+            "details": "dev_shinramen_01 scans 1->2 lowest=0.950",
+            "time": 83.64385986328125
+        },
+        {
+            "name": "order1.item0.bag",
+            "pass": true,
+            "details": "after 0.6s",
+            "time": 85.8112564086914
+        },
+        {
+            "name": "order1.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 88.54100036621094
+        },
+        {
+            "name": "order1.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 88.74236297607422
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_potato_01 angle from down=0.0",
+            "time": 89.91629028320313
+        },
+        {
+            "name": "order1.item1.scan",
+            "pass": true,
+            "details": "dev_potato_01 scans 2->3 lowest=0.950",
+            "time": 92.50749206542969
+        },
+        {
+            "name": "order1.item1.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 94.6123046875
+        },
+        {
+            "name": "order1.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=2700",
+            "time": 95.16797637939453
+        },
+        {
+            "name": "order1.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 97.29346466064453
+        },
+        {
+            "name": "order1.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 100.23192596435547
+        },
+        {
+            "name": "order1.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 100.43321228027344
+        },
+        {
+            "name": "order2.arrived",
+            "pass": true,
+            "details": "after 16.3s",
+            "time": 116.75785827636719
+        },
+        {
+            "name": "walk.before_order2",
+            "pass": true,
+            "details": "(0.506, 0.000, 0.000)->(-0.494, 0.000, 0.000)",
+            "time": 117.8752670288086
+        },
+        {
+            "name": "rule.bill_early.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 120.01490783691406
+        },
+        {
+            "name": "rule.bill_returned_before_scan",
+            "pass": true,
+            "details": "received=0; notice=스캔과 봉투 담기를 먼저 끝내세요.",
+            "time": 123.75180053710938
+        },
+        {
+            "name": "order2.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 126.59304809570313
+        },
+        {
+            "name": "order2.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 126.79423522949219
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_goraebap_01 angle from down=0.0",
+            "time": 127.9820556640625
+        },
+        {
+            "name": "order2.item0.scan",
+            "pass": true,
+            "details": "dev_goraebap_01 scans 3->4 lowest=0.950",
+            "time": 130.26747131347657
+        },
+        {
+            "name": "order2.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=2500",
+            "time": 133.26832580566407
+        },
+        {
+            "name": "order2.bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 135.6160888671875
+        },
+        {
+            "name": "order2.bill.received",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 138.87449645996095
+        },
+        {
+            "name": "order2.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 141.00645446777345
+        },
+        {
+            "name": "rule.short_change_after_stopping",
+            "pass": true,
+            "details": "errors 0->1; notice=접시에 1,000원이 있습니다. 거스름돈 2,500원보다 적습니다.",
+            "time": 152.48170471191407
+        },
+        {
+            "name": "order2.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 155.0103302001953
+        },
+        {
+            "name": "order2.change.take500.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 160.53277587890626
+        },
+        {
+            "name": "order2.change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 163.85308837890626
+        },
+        {
+            "name": "order2.change.no_false_errors",
+            "pass": true,
+            "details": "errors=1; expected=1; pieces=3",
+            "time": 163.8531951904297
+        },
+        {
+            "name": "order2.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 163.85324096679688
+        },
+        {
+            "name": "order3.arrived",
+            "pass": true,
+            "details": "after 16.5s",
+            "time": 180.38780212402345
+        },
+        {
+            "name": "walk.counter_contact_moves_nothing",
+            "pass": true,
+            "details": "checked=3; moved=[]; rig z=0.130",
+            "time": 183.76080322265626
+        },
+        {
+            "name": "walk.before_order3",
+            "pass": true,
+            "details": "(-0.494, 0.000, 0.000)->(0.006, 0.000, 0.130)",
+            "time": 183.76092529296876
+        },
+        {
+            "name": "order3.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 185.43508911132813
+        },
+        {
+            "name": "order3.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 185.6363067626953
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_sunchip_01 angle from down=0.0",
+            "time": 186.81727600097657
+        },
+        {
+            "name": "order3.item0.scan",
+            "pass": true,
+            "details": "dev_sunchip_01 scans 4->5 lowest=0.950",
+            "time": 189.10964965820313
+        },
+        {
+            "name": "cancel.second_scan",
+            "pass": true,
+            "details": "dev_sunchip_01 scans 5->6 lowest=0.950",
+            "time": 192.11720275878907
+        },
+        {
+            "name": "cancel.overscan_blocks_payment",
+            "pass": true,
+            "details": "scanned=2; notice=썬칩 (개발용): 주문보다 많이 찍혔습니다. [-]로 취소하세요.",
+            "time": 192.28390502929688
+        },
+        {
+            "name": "cancel.minus_button",
+            "pass": true,
+            "details": "cancels 0->1; scanned=1; notice=",
+            "time": 197.646484375
+        },
+        {
+            "name": "order3.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 200.0501251220703
+        },
+        {
+            "name": "order3.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 200.25152587890626
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_cheetos_01 angle from down=0.0",
+            "time": 201.43914794921876
+        },
+        {
+            "name": "order3.item1.scan",
+            "pass": true,
+            "details": "dev_cheetos_01 scans 6->7 lowest=0.950",
+            "time": 203.9816131591797
+        },
+        {
+            "name": "order3.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=3500",
+            "time": 206.84332275390626
+        },
+        {
+            "name": "order3.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 209.00379943847657
+        },
+        {
+            "name": "order3.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 211.9282989501953
+        },
+        {
+            "name": "order3.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 212.1297607421875
+        },
+        {
+            "name": "order4.arrived",
+            "pass": true,
+            "details": "after 16.3s",
+            "time": 228.45816040039063
+        },
+        {
+            "name": "walk.before_order4",
+            "pass": true,
+            "details": "(0.006, 0.000, 0.130)->(0.006, 0.000, -0.203)",
+            "time": 229.1272430419922
+        },
+        {
+            "name": "order4.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 231.53770446777345
+        },
+        {
+            "name": "order4.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 231.73899841308595
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_ogamja_01 angle from down=0.0",
+            "time": 232.92691040039063
+        },
+        {
+            "name": "rule.unscanned_not_bagged",
+            "pass": true,
+            "details": "bagged=False; notice=스캔하지 않은 상품은 봉투에 담을 수 없습니다.",
+            "time": 235.85128784179688
+        },
+        {
+            "name": "rule.bag_early.regrab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 236.8237762451172
+        },
+        {
+            "name": "rule.bag_early.regrab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 237.02508544921876
+        },
+        {
+            "name": "order4.item0.scan",
+            "pass": true,
+            "details": "dev_ogamja_01 scans 7->8 lowest=0.950",
+            "time": 239.58836364746095
+        },
+        {
+            "name": "order4.item0.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 241.693359375
+        },
+        {
+            "name": "order4.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 244.43690490722657
+        },
+        {
+            "name": "order4.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 244.63821411132813
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_kkobukchip_01 angle from down=0.0",
+            "time": 245.812255859375
+        },
+        {
+            "name": "order4.item1.scan",
+            "pass": true,
+            "details": "dev_kkobukchip_01 scans 8->9 lowest=0.950",
+            "time": 248.43113708496095
+        },
+        {
+            "name": "order4.item1.bag",
+            "pass": true,
+            "details": "after 0.6s",
+            "time": 250.68870544433595
+        },
+        {
+            "name": "order4.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=3800",
+            "time": 251.2441864013672
+        },
+        {
+            "name": "order4.bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 253.33514404296876
+        },
+        {
+            "name": "order4.bill.received",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 256.5940856933594
+        },
+        {
+            "name": "rule.too_much.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 258.72552490234377
+        },
+        {
+            "name": "rule.too_much_change_is_error",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 261.7540283203125
+        },
+        {
+            "name": "rule.too_much_not_paid",
+            "pass": true,
+            "details": "notice=접시에 5,000원이 있습니다. 거스름돈 1,200원보다 많습니다.",
+            "time": 261.7541198730469
+        },
+        {
+            "name": "rule.too_much.take_back.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 263.2268371582031
+        },
+        {
+            "name": "rule.tray_empty_after_taking_back",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 265.935546875
+        },
+        {
+            "name": "order4.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 268.0751647949219
+        },
+        {
+            "name": "order4.change.take100.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 273.6947326660156
+        },
+        {
+            "name": "order4.change.take100.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 279.7520751953125
+        },
+        {
+            "name": "order4.change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 283.3087463378906
+        },
+        {
+            "name": "order4.change.no_false_errors",
+            "pass": true,
+            "details": "errors=1; expected=1; pieces=3",
+            "time": 283.3088684082031
+        },
+        {
+            "name": "order4.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 283.3089294433594
+        },
+        {
+            "name": "order5.arrived",
+            "pass": true,
+            "details": "after 16.5s",
+            "time": 299.84014892578127
+        },
+        {
+            "name": "walk.before_order5",
+            "pass": true,
+            "details": "(0.006, 0.000, -0.203)->(0.411, 0.000, -0.203)",
+            "time": 300.55609130859377
+        },
+        {
+            "name": "order5.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 302.1954040527344
+        },
+        {
+            "name": "order5.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 302.396728515625
+        },
+        {
+            "name": "rule.dropped_product_returns",
+            "pass": true,
+            "details": "after 3.4s",
+            "time": 307.5509948730469
+        },
+        {
+            "name": "rule.dropped_product_back_on_counter",
+            "pass": true,
+            "details": "position=(0.300, 0.985, 0.680)",
+            "time": 308.35662841796877
+        },
+        {
+            "name": "rule.drop.regrab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 310.3226623535156
+        },
+        {
+            "name": "rule.drop.regrab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 310.52392578125
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 angle from down=0.0",
+            "time": 311.69775390625
+        },
+        {
+            "name": "order5.item0.scan",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 scans 9->10 lowest=0.950",
+            "time": 314.0805358886719
+        },
+        {
+            "name": "order5.item0.bag",
+            "pass": true,
+            "details": "after 0.6s",
+            "time": 316.31048583984377
+        },
+        {
+            "name": "order5.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=1000",
+            "time": 316.8658142089844
+        },
+        {
+            "name": "rule.card_drop.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 318.95684814453127
+        },
+        {
+            "name": "rule.dropped_card_returns",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 321.791015625
+        },
+        {
+            "name": "order5.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 324.2358703613281
+        },
+        {
+            "name": "order5.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 327.15362548828127
+        },
+        {
+            "name": "order5.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 327.3548278808594
+        },
+        {
+            "name": "day_end",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 330.41131591796877
+        },
+        {
+            "name": "day.all_paid",
+            "pass": true,
+            "details": "paid=5/5 left=0",
+            "time": 330.9529113769531
+        },
+        {
+            "name": "day.sales_match",
+            "pass": true,
+            "details": "sales=13500/13500",
+            "time": 330.9530029296875
+        },
+        {
+            "name": "day.cancel_counted",
+            "pass": true,
+            "details": "cancels=1",
+            "time": 330.95306396484377
+        },
+        {
+            "name": "day.grade",
+            "pass": true,
+            "details": "grade=S score=98.0 (one cancel costs 2 points)",
+            "time": 330.9530944824219
+        },
+        {
+            "name": "day.counter_cleared",
+            "pass": true,
+            "details": "no product or payment prop left in the scene",
+            "time": 330.9532165527344
+        },
+        {
+            "name": "input.set_downs_were_still",
+            "pass": true,
+            "details": "max speed on arrival=0.837 at release=0.000 m/s",
+            "time": 330.9532470703125
+        }
+    ]
+}

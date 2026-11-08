@@ -1,0 +1,26 @@
+{
+    "runtime": "Player",
+    "xrDeviceActive": true,
+    "activeLoader": "OpenXRLoader",
+    "xrRuntimeJson": "C:\\Projects\\vr-convenience-store-simulator\\Library\\PackageCache\\com.unity.xr.openxr@b5b77b4027be\\Runtime\\MockRuntime\\unity-mock-runtime.json",
+    "simulatorObjects": 1,
+    "simulatorObjectsActive": 0,
+    "simulatorInstance": false,
+    "stereoEnabled": true,
+    "secondsWaited": 6.000016212463379,
+    "hmdDevices": [
+        "OpenXRHmd:Head Tracking - OpenXR"
+    ],
+    "allDevices": [
+        "FastKeyboard:Keyboard",
+        "FastMouse:Mouse",
+        "OpenXRHmd:Head Tracking - OpenXR",
+        "OculusTouchController:Oculus Touch Controller (OpenXR)",
+        "OculusTouchController:Oculus Touch Controller OpenXR"
+    ],
+    "nativeXrDevices": [
+        "Head Tracking - OpenXR|HeadMounted, TrackedDevice",
+        "Oculus Touch Controller OpenXR|HeldInHand, TrackedDevice, Controller, Left",
+        "Oculus Touch Controller OpenXR|HeldInHand, TrackedDevice, Controller, Right"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "runtime": "Player",
+    "xrDeviceActive": false,
+    "activeLoader": "none",
+    "xrRuntimeJson": "C:\\Users\\LEEMIN~1\\AppData\\Local\\Temp\\claude\\90607bd1eb649938\\f6feddb8-40db-496d-b7a6-5783b0986e81\\scratchpad\\no_runtime_here.json",
+    "simulatorObjects": 1,
+    "simulatorObjectsActive": 1,
+    "simulatorInstance": true,
+    "stereoEnabled": false,
+    "secondsWaited": 6.0000152587890629,
+    "hmdDevices": [
+        "XRSimulatedHMD:XRSimulatedHMD"
+    ],
+    "allDevices": [
+        "FastKeyboard:Keyboard",
+        "FastMouse:Mouse",
+        "FastTouchscreen:Touchscreen",
+        "XRSimulatedHMD:XRSimulatedHMD",
+        "XRSimulatedController:XRSimulatedController",
+        "XRSimulatedController:XRSimulatedController"
+    ],
+    "nativeXrDevices": [],
+    "leftStickMove": "enabled=True /XRSimulatedController/primary2DAxis",
+    "rightStickSnapTurn": "enabled=True /XRSimulatedController1/primary2DAxis"
+}

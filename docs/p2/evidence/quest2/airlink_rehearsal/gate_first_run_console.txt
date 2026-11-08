@@ -1,0 +1,16 @@
+[gate] started pid=27144 at 17:44:29
+[gate] exit=0 at 18:04:54
+[HMD Perf] start mode=gate runtime=Oculus 1.208.0 xr=True eye=0x0 refresh=72 known=True tracking=Floor simulators=0
+[HMD Perf] g1h_shelf1m_held30cm_run1 frames=2162 fps=72.0 p50=13.88 p95=13.89 p99=13.89 max=13.9 drop=0.00% gpu=4.35/4.39 work_p95=2.01 moved=0.013m turned=3.1deg gaussians=458871 gate=True budget=True
+[HMD Perf] g1h_shelf1m_held30cm_run2 frames=2147 fps=72.0 p50=13.88 p95=13.89 p99=13.89 max=13.9 drop=0.00% gpu=4.44/4.46 work_p95=2.00 moved=0.007m turned=3.1deg gaussians=458871 gate=True budget=True
+[HMD Perf] g1h_shelf1m_held30cm_run3 frames=2147 fps=72.0 p50=13.88 p95=13.89 p99=13.89 max=13.9 drop=0.00% gpu=4.46/4.46 work_p95=1.94 moved=0.004m turned=1.3deg gaussians=458871 gate=True budget=True
+[HMD Perf] done report=C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/airlink_rehearsal/gate\hmd_report.json segments=3 frames=6456 marks=0 gate_runs_passed=3
+1111092 g1h_run1_left.png
+1055951 g1h_run1_right.png
+1162763 g1h_run2_left.png
+1157996 g1h_run2_right.png
+1155240 g1h_run3_left.png
+1137836 g1h_run3_right.png
+7243 hmd_report.json
+
+[exited with code 0]

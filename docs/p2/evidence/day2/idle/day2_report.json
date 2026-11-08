@@ -1,0 +1,156 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "Day 2 (intake, disposal, leaving customers). XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 351.384765625,
+    "maxHeldSpeedOnArrival": 0.0,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "C",
+    "score": 30.625,
+    "sales": 0,
+    "possibleSales": 20500,
+    "paid": 0,
+    "orders": 8,
+    "left": 3,
+    "cancels": 0,
+    "queueAndBrowsers": false,
+    "maxCustomersPresent": 0,
+    "maxForOrdersInStore": 0,
+    "maxWaiting": 0,
+    "maxLine": 0,
+    "maxBrowsers": 0,
+    "browsersSpawned": 0,
+    "stuckWarps": 0,
+    "shortArrivals": 0,
+    "customerFrames": 661115,
+    "settledFrames": 469158,
+    "offNavMeshFrames": 0,
+    "overlapFrames": 0,
+    "clerkSideFrames": 0,
+    "movingFrames": 180033,
+    "walkAnimatedFrames": 180033,
+    "standingFrames": 475138,
+    "standingAnimatedFrames": 475138,
+    "customers": [],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.003446102142334
+        },
+        {
+            "name": "setup.product_names_readable",
+            "pass": true,
+            "details": "products=12; broken=",
+            "time": 4.004120826721191
+        },
+        {
+            "name": "input.ready",
+            "pass": true,
+            "details": "mode=Translate",
+            "time": 4.577972412109375
+        },
+        {
+            "name": "d2.intake_tutorial_started",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.578557014465332
+        },
+        {
+            "name": "d2.setup.day_two",
+            "pass": true,
+            "details": "day=2; active=True; skipped=[]",
+            "time": 4.581548690795898
+        },
+        {
+            "name": "d2.setup.two_boxes_on_cart",
+            "pass": true,
+            "details": "boxes=[신라면 ×6 → A-2 Sealed y=0.800 inner=(0.410, 0.249, 0.159), 고래밥 ×4 → B-1 Sealed y=0.800 inner=(0.410, 0.129, 0.123)]",
+            "time": 4.582216739654541
+        },
+        {
+            "name": "d2.setup.target_slots_empty_and_yellow",
+            "pass": true,
+            "details": "A-2 A-2  0/6 lit=True; B-1 B-1  0/4 lit=True",
+            "time": 4.582437992095947
+        },
+        {
+            "name": "d2.setup.three_expired_not_in_targets",
+            "pass": true,
+            "details": "stock=6; expired in [B-2, B-2, A-1]",
+            "time": 4.582592010498047
+        },
+        {
+            "name": "d2.setup.guide_shows_step1",
+            "pass": true,
+            "details": "board=입고 1/4 운반: 뒤쪽 창고 입구의 입고 카트에서 신라면 박스를 옆면 손잡이로 들고, 진열대 A 옆 거치대에 올리세요.",
+            "time": 4.5828022956848148
+        },
+        {
+            "name": "d2.setup.no_customer_before_tutorial",
+            "pass": true,
+            "details": "shift=False; present=0; state=Tutorial",
+            "time": 4.582894325256348
+        },
+        {
+            "name": "d2.setup.cutters_in_holders",
+            "pass": true,
+            "details": "two cutters",
+            "time": 4.583049774169922
+        },
+        {
+            "name": "d2.idle.shift_starts",
+            "pass": true,
+            "details": "after 89.0s",
+            "time": 93.8271484375
+        },
+        {
+            "name": "d2.idle.first_customer_after_90s",
+            "pass": true,
+            "details": "shift began 90.00s after the guidance; tutorial step=Carry",
+            "time": 93.82736206054688
+        },
+        {
+            "name": "d2.idle.day_ends",
+            "pass": true,
+            "details": "after 412.1s",
+            "time": 505.9523620605469
+        },
+        {
+            "name": "d2.idle.three_left_ends_day",
+            "pass": true,
+            "details": "endedEarly=True; left=3; paid=0; called=3; hurried=[60.0, 60.0, 60.0]",
+            "time": 506.57171630859377
+        },
+        {
+            "name": "d2.idle.timeout_120_hurry_60",
+            "pass": true,
+            "details": "#1 waited 120.00s, hurried at 60.00s; #2 waited 120.00s, hurried at 60.00s; #3 waited 120.00s, hurried at 60.00s",
+            "time": 506.57196044921877
+        },
+        {
+            "name": "d2.idle.grade_c_with_reason",
+            "pass": true,
+            "details": "grade=C score=30.6; board=2일차 정산  등급 C (31점)  · 이탈 3명으로 일찍 마감\n매출 0원 / 20,500원 · 손님 0/8명 · 이탈 3명 · 스캔 취소 0회\n진열 0/10 · 폐기 0/3 · 오진열 0 · 폐기 오탐 0 · 빈 박스 미수거 0",
+            "time": 506.57208251953127
+        },
+        {
+            "name": "d2.idle.store_empties",
+            "pass": true,
+            "details": "after 13.8s",
+            "time": 520.357177734375
+        },
+        {
+            "name": "d2.idle.no_more_customers_called",
+            "pass": true,
+            "details": "called=3",
+            "time": 520.3574829101563
+        }
+    ]
+}

@@ -1,0 +1,161 @@
+{
+    "mode": "game",
+    "finished_local": "2026-11-07 18:29:24",
+    "runtime_name": "",
+    "runtime_version": "",
+    "openxr_plugin": "",
+    "loader": "none",
+    "xr_device": "",
+    "xr_active": false,
+    "stereo": false,
+    "simulators_active": 1,
+    "hmd_input": "XRSimulatedHMD:XRSimulatedHMD",
+    "mark_button": "/XRSimulatedController1/primaryButton",
+    "controllers": [
+        "XRSimulatedController:XRSimulatedController"
+    ],
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "graphics_api": "Direct3D12",
+    "unity_version": "6000.3.26f1",
+    "stereo_mode": "MultiPass",
+    "eye_width": 0,
+    "eye_height": 0,
+    "render_scale": 1.0,
+    "viewport_scale": 0.0,
+    "sh_order": 0,
+    "refresh_hz": 72.0,
+    "refresh_known": false,
+    "run_in_background": false,
+    "input_background": "ResetAndDisableNonBackgroundDevices",
+    "haptic_hand": "",
+    "haptic_pulses": 0,
+    "tracking_requested": "Floor",
+    "tracking_current": "Unknown",
+    "floor_offset_m": 1.3614399433135987,
+    "ipd_m": 0.0,
+    "widest_view_deg": 49.66350555419922,
+    "gate_runs_passed": 0,
+    "auto_presses": 0,
+    "auto_presses_seen": 0,
+    "overall": {
+        "name": "all_after_worn",
+        "frames": 0,
+        "seconds": 0.0,
+        "ms_avg": 0.0,
+        "ms_p50": 0.0,
+        "ms_p95": 0.0,
+        "ms_p99": 0.0,
+        "ms_max": 0.0,
+        "max_at_s": 0.0,
+        "fps_avg": 0.0,
+        "missed_frames": 0,
+        "drop_pct": 0.0,
+        "gpu_samples": 0,
+        "gpu_ms_avg": 0.0,
+        "gpu_ms_p95": 0.0,
+        "gpu_ms_max": 0.0,
+        "cpu_main_ms_avg": 0.0,
+        "cpu_render_ms_avg": 0.0,
+        "cpu_wait_ms_avg": 0.0,
+        "cpu_work_ms_p95": 0.0,
+        "gaussians": 0,
+        "head_move_m": 0.0,
+        "head_turn_deg": 0.0,
+        "xr_dropped": -1,
+        "gate_pass": false,
+        "work_budget_pass": false
+    },
+    "segments": [
+        {
+            "name": "not_worn",
+            "frames": 2814,
+            "seconds": 19.681869506835939,
+            "ms_avg": 6.994267463684082,
+            "ms_p50": 6.9388041496276859,
+            "ms_p95": 6.9388041496276859,
+            "ms_p99": 6.962896823883057,
+            "ms_max": 29.04389762878418,
+            "max_at_s": 6.646731376647949,
+            "fps_avg": 142.97422790527345,
+            "missed_frames": 1,
+            "drop_pct": 0.035523977130651477,
+            "gpu_samples": 2789,
+            "gpu_ms_avg": 0.2857569456100464,
+            "gpu_ms_p95": 0.29900801181793215,
+            "gpu_ms_max": 0.31334400177001955,
+            "cpu_main_ms_avg": 0.9822050929069519,
+            "cpu_render_ms_avg": 0.4433557391166687,
+            "cpu_wait_ms_avg": 6.001196384429932,
+            "cpu_work_ms_p95": 1.1496000289916993,
+            "gaussians": 0,
+            "head_move_m": 0.0,
+            "head_turn_deg": 0.0,
+            "xr_dropped": -1,
+            "gate_pass": true,
+            "work_budget_pass": true
+        }
+    ],
+    "marks": [],
+    "worst": [
+        {
+            "t_s": 6.646731376647949,
+            "ms": 29.04389762878418,
+            "gpu_ms": 0.2979840040206909,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 16.675230026245118,
+            "ms": 15.200092315673829,
+            "gpu_ms": 0.2959359884262085,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 7.652298927307129,
+            "ms": 14.361756324768067,
+            "gpu_ms": 0.2969599962234497,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 20.65376853942871,
+            "ms": 14.24045467376709,
+            "gpu_ms": 0.2969599962234497,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 22.670181274414064,
+            "ms": 14.111699104309082,
+            "gpu_ms": 0.29388800263404848,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 10.654816627502442,
+            "ms": 13.522250175476075,
+            "gpu_ms": 0.2959359884262085,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 23.673784255981447,
+            "ms": 13.467198371887207,
+            "gpu_ms": 0.29388800263404848,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 16.648380279541017,
+            "ms": 13.140050888061524,
+            "gpu_ms": 0.2969599962234497,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 8.650954246520996,
+            "ms": 13.135955810546875,
+            "gpu_ms": 0.2949120104312897,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 15.639315605163575,
+            "ms": 13.093855857849121,
+            "gpu_ms": 0.2949120104312897,
+            "segment": "not_worn"
+        }
+    ]
+}

@@ -1,0 +1,684 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "XR Device Simulator with virtual keyboard/mouse, full stick deflection only. No HMD, no physical controllers, nothing about thumbstick feel or sickness. FPS is desktop-only and not a VR measurement.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 647.01171875,
+    "walks": [
+        {
+            "name": "move.forward",
+            "seconds": 2.000789165496826,
+            "meanSpeed": 1.4999994039535523,
+            "firstTenthSecondSpeed": 1.5000025033950806,
+            "minWindowSpeed": 1.4999864101409913,
+            "maxWindowSpeed": 1.7545148134231568,
+            "directionErrorDegrees": 0.07132625579833985,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(0.000, 0.000, 0.000)",
+            "end": "(3.004, 0.000, 0.004)"
+        },
+        {
+            "name": "move.backward",
+            "seconds": 2.0010852813720705,
+            "meanSpeed": 1.5000008344650269,
+            "firstTenthSecondSpeed": 1.5000052452087403,
+            "minWindowSpeed": 1.4999908208847047,
+            "maxWindowSpeed": 1.5000110864639283,
+            "directionErrorDegrees": 0.07132625579833985,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(3.004, 0.000, 0.004)",
+            "end": "(0.000, 0.000, 0.000)"
+        },
+        {
+            "name": "move.strafe_right",
+            "seconds": 1.0074653625488282,
+            "meanSpeed": 1.499999761581421,
+            "firstTenthSecondSpeed": 1.4999983310699463,
+            "minWindowSpeed": 1.4999933242797852,
+            "maxWindowSpeed": 1.5000057220458985,
+            "directionErrorDegrees": 0.06852804124355316,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(0.000, 0.000, 0.000)",
+            "end": "(0.001, 0.000, -1.513)"
+        },
+        {
+            "name": "move.strafe_left",
+            "seconds": 1.0000457763671876,
+            "meanSpeed": 1.499999761581421,
+            "firstTenthSecondSpeed": 1.499992847442627,
+            "minWindowSpeed": 1.4999938011169434,
+            "maxWindowSpeed": 1.5000039339065552,
+            "directionErrorDegrees": 0.06852804124355316,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(0.001, 0.000, -1.513)",
+            "end": "(0.000, 0.000, -0.010)"
+        },
+        {
+            "name": "move.diagonal_keeps_speed",
+            "seconds": 1.0011749267578126,
+            "meanSpeed": 1.5000004768371583,
+            "firstTenthSecondSpeed": 1.4999983310699463,
+            "minWindowSpeed": 1.4999985694885255,
+            "maxWindowSpeed": 1.5000059604644776,
+            "directionErrorDegrees": 0.07132625579833985,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(0.000, 0.000, -0.010)",
+            "end": "(1.064, 0.000, -1.072)"
+        },
+        {
+            "name": "move.diagonal_back",
+            "seconds": 1.0003490447998047,
+            "meanSpeed": 1.499998927116394,
+            "firstTenthSecondSpeed": 1.4999898672103882,
+            "minWindowSpeed": 1.4999979734420777,
+            "maxWindowSpeed": 1.500004529953003,
+            "directionErrorDegrees": 0.07132625579833985,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(1.064, 0.000, -1.072)",
+            "end": "(0.000, 0.000, -0.011)"
+        },
+        {
+            "name": "move.follows_head_looking_down",
+            "seconds": 1.0008354187011719,
+            "meanSpeed": 1.499999761581421,
+            "firstTenthSecondSpeed": 1.4999821186065674,
+            "minWindowSpeed": 1.4999953508377076,
+            "maxWindowSpeed": 1.7683199644088746,
+            "directionErrorDegrees": 0.07132625579833985,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(0.000, 0.000, -0.011)",
+            "end": "(1.065, 0.000, -1.073)"
+        },
+        {
+            "name": "move.back_looking_down",
+            "seconds": 1.0013542175292969,
+            "meanSpeed": 1.5000004768371583,
+            "firstTenthSecondSpeed": 1.5000122785568238,
+            "minWindowSpeed": 1.4999980926513672,
+            "maxWindowSpeed": 1.5000059604644776,
+            "directionErrorDegrees": 0.06852804124355316,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(1.065, 0.000, -1.073)",
+            "end": "(0.000, 0.000, -0.010)"
+        },
+        {
+            "name": "move.after_snap_follows_head",
+            "seconds": 1.0011482238769532,
+            "meanSpeed": 1.5000022649765015,
+            "firstTenthSecondSpeed": 1.5000369548797608,
+            "minWindowSpeed": 1.4999960660934449,
+            "maxWindowSpeed": 1.5000107288360596,
+            "directionErrorDegrees": 0.0,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(0.000, 0.000, -0.010)",
+            "end": "(1.504, 0.000, -0.008)"
+        },
+        {
+            "name": "move.after_snap_back",
+            "seconds": 1.0005455017089844,
+            "meanSpeed": 1.4999995231628419,
+            "firstTenthSecondSpeed": 1.4999728202819825,
+            "minWindowSpeed": 1.499997615814209,
+            "maxWindowSpeed": 1.5000057220458985,
+            "directionErrorDegrees": 0.0,
+            "headHeightRange": 0.0,
+            "coastMeters": 0.0,
+            "minAperture": 0.699999988079071,
+            "start": "(1.504, 0.000, -0.008)",
+            "end": "(0.000, 0.000, -0.010)"
+        }
+    ],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rig=True; capsule=True; body=True; move=True; snap=True; vignette=True",
+            "time": 4.00178337097168
+        },
+        {
+            "name": "config.move_provider",
+            "pass": true,
+            "details": "speed=1.5; strafe=True; fly=False; left=HeadRelative",
+            "time": 4.003647804260254
+        },
+        {
+            "name": "config.snap_turn",
+            "pass": true,
+            "details": "amount=45; leftRight=True; turnAround=False",
+            "time": 4.003767490386963
+        },
+        {
+            "name": "config.capsule",
+            "pass": true,
+            "details": "layer=14; radius=0.2; skin=0.02; collidesWith=Default#0",
+            "time": 4.004144668579102
+        },
+        {
+            "name": "config.body_follows_with_collision",
+            "pass": true,
+            "details": "evaluator=RoomScaleBody",
+            "time": 4.004370212554932
+        },
+        {
+            "name": "config.only_wanted_providers",
+            "pass": true,
+            "details": "active=DynamicMoveProvider,GravityProvider,SnapTurnProvider",
+            "time": 4.0045905113220219
+        },
+        {
+            "name": "config.no_teleport_climb_jump",
+            "pass": true,
+            "details": "teleportRayActive=False",
+            "time": 4.005025863647461
+        },
+        {
+            "name": "config.sticks",
+            "pass": true,
+            "details": "leftMove=True[/XRSimulatedController/primary2DAxis]; rightMove=False; rightTurn=True[/XRSimulatedController1/primary2DAxis]; leftTurn=False",
+            "time": 4.005410671234131
+        },
+        {
+            "name": "config.vignette_on_camera",
+            "pass": true,
+            "details": "parent=Main Camera; providers=2; aperture=0.7",
+            "time": 4.005620956420898
+        },
+        {
+            "name": "rest.no_drift",
+            "pass": true,
+            "details": "origin (0.0000, 0.0000, 0.0000)->(0.0000, 0.0000, 0.0000)",
+            "time": 5.000881671905518
+        },
+        {
+            "name": "rest.no_vignette",
+            "pass": true,
+            "details": "aperture=1",
+            "time": 5.001053810119629
+        },
+        {
+            "name": "move.input_path_is_stick_not_hmd",
+            "pass": true,
+            "details": "right=True; fps=False",
+            "time": 6.611049175262451
+        },
+        {
+            "name": "move.forward.vignette_while_moving",
+            "pass": true,
+            "details": "aperture=0.7",
+            "time": 7.1332783699035648
+        },
+        {
+            "name": "move.forward",
+            "pass": true,
+            "details": "mean=1.500 m/s over 2.00s; first0.1s=1.500; window=1.500..1.755; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (0.000, 0.000, 0.000)->(3.004, 0.000, 0.004)",
+            "time": 8.875442504882813
+        },
+        {
+            "name": "vignette.draws_dark_corners",
+            "pass": true,
+            "details": "corners 0.352->0.000; middle 0.396->0.396",
+            "time": 8.875595092773438
+        },
+        {
+            "name": "vignette.gone_after_stopping",
+            "pass": true,
+            "details": "aperture=1",
+            "time": 9.475234985351563
+        },
+        {
+            "name": "vignette.corners_lit_again",
+            "pass": true,
+            "details": "corners moving=0.000; stopped=0.403",
+            "time": 9.485879898071289
+        },
+        {
+            "name": "move.backward",
+            "pass": true,
+            "details": "mean=1.500 m/s over 2.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (3.004, 0.000, 0.004)->(0.000, 0.000, 0.000)",
+            "time": 11.740674018859864
+        },
+        {
+            "name": "move.strafe_right",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.01s; first0.1s=1.500; window=1.500..1.500; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (0.000, 0.000, 0.000)->(0.001, 0.000, -1.513)",
+            "time": 13.000409126281739
+        },
+        {
+            "name": "move.strafe_left",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (0.001, 0.000, -1.513)->(0.000, 0.000, -0.010)",
+            "time": 14.25327205657959
+        },
+        {
+            "name": "move.diagonal_keeps_speed",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (0.000, 0.000, -0.010)->(1.064, 0.000, -1.072)",
+            "time": 15.50706672668457
+        },
+        {
+            "name": "move.diagonal_back",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (1.064, 0.000, -1.072)->(0.000, 0.000, -0.011)",
+            "time": 16.75986671447754
+        },
+        {
+            "name": "move.head_turned",
+            "pass": true,
+            "details": "forward=(0.613, -0.500, -0.612)",
+            "time": 17.77372169494629
+        },
+        {
+            "name": "move.follows_head_looking_down.vignette_while_moving",
+            "pass": true,
+            "details": "aperture=0.7",
+            "time": 18.28520393371582
+        },
+        {
+            "name": "move.follows_head_looking_down",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.768; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (0.000, 0.000, -0.011)->(1.065, 0.000, -1.073)",
+            "time": 19.02688980102539
+        },
+        {
+            "name": "move.back_looking_down",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.07 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (1.065, 0.000, -1.073)->(0.000, 0.000, -0.010)",
+            "time": 20.280536651611329
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 23.653608322143556
+        },
+        {
+            "name": "snap.right_45",
+            "pass": true,
+            "details": "yaw 0.00->45.00",
+            "time": 23.653915405273439
+        },
+        {
+            "name": "snap.head_stays_in_place",
+            "pass": true,
+            "details": "head moved 0.0000 m",
+            "time": 23.654006958007814
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 24.404918670654298
+        },
+        {
+            "name": "snap.step_1",
+            "pass": true,
+            "details": "yaw 45.00->90.00",
+            "time": 24.405101776123048
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 25.156335830688478
+        },
+        {
+            "name": "snap.step_2",
+            "pass": true,
+            "details": "yaw 90.00->135.00",
+            "time": 25.15650749206543
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 25.913301467895509
+        },
+        {
+            "name": "snap.step_3",
+            "pass": true,
+            "details": "yaw 135.00->180.00",
+            "time": 25.91347885131836
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 26.664249420166017
+        },
+        {
+            "name": "snap.step_4",
+            "pass": true,
+            "details": "yaw 180.00->225.00",
+            "time": 26.664440155029298
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 27.415956497192384
+        },
+        {
+            "name": "snap.step_5",
+            "pass": true,
+            "details": "yaw 225.00->270.00",
+            "time": 27.416128158569337
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 28.17284393310547
+        },
+        {
+            "name": "snap.step_6",
+            "pass": true,
+            "details": "yaw 270.00->315.00",
+            "time": 28.173019409179689
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 28.930143356323243
+        },
+        {
+            "name": "snap.step_7",
+            "pass": true,
+            "details": "yaw 315.00->0.00",
+            "time": 28.930322647094728
+        },
+        {
+            "name": "snap.full_circle",
+            "pass": true,
+            "details": "after 8 steps 0.00->0.00",
+            "time": 28.93039894104004
+        },
+        {
+            "name": "vignette.on_snap_A",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 29.681121826171876
+        },
+        {
+            "name": "snap.left_45",
+            "pass": true,
+            "details": "yaw 0.00->315.00",
+            "time": 29.681304931640626
+        },
+        {
+            "name": "snap.head_turned_with_rig",
+            "pass": true,
+            "details": "heading=(-0.708, 0.000, 0.706)",
+            "time": 29.681392669677736
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 30.432987213134767
+        },
+        {
+            "name": "vignette.on_snap_A",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 33.57744598388672
+        },
+        {
+            "name": "snap.head_yaw_plus_rig_yaw",
+            "pass": true,
+            "details": "heading=(1.000, 0.000, 0.001)",
+            "time": 33.57764434814453
+        },
+        {
+            "name": "move.after_snap_follows_head",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.00 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (0.000, 0.000, -0.010)->(1.504, 0.000, -0.008)",
+            "time": 34.83085632324219
+        },
+        {
+            "name": "move.after_snap_back",
+            "pass": true,
+            "details": "mean=1.500 m/s over 1.00s; first0.1s=1.500; window=1.500..1.500; direction error=0.00 deg; head height range=0.0000 m; coast=0.000 m; minAperture=0.700; (1.504, 0.000, -0.008)->(0.000, 0.000, -0.010)",
+            "time": 36.084007263183597
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 36.884979248046878
+        },
+        {
+            "name": "snap.hold_repeats_whole_steps",
+            "pass": true,
+            "details": "held 1.3 s: 3 steps, 135.00 deg",
+            "time": 41.19862365722656
+        },
+        {
+            "name": "vignette.on_snap_A",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 41.976112365722659
+        },
+        {
+            "name": "vignette.on_snap_A",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 42.7288932800293
+        },
+        {
+            "name": "vignette.on_snap_A",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 43.481300354003909
+        },
+        {
+            "name": "snap.back_to_start",
+            "pass": true,
+            "details": "yaw=0.00",
+            "time": 43.481475830078128
+        },
+        {
+            "name": "snap.stick_forward_does_nothing",
+            "pass": true,
+            "details": "moved=0.0000; yaw=0.00; teleportRay=False",
+            "time": 44.18351745605469
+        },
+        {
+            "name": "snap.stick_back_does_not_turn_around",
+            "pass": true,
+            "details": "yaw=0.00",
+            "time": 44.88484191894531
+        },
+        {
+            "name": "collide.counter_near_side",
+            "pass": true,
+            "details": "(0.000, 0.000, -0.010)->(0.000, 0.000, 0.130); surface vs obstacle at 0.35: worst past=0.0000 m; sideHit=True; pushed for 1.2s",
+            "time": 46.53585433959961
+        },
+        {
+            "name": "collide.slides_along_counter",
+            "pass": true,
+            "details": "(0.000, 0.000, 0.130)->(0.520, 0.000, 0.136)",
+            "time": 47.13786697387695
+        },
+        {
+            "name": "collide.back_wall",
+            "pass": true,
+            "details": "(-0.005, 0.000, 0.136)->(-0.005, 0.000, -2.230); surface vs obstacle at -2.45: worst past=0.0000 m; sideHit=True; pushed for 2.2s",
+            "time": 50.23997116088867
+        },
+        {
+            "name": "collide.left_wall",
+            "pass": true,
+            "details": "(-0.005, 0.000, -2.230)->(-4.230, 0.000, -2.230); surface vs obstacle at -4.45: worst past=0.0000 m; sideHit=True; pushed for 3.5s",
+            "time": 54.1923713684082
+        },
+        {
+            "name": "collide.right_wall",
+            "pass": true,
+            "details": "(-4.230, 0.000, -2.230)->(4.230, 0.000, -2.230); surface vs obstacle at 4.45: worst past=0.0000 m; sideHit=True; pushed for 6.2s",
+            "time": 60.84439468383789
+        },
+        {
+            "name": "collide.front_wall",
+            "pass": true,
+            "details": "(1.996, 0.000, -2.230)->(1.996, 0.000, 5.230); surface vs obstacle at 5.45: worst past=0.0000 m; sideHit=True; pushed for 5.5s",
+            "time": 68.39558410644531
+        },
+        {
+            "name": "collide.counter_far_side",
+            "pass": true,
+            "details": "(-0.017, 0.000, 5.230)->(-0.017, 0.000, 1.170); surface vs obstacle at 0.95: worst past=0.0000 m; sideHit=True; pushed for 3.2s",
+            "time": 73.49899291992188
+        },
+        {
+            "name": "collide.still_on_customer_side",
+            "pass": true,
+            "details": "z=1.170",
+            "time": 73.49917602539063
+        },
+        {
+            "name": "collide.shelf",
+            "pass": true,
+            "details": "(-3.601, 0.000, 1.170)->(-3.601, 0.000, 2.730); surface vs obstacle at 2.95: worst past=0.0000 m; sideHit=True; pushed for 1.5s",
+            "time": 77.94064331054688
+        },
+        {
+            "name": "collide.walked_back_to_start",
+            "pass": true,
+            "details": "origin=(0.002, 0.000, -0.001)",
+            "time": 82.47592163085938
+        },
+        {
+            "name": "collide.nothing_on_the_counter_moved",
+            "pass": true,
+            "details": "checked=1; moved=[]",
+            "time": 82.47638702392578
+        },
+        {
+            "name": "roomscale.head_moves_rig_does_not",
+            "pass": true,
+            "details": "origin moved 0.0000; head moved 0.362",
+            "time": 82.8418197631836
+        },
+        {
+            "name": "roomscale.capsule_follows_head",
+            "pass": true,
+            "details": "capsule center=(-0.256, 0.701, -0.256); head local=(-0.256, 1.361, -0.256); lean=0.0000",
+            "time": 82.8421630859375
+        },
+        {
+            "name": "roomscale.stick_stops_under_head",
+            "pass": true,
+            "details": "(0.002, 0.000, -0.001)->(0.002, 0.000, 0.386); surface vs obstacle at 0.35: worst past=0.0000 m; sideHit=True; pushed for 1.2s",
+            "time": 84.51026916503906
+        },
+        {
+            "name": "roomscale.capsule_height_follows_head",
+            "pass": true,
+            "details": "capsule height=1.361; head height=1.361",
+            "time": 84.52108764648438
+        },
+        {
+            "name": "roomscale.lean_over_counter_moves_only_the_head",
+            "pass": true,
+            "details": "head z 0.130->0.281; origin moved 0.0000; body (-0.2534, 0.0000, 0.1300)->(-0.2535, 0.0000, 0.1300)",
+            "time": 85.88806915283203
+        },
+        {
+            "name": "vignette.on_snap_D",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 86.65618896484375
+        },
+        {
+            "name": "roomscale.snap_while_leaning_keeps_body_out_of_counter",
+            "pass": true,
+            "details": "body (-0.253, 0.000, 0.130)->(-0.147, 0.000, 0.136); capsule surface z=0.336; counter at 0.35",
+            "time": 86.65641784667969
+        },
+        {
+            "name": "vignette.on_snap_A",
+            "pass": true,
+            "details": "before=1; lowest=0.700; after=1",
+            "time": 87.40744018554688
+        },
+        {
+            "name": "roomscale.stick_while_leaning_does_not_jump",
+            "pass": true,
+            "details": "head (-0.218, 1.361, 0.207)->(0.233, 1.361, 0.207); body z=0.136",
+            "time": 88.00888061523438
+        },
+        {
+            "name": "roomscale.step_cannot_pass_counter",
+            "pass": true,
+            "details": "head z=0.336; body z 0.136->0.136; origin z 0.312->-0.560; counter near edge at 0.35",
+            "time": 89.2369384765625
+        },
+        {
+            "name": "roomscale.step_back_body_under_head",
+            "pass": true,
+            "details": "lean=0.0000",
+            "time": 89.93830871582031
+        },
+        {
+            "name": "roomscale.walk_to_wall",
+            "pass": true,
+            "details": "(0.489, 0.000, -0.560)->(4.486, 0.000, -0.560); surface vs obstacle at 4.45: worst past=0.0000 m; sideHit=True; pushed for 3.4s",
+            "time": 93.79742431640625
+        },
+        {
+            "name": "roomscale.step_cannot_pass_wall",
+            "pass": true,
+            "details": "head x=4.430; wall at 4.45; body x 4.230->4.230",
+            "time": 95.00443267822266
+        },
+        {
+            "name": "roomscale.body_slides_along_wall",
+            "pass": true,
+            "details": "body (4.230, 0.000, -0.152)->(4.230, 0.000, -0.643)",
+            "time": 95.70670318603516
+        }
+    ],
+    "notes": [
+        "shot.01_rest: aperture=1.000; corners=0.439; middle=0.711; origin=(0.000, 0.000, 0.000); head=(0.000, 1.361, 0.000)",
+        "shot.02_before_walking: aperture=1.000; corners=0.352; middle=0.396; origin=(0.000, 0.000, 0.000); head=(0.000, 1.361, 0.000)",
+        "shot.03_moving_forward: aperture=0.700; corners=0.000; middle=0.396; origin=(0.753, 0.000, 0.001); head=(0.753, 1.361, 0.001)",
+        "shot.04_stopped_after_walking: aperture=1.000; corners=0.403; middle=0.396; origin=(3.004, 0.000, 0.004); head=(3.004, 1.361, 0.004)",
+        "shot.05_moving_looking_down: aperture=0.700; corners=0.000; middle=0.570; origin=(0.534, 0.000, -0.543); head=(0.534, 1.361, -0.543)",
+        "shot.06_snap_turn_vignette: aperture=0.700; corners=0.000; middle=0.309; origin=(0.000, 0.000, -0.010); head=(0.000, 1.361, -0.010)",
+        "shot.10_counter_near_side: aperture=1.000; corners=0.502; middle=0.711; origin=(0.000, 0.000, 0.130); head=(0.000, 1.361, 0.130)",
+        "shot.11_back_wall: aperture=1.000; corners=0.473; middle=0.711; origin=(-0.005, 0.000, -2.230); head=(-0.005, 1.361, -2.230)",
+        "shot.12_right_wall: aperture=1.000; corners=0.432; middle=0.711; origin=(4.230, 0.000, -2.230); head=(4.230, 1.361, -2.230)",
+        "shot.13_front_wall: aperture=1.000; corners=0.713; middle=0.711; origin=(1.996, 0.000, 5.230); head=(1.996, 1.361, 5.230)",
+        "shot.14_shelf: aperture=1.000; corners=0.553; middle=0.551; origin=(-3.601, 0.000, 2.730); head=(-3.601, 1.361, 2.730)",
+        "shot.20_roomscale_step: aperture=1.000; corners=0.482; middle=0.711; origin=(0.002, 0.000, -0.001); head=(-0.253, 1.361, -0.257)",
+        "shot.21_roomscale_counter: aperture=1.000; corners=0.494; middle=0.711; origin=(0.002, 0.000, 0.386); head=(-0.253, 1.361, 0.130)",
+        "shot.22_lean_over_counter: aperture=1.000; corners=0.494; middle=0.711; origin=(0.002, 0.000, 0.386); head=(-0.254, 1.361, 0.281)",
+        "shot.23_stick_while_leaning: aperture=1.000; corners=0.418; middle=0.711; origin=(0.488, 0.000, 0.312); head=(0.233, 1.361, 0.207)",
+        "shot.24_step_cannot_pass_counter: aperture=1.000; corners=0.494; middle=0.711; origin=(0.489, 0.000, -0.560); head=(0.232, 1.361, 0.336)",
+        "shot.25_step_cannot_pass_wall: aperture=1.000; corners=0.432; middle=0.627; origin=(3.686, 0.000, -0.560); head=(4.430, 1.361, -0.152)"
+    ]
+}

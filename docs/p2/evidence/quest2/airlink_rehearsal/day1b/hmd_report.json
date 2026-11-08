@@ -1,0 +1,162 @@
+{
+    "mode": "game",
+    "finished_local": "2026-11-07 18:51:38",
+    "runtime_name": "Oculus",
+    "runtime_version": "1.208.0",
+    "openxr_plugin": "ecb5f4e-dirty",
+    "loader": "OpenXRLoader",
+    "xr_device": "OpenXR Display",
+    "xr_active": true,
+    "stereo": true,
+    "simulators_active": 0,
+    "hmd_input": "OpenXRHmd:Head Tracking - OpenXR",
+    "mark_button": "",
+    "controllers": [
+        "OculusTouchController:Oculus Touch Controller (OpenXR)",
+        "OculusTouchController:Oculus Touch Controller OpenXR"
+    ],
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "graphics_api": "Direct3D12",
+    "unity_version": "6000.3.26f1",
+    "stereo_mode": "MultiPass",
+    "eye_width": 2080,
+    "eye_height": 2096,
+    "render_scale": 1.0,
+    "viewport_scale": 1.0,
+    "sh_order": 0,
+    "refresh_hz": 72.00000762939453,
+    "refresh_known": true,
+    "run_in_background": true,
+    "input_background": "IgnoreFocus",
+    "haptic_hand": "Near-Far Interactor",
+    "haptic_pulses": 0,
+    "tracking_requested": "Floor",
+    "tracking_current": "Floor",
+    "floor_offset_m": 0.0,
+    "ipd_m": 0.05810363590717316,
+    "widest_view_deg": 60.23909378051758,
+    "gate_runs_passed": 0,
+    "auto_presses": 0,
+    "auto_presses_seen": 0,
+    "overall": {
+        "name": "all_after_worn",
+        "frames": 0,
+        "seconds": 0.0,
+        "ms_avg": 0.0,
+        "ms_p50": 0.0,
+        "ms_p95": 0.0,
+        "ms_p99": 0.0,
+        "ms_max": 0.0,
+        "max_at_s": 0.0,
+        "fps_avg": 0.0,
+        "missed_frames": 0,
+        "drop_pct": 0.0,
+        "gpu_samples": 0,
+        "gpu_ms_avg": 0.0,
+        "gpu_ms_p95": 0.0,
+        "gpu_ms_max": 0.0,
+        "cpu_main_ms_avg": 0.0,
+        "cpu_render_ms_avg": 0.0,
+        "cpu_wait_ms_avg": 0.0,
+        "cpu_work_ms_p95": 0.0,
+        "gaussians": 0,
+        "head_move_m": 0.0,
+        "head_turn_deg": 0.0,
+        "xr_dropped": -1,
+        "gate_pass": false,
+        "work_budget_pass": false
+    },
+    "segments": [
+        {
+            "name": "not_worn",
+            "frames": 23547,
+            "seconds": 327.9813537597656,
+            "ms_avg": 13.928794860839844,
+            "ms_p50": 13.922300338745118,
+            "ms_p95": 13.956009864807129,
+            "ms_p99": 13.957511901855469,
+            "ms_max": 41.76709747314453,
+            "max_at_s": 186.3805694580078,
+            "fps_avg": 71.79371643066406,
+            "missed_frames": 12,
+            "drop_pct": 0.05093594640493393,
+            "gpu_samples": 23523,
+            "gpu_ms_avg": 1.0768152475357056,
+            "gpu_ms_p95": 2.3992319107055666,
+            "gpu_ms_max": 3.9383039474487306,
+            "cpu_main_ms_avg": 1.5362440347671509,
+            "cpu_render_ms_avg": 1.113123893737793,
+            "cpu_wait_ms_avg": 0.3479224741458893,
+            "cpu_work_ms_p95": 1.8681999444961548,
+            "gaussians": 0,
+            "head_move_m": 2.0975139141082765,
+            "head_turn_deg": 179.7667694091797,
+            "xr_dropped": 0,
+            "gate_pass": true,
+            "work_budget_pass": true
+        }
+    ],
+    "marks": [],
+    "worst": [
+        {
+            "t_s": 186.3805694580078,
+            "ms": 41.76709747314453,
+            "gpu_ms": 0.6218240261077881,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 7.704775333404541,
+            "ms": 41.733787536621097,
+            "gpu_ms": 0.5785599946975708,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 186.36814880371095,
+            "ms": 27.84610366821289,
+            "gpu_ms": 0.6174719929695129,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 334.28106689453127,
+            "ms": 27.84609603881836,
+            "gpu_ms": 0.5230079889297485,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 103.84791564941406,
+            "ms": 27.844799041748048,
+            "gpu_ms": 0.604416012763977,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 103.83605194091797,
+            "ms": 27.843700408935548,
+            "gpu_ms": 0.6359040141105652,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 228.3676300048828,
+            "ms": 27.811195373535158,
+            "gpu_ms": 0.596992015838623,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 149.04336547851563,
+            "ms": 27.77797508239746,
+            "gpu_ms": 2.43123197555542,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 268.21002197265627,
+            "ms": 27.77777862548828,
+            "gpu_ms": 0.6010879874229431,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 149.0723114013672,
+            "ms": 27.77777099609375,
+            "gpu_ms": 1.2554240226745606,
+            "segment": "not_worn"
+        }
+    ]
+}

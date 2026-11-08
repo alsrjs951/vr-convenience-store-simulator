@@ -1,0 +1,22 @@
+{
+    "runtime": "Player",
+    "xrDeviceActive": false,
+    "activeLoader": "none",
+    "xrRuntimeJson": "",
+    "simulatorObjects": 1,
+    "simulatorObjectsActive": 1,
+    "simulatorInstance": true,
+    "stereoEnabled": false,
+    "secondsWaited": 6.000213623046875,
+    "hmdDevices": [
+        "XRSimulatedHMD:XRSimulatedHMD"
+    ],
+    "allDevices": [
+        "FastKeyboard:Keyboard",
+        "FastMouse:Mouse",
+        "XRSimulatedHMD:XRSimulatedHMD",
+        "XRSimulatedController:XRSimulatedController",
+        "XRSimulatedController:XRSimulatedController"
+    ],
+    "nativeXrDevices": []
+}

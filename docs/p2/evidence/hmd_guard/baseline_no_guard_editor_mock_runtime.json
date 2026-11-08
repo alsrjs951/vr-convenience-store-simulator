@@ -1,0 +1,22 @@
+{
+    "runtime": "Editor Play Mode",
+    "xrDeviceActive": true,
+    "activeLoader": "OpenXRLoader",
+    "xrRuntimeJson": "C:\\Projects\\vr-convenience-store-simulator\\.claude\\worktrees\\annyeong-945854\\Library\\PackageCache\\com.unity.xr.openxr@b5b77b4027be\\Runtime\\MockRuntime\\unity-mock-runtime.json",
+    "simulatorObjects": 1,
+    "simulatorObjectsActive": 1,
+    "simulatorInstance": true,
+    "stereoEnabled": true,
+    "hmdDevices": [
+        "XRSimulatedHMD:XRSimulatedHMD"
+    ],
+    "allDevices": [
+        "FastKeyboard:Keyboard",
+        "FastMouse:Mouse",
+        "XRSimulatedHMD:XRSimulatedHMD",
+        "XRSimulatedController:XRSimulatedController",
+        "XRSimulatedController:XRSimulatedController",
+        "OculusTouchController:Oculus Touch Controller (OpenXR)",
+        "OculusTouchController:Oculus Touch Controller OpenXR"
+    ]
+}

@@ -1,0 +1,220 @@
+Found 4 interfaces on host : 0) 192.168.219.113 1) 25.2.30.170 2) 172.30.144.1 3) 100.71.35.78
+Player connection [3608]  Target information:
+
+Player connection [3608]  * "[IP] 192.168.219.113 [Port] 55000 [Flags] 2 [Guid] 2190225438 [EditorId] 3130980814 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [3608]  * "[IP] 25.2.30.170 [Port] 55000 [Flags] 2 [Guid] 2190225438 [EditorId] 3130980814 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [3608]  * "[IP] 172.30.144.1 [Port] 55000 [Flags] 2 [Guid] 2190225438 [EditorId] 3130980814 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [3608]  * "[IP] 100.71.35.78 [Port] 55000 [Flags] 2 [Guid] 2190225438 [EditorId] 3130980814 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [3608] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.26f1 (de8167e7440c)
+[Subsystems] Discovering subsystems at path C:/Projects/vr-convenience-store-simulator/Builds/Store/VRStore_Data/UnitySubsystems
+[Subsystems] No descriptors matched for  examples in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 4070
+[D3D12 Device Filter] Driver Version: 32.0.15.9159
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 12010 MB
+[D3D12 Device Filter] Processor Count: 20
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 (ID=0x2786)
+    Vendor:          NVIDIA
+    VRAM:            12010 MB
+    App VRAM Budget: 11242 MB
+    Driver:          32.0.15.9159
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+XRGeneral Settings awakening...
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.Management.XRGeneralSettings:Awake()
+
+[XR] [3608] [18:05:05.873][Info   ] Available Layers: (0)
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Input
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+Loading OpenXR loader library at path: openxr_loader
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:LoadOpenXRSymbols()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:InitializeInternal()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:Initialize()
+UnityEngine.XR.Management.XRManagerSettings:InitializeLoaderSync()
+UnityEngine.XR.Management.XRGeneralSettings:InitXRSDK()
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Display...
+[XR] [3608] [18:05:06.104][Info   ] Available Layers: (0)
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Input...
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+[XR] [3608] [18:05:06.303][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE session=2 time=70198822864899
+UnloadTime: 0.424900 ms
+[Simulator Guard] OpenXRLoader is running; XR Device Simulator stays off.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SimulatorHmdGuard:Awake()
+
+[Scenario] Day 1: 5 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+<Start>d__32:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] start mode=game runtime=Oculus 1.208.0 xr=False eye=0x0 refresh=72 known=False tracking=Unknown simulators=0
+[HMD Perf] t=30 state=not_worn frames=3611 fps=120.3 p95=16.48 max=19.6 missed=0 gpu=0.40/0.41 work_p95=1.14
+[HMD Perf] t=60 state=not_worn frames=4228 fps=140.9 p95=6.96 max=19.2 missed=0 gpu=0.41/0.41 work_p95=1.05
+[HMD Perf] t=90 state=not_worn frames=4319 fps=143.9 p95=6.95 max=13.9 missed=0 gpu=0.41/0.41 work_p95=0.97
+[HMD Perf] t=120 state=not_worn frames=4318 fps=143.9 p95=6.95 max=13.9 missed=0 gpu=0.40/0.40 work_p95=0.91
+Shutting down OpenXR.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.<RestartCoroutine>d__36:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+UnityEngine.XR.OpenXR.OpenXRRestarter:Shutdown()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:ReceiveNativeEvent(NativeEvent, UInt64)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:ProcessOpenXRMessageLoop()
+UnityEngine.BeforeRenderHelper:Invoke()
+
+[XR] [3608] [18:07:16.293][Info   ] 
+
+==== Start Unity OpenXR Diagnostic Report ====
+
+
+[XR] [3608] [18:07:16.293][Info   ] ==== Report Reason: System Shutdown ====
+
+
+[XR] [3608] [18:07:16.293][Info   ] ==== OpenXR Settings ====
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Symmetric Projection: False
+[XR] [3608] [18:07:16.293][Info   ] Stereo Rendering Mode: MultiPass
+[XR] [3608] [18:07:16.293][Info   ] Latency Optimization: PrioritizeRendering
+[XR] [3608] [18:07:16.293][Info   ] Color Submission Modes: kRenderTextureFormatGroup8888
+[XR] [3608] [18:07:16.293][Info   ] Depth Submission Mode: None
+[XR] [3608] [18:07:16.293][Info   ] Space Warp Motion Vector Texture Format: RGBA16f
+[XR] [3608] [18:07:16.293][Info   ] Optimize Buffer Discards: False
+[XR] [3608] [18:07:16.293][Info   ] Multiview Render Regions Optimization Mode: None
+[XR] [3608] [18:07:16.293][Info   ] Use OpenXR Predicted Time: True
+[XR] [3608] [18:07:16.293][Info   ] Foveated Rendering API: SRPFoveation
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] ==== OpenXR Provider Info ====
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Provider Version: ecb5f4e-dirty
+[XR] [3608] [18:07:16.293][Info   ] App: vr-convenience-store-simulator #3118937138
+[XR] [3608] [18:07:16.293][Info   ] Engine: 6000.3.26f1 #87139329
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] ==== OpenXR Runtime Info ====
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Available Runtime Extensions: (36)
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_D3D11_enable: Version=11
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_opengl_enable: Version=12
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_vulkan_enable: Version=10
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_vulkan_enable2: Version=4
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_win32_convert_performance_counter_time: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_convert_timespec_time: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_composition_layer_cube: Version=8
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_composition_layer_cylinder: Version=4
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_composition_layer_equirect: Version=3
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_composition_layer_color_scale_bias: Version=5
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_maintenance1: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_win32_appcontainer_compatible: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_debug_utils: Version=5
+[XR] [3608] [18:07:16.293][Info   ]   XR_OCULUS_recenter_event: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_FB_color_space: Version=3
+[XR] [3608] [18:07:16.293][Info   ]   XR_FB_display_refresh_rate: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [3608] [18:07:16.293][Info   ]   XR_META_headset_id: Version=2
+[XR] [3608] [18:07:16.293][Info   ]   XR_OCULUS_ovrsession_handle: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_active_action_set_priority: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_future: Version=2
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_palm_pose: Version=3
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_haptic_parametric: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_FB_haptic_amplitude_envelope: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_FB_haptic_pcm: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_FB_touch_controller_pro: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_META_touch_controller_plus: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_FB_touch_controller_proximity: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_OCULUS_external_camera: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_META_detached_controllers: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_LOGITECH_mx_ink_stylus_interaction: Version=1
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Available Layers: (0)
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Runtime Name: Oculus
+[XR] [3608] [18:07:16.293][Info   ] Runtime Version: 1.208.0
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Form factor: XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Runtime extensions enabled: (6)
+[XR] [3608] [18:07:16.293][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [3608] [18:07:16.293][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [3608] [18:07:16.293][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [3608] [18:07:16.293][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Available Reference Spaces: (4)
+[XR] [3608] [18:07:16.293][Info   ]   XR_REFERENCE_SPACE_TYPE_VIEW
+[XR] [3608] [18:07:16.293][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL
+[XR] [3608] [18:07:16.293][Info   ]   XR_REFERENCE_SPACE_TYPE_STAGE
+[XR] [3608] [18:07:16.293][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] Instance Id  : 0x1
+[XR] [3608] [18:07:16.293][Info   ] System Id    : 0x14
+[XR] [3608] [18:07:16.293][Info   ] Session Id   : 0x2
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] ==== OpenXR API Spec Version ====
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] XrInstance Created with OpenXR API Version: 1.1.54
+[XR] [3608] [18:07:16.293][Info   ] 
+[XR] [3608] [18:07:16.293][Info   ] ==== Last 20 Events ====
+[XR] [3608] [18:07:16.293][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE
+[XR] [3608] [18:07:16.293][Info   ] XrEventDataInstanceLossPending: Loss Time: 70328908764600
+[XR] [3608] [18:07:16.293][Info   ] 
+
+==== End Unity OpenXR Diagnostic Report ====
+
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+NullReferenceException: Object reference not set to an instance of an object.
+  at UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) [0x00000] in <00000000000000000000000000000000>:0 
+  at UnityEngine.XR.XRDisplaySubsystem.TryGetDisplayRefreshRate (System.Single& displayRefreshRate) [0x00000] in <00000000000000000000000000000000>:0 
+  at HmdPerfRecorder.ReadEnvironment () [0x00000] in <00000000000000000000000000000000>:0 
+  at HmdPerfRecorder.WrapUp () [0x00000] in <00000000000000000000000000000000>:0 
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+PlayerConnection::Cleanup##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794042443012,"processId":27844,"allocatedMemory":1212207,"memoryLabels":[{"Default":248},{"NewDelete":6468},{"Thread":8640},{"Manager":15798},{"GfxDevice":2128},{"GfxThread":3072},{"Animation":3744},{"Audio":752},{"Serialization":520},{"JobScheduler":32768},{"ScriptingNativeRuntime":1061712},{"Renderer":11676},{"String":303},{"DynamicArray":31904},{"HashMap":6656},{"PoolAlloc":192},{"VR":7456},{"Video":144},{"NativeArray":23106},{"Gui":360},{"CoreBusinessMetrics":120}]}

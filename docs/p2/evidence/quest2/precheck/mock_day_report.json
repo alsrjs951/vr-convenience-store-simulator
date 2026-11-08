@@ -1,0 +1,202 @@
+{
+    "mode": "game",
+    "finished_local": "2026-11-07 18:32:37",
+    "runtime_name": "Unity Mock Runtime",
+    "runtime_version": "0.0.2",
+    "openxr_plugin": "ecb5f4e-dirty",
+    "loader": "OpenXRLoader",
+    "xr_device": "OpenXR Display",
+    "xr_active": true,
+    "stereo": true,
+    "simulators_active": 0,
+    "hmd_input": "OpenXRHmd:Head Tracking - OpenXR",
+    "mark_button": "/OculusTouchControllerOpenXR1/primarybutton",
+    "controllers": [
+        "OculusTouchController:Oculus Touch Controller (OpenXR)",
+        "OculusTouchController:Oculus Touch Controller OpenXR"
+    ],
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "graphics_api": "Direct3D12",
+    "unity_version": "6000.3.26f1",
+    "stereo_mode": "MultiPass",
+    "eye_width": 1512,
+    "eye_height": 1680,
+    "render_scale": 1.0,
+    "viewport_scale": 1.0,
+    "sh_order": 0,
+    "refresh_hz": 60.00239944458008,
+    "refresh_known": true,
+    "run_in_background": true,
+    "input_background": "IgnoreFocus",
+    "haptic_hand": "Near-Far Interactor",
+    "haptic_pulses": 1,
+    "tracking_requested": "Floor",
+    "tracking_current": "Floor",
+    "floor_offset_m": 1.3600000143051148,
+    "ipd_m": 0.02199999988079071,
+    "widest_view_deg": 64.46322631835938,
+    "gate_runs_passed": 0,
+    "auto_presses": 1,
+    "auto_presses_seen": 1,
+    "overall": {
+        "name": "all_after_worn",
+        "frames": 28182,
+        "seconds": 36.90932083129883,
+        "ms_avg": 1.3096771240234376,
+        "ms_p50": 1.2783942222595215,
+        "ms_p95": 1.6611040830612183,
+        "ms_p99": 1.8655966520309449,
+        "ms_max": 6.468898773193359,
+        "max_at_s": 36.431549072265628,
+        "fps_avg": 763.5469970703125,
+        "missed_frames": 0,
+        "drop_pct": 0.0,
+        "gpu_samples": 28146,
+        "gpu_ms_avg": 0.7981542348861694,
+        "gpu_ms_p95": 0.8028159737586975,
+        "gpu_ms_max": 35.9106559753418,
+        "cpu_main_ms_avg": 0.8422189950942993,
+        "cpu_render_ms_avg": 0.7566251158714294,
+        "cpu_wait_ms_avg": 0.2936997711658478,
+        "cpu_work_ms_p95": 1.1160999536514283,
+        "gaussians": 0,
+        "head_move_m": 0.0,
+        "head_turn_deg": 0.0,
+        "xr_dropped": -1,
+        "gate_pass": true,
+        "work_budget_pass": true
+    },
+    "segments": [
+        {
+            "name": "not_worn",
+            "frames": 6119,
+            "seconds": 8.005534172058106,
+            "ms_avg": 1.3083076477050782,
+            "ms_p50": 1.278599739074707,
+            "ms_p95": 1.6624008417129517,
+            "ms_p99": 1.860501766204834,
+            "ms_max": 21.776798248291017,
+            "max_at_s": 7.620975017547607,
+            "fps_avg": 764.34619140625,
+            "missed_frames": 0,
+            "drop_pct": 0.0,
+            "gpu_samples": 6114,
+            "gpu_ms_avg": 0.712944746017456,
+            "gpu_ms_p95": 0.8028159737586975,
+            "gpu_ms_max": 4.063231945037842,
+            "cpu_main_ms_avg": 0.8262434005737305,
+            "cpu_render_ms_avg": 0.7315303683280945,
+            "cpu_wait_ms_avg": 0.28903862833976748,
+            "cpu_work_ms_p95": 1.1095999479293824,
+            "gaussians": 0,
+            "head_move_m": 0.0,
+            "head_turn_deg": 0.0,
+            "xr_dropped": 0,
+            "gate_pass": true,
+            "work_budget_pass": true
+        },
+        {
+            "name": "Tutorial",
+            "frames": 28182,
+            "seconds": 36.90932083129883,
+            "ms_avg": 1.3096771240234376,
+            "ms_p50": 1.2783942222595215,
+            "ms_p95": 1.6611040830612183,
+            "ms_p99": 1.8655966520309449,
+            "ms_max": 6.468898773193359,
+            "max_at_s": 36.431549072265628,
+            "fps_avg": 763.5469970703125,
+            "missed_frames": 0,
+            "drop_pct": 0.0,
+            "gpu_samples": 28146,
+            "gpu_ms_avg": 0.7981542348861694,
+            "gpu_ms_p95": 0.8028159737586975,
+            "gpu_ms_max": 35.9106559753418,
+            "cpu_main_ms_avg": 0.8422189950942993,
+            "cpu_render_ms_avg": 0.7566251158714294,
+            "cpu_wait_ms_avg": 0.2936997711658478,
+            "cpu_work_ms_p95": 1.1160999536514283,
+            "gaussians": 0,
+            "head_move_m": 0.0,
+            "head_turn_deg": 0.0,
+            "xr_dropped": 0,
+            "gate_pass": true,
+            "work_budget_pass": true
+        }
+    ],
+    "marks": [
+        {
+            "t_s": 14.601341247558594,
+            "state": "Tutorial",
+            "picture": "mark_01_Tutorial",
+            "head_from_rig": {
+                "x": 0.0,
+                "y": 1.3600000143051148,
+                "z": 0.0
+            },
+            "head_yaw_from_rig_deg": 0.0
+        }
+    ],
+    "worst": [
+        {
+            "t_s": 7.620975017547607,
+            "ms": 21.776798248291017,
+            "gpu_ms": 0.29721599817276,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 8.00363826751709,
+            "ms": 8.828897476196289,
+            "gpu_ms": 0.7997440099716187,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 7.613228797912598,
+            "ms": 6.628302097320557,
+            "gpu_ms": 0.27750399708747866,
+            "segment": "not_worn"
+        },
+        {
+            "t_s": 36.431549072265628,
+            "ms": 6.468898773193359,
+            "gpu_ms": 0.796671986579895,
+            "segment": "Tutorial"
+        },
+        {
+            "t_s": 22.98037338256836,
+            "ms": 6.427302837371826,
+            "gpu_ms": 0.7915520071983337,
+            "segment": "Tutorial"
+        },
+        {
+            "t_s": 36.60280227661133,
+            "ms": 6.302799224853516,
+            "gpu_ms": 0.792576014995575,
+            "segment": "Tutorial"
+        },
+        {
+            "t_s": 36.97805404663086,
+            "ms": 5.99630069732666,
+            "gpu_ms": 0.7928320169448853,
+            "segment": "Tutorial"
+        },
+        {
+            "t_s": 40.00948715209961,
+            "ms": 5.985898494720459,
+            "gpu_ms": 0.7987200021743774,
+            "segment": "Tutorial"
+        },
+        {
+            "t_s": 38.00689697265625,
+            "ms": 5.659396171569824,
+            "gpu_ms": 0.7989760041236877,
+            "segment": "Tutorial"
+        },
+        {
+            "t_s": 29.043668746948243,
+            "ms": 5.58120059967041,
+            "gpu_ms": 0.8005120158195496,
+            "segment": "Tutorial"
+        }
+    ]
+}

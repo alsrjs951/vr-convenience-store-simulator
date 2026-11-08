@@ -1,0 +1,1 @@
+Unity 6000.3.26f1; Windows x64 IL2CPP Development; result=Succeeded; errors=0; warnings=11; bytes=1766887673; duration=00:00:40.1211500; scene=Assets/Scenes/StoreScene.unity; output=Builds/Store/VRStore.exe
