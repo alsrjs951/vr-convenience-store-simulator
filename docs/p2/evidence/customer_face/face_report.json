@@ -1,0 +1,90 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 187.1546630859375,
+    "maxHeldSpeedOnArrival": 0.0,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "",
+    "score": 0.0,
+    "sales": 0,
+    "possibleSales": 0,
+    "paid": 0,
+    "orders": 0,
+    "left": 0,
+    "cancels": 0,
+    "queueAndBrowsers": false,
+    "maxCustomersPresent": 0,
+    "maxForOrdersInStore": 0,
+    "maxWaiting": 0,
+    "maxLine": 0,
+    "maxBrowsers": 0,
+    "browsersSpawned": 0,
+    "stuckWarps": 0,
+    "shortArrivals": 0,
+    "customerFrames": 13851,
+    "settledFrames": 7102,
+    "offNavMeshFrames": 0,
+    "overlapFrames": 0,
+    "clerkSideFrames": 0,
+    "movingFrames": 6168,
+    "walkAnimatedFrames": 6167,
+    "standingFrames": 7338,
+    "standingAnimatedFrames": 7338,
+    "customers": [],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.005552768707275
+        },
+        {
+            "name": "face.customer_at_counter",
+            "pass": true,
+            "details": "after 13.6s",
+            "time": 17.61328887939453
+        },
+        {
+            "name": "face.bones_found",
+            "pass": true,
+            "details": "bones=True",
+            "time": 21.604185104370118
+        },
+        {
+            "name": "face.looks_at_clerk",
+            "pass": true,
+            "details": "off by 1.3°; forward=(0.02, -0.14, -0.99)",
+            "time": 21.604379653930665
+        },
+        {
+            "name": "face.blinks_on_its_own",
+            "pass": true,
+            "details": "blinks so far=3",
+            "time": 21.604450225830079
+        },
+        {
+            "name": "face.jaw_opens_when_talking",
+            "pass": true,
+            "details": "jaw=9.5°",
+            "time": 22.52374267578125
+        },
+        {
+            "name": "face.jaw_closes_after",
+            "pass": true,
+            "details": "jaw=0.0°",
+            "time": 25.6694278717041
+        },
+        {
+            "name": "face.nods",
+            "pass": true,
+            "details": "nods=1",
+            "time": 27.86501121520996
+        }
+    ]
+}

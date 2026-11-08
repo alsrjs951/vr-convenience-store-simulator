@@ -753,6 +753,7 @@ public static class P3StoreDressing
         {
             ("01_clerk_view", new Vector3(0f, 1.6f, -0.3f), new Vector3(0f, 1.25f, 4f)),
             ("02_from_door", new Vector3(-4.1f, 1.6f, 2.35f), new Vector3(1.5f, 1.0f, 1.2f)),
+            ("02b_first_look", new Vector3(-5.2f, 1.6f, 2.4f), new Vector3(0f, 1.25f, 2.4f)),
             ("03_fridge_wall", new Vector3(-0.5f, 1.6f, 2.1f), new Vector3(0.4f, 1.3f, 5.4f)),
             ("04_counter_clerk", new Vector3(0f, 1.5f, -0.2f), new Vector3(0f, 0.95f, 0.7f)),
             ("05_counter_customer", new Vector3(0.3f, 1.55f, 2.4f), new Vector3(0f, 0.95f, 0.6f)),

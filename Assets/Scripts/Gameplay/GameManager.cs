@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     const int IntakeTutorialDay = 2;
     const float BriefSeconds = 7f;
     const float RequestGuideSeconds = 12f;
-    static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check" };
+    static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check" };
 
     public int Day = 1;
     public int LastDay = 3;

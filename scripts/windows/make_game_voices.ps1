@@ -39,6 +39,7 @@ $lines = [ordered]@{
     # Customers at the end of an order, and the store manager on the way in and out (game design 10.0, 11).
     "voice_thanks"            = "감사합니다."
     "voice_thanks_fast"       = "와, 빠르시네요. 감사합니다."
+    "voice_waited"            = "한참 기다렸어요. 이거 계산해 주세요."
     "voice_manager_welcome"   = "어서 와요, 점장이에요. 화살표를 따라 계산대 안쪽으로 들어오세요."
     "voice_manager_punch_in"  = "왔어요? 계산대 위 출근 카드를 집어서, 단말기에 찍어 주세요."
     "voice_manager_punch_out" = "수고 많았어요. 퇴근 카드 찍고 들어가세요."

@@ -246,7 +246,7 @@ def trim(x, sr, threshold=0.02, pad=0.06):
 # Lines said by customers come as a female (Heami) and a male (pitched down) version. Narration is Heami only.
 CUSTOMER_LINES = ['voice_greet_1', 'voice_greet_2', 'voice_bag', 'voice_hurry', 'voice_leave',
                   'voice_special_microwave', 'voice_special_hotwater', 'voice_special_oneplus',
-                  'voice_thanks', 'voice_thanks_fast']
+                  'voice_thanks', 'voice_thanks_fast', 'voice_waited']
 MALE_FACTOR = 0.68   # about 200 Hz down to about 136 Hz
 
 

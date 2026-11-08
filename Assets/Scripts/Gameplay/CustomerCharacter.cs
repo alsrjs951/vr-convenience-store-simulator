@@ -87,6 +87,8 @@ public class CustomerCharacter : MonoBehaviour
     public float WalkClipSpeed { get; private set; } = 1.2f;
     public Transform Basket { get; set; }
     public Transform RightHand => Animator != null && Animator.isHuman ? Animator.GetBoneTransform(HumanBodyBones.RightHand) : null;
+    /// <summary>Null on the placeholder body.</summary>
+    public CustomerFace FaceRig { get; private set; }
 
     bool playingOnce;
 
@@ -102,6 +104,7 @@ public class CustomerCharacter : MonoBehaviour
         Obstacle.carveOnlyStationary = false;
         Obstacle.enabled = false;
         if (Animator == null) Animator = GetComponentInChildren<Animator>();
+        FaceRig = CustomerFace.Attach(this);
     }
 
     void OnEnable() => everyone.Add(this);

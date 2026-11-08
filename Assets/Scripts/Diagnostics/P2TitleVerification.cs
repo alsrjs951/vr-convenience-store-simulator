@@ -15,6 +15,59 @@ public partial class P2DayVerification
     public TitleFlow Title;
 
     bool titleMode;
+    bool faceMode;
+
+    /// <summary>-p2-face-verify: the first customer at the counter, each thing the face can do, a close picture of it.</summary>
+    IEnumerator RunFaceCheck()
+    {
+        yield return new WaitForSecondsRealtime(StartupSeconds);
+        if (!FindRig()) yield break;
+        view.fieldOfView = ViewFieldOfView;
+        foreach (var canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            if (canvas.renderMode != RenderMode.WorldSpace) canvas.enabled = false;
+        var director = Game.Director;
+        yield return WaitUntil(() => Game.Pos.Current != null && director.AtCounter != null, 60f, "face.customer_at_counter");
+        if (finished) yield break;
+        yield return new WaitForSeconds(4f);
+        var face = director.AtCounter.FaceRig;
+        Check("face.bones_found", face != null && face.HasFaceBones, face == null ? "no face" : $"bones={face.HasFaceBones}");
+        if (face == null) { Finish(); yield break; }
+        Check("face.looks_at_clerk", face.GazeErrorDegrees < 25f, $"off by {face.GazeErrorDegrees:0.0}°; forward={face.FaceForward.ToString("F2")}");
+        Check("face.blinks_on_its_own", face.Blinks >= 1, $"blinks so far={face.Blinks}");
+
+        Vector3 Eye() => face.FacePoint + director.AtCounter.transform.forward * 0.62f;
+        IEnumerator Shot(string name) => CaptureFrom(name, Eye(), face.FacePoint + Vector3.down * 0.04f, 32f);
+
+        yield return Shot("f01_neutral");
+        face.TestLids = 1f;
+        yield return new WaitForSeconds(0.2f);
+        yield return Shot("f02_eyes_closed");
+        face.TestLids = -1f;
+        var loud = new float[50];
+        for (int i = 0; i < loud.Length; i++) loud[i] = 1f;
+        face.Talk(loud, 3f);
+        yield return new WaitForSeconds(0.4f);
+        Check("face.jaw_opens_when_talking", face.Talking && face.JawAngle > 5f, $"jaw={face.JawAngle:0.0}°");
+        yield return Shot("f03_mouth_open");
+        yield return new WaitForSeconds(3f);
+        Check("face.jaw_closes_after", face.JawAngle < 0.5f, $"jaw={face.JawAngle:0.0}°");
+        face.SetMood(CustomerMood.Pleased);
+        yield return new WaitForSeconds(0.6f);
+        yield return Shot("f04_pleased");
+        face.SetMood(CustomerMood.Angry);
+        yield return new WaitForSeconds(0.6f);
+        yield return Shot("f05_angry");
+        face.SetMood(CustomerMood.Neutral);
+        yield return new WaitForSeconds(0.5f);
+        int nods = face.Nods;
+        face.Nod();
+        yield return new WaitForSeconds(0.2f);
+        Check("face.nods", face.Nods == nods + 1, $"nods={face.Nods}");
+        yield return Shot("f06_nod");
+        yield return new WaitForSeconds(1f);
+        yield return Capture("f07_from_the_clerk");
+        Finish();
+    }
 
     IEnumerator RunTitleCheck()
     {
@@ -162,7 +215,10 @@ public partial class P2DayVerification
                 var wrist = watch.transform;
                 yield return CaptureFrom("t05_wrist_watch", wrist.position - wrist.forward * 0.28f, wrist.position, 40f);
                 yield return Capture("t05b_counter_with_customer");
+                var looking = director.AtCounter.FaceRig;
+                Check("customer.looks_at_clerk", looking != null && looking.HasFaceBones && looking.GazeErrorDegrees < 35f, looking == null ? "no face" : $"off by {looking.GazeErrorDegrees:0.0}°");
             }
+            var served = director.AtCounter;
             int spoken = Game.Pos.Audio.SpokenCount(CustomerLine.ThanksFast);
             Game.Pos.CompleteCard();
             yield return WaitUntil(() => Game.Pos.Current == null, 3f, $"day.customer{n}_paid");
@@ -170,6 +226,8 @@ public partial class P2DayVerification
             var record = director.Records.Find(r => r.ForOrder && r.Sequence == n);
             Check($"day.customer{n}_rewarded", record != null && record.Tip > 0 && Mathf.Approximately(record.Satisfaction, 1f) && director.LastOutcome.Contains("팁") && Game.Pos.Audio.SpokenCount(CustomerLine.ThanksFast) == spoken + 1,
                 record == null ? "no record" : $"tip={record.Tip}; satisfaction={record.Satisfaction:0.00}; share left={record.ShareLeft:0.00}; card={director.LastOutcome}");
+            Check($"day.customer{n}_nods_and_thanks", served != null && served.FaceRig != null && served.FaceRig.Nods == 1 && served.FaceRig.Talking && served.FaceRig.Mood == CustomerMood.Pleased,
+                served == null || served.FaceRig == null ? "no face" : $"nods={served.FaceRig.Nods}; talking={served.FaceRig.Talking}; mood={served.FaceRig.Mood}");
             if (number == 1) yield return Capture("t06_outcome_card");
         }
     }

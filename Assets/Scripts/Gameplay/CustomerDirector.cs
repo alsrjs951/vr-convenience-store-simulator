@@ -341,6 +341,7 @@ public class CustomerDirector : MonoBehaviour
         BeginPayment(order);
         linePenalty = order.Day > 1 && customer.Record.QueuedAt >= 0f ? LinePenalty(customer.Record.CalledAt - customer.Record.QueuedAt, order.TimeLimitSeconds) : 0f;
         customer.Record.LinePenalty = linePenalty;
+        if (customer.FaceRig != null) customer.FaceRig.SetMood(linePenalty > 0f ? CustomerMood.Impatient : CustomerMood.Neutral);
         remaining = order.TimeLimitSeconds - linePenalty;
         customer.Record.ArrivedAt = Time.time;
         customer.Record.RemainingAtArrival = remaining;
@@ -375,6 +376,11 @@ public class CustomerDirector : MonoBehaviour
                 }
                 flashUntil = Time.time + 1.5f;
                 Hurried?.Invoke();
+                if (customer.FaceRig != null)
+                {
+                    customer.FaceRig.SetMood(CustomerMood.Impatient);
+                    customer.FaceRig.ShakeHead(0.6f);
+                }
             }
             RefreshHud();
             if (remaining <= 0f)
@@ -407,8 +413,13 @@ public class CustomerDirector : MonoBehaviour
             ShowOutcome(fast ? $"+{total:N0}원  ·  팁 {tip:N0}원" : $"+{total:N0}원", fast ? WorldUi.Palette.Good : WorldUi.Palette.Text);
             if (Audio)
             {
-                Audio.Say(fast ? CustomerLine.ThanksFast : CustomerLine.Thanks, GameAudio.IsFemale(customer.Record.Avatar), Mouth(customer));
+                Speak(customer, fast ? CustomerLine.ThanksFast : CustomerLine.Thanks);
                 if (fast) Audio.PlayAt(StoreSound.Tip, Mouth(customer));
+            }
+            if (customer.FaceRig != null)
+            {
+                customer.FaceRig.SetMood(fast ? CustomerMood.Pleased : CustomerMood.Neutral);
+                customer.FaceRig.Nod();
             }
         }
         else
@@ -416,7 +427,12 @@ public class CustomerDirector : MonoBehaviour
             Left++;
             customer.Record.TimedOut = true;
             ShowOutcome($"손님이 떠났습니다  ·  이탈 {Left}/{LeaveLimit}", WorldUi.Palette.Bad);
-            if (Audio) Audio.Say(CustomerLine.Leave, GameAudio.IsFemale(customer.Record.Avatar), Mouth(customer));
+            if (Audio) Speak(customer, CustomerLine.Leave);
+            if (customer.FaceRig != null)
+            {
+                customer.FaceRig.SetMood(CustomerMood.Angry);
+                customer.FaceRig.ShakeHead();
+            }
         }
         customer.Record.DoneAt = Time.time;
         Desk.EndPayment();
@@ -494,8 +510,7 @@ public class CustomerDirector : MonoBehaviour
     {
         yield return new WaitForSeconds(order.Day > 1 ? GreetAfterBellSeconds : GreetDelaySeconds);
         if (AtCounter != customer) yield break;
-        bool female = GameAudio.IsFemale(customer.Record.Avatar);
-        float talking = Audio.Say(CustomerLine.Greet, female, Mouth(customer), order.Sequence);
+        float talking = linePenalty > 0f ? Speak(customer, CustomerLine.Waited) : Speak(customer, CustomerLine.Greet, order.Sequence);
         var requests = new List<CustomerLine>();
         switch (order.Special)
         {
@@ -508,7 +523,7 @@ public class CustomerDirector : MonoBehaviour
         {
             yield return new WaitForSeconds(talking + LinePauseSeconds);
             if (AtCounter != customer) yield break;
-            talking = Audio.Say(line, female, Mouth(customer));
+            talking = Speak(customer, line);
         }
         if (!firstOfItsKind) yield break;
         yield return new WaitForSeconds(talking + LinePauseSeconds);
@@ -518,7 +533,16 @@ public class CustomerDirector : MonoBehaviour
     IEnumerator SayLater(CustomerCharacter customer, CustomerLine line, float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        if (customer != null && AtCounter == customer) Audio.Say(line, GameAudio.IsFemale(customer.Record.Avatar), Mouth(customer));
+        if (customer != null && AtCounter == customer) Speak(customer, line);
+    }
+
+    /// <summary>The line from the customer's mouth, and the mouth moving with it. Returns its length, for what follows.</summary>
+    float Speak(CustomerCharacter customer, CustomerLine line, int variant = 0)
+    {
+        bool female = GameAudio.IsFemale(customer.Record.Avatar);
+        float seconds = Audio.Say(line, female, Mouth(customer), variant);
+        if (customer.FaceRig != null) customer.FaceRig.Talk(Audio.EnvelopeOf(line, female, variant), seconds);
+        return seconds;
     }
 
     void BeginPayment(Order order)
@@ -602,6 +626,7 @@ public class CustomerDirector : MonoBehaviour
         customer.State = CustomerState.Queued;
         customer.Record.QueuedAt = Time.time;
         customer.Resting = CustomerCharacter.IdleState;
+        bool fedUp = false;
         while (true)
         {
             int slot = Line.IndexOf(customer);
@@ -609,7 +634,20 @@ public class CustomerDirector : MonoBehaviour
             customer.Record.QueueSlotsTaken++;
             yield return customer.WalkTo(spot.position);
             yield return customer.Face(spot.rotation);
-            while (Line.IndexOf(customer) == slot) yield return null;
+            while (Line.IndexOf(customer) == slot)
+            {
+                // Past the grace the wait starts to cost time at the counter (LinePenalty), and it shows on the face first.
+                if (!fedUp && dayOrders.Count > 0 && dayOrders[0].Day > 1 && Time.time - customer.Record.QueuedAt > LineGraceSeconds)
+                {
+                    fedUp = true;
+                    if (customer.FaceRig != null)
+                    {
+                        customer.FaceRig.SetMood(CustomerMood.Impatient);
+                        customer.FaceRig.ShakeHead(0.5f);
+                    }
+                }
+                yield return null;
+            }
             // A moment to notice the line has moved, which also lets the one ahead clear the place first.
             yield return new WaitForSeconds(MoveUpDelay);
         }

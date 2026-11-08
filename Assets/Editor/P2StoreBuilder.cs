@@ -570,6 +570,8 @@ public static class P2StoreBuilder
         new GameObject("P2 Locomotion Verification").AddComponent<P2LocomotionVerification>();
         // P3 counter devices and screens: looks only, after everything they sit around exists.
         P3StoreDressing.DressCounter(environment, new Vector3(-0.62f, 1.32f, 0.98f), new Vector3(0.62f, 1.32f, 0.98f), EyePosition);
+        // Printed and painted details, looks only, after the NavMesh bake: nothing here has a collider.
+        P3StoreDetails.Apply(environment);
 
         if (!EditorSceneManager.SaveScene(scene, StoreScene)) throw new Exception("Scene save failed.");
     }
@@ -679,6 +681,7 @@ public static class P2StoreBuilder
         Bag = Sound($"voice_bag_{gender}"),
         Thanks = Sound($"voice_thanks_{gender}"),
         ThanksFast = Sound($"voice_thanks_fast_{gender}"),
+        Waited = Sound($"voice_waited_{gender}"),
         Hurry = Sound($"voice_hurry_{gender}"),
         Leave = Sound($"voice_leave_{gender}"),
         Microwave = Sound($"voice_special_microwave_{gender}"),

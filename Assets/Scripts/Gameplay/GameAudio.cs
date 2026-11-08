@@ -5,7 +5,7 @@ using UnityEngine;
 public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip }
 
 /// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line, the four requests, and the two thanks.</summary>
-public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast }
+public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited }
 
 /// <summary>What the store manager says on the way in and at the end (game design 10.0, 2026-11-09).</summary>
 public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC }
@@ -15,7 +15,7 @@ public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB,
 public class CustomerVoice
 {
     public AudioClip[] Greet = new AudioClip[0];
-    public AudioClip Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast;
+    public AudioClip Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited;
 
     public AudioClip Get(CustomerLine line, int variant)
     {
@@ -29,6 +29,7 @@ public class CustomerVoice
             case CustomerLine.HotWater: return HotWater;
             case CustomerLine.Thanks: return Thanks;
             case CustomerLine.ThanksFast: return ThanksFast;
+            case CustomerLine.Waited: return Waited;
             default: return OnePlus;
         }
     }
@@ -47,6 +48,7 @@ public class GameAudio : MonoBehaviour
     const float VoiceVolume = 1f;
     const float NarrationVolume = 0.9f;
     const float AmbienceVolume = 0.22f;
+    const int EnvelopeRate = 25;
 
     [Header("Counter (doc 5.1)")]
     public AudioClip ErrorClip;
@@ -79,6 +81,7 @@ public class GameAudio : MonoBehaviour
     public AudioClip[] ManagerLines = new AudioClip[0];
 
     AudioSource speaker, narrator, ambience;
+    readonly Dictionary<AudioClip, float[]> envelopes = new Dictionary<AudioClip, float[]>();
 
     /// <summary>How many times each sound was asked for, for the checks. Sounds are not listened to.</summary>
     public readonly Dictionary<StoreSound, int> Played = new Dictionary<StoreSound, int>();
@@ -161,6 +164,34 @@ public class GameAudio : MonoBehaviour
         if (clip == null) return 0f;
         AudioSource.PlayClipAtPoint(clip, mouth, VoiceVolume);
         return clip.length;
+    }
+
+    /// <summary>How loud the line is over its length, 0 to 1, for the speaker's mouth. Null if the clip cannot be read.</summary>
+    public float[] EnvelopeOf(CustomerLine line, bool female, int variant = 0)
+    {
+        var clip = (female ? Female : Male)?.Get(line, variant);
+        if (clip == null) return null;
+        if (envelopes.TryGetValue(clip, out var known)) return known;
+        var samples = new float[clip.samples * clip.channels];
+        float[] result = null;
+        if (clip.GetData(samples, 0))
+        {
+            int frames = Mathf.Max(1, Mathf.CeilToInt(clip.length * EnvelopeRate));
+            result = new float[frames];
+            int perFrame = Mathf.Max(1, samples.Length / frames);
+            float loudest = 0.0001f;
+            for (int frame = 0; frame < frames; frame++)
+            {
+                float sum = 0f;
+                int count = 0;
+                for (int i = frame * perFrame; i < Mathf.Min(samples.Length, (frame + 1) * perFrame); i++, count++) sum += samples[i] * samples[i];
+                result[frame] = count > 0 ? Mathf.Sqrt(sum / count) : 0f;
+                loudest = Mathf.Max(loudest, result[frame]);
+            }
+            for (int frame = 0; frame < frames; frame++) result[frame] = Mathf.Sqrt(result[frame] / loudest);
+        }
+        envelopes[clip] = result;
+        return result;
     }
 
     /// <summary>Tutorial step 1 to 6; a new step cuts the one still talking.</summary>

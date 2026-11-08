@@ -108,7 +108,9 @@ public partial class P2DayVerification : MonoBehaviour
         var args = Environment.GetCommandLineArgs();
         day2Mode = Array.IndexOf(args, "-p2-day2-verify") >= 0;
         titleMode = Array.IndexOf(args, "-p2-title-verify") >= 0;
-        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode) return;
+        faceMode = Array.IndexOf(args, "-p2-face-verify") >= 0;
+        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode) return;
+        if (faceMode) Game.RunTutorial = false;
         walking = Array.IndexOf(args, "-p2-walk") >= 0;
         nextDayCheck = Array.IndexOf(args, "-p2-next-day") >= 0;
         Application.runInBackground = true;
@@ -116,7 +118,7 @@ public partial class P2DayVerification : MonoBehaviour
 #if UNITY_EDITOR
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 #endif
-        output = Path.Combine(Application.dataPath, titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
+        output = Path.Combine(Application.dataPath, faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
         int index = Array.IndexOf(args, "-p2-evidence");
         if (index >= 0 && index + 1 < args.Length) output = args[index + 1];
         Directory.CreateDirectory(output);
@@ -126,7 +128,7 @@ public partial class P2DayVerification : MonoBehaviour
         Scanner.Scanned += _ => scansSeen++;
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
-        StartCoroutine(titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
+        StartCoroutine(faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
     }
 
     void Update()
@@ -1176,7 +1178,7 @@ public partial class P2DayVerification : MonoBehaviour
         report.hmdRuntimeActive = UnityEngine.XR.XRSettings.isDeviceActive;
         report.meanDesktopFps = frames / Mathf.Max(0.01f, Time.realtimeSinceStartup - started);
         report.scope = (day2Mode ? "Day 2 (intake, disposal, leaving customers). " : "") + "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.";
-        File.WriteAllText(Path.Combine(output, titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
+        File.WriteAllText(Path.Combine(output, faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
         WriteDay2Details();
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P2 Day] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} grade={report.grade} sales={report.sales}/{report.possibleSales} mouse={report.externalMouseMotion:0} fps={report.meanDesktopFps:0}");
