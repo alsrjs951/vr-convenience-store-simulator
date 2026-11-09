@@ -21,19 +21,27 @@ public static class P3StoreDressing
     const string Generated = "Assets/Art/Generated";
     const string MaterialFolder = "Assets/Materials/P3";
     const string P2Materials = "Assets/Materials/P2";
+    const string Signage = "Assets/Art/Signage";
     const float CeilingHeight = 3f;
 
-    // Store inside faces (P2StoreBuilder: 9 m x 8 m room, walls 0.1 m thick at x = +-4.5, z = -2.5 and 5.5).
-    const float InnerLeft = -4.44f, InnerRight = 4.44f, InnerFront = 5.44f, InnerBack = -2.44f;
-    // From P2StoreBuilder: gondola fronts and backs, the door in the left wall.
-    const float ShelfFront = 2.95f, ShelfBack = 3.45f, ShelfWidth = 1.5f;
-    const float DoorNear = 1.2f, DoorFar = 3.6f;
+    // Store inside faces (P2StoreBuilder: walls 0.1 m thick, the store runs along x from the near wall to the far wall).
+    const float InnerFar = P2StoreBuilder.RoomFar + 0.06f, InnerRight = P2StoreBuilder.RoomNear - 0.06f, InnerFront = P2StoreBuilder.RoomFront - 0.06f, InnerBack = P2StoreBuilder.RoomBack + 0.06f;
+    const float ShelfWidth = P2StoreBuilder.ShelfWidth;
+    const float StorefrontZ = P2StoreBuilder.StorefrontZ, PartitionX = P2StoreBuilder.PartitionX;
+    static readonly float DoorLeft = P2StoreBuilder.DoorCenter.x - P2StoreBuilder.DoorWidth * 0.5f, DoorRight = P2StoreBuilder.DoorCenter.x + P2StoreBuilder.DoorWidth * 0.5f;
+
+    // The tobacco wall behind the clerk (the locomotion check pushes against its front).
+    public const float TobaccoFront = -1.35f, TobaccoBack = -1.75f, TobaccoLeft = PartitionX + 0.05f, TobaccoRight = 1.85f;
+    // The fridges along the far wall, then the microwave corner, then the end of the chilled cases.
+    public const float FridgeStart = -1.12f, ChilledFront = 4.6f, ChilledFar = -3.8f, ChilledNear = 4.2f;
+    public const float FreezerX0 = 0.35f, FreezerX1 = 1.1f, FreezerZ0 = 2.75f, FreezerZ1 = 4.15f, FreezerHeight = 0.86f;
+    public const int FridgeCount = 5, ChilledModules = 4;
 
     static readonly Color Navy = new Color(0.016f, 0.118f, 0.259f);
     static readonly Color Grey = new Color(0.635f, 0.667f, 0.678f);
     static readonly Color White = new Color(0.95f, 0.95f, 0.94f);
 
-    static Material navy, white, grey, graphite, steel, led;
+    static Material navy, white, grey, graphite, steel, strip;
 
     public static void Dress(Transform environment)
     {
@@ -43,7 +51,8 @@ public static class P3StoreDressing
         // ---------- Surfaces: the P2 materials change, so every box that uses them changes at once ----------
         ApplyPbr(Load<Material>($"{P2Materials}/P2_Floor.mat"), $"{Generated}/floor_tile", new Vector2(9f / 1.2f, 8f / 1.2f), Color.white);
         Paint(Load<Material>($"{P2Materials}/P2_Wall.mat"), $"{Generated}/wall_paint", new Color(0.96f, 0.96f, 0.95f), 0.22f, new Vector2(6f, 2f), 0.35f);
-        Paint(Load<Material>($"{P2Materials}/P2_Shelf.mat"), $"{Root}/AmbientCG/Metal027/Metal027", new Color(0.97f, 0.97f, 0.97f), 0.5f, Vector2.one, 0.25f);
+        // Dark gondolas, as in the reference photo: the goods and the price rails stand out against them.
+        Paint(Load<Material>($"{P2Materials}/P2_Shelf.mat"), $"{Root}/AmbientCG/Metal027/Metal027", new Color(0.1f, 0.105f, 0.115f), 0.42f, Vector2.one, 0.25f);
         Paint(Load<Material>($"{P2Materials}/P2_Counter.mat"), null, new Color(0.93f, 0.925f, 0.91f), 0.35f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_Device.mat"), null, new Color(0.055f, 0.06f, 0.07f), 0.62f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_Stand.mat"), null, Grey, 0.4f, Vector2.one, 0f);
@@ -51,7 +60,7 @@ public static class P3StoreDressing
         Paint(Load<Material>($"{P2Materials}/P2_RecycleBin.mat"), null, Navy, 0.4f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_WarehouseDoor.mat"), null, new Color(0.62f, 0.64f, 0.67f), 0.45f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_Bag.mat"), null, new Color(0.98f, 0.98f, 0.97f), 0.55f, Vector2.one, 0f);
-        Paint(Load<Material>($"{P2Materials}/P2_Porch.mat"), null, new Color(0.22f, 0.23f, 0.25f), 0.3f, Vector2.one, 0f);
+        Paint(Load<Material>($"{P2Materials}/P2_Porch.mat"), null, new Color(0.46f, 0.46f, 0.44f), 0.2f, Vector2.one, 0f);
         ApplyPbr(Load<Material>($"{P2Materials}/P2_Cardboard.mat"), $"{Root}/PolyHaven/cardboard_box_01/cardboard_side", Vector2.one, Color.white);
 
         navy = Plain("P3_Navy", Navy, 0.45f);
@@ -59,9 +68,9 @@ public static class P3StoreDressing
         grey = Plain("P3_Grey", Grey, 0.4f);
         graphite = Plain("P3_Graphite", new Color(0.05f, 0.055f, 0.065f), 0.7f);
         steel = Plain("P3_Steel", new Color(0.78f, 0.8f, 0.83f), 0.7f, 1f);
-        led = Lit("P3_LedPanel", $"{Generated}/led_panel", Vector2.one, Color.white, 2.2f);
+        strip = Emissive("P3_LedStrip", Color.white, new Color(1f, 1f, 0.98f) * 3.2f);
 
-        // The lit panels do not light anything by themselves (no baked GI): a bright, even indoor ambient stands in for
+        // The lit strips do not light anything by themselves (no baked GI): a bright, even indoor ambient stands in for
         // them. The Gaussian splat products are unlit and do not change.
         RenderSettings.ambientMode = AmbientMode.Trilight;
         RenderSettings.ambientSkyColor = new Color(0.9f, 0.91f, 0.93f);
@@ -75,36 +84,43 @@ public static class P3StoreDressing
         foreach (var t in environment.GetComponentsInChildren<Transform>(true))
         {
             var n = t.name;
-            if (n.StartsWith("Shelf A ") || n.StartsWith("Shelf B ")) P3Meshes.Round(t.gameObject, n.EndsWith("Spine") || n.EndsWith("Base") ? 0.012f : 0.007f);
+            if (n.StartsWith("Shelf A ") || n.StartsWith("Shelf B ") || n.StartsWith("Shelf D ")) P3Meshes.Round(t.gameObject, n.EndsWith("Spine") || n.EndsWith("Base") ? 0.012f : 0.007f);
             else if (n.StartsWith("Stand ") && n.EndsWith(" Body")) P3Meshes.Round(t.gameObject, 0.02f);
             else if (n == "Cart Body") P3Meshes.Round(t.gameObject, 0.03f);
         }
 
         Ceiling(dressing);
+        StreetFront(dressing);
         Baseboards(dressing);
-        foreach (var (x, title) in new[] { (-2.2f, "라면 · 과자"), (2.2f, "즉석식품") }) GondolaTrim(dressing, x, title);
+        foreach (var (x, front, back) in new[]
+        {
+            (P2StoreBuilder.ShelfAX, P2StoreBuilder.ShelfFront, P2StoreBuilder.ShelfBack),
+            (P2StoreBuilder.ShelfBX, P2StoreBuilder.ShelfFront, P2StoreBuilder.ShelfBack),
+            (P2StoreBuilder.ShelfDX, P2StoreBuilder.ShelfDFront, P2StoreBuilder.ShelfDBack),
+        })
+            GondolaTrim(dressing, x, front, back);
         FridgeWall(dressing);
+        ChilledCases(dressing);
+        TobaccoWall(dressing);
+        ChestFreezer(dressing);
         ShelfC(dressing);
         MicrowaveCorner(dressing);
 
-        // The store name on the back wall, for the customers' side (left of the warehouse door).
-        Sign(dressing, "Back Wall Sign", new Vector3(-0.6f, 2.45f, InnerBack + 0.004f), Quaternion.Euler(0f, 180f, 0f), new Vector2(3.2f, 0.52f), "동아편의점", "", Navy, Color.white, false);
-
-        // ---------- Behind the counter: stock shelf with a crate, a hand truck (kept from the first pass) ----------
-        var shelf = Place($"{Root}/PolyHaven/steel_frame_shelves_01/steel_frame_shelves_01.fbx", "Stock Shelf", dressing, 90f,
+        // ---------- Back of house, behind the tobacco wall: stock shelf with a crate, a hand truck (kept from the first pass) ----------
+        var shelf = Place($"{Root}/PolyHaven/steel_frame_shelves_01/steel_frame_shelves_01.fbx", "Stock Shelf", dressing, 0f,
             _ => Lit("P3_SteelShelves", $"{Root}/PolyHaven/steel_frame_shelves_01/steel_frame_shelves_01", Vector2.one, Color.white));
-        Align(shelf, new Vector3(InnerLeft + 0.01f, 0f, -1.2f), new Vector3(0f, 0f, 0.5f));
+        Align(shelf, new Vector3(-0.3f, 0f, InnerBack + 0.01f), new Vector3(0.5f, 0f, 0f));
         AddBoxCollider(shelf);
         var shelfBounds = Bounds(shelf);
-        var crate = Place($"{Root}/PolyHaven/industrial_pastic_container/industrial_pastic_container.fbx", "Crate On Shelf", dressing, 90f,
+        var crate = Place($"{Root}/PolyHaven/industrial_pastic_container/industrial_pastic_container.fbx", "Crate On Shelf", dressing, 0f,
             _ => Lit("P3_PlasticContainer", $"{Root}/PolyHaven/industrial_pastic_container/industrial_pastic_container", Vector2.one, Color.white));
         Align(crate, new Vector3(shelfBounds.center.x, shelfBounds.max.y, shelfBounds.center.z), new Vector3(0.5f, 0f, 0.5f));
         FitWithin(crate, new Vector2(shelfBounds.size.x - 0.04f, shelfBounds.size.z - 0.04f));
-        var truck = Place($"{Root}/PolyHaven/hand_truck/hand_truck.fbx", "Hand Truck", dressing, 90f,
+        var truck = Place($"{Root}/PolyHaven/hand_truck/hand_truck.fbx", "Hand Truck", dressing, 0f,
             _ => Lit("P3_HandTruck", $"{Root}/PolyHaven/hand_truck/hand_truck", Vector2.one, Color.white));
-        Align(truck, new Vector3(InnerLeft + 0.02f, 0f, 0.1f), new Vector3(0f, 0f, 0.5f));
+        Align(truck, new Vector3(1.1f, 0f, InnerBack + 0.02f), new Vector3(0.5f, 0f, 0f));
 
-        foreach (var placed in new[] { "Stock Shelf", "Hand Truck", "Drinks Fridge 1", "Shelf C", "Microwave Cabinet" })
+        foreach (var placed in new[] { "Stock Shelf", "Hand Truck", "Drinks Fridge 1", "Shelf C", "Microwave Cabinet", "Chilled Cases", "Tobacco Wall", "Chest Freezer" })
         {
             var t = dressing.Find(placed);
             if (t == null) continue;
@@ -115,16 +131,75 @@ public static class P3StoreDressing
 
     // ---------- Room ----------
 
+    /// <summary>A tiled T-bar ceiling with rows of slim strip lights running across the store, as in the reference photo.</summary>
     static void Ceiling(Transform parent)
     {
-        var ceiling = Quad("Ceiling", parent, new Vector3(0f, CeilingHeight, 1.5f), new Vector2(9f, 8f), Emissive("P3_Ceiling", new Color(0.96f, 0.96f, 0.96f), new Color(0.42f, 0.42f, 0.43f)));
-        ceiling.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-        // 60 cm LED panels: two rows over the shop floor, one behind the counter.
-        foreach (var x in new[] { -3.0f, -1.0f, 1.0f, 3.0f })
-            foreach (var z in new[] { 1.9f, 3.95f })
-                Quad("LED Panel", parent, new Vector3(x, CeilingHeight - 0.004f, z), new Vector2(0.6f, 0.6f), led).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
-        foreach (var x in new[] { -2.4f, 0f, 2.4f })
-            Quad("LED Panel", parent, new Vector3(x, CeilingHeight - 0.004f, -1.1f), new Vector2(0.6f, 0.6f), led).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        float width = P2StoreBuilder.RoomNear - P2StoreBuilder.RoomFar, depth = P2StoreBuilder.RoomFront - P2StoreBuilder.RoomBack;
+        var material = Emissive("P3_Ceiling", new Color(0.96f, 0.96f, 0.96f), new Color(0.42f, 0.42f, 0.43f));
+        material.SetFloat("_Smoothness", 0.15f);
+        var tile = Load<Texture2D>($"{Signage}/ceiling_tile.png");
+        material.SetTexture("_BaseMap", tile);
+        material.SetTextureScale("_BaseMap", new Vector2(width / 0.6f, depth / 0.6f));
+        material.SetTexture("_EmissionMap", tile);
+        var center = new Vector3((P2StoreBuilder.RoomNear + P2StoreBuilder.RoomFar) * 0.5f, CeilingHeight, (P2StoreBuilder.RoomFront + P2StoreBuilder.RoomBack) * 0.5f);
+        Quad("Ceiling", parent, center, new Vector2(width, depth), material).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+
+        var housing = Plain("P3_LightHousing", new Color(0.93f, 0.93f, 0.92f), 0.4f);
+        foreach (var x in LightRows)
+            foreach (var (z0, z1) in LightSpans)
+                LightStrip(parent, housing, new Vector3(x, CeilingHeight, (z0 + z1) * 0.5f), new Vector2(0.09f, z1 - z0));
+        // Back of house, one short row along it.
+        LightStrip(parent, housing, new Vector3(1f, CeilingHeight, -2.05f), new Vector2(2.4f, 0.09f));
+
+        // An air-conditioning cassette, as over the far aisle in the photo.
+        var cassette = new Vector3(-1.9f, CeilingHeight - 0.02f, 3.6f);
+        Visual("AC Cassette", parent, cassette, new Vector3(0.8f, 0.04f, 0.8f), white, 0.008f);
+        Visual("AC Vent", parent, cassette + new Vector3(0f, -0.021f, 0f), new Vector3(0.42f, 0.004f, 0.42f), grey, 0.001f);
+        foreach (var (offset, size) in new[]
+        {
+            (new Vector3(0f, -0.021f, -0.31f), new Vector3(0.62f, 0.004f, 0.06f)), (new Vector3(0f, -0.021f, 0.31f), new Vector3(0.62f, 0.004f, 0.06f)),
+            (new Vector3(-0.31f, -0.021f, 0f), new Vector3(0.06f, 0.004f, 0.62f)), (new Vector3(0.31f, -0.021f, 0f), new Vector3(0.06f, 0.004f, 0.62f)),
+        })
+            Visual("AC Slot", parent, cassette + offset, size, graphite, 0.001f);
+    }
+
+    /// <summary>Where the rows are; the floor texture's lit bands follow the same numbers (scripts/windows/make_store_signage.py).</summary>
+    public static readonly float[] LightRows = { -5.1f, -3.7f, -2.3f, -0.9f, 0.5f, 1.9f, 3.3f };
+    public static readonly (float z0, float z1)[] LightSpans = { (-1.2f, 0.95f), (1.1f, 3.25f), (3.4f, 5.3f) };
+
+    static void LightStrip(Transform parent, Material housing, Vector3 atCeiling, Vector2 size)
+    {
+        Visual("Light Housing", parent, atCeiling + Vector3.down * 0.012f, new Vector3(size.x + 0.07f, 0.024f, size.y + 0.07f), housing, 0.006f).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        Quad("LED Strip", parent, atCeiling + Vector3.down * 0.0245f, size, strip).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+    }
+
+    /// <summary>Aluminium frames for the street front: posts, rails, the two sliding leaves parked open, the store name over the door.</summary>
+    static void StreetFront(Transform parent)
+    {
+        var root = new GameObject("Street Front").transform;
+        root.SetParent(parent, false);
+        var aluminium = Plain("P3_Aluminium", new Color(0.72f, 0.74f, 0.76f), 0.6f, 0.6f);
+        float height = P2StoreBuilder.DoorHeight, roomFar = P2StoreBuilder.RoomFar;
+        foreach (var x in new[] { roomFar + 0.09f, (roomFar + DoorLeft) * 0.5f, DoorLeft, DoorRight, PartitionX - 0.07f })
+            Visual("Post", root, new Vector3(x, height * 0.5f, StorefrontZ), new Vector3(0.07f, height, 0.1f), aluminium, 0.006f);
+        Visual("Top Rail", root, new Vector3((roomFar + PartitionX) * 0.5f, height - 0.03f, StorefrontZ), new Vector3(PartitionX - roomFar, 0.06f, 0.1f), aluminium, 0.006f);
+        foreach (var (x0, x1) in new[] { (roomFar, DoorLeft), (DoorRight, PartitionX) })
+            Visual("Bottom Rail", root, new Vector3((x0 + x1) * 0.5f, 0.05f, StorefrontZ), new Vector3(x1 - x0, 0.1f, 0.1f), aluminium, 0.006f);
+
+        // The leaves slid aside over the fixed glass (Title's closed leaves are separate and only there on the title).
+        float leaf = P2StoreBuilder.DoorWidth * 0.5f, z = StorefrontZ + 0.07f;
+        foreach (float near in new[] { DoorLeft - leaf * 0.5f, DoorRight + Mathf.Min(leaf, PartitionX - DoorRight) * 0.5f })
+        {
+            float width = near < DoorLeft ? leaf : Mathf.Min(leaf, PartitionX - DoorRight);
+            foreach (float side in new[] { -1f, 1f })
+                Visual("Door Leaf Stile", root, new Vector3(near + side * (width * 0.5f - 0.03f), height * 0.5f, z), new Vector3(0.05f, height - 0.08f, 0.04f), aluminium, 0.005f);
+            foreach (float y in new[] { 0.08f, height - 0.1f })
+                Visual("Door Leaf Rail", root, new Vector3(near, y, z), new Vector3(width, 0.08f, 0.04f), aluminium, 0.005f);
+        }
+
+        float frontCenter = (roomFar + PartitionX) * 0.5f, length = PartitionX - roomFar;
+        Sign(root, "Outside Name", new Vector3(P2StoreBuilder.DoorCenter.x, 2.6f, StorefrontZ - 0.056f), Quaternion.identity, new Vector2(2.6f, 0.46f), "동아편의점", "", Navy, Color.white, false);
+        Visual("Inside Header Band", root, new Vector3(frontCenter, 2.3f, StorefrontZ + 0.056f), new Vector3(length, 0.1f, 0.012f), navy, 0.003f);
     }
 
     /// <summary>A downward-facing quad: seen from below, invisible from above (overhead evidence cameras still see in).</summary>
@@ -140,41 +215,31 @@ public static class P3StoreDressing
         return quad;
     }
 
-    /// <summary>Navy skirting along the walls the customer sees (the front wall is behind the fridges).</summary>
+    /// <summary>Navy skirting along the walls the customer sees (the far and front walls are behind the fridges and chilled cases).</summary>
     static void Baseboards(Transform parent)
     {
         const float h = 0.1f, t = 0.012f;
-        Visual("Skirting Back", parent, new Vector3(0f, h * 0.5f, InnerBack + t * 0.5f), new Vector3(InnerRight - InnerLeft, h, t), navy, 0.003f);
+        Visual("Skirting Back", parent, new Vector3((PartitionX + InnerRight) * 0.5f, h * 0.5f, InnerBack + t * 0.5f), new Vector3(InnerRight - PartitionX, h, t), navy, 0.003f);
         Visual("Skirting Right", parent, new Vector3(InnerRight - t * 0.5f, h * 0.5f, 1.5f), new Vector3(t, h, InnerFront - InnerBack), navy, 0.003f);
-        Visual("Skirting Left Back", parent, new Vector3(InnerLeft + t * 0.5f, h * 0.5f, (InnerBack + DoorNear) * 0.5f), new Vector3(t, h, DoorNear - InnerBack), navy, 0.003f);
-        Visual("Skirting Left Front", parent, new Vector3(InnerLeft + t * 0.5f, h * 0.5f, (DoorFar + InnerFront) * 0.5f), new Vector3(t, h, InnerFront - DoorFar), navy, 0.003f);
-        // A navy frame round the doorway so the entrance reads from across the store.
-        Visual("Door Frame Near", parent, new Vector3(InnerLeft + 0.02f, 1.1f, DoorNear + 0.03f), new Vector3(0.05f, 2.2f, 0.06f), navy, 0.01f);
-        Visual("Door Frame Far", parent, new Vector3(InnerLeft + 0.02f, 1.1f, DoorFar - 0.03f), new Vector3(0.05f, 2.2f, 0.06f), navy, 0.01f);
-        Visual("Door Frame Top", parent, new Vector3(InnerLeft + 0.02f, 2.23f, (DoorNear + DoorFar) * 0.5f), new Vector3(0.05f, 0.06f, DoorFar - DoorNear), navy, 0.01f);
-        Sign(parent, "Door Sign", new Vector3(InnerLeft + 0.004f, 2.5f, (DoorNear + DoorFar) * 0.5f), Quaternion.Euler(0f, -90f, 0f), new Vector2(1.6f, 0.3f), "동아편의점", "", Navy, Color.white, false);
     }
 
-    // ---------- Gondolas A and B: price rails, plinth, topper ----------
+    // ---------- Gondolas: price rails, plinth ----------
 
-    static void GondolaTrim(Transform parent, float x, string title)
+    static void GondolaTrim(Transform parent, float x, float front, float back)
     {
-        var root = new GameObject("Gondola Trim " + title).transform;
+        var root = new GameObject($"Gondola Trim {x:0.00}").transform;
         root.SetParent(parent, false);
         float w = ShelfWidth - 0.04f;
         foreach (var top in new[] { 0.1f, 0.55f, 1.0f, 1.4f })
         {
-            Visual("Price Rail Front", root, new Vector3(x, top - 0.021f, ShelfFront - 0.004f), new Vector3(w, 0.035f, 0.008f), navy, 0.002f);
-            Visual("Price Rail Back", root, new Vector3(x, top - 0.021f, ShelfBack + 0.004f), new Vector3(w, 0.035f, 0.008f), navy, 0.002f);
+            Visual("Price Rail Front", root, new Vector3(x, top - 0.021f, front - 0.004f), new Vector3(w, 0.035f, 0.008f), navy, 0.002f);
+            Visual("Price Rail Back", root, new Vector3(x, top - 0.021f, back + 0.004f), new Vector3(w, 0.035f, 0.008f), navy, 0.002f);
         }
-        Visual("Plinth Front", root, new Vector3(x, 0.045f, ShelfFront - 0.003f), new Vector3(ShelfWidth, 0.09f, 0.006f), navy, 0.002f);
-        Visual("Plinth Back", root, new Vector3(x, 0.045f, ShelfBack + 0.003f), new Vector3(ShelfWidth, 0.09f, 0.006f), navy, 0.002f);
-        float z = (ShelfFront + ShelfBack) * 0.5f;
-        Visual("Topper", root, new Vector3(x, 1.885f, z), new Vector3(ShelfWidth, 0.17f, 0.02f), navy, 0.006f);
-        Sign(root, "Topper Sign", new Vector3(x, 1.885f, z), Quaternion.identity, new Vector2(ShelfWidth - 0.06f, 0.15f), title, "", new Color(0, 0, 0, 0), Color.white, true, 0.012f);
+        Visual("Plinth Front", root, new Vector3(x, 0.045f, front - 0.003f), new Vector3(ShelfWidth, 0.09f, 0.006f), graphite, 0.002f);
+        Visual("Plinth Back", root, new Vector3(x, 0.045f, back + 0.003f), new Vector3(ShelfWidth, 0.09f, 0.006f), graphite, 0.002f);
     }
 
-    // ---------- Fridge wall ----------
+    // ---------- Fridge wall: the far wall, the photo's back wall ----------
 
     static void FridgeWall(Transform parent)
     {
@@ -183,32 +248,176 @@ public static class P3StoreDressing
         var fridgeInterior = Lit("P3_FridgeInterior", $"{Root}/Khronos/CommercialRefrigerator/FridgeInterior", Vector2.one, Color.white, 1f);
         var fridgeGlass = Glass("P3_FridgeGlass");
         Func<string, Material> material = slot => slot.Contains("Glass") ? fridgeGlass : slot.Contains("Interior") ? fridgeInterior : fridgeCase;
-        const int count = 10;
         const float gap = 0.01f;
         float width = 0f, depth = 0f, height = 0f;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < FridgeCount; i++)
         {
-            var fridge = Place($"{Root}/Khronos/CommercialRefrigerator/CommercialRefrigerator.obj", $"Drinks Fridge {i + 1}", parent, 180f, material);
+            // Yaw 90 turns the doors toward +x, into the store.
+            var fridge = Place($"{Root}/Khronos/CommercialRefrigerator/CommercialRefrigerator.obj", $"Drinks Fridge {i + 1}", parent, 90f, material);
             var size = Bounds(fridge).size;
-            width = size.x; depth = size.z; height = size.y;
-            float total = count * size.x + (count - 1) * gap;
-            Align(fridge, new Vector3(total * 0.5f - i * (size.x + gap), 0f, InnerFront - 0.005f), new Vector3(1f, 0f, 1f));
+            width = size.z; depth = size.x; height = size.y;
+            Align(fridge, new Vector3(InnerFar + 0.005f, 0f, FridgeStart + i * (size.z + gap)), new Vector3(0f, 0f, 0f));
             AddBoxCollider(fridge);
         }
-        float wall = count * width + (count - 1) * gap;
-        float front = InnerFront - 0.005f - depth;
-        // White soffit over the fridges up to the ceiling, with the navy name band on its face.
-        Visual("Fridge Soffit", parent, new Vector3(0f, (height + CeilingHeight) * 0.5f, (front + InnerFront) * 0.5f), new Vector3(InnerRight - InnerLeft, CeilingHeight - height, InnerFront - front), white, 0.004f);
-        Visual("Fridge Band", parent, new Vector3(0f, height + 0.36f, front - 0.006f), new Vector3(InnerRight - InnerLeft, 0.46f, 0.012f), navy, 0.003f);
-        Sign(parent, "Fridge Band Name", new Vector3(-wall * 0.5f + 1.5f, height + 0.36f, front - 0.014f), Quaternion.identity, new Vector2(2.8f, 0.42f), "동아편의점", "", new Color(0, 0, 0, 0), Color.white, false);
-        Sign(parent, "Fridge Band Section", new Vector3(wall * 0.5f - 1.6f, height + 0.36f, front - 0.014f), Quaternion.identity, new Vector2(3f, 0.42f), "음료 · 유제품", "", new Color(0, 0, 0, 0), new Color(0.8f, 0.86f, 0.95f), false, 0.002f, 0.5f);
+        float z0 = StorefrontZ + 0.05f, z1 = FridgeStart + FridgeCount * width + (FridgeCount - 1) * gap;
+        float front = InnerFar + 0.005f + depth;
+
+        // A white filler from the street front to the first fridge, solid so nobody walks behind the fridges.
+        var filler = Visual("Fridge Filler", parent, new Vector3((InnerFar + front) * 0.5f, height * 0.5f, (z0 + FridgeStart) * 0.5f), new Vector3(depth, height, FridgeStart - z0), white, 0.006f);
+        filler.AddComponent<BoxCollider>().size = new Vector3(depth, height, FridgeStart - z0);
+
+        // White soffit over the fridges up to the ceiling; a slim navy band over the doors and the section name above it.
+        float zc = (z0 + z1) * 0.5f, length = z1 - z0;
+        var seenLookingFar = Quaternion.Euler(0f, -90f, 0f);
+        Visual("Fridge Soffit", parent, new Vector3((InnerFar + front) * 0.5f, (height + CeilingHeight) * 0.5f, zc), new Vector3(depth, CeilingHeight - height, length), white, 0.004f);
+        Visual("Fridge Band", parent, new Vector3(front + 0.006f, height + 0.07f, zc), new Vector3(0.012f, 0.12f, length), navy, 0.003f);
+        Sign(parent, "Fridge Section Name", new Vector3(front + 0.003f, height + 0.46f, zc + 1f), seenLookingFar, new Vector2(2.4f, 0.42f), "음료 · 주류", "", new Color(0, 0, 0, 0), Navy, false);
     }
 
-    // ---------- Right wall: shelf C and the microwave / hot water corner ----------
+    // ---------- Chilled cases: the front wall, the photo's right wall ----------
+
+    /// <summary>
+    /// Open multi-deck chilled cases along the front wall: a dark base with a grille, white decks that step back as they rise,
+    /// a lit strip under each deck and a navy header leaning out over them. One solid box for the whole run.
+    /// </summary>
+    static void ChilledCases(Transform parent)
+    {
+        var root = new GameObject("Chilled Cases").transform;
+        root.SetParent(parent, false);
+        const float front = ChilledFront, back = InnerFront, depth = back - front;
+        float moduleWidth = (ChilledNear - ChilledFar) / ChilledModules;
+        var collider = root.gameObject.AddComponent<BoxCollider>();
+        collider.center = new Vector3((ChilledFar + ChilledNear) * 0.5f, 1.15f, (front + back) * 0.5f);
+        collider.size = new Vector3(ChilledNear - ChilledFar, 2.3f, depth);
+
+        var liner = Plain("P3_CaseLiner", new Color(0.86f, 0.87f, 0.87f), 0.55f);
+        var deckMaterial = Plain("P3_CaseDeck", new Color(0.93f, 0.93f, 0.92f), 0.6f, 0.15f);
+        var strip2 = Emissive("P3_CaseLight", Color.white, new Color(1f, 1f, 0.97f) * 2.6f);
+        float xc = (ChilledFar + ChilledNear) * 0.5f, length = ChilledNear - ChilledFar;
+        Visual("Case Back", root, new Vector3(xc, 1.25f, back - 0.02f), new Vector3(length, 2.5f, 0.04f), liner, 0.004f);
+        Visual("Case Base", root, new Vector3(xc, 0.33f, front + depth * 0.5f), new Vector3(length, 0.66f, depth), graphite, 0.008f);
+        Visual("Case Kick", root, new Vector3(xc, 0.05f, front - 0.004f), new Vector3(length, 0.1f, 0.008f), Plain("P3_CaseKick", new Color(0.22f, 0.24f, 0.26f), 0.5f), 0.002f);
+        Visual("Case Lip", root, new Vector3(xc, 0.68f, front + 0.04f), new Vector3(length, 0.05f, 0.08f), steel, 0.01f);
+        Visual("Case Rail", root, new Vector3(xc, 0.58f, front - 0.005f), new Vector3(length, 0.1f, 0.01f), navy, 0.002f);
+
+        foreach (var (y, reach) in ChilledDecks)
+        {
+            float zDeck = back - 0.04f - reach * 0.5f;
+            Visual("Deck", root, new Vector3(xc, y, zDeck), new Vector3(length, 0.016f, reach), deckMaterial, 0.004f).transform.rotation = Quaternion.Euler(-DeckTilt, 0f, 0f);
+            float zEdge = back - 0.04f - reach + 0.004f, yEdge = y - Mathf.Sin(DeckTilt * Mathf.Deg2Rad) * reach * 0.5f - 0.012f;
+            Visual("Deck Rail", root, new Vector3(xc, yEdge, zEdge), new Vector3(length, 0.042f, 0.008f), navy, 0.002f);
+            if (y > 0.8f) Visual("Deck Light", root, new Vector3(xc, y - 0.02f, zDeck - reach * 0.15f), new Vector3(length, 0.006f, 0.03f), strip2, 0.001f).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        }
+
+        // Uprights between the modules and at both ends.
+        for (int i = 0; i <= ChilledModules; i++)
+            Visual("Case Upright", root, new Vector3(ChilledFar + i * moduleWidth, 1.45f, back - 0.22f), new Vector3(0.025f, 1.66f, 0.36f), liner, 0.005f);
+
+        // Canopy with a light under it, and the navy header leaning out over the aisle.
+        Visual("Case Canopy", root, new Vector3(xc, 2.28f, front + depth * 0.5f), new Vector3(length, 0.06f, depth), white, 0.006f);
+        Visual("Case Canopy Light", root, new Vector3(xc, 2.245f, front + 0.2f), new Vector3(length, 0.006f, 0.05f), strip2, 0.001f).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+        var lean = Quaternion.Euler(-14f, 0f, 0f);
+        var header = new Vector3(xc, 2.53f, front + 0.02f);
+        Visual("Case Header", root, header, new Vector3(length, 0.42f, 0.04f), navy, 0.01f).transform.rotation = lean;
+        var seenLookingFront = lean;
+        var faceAt = header + lean * new Vector3(0f, 0f, -0.024f);
+        foreach (float offset in new[] { -2f, 2f })
+            Sign(root, "Case Header Name", faceAt + new Vector3(offset, 0f, 0f), seenLookingFront, new Vector2(3.4f, 0.38f), "도시락 · 샌드위치 · 김밥", "", new Color(0, 0, 0, 0), Color.white, false, 0.002f, 0.5f);
+
+        // The corner past the far end of the cases, white cupboards like the photo's.
+        float cornerX0 = InnerFar + 0.5f, cornerX1 = ChilledFar - 0.02f;
+        var cupboard = Visual("Corner Cupboard", parent, new Vector3((cornerX0 + cornerX1) * 0.5f, 0.45f, (front + back) * 0.5f), new Vector3(cornerX1 - cornerX0, 0.9f, depth), white, 0.01f);
+        cupboard.AddComponent<BoxCollider>().size = new Vector3(cornerX1 - cornerX0, 0.9f, depth);
+        Visual("Corner Cupboard Top", parent, new Vector3((cornerX0 + cornerX1) * 0.5f, 0.915f, (front + back) * 0.5f), new Vector3(cornerX1 - cornerX0 + 0.02f, 0.03f, depth + 0.02f), grey, 0.006f);
+    }
+
+    /// <summary>Height of each deck's middle and how far it reaches out from the back of the case.</summary>
+    public static readonly (float y, float reach)[] ChilledDecks = { (0.74f, 0.72f), (1.06f, 0.6f), (1.38f, 0.52f), (1.7f, 0.44f), (2.02f, 0.36f) };
+    public const float DeckTilt = 8f;
+
+    // ---------- Tobacco wall: behind the clerk, the photo's left wall ----------
+
+    /// <summary>
+    /// Base cupboards, two lit display bays with numbered shelf rails (the printed faces are P3StoreDetails', words and colour
+    /// only, D9), a backlit header over them and a tall lightbox at the door end. One solid box, against which the clerk stops.
+    /// </summary>
+    static void TobaccoWall(Transform parent)
+    {
+        var root = new GameObject("Tobacco Wall").transform;
+        root.SetParent(parent, false);
+        float x0 = TobaccoLeft, x1 = TobaccoRight, xc = (x0 + x1) * 0.5f, length = x1 - x0, zc = (TobaccoFront + TobaccoBack) * 0.5f, depth = TobaccoFront - TobaccoBack;
+        var collider = root.gameObject.AddComponent<BoxCollider>();
+        collider.center = new Vector3(xc, CeilingHeight * 0.5f, zc);
+        collider.size = new Vector3(length, CeilingHeight, depth);
+
+        Visual("Tobacco Back", root, new Vector3(xc, 1.5f, TobaccoBack + 0.02f), new Vector3(length, 3f, 0.04f), graphite, 0.004f);
+        Visual("Tobacco Base", root, new Vector3(xc, 0.45f, zc), new Vector3(length, 0.9f, depth), graphite, 0.01f);
+        Visual("Tobacco Base Top", root, new Vector3(xc, 0.91f, zc + 0.01f), new Vector3(length + 0.02f, 0.02f, depth + 0.02f), steel, 0.004f);
+        var drawerFront = Plain("P3_TobaccoDrawer", new Color(0.16f, 0.17f, 0.19f), 0.5f);
+        int drawers = 6;
+        float drawerWidth = (x1 - TobaccoBayLeft) / drawers;
+        for (int i = 0; i < drawers; i++)
+            Visual("Tobacco Drawer", root, new Vector3(TobaccoBayLeft + (i + 0.5f) * drawerWidth, 0.47f, TobaccoFront + 0.006f), new Vector3(drawerWidth - 0.02f, 0.72f, 0.012f), drawerFront, 0.003f);
+
+        var railLight = Emissive("P3_TobaccoRailLight", new Color(0.8f, 0.9f, 1f), new Color(0.75f, 0.9f, 1f) * 2.2f);
+        for (int bay = 0; bay < TobaccoBays; bay++)
+        {
+            float bayCenter = TobaccoBayLeft + (bay + 0.5f) * TobaccoBayWidth;
+            foreach (float side in new[] { -1f, 1f })
+                Visual("Tobacco Upright", root, new Vector3(bayCenter + side * (TobaccoBayWidth * 0.5f), 1.55f, zc), new Vector3(0.03f, 1.3f, depth), graphite, 0.005f);
+            for (int row = 0; row <= TobaccoRows; row++)
+            {
+                float y = TobaccoBottom + row * TobaccoRowHeight;
+                Visual("Tobacco Shelf", root, new Vector3(bayCenter, y, zc + 0.03f), new Vector3(TobaccoBayWidth - 0.03f, 0.012f, depth - 0.06f), steel, 0.002f);
+                Visual("Tobacco Rail", root, new Vector3(bayCenter, y - 0.012f, TobaccoFront + 0.002f), new Vector3(TobaccoBayWidth - 0.03f, 0.016f, 0.006f), railLight, 0.001f).GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
+        }
+
+        // Backlit header, tipped a little toward the clerk; its printed face is P3StoreDetails'.
+        Visual("Tobacco Header", root, new Vector3(TobaccoBayLeft + TobaccoBays * TobaccoBayWidth * 0.5f, TobaccoHeaderY, TobaccoFront + 0.02f), new Vector3(TobaccoBays * TobaccoBayWidth, TobaccoHeaderHeight + 0.06f, 0.08f), graphite, 0.01f);
+        // The tall lightbox at the door end, in the photo beside the header.
+        Visual("Tobacco Lightbox", root, new Vector3((x0 + TobaccoBayLeft) * 0.5f, 1.72f, TobaccoFront + 0.02f), new Vector3(TobaccoBayLeft - x0, 2.5f, 0.08f), graphite, 0.01f);
+    }
+
+    public const float TobaccoBayLeft = TobaccoLeft + 0.35f, TobaccoBayWidth = 1.6f, TobaccoBottom = 0.94f, TobaccoRowHeight = 0.25f;
+    public const int TobaccoBays = 2, TobaccoRows = 5;
+    public const float TobaccoHeaderY = 2.56f, TobaccoHeaderHeight = 0.72f;
+
+    // ---------- Ice cream chest freezer ----------
+
+    /// <summary>A chest freezer in the aisle, its long side toward the near end of the store: white body, navy band, glass lids.</summary>
+    static void ChestFreezer(Transform parent)
+    {
+        var root = new GameObject("Chest Freezer").transform;
+        root.SetParent(parent, false);
+        float xc = (FreezerX0 + FreezerX1) * 0.5f, zc = (FreezerZ0 + FreezerZ1) * 0.5f, dx = FreezerX1 - FreezerX0, dz = FreezerZ1 - FreezerZ0, h = FreezerHeight;
+        var collider = root.gameObject.AddComponent<BoxCollider>();
+        collider.center = new Vector3(xc, (h + 0.08f) * 0.5f, zc);
+        collider.size = new Vector3(dx, h + 0.08f, dz);
+
+        Visual("Freezer Kick", root, new Vector3(xc, 0.04f, zc), new Vector3(dx - 0.04f, 0.08f, dz - 0.04f), graphite, 0.006f);
+        Visual("Freezer Body", root, new Vector3(xc, 0.08f + (h - 0.08f) * 0.5f, zc), new Vector3(dx, h - 0.08f, dz), Plain("P3_FreezerBody", new Color(0.88f, 0.88f, 0.87f), 0.5f), 0.02f);
+        Visual("Freezer Band", root, new Vector3(xc, h - 0.09f, zc), new Vector3(dx + 0.006f, 0.05f, dz + 0.006f), navy, 0.004f);
+        Visual("Freezer Inside", root, new Vector3(xc, h - 0.012f, zc), new Vector3(dx - 0.09f, 0.008f, dz - 0.09f), Emissive("P3_FreezerFrost", new Color(0.82f, 0.9f, 0.97f), new Color(0.3f, 0.36f, 0.42f)), 0.002f);
+
+        var rim = Plain("P3_FreezerRim", new Color(0.7f, 0.72f, 0.75f), 0.75f, 0.5f);
+        foreach (var (offset, size) in new[]
+        {
+            (new Vector3(-dx * 0.5f + 0.02f, 0f, 0f), new Vector3(0.04f, 0.05f, dz)), (new Vector3(dx * 0.5f - 0.02f, 0f, 0f), new Vector3(0.04f, 0.05f, dz)),
+            (new Vector3(0f, 0f, -dz * 0.5f + 0.02f), new Vector3(dx, 0.05f, 0.04f)), (new Vector3(0f, 0f, dz * 0.5f - 0.02f), new Vector3(dx, 0.05f, 0.04f)),
+            (Vector3.zero, new Vector3(dx - 0.04f, 0.05f, 0.03f)),
+        })
+            Visual("Freezer Rim", root, new Vector3(xc, h + 0.025f, zc) + offset, size, rim, 0.006f);
+        var lidGlass = Tinted("P3_FreezerLid", new Color(0.82f, 0.92f, 0.98f, 0.22f));
+        foreach (float side in new[] { -1f, 1f })
+            Visual("Freezer Lid", root, new Vector3(xc, h + 0.05f, zc + side * dz * 0.25f), new Vector3(dx - 0.05f, 0.012f, dz * 0.5f - 0.05f), lidGlass, 0.004f);
+    }
+
+    // ---------- Near wall: shelf C ----------
 
     static void ShelfC(Transform parent)
     {
-        const float z0 = 2.6f, z1 = 4.42f, depth = 0.45f, height = 1.8f;
+        const float z0 = 1.4f, z1 = 4.42f, depth = 0.45f, height = 1.8f;
         float x0 = InnerRight - depth;
         var root = new GameObject("Shelf C").transform;
         root.SetParent(parent, false);
@@ -230,6 +439,9 @@ public static class P3StoreDressing
     }
 
     // Where Day 3's rule zones go (P2StoreBuilder.BuildCookingZones). The cabinet top is the floor the products rest on.
+    // The corner is built at these near-wall coordinates, then P2StoreBuilder turns it half round and sets it at CabinetPlace:
+    // the far wall, at the end of the fridges, beside the chilled cases, where the photo has it.
+    public static readonly Vector3 CabinetPlace = new Vector3(-1.5f, 0f, 5.6f);
     const float CabinetTop = 0.9f;
     static readonly Vector3 MicrowaveCenter = new Vector3(InnerRight - 0.2f, CabinetTop + 0.15f, 1.45f);
     static readonly Vector3 DispenserCenter = new Vector3(InnerRight - 0.17f, CabinetTop + 0.23f, 2.02f);
@@ -372,18 +584,23 @@ public static class P3StoreDressing
     {
         var parent = new GameObject("Counter Dressing").transform;
         parent.SetParent(environment, false);
-        var counterTop = Plain("P3_CounterTop", new Color(0.97f, 0.97f, 0.965f), 0.72f);
+        // Mid blue, the reference photo's counter top in the store's colour: dark enough to be a colour, light enough that
+        // the black devices on it still read.
+        var counterTop = Plain("P3_CounterTop", new Color(0.09f, 0.3f, 0.45f), 0.62f);
         var screenGlow = Emissive("P3_TerminalScreen", new Color(0.06f, 0.16f, 0.32f), new Color(0.12f, 0.32f, 0.7f) * 0.9f);
 
-        // Counter: warm white body, white top, navy front with the store name toward the customers.
+        // Counter: warm white body, blue top running on over the extension, navy front with the store name toward the customers.
         var counter = Find(environment, "Counter");
         counter.GetComponent<Renderer>().enabled = false;
+        Find(environment, "Counter Extension").GetComponent<Renderer>().enabled = false;
         var c = counter.transform.position;
         var size = counter.transform.localScale;
+        float wholeLeft = c.x - size.x * 0.5f, wholeRight = P2StoreBuilder.CounterExtensionEnd;
+        float wholeCenter = (wholeLeft + wholeRight) * 0.5f, wholeLength = wholeRight - wholeLeft;
         var counterBody = Load<Material>($"{P2Materials}/P2_Counter.mat");
-        Visual("Counter Body", parent, new Vector3(c.x, 0.08f + (size.y - 0.115f) * 0.5f, c.z), new Vector3(size.x - 0.02f, size.y - 0.115f, size.z - 0.02f), counterBody, 0.012f);
-        Visual("Counter Kick", parent, new Vector3(c.x, 0.04f, c.z - 0.01f), new Vector3(size.x - 0.06f, 0.08f, size.z - 0.06f), graphite, 0.004f);
-        Visual("Counter Top", parent, new Vector3(c.x, size.y - 0.0175f, c.z), new Vector3(size.x + 0.04f, 0.035f, size.z + 0.04f), counterTop, 0.01f);
+        Visual("Counter Body", parent, new Vector3(wholeCenter, 0.08f + (size.y - 0.115f) * 0.5f, c.z), new Vector3(wholeLength - 0.02f, size.y - 0.115f, size.z - 0.02f), counterBody, 0.012f);
+        Visual("Counter Kick", parent, new Vector3(wholeCenter, 0.04f, c.z - 0.01f), new Vector3(wholeLength - 0.06f, 0.08f, size.z - 0.06f), graphite, 0.004f);
+        Visual("Counter Top", parent, new Vector3(wholeCenter, size.y - 0.0175f, c.z), new Vector3(wholeLength + 0.04f, 0.035f, size.z + 0.04f), counterTop, 0.01f);
         float far = c.z + size.z * 0.5f;
         Visual("Counter Front", parent, new Vector3(c.x, 0.47f, far + 0.006f), new Vector3(size.x - 0.1f, 0.6f, 0.012f), navy, 0.004f);
         Sign(parent, "Counter Name", new Vector3(c.x, 0.5f, far + 0.013f), Quaternion.Euler(0f, 180f, 0f), new Vector2(1.3f, 0.24f), "동아편의점", "", new Color(0, 0, 0, 0), Color.white, false);
@@ -751,19 +968,23 @@ public static class P3StoreDressing
         foreach (var sign in UnityEngine.Object.FindObjectsByType<StoreSign>(FindObjectsSortMode.None)) sign.BuildNow();
         var views = new List<(string name, Vector3 position, Vector3 lookAt)>
         {
+            // The reference photo's viewpoint: over the near end of the counter, looking along it toward the fridges.
+            ("00_photo_match", new Vector3(3.5f, 1.62f, 1.4f), new Vector3(-6f, 0.95f, 1.15f)),
             ("01_clerk_view", new Vector3(0f, 1.6f, -0.3f), new Vector3(0f, 1.25f, 4f)),
-            ("02_from_door", new Vector3(-4.1f, 1.6f, 2.35f), new Vector3(1.5f, 1.0f, 1.2f)),
-            ("02b_first_look", new Vector3(-5.2f, 1.6f, 2.4f), new Vector3(0f, 1.25f, 2.4f)),
-            ("03_fridge_wall", new Vector3(-0.5f, 1.6f, 2.1f), new Vector3(0.4f, 1.3f, 5.4f)),
+            ("02_from_door", new Vector3(-3.6f, 1.6f, -1.2f), new Vector3(0.5f, 1.0f, 1.8f)),
+            ("02b_first_look", new Vector3(-3.6f, 1.6f, -2.6f), new Vector3(-3.6f, 1.25f, 2f)),
+            ("03_fridge_wall", new Vector3(-2.2f, 1.6f, 2.2f), new Vector3(-6f, 1.3f, 1.4f)),
             ("04_counter_clerk", new Vector3(0f, 1.5f, -0.2f), new Vector3(0f, 0.95f, 0.7f)),
             ("05_counter_customer", new Vector3(0.3f, 1.55f, 2.4f), new Vector3(0f, 0.95f, 0.6f)),
-            ("06_right_wall", new Vector3(1.4f, 1.6f, 1.6f), new Vector3(4.4f, 1.0f, 3.0f)),
-            ("07_aisle_back", new Vector3(-4.0f, 1.6f, 4.0f), new Vector3(2.0f, 1.0f, 3.6f)),
-            ("08_overview", new Vector3(4.1f, 2.6f, -2.1f), new Vector3(-1.2f, 0.6f, 3.0f)),
-            ("09_clerk_side_left", new Vector3(0.5f, 1.6f, 0.2f), new Vector3(-4.2f, 1.0f, -1.0f)),
+            ("06_chilled_cases", new Vector3(1.6f, 1.6f, 3.2f), new Vector3(-2f, 1.2f, 5.4f)),
+            ("07_aisle_back", new Vector3(-4.6f, 1.6f, 4f), new Vector3(2f, 1f, 4.2f)),
+            ("08_overview", new Vector3(4.1f, 2.7f, 4.3f), new Vector3(-3f, 0.4f, 0.5f)),
+            ("09_tobacco_wall", new Vector3(0.1f, 1.6f, 0.2f), new Vector3(0.1f, 1.5f, -1.75f)),
             ("10_scanner_clerk", new Vector3(0.22f, 1.28f, 0.12f), new Vector3(0f, 1.0f, 0.62f)),
             ("11_scanner_side", new Vector3(0.6f, 1.12f, 0.42f), new Vector3(0f, 1.02f, 0.7f)),
-            ("12_microwave_corner", new Vector3(3.2f, 1.55f, 1.7f), new Vector3(4.3f, 1.05f, 1.7f)),
+            ("12_microwave_corner", new Vector3(-4.4f, 1.55f, 3.9f), new Vector3(-5.8f, 1.05f, 3.9f)),
+            ("15_counter_extension", new Vector3(2.6f, 1.45f, 1.5f), new Vector3(1f, 0.85f, 0.65f)),
+            ("16_freezer", new Vector3(2.4f, 1.5f, 3.4f), new Vector3(0.7f, 0.7f, 3.45f)),
         };
         var go = new GameObject("P3 Shot Camera");
         var camera = go.AddComponent<Camera>();
@@ -776,6 +997,7 @@ public static class P3StoreDressing
         void Shot(string name, Vector3 position, Vector3 lookAt)
         {
             go.transform.SetPositionAndRotation(position, Quaternion.LookRotation(lookAt - position));
+            camera.fieldOfView = name.StartsWith("00_") ? 62f : 75f;  // about the reference photo's lens
             camera.Render();
             RenderTexture.active = target;
             image.ReadPixels(new Rect(0, 0, 1600, 900), 0, 0);
@@ -787,11 +1009,11 @@ public static class P3StoreDressing
         // Day 3's corner as it looks during a request: door open, then running with the light on and the water pouring (not saved).
         var hinge = Find(null, "Microwave Door Hinge").transform;
         hinge.localRotation = Quaternion.Euler(0f, 105f, 0f);
-        Shot("13_microwave_door_open", new Vector3(3.3f, 1.4f, 1.55f), new Vector3(4.25f, 1.05f, 1.6f));
+        Shot("13_microwave_door_open", new Vector3(-4.6f, 1.4f, 4f), new Vector3(-5.75f, 1.05f, 4f));
         hinge.localRotation = Quaternion.identity;
         Find(null, "Microwave Lit").SetActive(true);
         Find(null, "Dispenser Water").SetActive(true);
-        Shot("14_running_and_pouring", new Vector3(3.3f, 1.4f, 1.75f), new Vector3(4.25f, 1.05f, 1.75f));
+        Shot("14_running_and_pouring", new Vector3(-4.6f, 1.4f, 3.9f), new Vector3(-5.75f, 1.05f, 3.9f));
 
         RenderTexture.active = null;
         UnityEngine.Object.DestroyImmediate(go);
