@@ -87,6 +87,8 @@ public class GameManager : MonoBehaviour
         boardPanel = WorldUi.CreatePanel(BoardAnchor, "Guide Board", BoardAnchor.position, BoardAnchor.rotation, new Vector2(BoardWidth, BoardHeight), BoardMetersPerPixel, WorldUi.Palette.Panel);
         var panel = boardPanel;
         board = WorldUi.AddText(panel, 40f, 18f, 1420f, 190f, 46, TextAnchor.MiddleCenter);
+        // Drawn as a headline and what follows it; the text is still set and read through board.
+        HeadlineText.On(board);
         Tutorial.Board = board;
         if (IntakeTutorial) IntakeTutorial.Board = board;
 

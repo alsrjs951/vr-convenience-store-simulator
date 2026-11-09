@@ -3,9 +3,11 @@ using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 
 /// <summary>
-/// Builds the world-space panels. One look everywhere (2026-11-08, "동아편의점"): rounded panels in Dong-A navy
-/// (Pantone 282C) with white text and few words. The type is Pretendard (Assets/Resources/Fonts, SIL OFL), the family the
-/// store's printed surfaces use too (scripts/windows/make_store_signage.py).
+/// Builds the world-space panels. Three looks, so a thing can be told by what it is (2026-11-10):
+/// the store's signs are Dong-A navy (Pantone 282C); what the game says to the player floats on a plain dark glass that is
+/// nobody's brand; the store's own screens (the POS, the order screen) are light, ruled and square like till software.
+/// The type is Pretendard (Assets/Resources/Fonts, SIL OFL), the family the store's printed surfaces use too
+/// (scripts/windows/make_store_signage.py).
 /// </summary>
 public static class WorldUi
 {
@@ -13,8 +15,15 @@ public static class WorldUi
     public static class Palette
     {
         public static readonly Color Navy = new Color(0.016f, 0.118f, 0.259f);
-        public static readonly Color Panel = new Color(0.016f, 0.118f, 0.259f, 0.94f);
-        public static readonly Color PanelSoft = new Color(0.016f, 0.118f, 0.259f, 0.78f);
+        /// <summary>The dark glass behind what the game tells the player.</summary>
+        public static readonly Color Panel = new Color(0.07f, 0.08f, 0.095f, 0.9f);
+        public static readonly Color PanelSoft = new Color(0.07f, 0.08f, 0.095f, 0.72f);
+        /// <summary>The store's screens: the page, what is written on it, its rules and its shaded bands.</summary>
+        public static readonly Color Paper = new Color(0.9f, 0.91f, 0.925f);
+        public static readonly Color Ink = new Color(0.09f, 0.11f, 0.15f);
+        public static readonly Color InkDim = new Color(0.09f, 0.11f, 0.15f, 0.58f);
+        public static readonly Color Rule = new Color(0.09f, 0.11f, 0.15f, 0.2f);
+        public static readonly Color Band = new Color(0.8f, 0.825f, 0.855f);
         public static readonly Color Accent = new Color(0.24f, 0.49f, 0.86f);
         public static readonly Color Grey = new Color(0.635f, 0.667f, 0.678f);
         public static readonly Color Text = Color.white;
@@ -24,7 +33,8 @@ public static class WorldUi
         public static readonly Color Bad = new Color(0.95f, 0.33f, 0.3f);
     }
 
-    const int CornerPixels = 22;
+    // Small: a card's corner, not a pill.
+    const int CornerPixels = 10;
 
     static Font regular, bold, heavy;
     static Sprite rounded;
@@ -99,6 +109,14 @@ public static class WorldUi
         image.sprite = Rounded;
         image.type = Image.Type.Sliced;
         return rect;
+    }
+
+    /// <summary>Square corners: a screen's page, or a band or rule on it.</summary>
+    public static Image Square(Image image)
+    {
+        image.sprite = null;
+        image.type = Image.Type.Simple;
+        return image;
     }
 
     /// <summary>Text anchored to a pixel rectangle measured from the panel's top-left corner.</summary>

@@ -134,7 +134,7 @@ public class CustomerDirector : MonoBehaviour
     public int BrowsersSpawned { get; private set; }
     public Transform CounterBasket { get; private set; }
 
-    Text hud, hudTitle, hudPayText, hudBagText, hudSpecialText;
+    Text hud, hudTitle, hudIdle, hudPayText, hudBagText, hudSpecialText;
     Image hudPay, hudBag, hudTime, hudSpecial;
     Image hudBackground, hudHalf;
     RectTransform outcomePanel;
@@ -158,25 +158,37 @@ public class CustomerDirector : MonoBehaviour
 
     void Start()
     {
-        var panel = WorldUi.CreatePanel(transform, "Order HUD", transform.position, transform.rotation, new Vector2(620f, 470f), MetersPerPixel, WorldUi.Palette.Panel);
-        hudTitle = WorldUi.AddText(panel, 28f, 20f, 560f, 50f, 36);
+        // The order screen is one of the store's own screens, so it is laid out like the POS beside it: a navy header,
+        // a light page, square corners.
+        var panel = WorldUi.CreatePanel(transform, "Order HUD", transform.position, transform.rotation, new Vector2(620f, 470f), MetersPerPixel, WorldUi.Palette.Paper);
+        WorldUi.Square(panel.GetComponent<Image>());
+        WorldUi.Square(WorldUi.AddBox(panel, 0f, 0f, 620f, 64f, WorldUi.Palette.Navy));
+        hudTitle = WorldUi.AddText(panel, 28f, 0f, 564f, 64f, 34, TextAnchor.MiddleLeft);
         WorldUi.Bold(hudTitle);
-        hud = WorldUi.AddText(panel, 28f, 82f, 564f, 250f, 36);
+        hudIdle = WorldUi.AddText(panel, 28f, 0f, 564f, 64f, 26, TextAnchor.MiddleLeft);
+        hudIdle.text = "주문 확인";
+        hudIdle.color = WorldUi.Palette.TextDim;
+        hud = WorldUi.AddText(panel, 28f, 84f, 564f, 190f, 34);
+        hud.color = WorldUi.Palette.Ink;
         hudPay = WorldUi.AddBox(panel, 28f, 340f, 170f, 52f, WorldUi.Palette.Accent);
-        hudPayText = WorldUi.AddText((RectTransform)hudPay.transform, 0f, 0f, 170f, 52f, 30, TextAnchor.MiddleCenter);
-        hudBag = WorldUi.AddBox(panel, 212f, 340f, 200f, 52f, WorldUi.Palette.Grey);
-        hudBagText = WorldUi.AddText((RectTransform)hudBag.transform, 0f, 0f, 200f, 52f, 30, TextAnchor.MiddleCenter);
-        WorldUi.AddBox(panel, 28f, 414f, 564f, 22f, new Color(1f, 1f, 1f, 0.15f));
+        hudPayText = WorldUi.AddText((RectTransform)hudPay.transform, 0f, 0f, 170f, 52f, 28, TextAnchor.MiddleCenter);
+        WorldUi.Bold(hudPayText);
+        hudBag = WorldUi.AddBox(panel, 212f, 340f, 200f, 52f, WorldUi.Palette.Band);
+        hudBagText = WorldUi.AddText((RectTransform)hudBag.transform, 0f, 0f, 200f, 52f, 28, TextAnchor.MiddleCenter);
+        hudBagText.color = WorldUi.Palette.Ink;
+        WorldUi.Bold(hudBagText);
+        WorldUi.Square(WorldUi.AddBox(panel, 28f, 414f, 564f, 22f, WorldUi.Palette.Rule));
         hudTime = WorldUi.AddBox(panel, 28f, 414f, 564f, 22f, WorldUi.Palette.Good);
         hudTime.type = Image.Type.Filled;
         hudTime.fillMethod = Image.FillMethod.Horizontal;
         hudTime.sprite = null;
         // Added after the time bar: SetHudVisible finds the bar's background as the sibling just before it.
         hudSpecial = WorldUi.AddBox(panel, 28f, 276f, 564f, 52f, WorldUi.Palette.Warn);
-        hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 30, TextAnchor.MiddleCenter);
+        hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 28, TextAnchor.MiddleCenter);
+        hudSpecialText.color = WorldUi.Palette.Ink;
         WorldUi.Bold(hudSpecialText);
         // Half way along the bar: finish while the bar is past this mark and it is a tip.
-        hudHalf = WorldUi.AddBox(panel, 28f + 564f * FastShare - 2f, 408f, 4f, 34f, Color.white);
+        hudHalf = WorldUi.Square(WorldUi.AddBox(panel, 28f + 564f * FastShare - 2f, 408f, 4f, 34f, WorldUi.Palette.Ink));
         SetHudVisible(false);
         BuildOutcomeCard();
         hudBackground = panel.GetComponent<Image>();
@@ -212,7 +224,7 @@ public class CustomerDirector : MonoBehaviour
             if (customer != null && customer.State == CustomerState.AtCounter) atCounter++;
         MaxAtCounterSeen = Mathf.Max(MaxAtCounterSeen, atCounter);
         if (hudBackground != null)
-            hudBackground.color = HudFlashing && Mathf.Repeat(Time.time, 0.5f) < 0.25f ? new Color(0.62f, 0.44f, 0.06f, 0.96f) : hudColor;
+            hudBackground.color = HudFlashing && Mathf.Repeat(Time.time, 0.5f) < 0.25f ? new Color(1f, 0.82f, 0.36f) : hudColor;
     }
 
     /// <summary>Clears the day's numbers and records before the next day. Customers still walking out finish leaving.</summary>
@@ -1082,7 +1094,7 @@ public class CustomerDirector : MonoBehaviour
         RefreshSpecial(order);
         hudPayText.text = order.Payment == PaymentMethod.Card ? "카드" : "현금";
         hudBagText.text = order.NeedsBag ? (Pos.AllBagged ? "봉투 ✓" : "봉투") : "봉투 없음";
-        hudBag.color = order.NeedsBag ? (Pos.AllBagged ? WorldUi.Palette.Good : WorldUi.Palette.Warn) : new Color(1f, 1f, 1f, 0.15f);
+        hudBag.color = order.NeedsBag ? (Pos.AllBagged ? WorldUi.Palette.Good : WorldUi.Palette.Warn) : WorldUi.Palette.Band;
         float share = order.TimeLimitSeconds > 0f ? Mathf.Clamp01(remaining / order.TimeLimitSeconds) : 0f;
         hudTime.fillAmount = share;
         hudTime.color = share > 0.5f ? WorldUi.Palette.Good : share > 0.25f ? WorldUi.Palette.Warn : WorldUi.Palette.Bad;
@@ -1098,7 +1110,9 @@ public class CustomerDirector : MonoBehaviour
         hudSpecialText.text = order.Special == Order.Microwave ? (done ? "전자레인지 데우기 ✓" : "전자레인지 데우기")
             : order.Special == Order.HotWater ? (done ? "온수 붓기 ✓" : "온수 붓기")
             : "1+1 행사 · 1개 값만 받기";
-        hudSpecial.color = done ? WorldUi.Palette.Good : order.Special == Order.OnePlus ? WorldUi.Palette.Accent : WorldUi.Palette.Warn;
+        bool onePlus = !done && order.Special == Order.OnePlus;
+        hudSpecial.color = done ? WorldUi.Palette.Good : onePlus ? WorldUi.Palette.Accent : WorldUi.Palette.Warn;
+        hudSpecialText.color = onePlus ? WorldUi.Palette.Text : WorldUi.Palette.Ink;
     }
 
     /// <summary>Between customers the card shows only its title line (the day's message).</summary>
@@ -1112,5 +1126,7 @@ public class CustomerDirector : MonoBehaviour
         hudTime.gameObject.SetActive(order);
         if (hudHalf != null) hudHalf.gameObject.SetActive(order);
         if (!order) hudTitle.text = "";
+        // With no order the header names the screen instead.
+        hudIdle.gameObject.SetActive(!order);
     }
 }
