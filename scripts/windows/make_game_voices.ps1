@@ -21,12 +21,12 @@ $lines = [ordered]@{
     "voice_special_hotwater"  = "컵라면에 뜨거운 물 좀 부어 주세요."
     "voice_special_oneplus"   = "이거 원 플러스 원 맞죠?"
     # Day 1 tutorial narration, T1 to T6 (doc 5.6).
-    "voice_tutorial_1"        = "계산대 위의 상품에 손을 대고, 컨트롤러 옆의 그립 버튼을 눌러 잡아 보세요."
+    "voice_tutorial_1"        = "손님 상품에 손을 대고, 컨트롤러 옆면의 가운뎃손가락 버튼을 꾹 눌러 잡아 보세요."
     "voice_tutorial_2"        = "손목을 돌려서 바코드가 있는 면을 찾아, 스캐너 쪽으로 향하게 하세요."
     "voice_tutorial_3"        = "바코드 면을 스캐너 유리에 대 보세요. 삑 소리가 나면 성공이에요."
     "voice_tutorial_4"        = "스캔한 상품을 비닐봉투 위로 옮긴 다음, 손을 놓으세요."
     "voice_tutorial_5"        = "손님 카드를 집어서, 오른쪽 단말기 앞면의 노란 칸에 밀어 넣으세요."
-    "voice_tutorial_6"        = "손님이 낸 오천 원을 왼쪽 서랍에 넣고, 거스름돈 삼천오백 원을 접시에 놓으세요."
+    "voice_tutorial_6"        = "이번 손님은 현금이에요. 계산은 제가 찍어 뒀어요. 오천 원을 왼쪽 서랍에 넣고, 거스름돈 삼천오백 원을 접시에 놓으세요."
     # Day 2 intake narration, I1 to I4 (doc 5.7.4).
     "voice_intake_1"          = "뒤쪽 창고 입구의 카트에서 첫 번째 박스를 옆면 손잡이로 들고, 노란 칸이 있는 진열대 옆 거치대에 올려 주세요."
     "voice_intake_2"          = "거치대 앞의 커터를 집어서, 박스 위 테이프를 한쪽 끝에서 다른 쪽 끝까지 그어 주세요."
@@ -43,6 +43,8 @@ $lines = [ordered]@{
     "voice_manager_welcome"   = "어서 와요, 점장이에요. 화살표를 따라 계산대 안쪽으로 들어오세요."
     "voice_manager_punch_in"  = "왔어요? 계산대 위 출근 카드를 집어서, 단말기에 찍어 주세요."
     "voice_manager_punch_out" = "수고 많았어요. 퇴근 카드 찍고 들어가세요."
+    "voice_manager_first_customer" = "마침 손님이 오시네요. 제가 옆에서 알려 줄게요."
+    "voice_manager_alone"     = "잘했어요. 이제 혼자 해 봐요. 저는 은행 좀 다녀올게요."
     "voice_ending_s"          = "정말 훌륭했어요. 다음 달부터 정식으로 같이 일해 볼래요?"
     "voice_ending_a"          = "아주 잘했어요. 다음 주 근무표에도 이름 올려 둘게요."
     "voice_ending_b"          = "수고했어요. 조금만 더 손에 익히면 금방 좋아질 거예요."

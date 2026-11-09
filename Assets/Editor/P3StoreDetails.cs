@@ -164,14 +164,13 @@ public static class P3StoreDetails
             }
         foreach (var x in new[] { ShelfA, ShelfB })
             RowAlongX(parent, x - inset, x + inset, 1.0f, back - depth * 0.5f, depth, 0.34f, 1f);
-        RowAlongX(parent, ShelfA - inset, ShelfA + 0.0f, 1.4f, front + depth * 0.5f, depth, 0.34f, -1f);
-        RowAlongX(parent, ShelfB - inset, ShelfB + inset, 1.4f, front + depth * 0.5f, depth, 0.34f, -1f);
+        // The boards at 1.4 and row D's face toward the street hold real products (P2StoreBuilder.BuildDecorSlots).
         RowAlongX(parent, ShelfB - inset, ShelfB - inset + 0.34f, 1.0f, front + depth * 0.5f, depth, 0.34f, -1f);
 
-        // Row D holds no deliveries: every board, both sides, and the overstock on top.
+        // Row D holds no deliveries: every board on the far side, the bottom board on the near side, and the overstock on top.
         foreach (var board in GondolaBoards)
         {
-            RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDFront + 0.02f + depth * 0.5f, depth, 0.34f, -1f);
+            if (board < 0.5f) RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDFront + 0.02f + depth * 0.5f, depth, 0.34f, -1f);
             RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDBack - 0.02f - depth * 0.5f, depth, 0.34f, 1f);
         }
         RowAlongX(parent, ShelfD - inset, ShelfD + inset, 1.8f, SpineDZ, 0.3f, 0.3f, -1f);

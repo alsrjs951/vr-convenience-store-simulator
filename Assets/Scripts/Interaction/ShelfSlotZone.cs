@@ -31,8 +31,12 @@ public class ShelfSlotZone : MonoBehaviour
     public GameAudio Audio;
     /// <summary>Doc 7.3: one merged splat for all places. Without them, or with -individual-shelves, every product draws itself.</summary>
     public GaussianSplatAsset MergedNear, MergedFar;
+    /// <summary>Store stock that is only seen (2026-11-09): no deliveries, no preview, no zone, never cleared. See IntakeDirector.StockDecor.</summary>
+    public bool DisplayOnly;
+    /// <summary>For display stock only seen from afar: the lighter copy is all there is.</summary>
+    public bool FarOnly;
     public SplatShelfSlot Merged { get; private set; }
-    static readonly bool IndividualOnly = Array.IndexOf(Environment.GetCommandLineArgs(), "-individual-shelves") >= 0;
+    public static readonly bool IndividualOnly = Array.IndexOf(Environment.GetCommandLineArgs(), "-individual-shelves") >= 0;
 
     public int Capacity => Columns * Rows;
     public int Filled { get; private set; }

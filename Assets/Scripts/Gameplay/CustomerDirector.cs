@@ -32,6 +32,7 @@ public class CustomerDirector : MonoBehaviour
     const float BrowserGapMin = 8f;
     const float BrowserGapMax = 20f;
     const int MaxCharacters = 5;
+    const float AmbientFirstLookMin = 7f, AmbientFirstLookMax = 14f;
     const float ItemSpacing = 0.25f;
     const float SpawnClearance = 0.004f;
     const float MetersPerPixel = 0.0007f;
@@ -120,6 +121,10 @@ public class CustomerDirector : MonoBehaviour
     public readonly List<CustomerCharacter> Browsers = new List<CustomerCharacter>();
     public readonly List<CustomerCharacter> Present = new List<CustomerCharacter>();
     public readonly List<CustomerRecord> Records = new List<CustomerRecord>();
+    /// <summary>In the store before the shift (see StartAmbient). Not in Present.</summary>
+    public readonly List<CustomerCharacter> Ambient = new List<CustomerCharacter>();
+    /// <summary>The manager's body: nobody shopping should be her twin.</summary>
+    public string ReservedAvatar { get; set; } = "";
     public int MaxPresent { get; private set; }
     public int MaxWaitingSeen { get; private set; }
     public int MaxLineSeen { get; private set; }
@@ -239,6 +244,153 @@ public class CustomerDirector : MonoBehaviour
     {
         ResetDay();
         specialsSeen.Clear();
+        ClearAmbient();
+    }
+
+    // ---------- Before the shift: people already shopping, and the two the tutorial serves (2026-11-09) ----------
+
+    /// <summary>
+    /// People in the store when the player first looks in, so the glass door shows a store that is open and the tutorial's
+    /// customers are people who were already there. Outside Present and Records: the shift's own numbers do not count them.
+    /// </summary>
+    public void StartAmbient(int count)
+    {
+        ClearAmbient();
+        // In front of row B and at the fridges: the two browse spots that can be seen through the door.
+        var opening = new[] { 2, 1 };
+        for (int i = 0; i < count && i < opening.Length && opening[i] < BrowseSpots.Length; i++)
+        {
+            var spot = BrowseSpots[opening[i]];
+            var guest = NewGuest(spot.position, spot.rotation);
+            guest.State = CustomerState.Wandering;
+            guest.Settle();
+            guest.Resting = CustomerCharacter.BrowseState;
+            reservedSpots[spot] = guest;
+            lastSpot[guest] = spot;
+            Ambient.Add(guest);
+            behaviours[guest] = StartCoroutine(KeepShopping(guest));
+        }
+    }
+
+    /// <summary>A while at a shelf, then on to another one, until called to the counter or sent home.</summary>
+    IEnumerator KeepShopping(CustomerCharacter guest)
+    {
+        // Staggered, and long enough at first for the player to have looked in.
+        yield return new WaitForSeconds(Random.Range(AmbientFirstLookMin, AmbientFirstLookMax));
+        while (true)
+        {
+            guest.Resting = CustomerCharacter.IdleState;
+            ReleaseSpot(guest);
+            yield return Browse(guest, CustomerState.Wandering);
+        }
+    }
+
+    /// <summary>The ones still shopping when the shift starts walk out; the shift brings its own.</summary>
+    public void DismissAmbient()
+    {
+        foreach (var guest in Ambient)
+        {
+            if (guest == null) continue;
+            StopBehaviour(guest);
+            ReleaseSpot(guest);
+            behaviours[guest] = StartCoroutine(LeaveStore(guest, false));
+        }
+        Ambient.Clear();
+    }
+
+    public void ClearAmbient()
+    {
+        foreach (var guest in Ambient)
+        {
+            if (guest == null) continue;
+            StopBehaviour(guest);
+            ReleaseSpot(guest);
+            lastSpot.Remove(guest);
+            Destroy(guest.gameObject);
+        }
+        Ambient.Clear();
+    }
+
+    /// <summary>The next person for the tutorial: someone already shopping, or else someone new from the door.</summary>
+    public CustomerCharacter CallGuest()
+    {
+        CustomerCharacter guest;
+        if (Ambient.Count > 0)
+        {
+            guest = Ambient[0];
+            Ambient.RemoveAt(0);
+            StopBehaviour(guest);
+            ReleaseSpot(guest);
+        }
+        else
+        {
+            guest = NewGuest(DoorEntry, Door.rotation);
+            if (Audio) Audio.PlayAt(StoreSound.Door, Door.position + Vector3.up * DoorChimeHeight);
+        }
+        guest.State = CustomerState.ToCounter;
+        guest.Resting = CustomerCharacter.IdleState;
+        guest.Agent.avoidancePriority = 30;
+        return guest;
+    }
+
+    public IEnumerator BringGuest(CustomerCharacter guest)
+    {
+        yield return guest.WalkTo(Counter.position);
+        yield return guest.Face(Counter.rotation);
+        guest.State = CustomerState.AtCounter;
+        guest.Resting = CustomerCharacter.IdleState;
+    }
+
+    /// <summary>The basket comes off the arm onto the counter. The tutorial makes the product that stands in it.</summary>
+    public void GuestPutsBasketDown(CustomerCharacter guest)
+    {
+        if (guest.Basket != null) Destroy(guest.Basket.gameObject);
+        guest.Basket = null;
+        CounterBasket = BuildBasket("Basket (on counter)", 0.26f, false);
+        CounterBasket.position = BasketAnchor.position + Vector3.up * BasketHeight;
+        CounterBasket.rotation = Quaternion.Euler(0f, 90f, 0f);
+    }
+
+    /// <summary>The line and the mouth moving with it. Returns its length.</summary>
+    public float GuestSays(CustomerCharacter guest, CustomerLine line, int variant = 0) => Audio ? Speak(guest, line, variant) : 0f;
+
+    /// <summary>The end of a served guest: the money on the card, thanks, a nod, a wave, and out.</summary>
+    public void GuestLeaves(CustomerCharacter guest, int amount)
+    {
+        ShowOutcome($"+{amount:N0}원", WorldUi.Palette.Good);
+        if (Audio) Speak(guest, CustomerLine.Thanks);
+        if (guest.FaceRig != null)
+        {
+            guest.FaceRig.SetMood(CustomerMood.Pleased);
+            guest.FaceRig.Nod();
+        }
+        if (CounterBasket) Destroy(CounterBasket.gameObject);
+        CounterBasket = null;
+        behaviours[guest] = StartCoroutine(LeaveStore(guest, true));
+    }
+
+    CustomerCharacter NewGuest(Vector3 position, Quaternion rotation)
+    {
+        spawnedTotal++;
+        var prefab = PickCharacter();
+        string avatar = prefab != null ? prefab.name : "placeholder";
+        CustomerCharacter guest;
+        if (prefab != null)
+        {
+            guest = Instantiate(prefab, position, rotation);
+        }
+        else
+        {
+            guest = CreatePlaceholder();
+            guest.Agent.Warp(position);
+            guest.transform.rotation = rotation;
+        }
+        guest.name = $"Guest {spawnedTotal} ({avatar})";
+        guest.Agent.avoidancePriority = 60 + spawnedTotal % 10;
+        guest.Record.Name = guest.name;
+        guest.Record.Avatar = avatar;
+        guest.Basket = CreateBasket(guest);
+        return guest;
     }
 
     public IEnumerator RunDay(List<Order> orders)
@@ -760,7 +912,7 @@ public class CustomerDirector : MonoBehaviour
 
     // Door faces into the store, so its right is the right-hand side of someone coming in.
     Vector3 DoorEntry => Door.position + Door.right * DoorLane;
-    Vector3 DoorExit => Door.position - Door.right * DoorLane;
+    public Vector3 DoorExit => Door.position - Door.right * DoorLane;
 
     CustomerCharacter Spawn(bool forOrder)
     {
@@ -803,9 +955,11 @@ public class CustomerDirector : MonoBehaviour
         foreach (var candidate in Characters)
         {
             if (candidate == null) continue;
-            int count = 0;
+            int count = candidate.name == ReservedAvatar ? 1 : 0;
             foreach (var present in Present)
                 if (present != null && present.Record.Avatar == candidate.name) count++;
+            foreach (var guest in Ambient)
+                if (guest != null && guest.Record.Avatar == candidate.name) count++;
             if (count < fewest)
             {
                 fewest = count;

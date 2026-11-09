@@ -15,6 +15,7 @@ using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 public class TitleFlow : MonoBehaviour
 {
     const float PanelMetersPerPixel = 0.0008f;
+    const float PanelWidth = 860f, PanelHeight = 490f;
     const float GuideMetersPerPixel = 0.001f;
     const float DoorOpenSeconds = 1.1f;
     const float SettleSeconds = 0.5f;
@@ -28,6 +29,7 @@ public class TitleFlow : MonoBehaviour
     const float PunchGiveUpSeconds = 70f;
     const float NormalSpeed = 1.5f, SlowSpeed = 1f;
     const float NormalAperture = 0.7f, StrongAperture = 0.5f;
+    const string GripWords = "가운뎃손가락 버튼을 꾹";
 
     public XROrigin Rig;
     public DynamicMoveProvider Move;
@@ -39,10 +41,16 @@ public class TitleFlow : MonoBehaviour
     public Transform[] DoorLeaves = new Transform[0];
     public Vector3 LeafSlide = new Vector3(0f, 0f, 1.18f);
     public GameObject CommutePath;
+    public TargetPointer Pointer;
+    public ControllerHint Hands;
+    public ManagerNpc Manager;
 
     /// <summary>The day the player chose to start from; 0 until then.</summary>
     public int ChosenDay { get; private set; }
     public Button StartButton { get; private set; }
+    public Button MoreButton { get; private set; }
+    public Button BackButton { get; private set; }
+    public bool MoreShown => moreGroup != null && moreGroup.activeSelf;
     public Button Day2Button { get; private set; }
     public Button Day3Button { get; private set; }
     public Button SpeedButton { get; private set; }
@@ -58,6 +66,7 @@ public class TitleFlow : MonoBehaviour
     public bool PunchGaveUp { get; private set; }
 
     RectTransform panel, guidePanel;
+    GameObject mainGroup, moreGroup;
     Text guideText, speedLabel, vignetteLabel;
     Vector3[] leafClosed = new Vector3[0];
 
@@ -71,29 +80,45 @@ public class TitleFlow : MonoBehaviour
         guidePanel.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// One thing to do: go to work. The first look is through the glass at a lit store with people in it, so the sign is kept
+    /// small and low, and everything a first-timer does not need yet waits behind 설정.
+    /// </summary>
     void BuildPanel()
     {
-        panel = WorldUi.CreatePanel(transform, "Title Panel", PanelAnchor.position, PanelAnchor.rotation, new Vector2(1100f, 720f), PanelMetersPerPixel, WorldUi.Palette.Navy, interactive: true);
-        var title = WorldUi.AddText(panel, 0f, 26f, 1100f, 120f, 104, TextAnchor.MiddleCenter);
+        panel = WorldUi.CreatePanel(transform, "Title Panel", PanelAnchor.position, PanelAnchor.rotation, new Vector2(PanelWidth, PanelHeight), PanelMetersPerPixel, WorldUi.Palette.Navy, interactive: true);
+        mainGroup = Group("Main");
+        var main = (RectTransform)mainGroup.transform;
+        var title = WorldUi.AddText(main, 0f, 18f, PanelWidth, 110f, 96, TextAnchor.MiddleCenter);
         title.fontStyle = FontStyle.Bold;
         title.text = "동아편의점";
-        var subtitle = WorldUi.AddText(panel, 0f, 150f, 1100f, 50f, 40, TextAnchor.MiddleCenter);
+        var subtitle = WorldUi.AddText(main, 0f, 132f, PanelWidth, 56f, 42, TextAnchor.MiddleCenter);
         subtitle.color = WorldUi.Palette.TextDim;
-        subtitle.text = "3일 알바 체험";
-
-        StartButton = Button(250f, 215f, 600f, 104f, "출근하기", 58, true);
-        Day2Button = Button(250f, 335f, 290f, 76f, "2일차부터", 38, false);
-        Day3Button = Button(560f, 335f, 290f, 76f, "3일차부터", 38, false);
-        SpeedButton = Button(90f, 462f, 450f, 72f, "", 34, false);
-        VignetteButton = Button(560f, 462f, 450f, 72f, "", 34, false);
-        RecenterButton = Button(325f, 548f, 450f, 66f, "시점 다시 맞추기", 34, false);
-        speedLabel = SpeedButton.GetComponentInChildren<Text>();
-        vignetteLabel = VignetteButton.GetComponentInChildren<Text>();
-        var hint = WorldUi.AddText(panel, 0f, 636f, 1100f, 50f, 32, TextAnchor.MiddleCenter);
+        subtitle.text = "오늘은 첫 출근 날입니다";
+        StartButton = Button(main, 150f, 204f, 560f, 120f, "출근하기", 66, true);
+        var hint = WorldUi.AddText(main, 0f, 338f, PanelWidth, 50f, 32, TextAnchor.MiddleCenter);
         hint.color = WorldUi.Palette.TextDim;
         hint.text = "컨트롤러로 가리키고 검지 버튼을 누르세요";
+        MoreButton = Button(main, 340f, 404f, 180f, 62f, "설정", 34, false);
+
+        moreGroup = Group("More");
+        var more = (RectTransform)moreGroup.transform;
+        var moreTitle = WorldUi.AddText(more, 0f, 14f, PanelWidth, 70f, 54, TextAnchor.MiddleCenter);
+        moreTitle.fontStyle = FontStyle.Bold;
+        moreTitle.text = "설정";
+        Day2Button = Button(more, 50f, 96f, 370f, 72f, "2일차부터", 38, false);
+        Day3Button = Button(more, 440f, 96f, 370f, 72f, "3일차부터", 38, false);
+        SpeedButton = Button(more, 50f, 182f, 370f, 72f, "", 32, false);
+        VignetteButton = Button(more, 440f, 182f, 370f, 72f, "", 32, false);
+        RecenterButton = Button(more, 50f, 268f, 760f, 66f, "시점 다시 맞추기", 34, false);
+        BackButton = Button(more, 250f, 372f, 360f, 84f, "돌아가기", 44, true);
+        moreGroup.SetActive(false);
+        speedLabel = SpeedButton.GetComponentInChildren<Text>();
+        vignetteLabel = VignetteButton.GetComponentInChildren<Text>();
 
         StartButton.onClick.AddListener(() => Choose(1));
+        MoreButton.onClick.AddListener(() => ShowMore(true));
+        BackButton.onClick.AddListener(() => ShowMore(false));
         Day2Button.onClick.AddListener(() => Choose(2));
         Day3Button.onClick.AddListener(() => Choose(3));
         SpeedButton.onClick.AddListener(() => SetComfort(!SlowWalk, StrongVignette));
@@ -103,9 +128,26 @@ public class TitleFlow : MonoBehaviour
         panel.gameObject.SetActive(false);
     }
 
-    Button Button(float x, float y, float width, float height, string label, int fontSize, bool primary)
+    GameObject Group(string groupName)
     {
-        var button = WorldUi.AddButton(panel, x, y, width, height, label, fontSize);
+        var go = new GameObject(groupName, typeof(RectTransform));
+        go.transform.SetParent(panel, false);
+        var rect = (RectTransform)go.transform;
+        rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+        return go;
+    }
+
+    void ShowMore(bool show)
+    {
+        moreGroup.SetActive(show);
+        mainGroup.SetActive(!show);
+    }
+
+    Button Button(RectTransform group, float x, float y, float width, float height, string label, int fontSize, bool primary)
+    {
+        var button = WorldUi.AddButton(group, x, y, width, height, label, fontSize);
         if (!primary) button.GetComponent<Image>().color = new Color(0.17f, 0.29f, 0.47f);
         // Tints multiply the color, so the resting state sits below full: pointing at a button has to be seen on Quest 2.
         var colors = button.colors;
@@ -143,6 +185,7 @@ public class TitleFlow : MonoBehaviour
         ChosenDay = 0;
         SetDoor(true);
         if (CommutePath != null) CommutePath.SetActive(false);
+        ShowMore(false);
         panel.gameObject.SetActive(true);
         yield return new WaitForSeconds(SettleSeconds);
         PlacePlayer(StandSpot);
@@ -167,6 +210,7 @@ public class TitleFlow : MonoBehaviour
     public IEnumerator WalkIn()
     {
         WalkGaveUp = false;
+        if (Manager != null) Manager.Greet();
         if (Audio)
         {
             Audio.PlayAt(StoreSound.Door, StandSpot.position + Vector3.up * 2f);
@@ -174,8 +218,10 @@ public class TitleFlow : MonoBehaviour
         }
         yield return SlideDoorOpen();
         if (CommutePath != null) CommutePath.SetActive(true);
-        guideText.text = "노란 화살표를 따라 계산대 안쪽으로";
+        // Said from the first moment: someone who has never used these sticks would otherwise just stand there.
+        guideText.text = "왼손 스틱을 앞으로 밀어\n노란 화살표를 따라가세요";
         guidePanel.gameObject.SetActive(true);
+        if (Hands != null) Hands.Show("이 스틱을 앞으로 밀기", null);
 
         float begun = Time.time;
         bool hinted = false;
@@ -185,7 +231,8 @@ public class TitleFlow : MonoBehaviour
             if (!hinted && waited > WalkHintSeconds)
             {
                 hinted = true;
-                guideText.text = "왼손 썸스틱을 밀면 걸어갑니다\n오른손 썸스틱 좌우로 방향 전환";
+                guideText.text = "왼손 스틱: 걷기\n오른손 스틱을 좌우로: 방향 돌리기";
+                if (Hands != null) Hands.Show("이 스틱을 앞으로 밀기", "좌우로 밀면 몸이 돌아요");
             }
             if (waited > WalkGiveUpSeconds)
             {
@@ -195,6 +242,7 @@ public class TitleFlow : MonoBehaviour
             }
             yield return null;
         }
+        if (Hands != null) Hands.Hide();
         if (CommutePath != null) CommutePath.SetActive(false);
         guidePanel.gameObject.SetActive(false);
     }
@@ -211,16 +259,19 @@ public class TitleFlow : MonoBehaviour
         string prompt = $"{cardName}를 집어\n단말기 노란 칸에 꽂으세요";
         say(prompt);
         Desk.BeginCard(() => true, notice => say(prompt + "\n" + notice), () => punched = true, cardName);
+        if (Pointer != null) Pointer.Aim = () => TargetPointer.AimAtCard(Desk);
+        if (Hands != null) Hands.Show(GripWords, GripWords);
 
         float begun = Time.time;
         bool hinted = false;
         while (!punched)
         {
             float waited = Time.time - begun;
+            if (Hands != null && Desk.CustomerCard != null && Desk.CustomerCard.Grab.isSelected) Hands.Hide();
             if (!hinted && waited > PunchHintSeconds)
             {
                 hinted = true;
-                say($"{cardName}에 손을 대고 그립 버튼을 누른 채\n오른쪽 단말기의 노란 칸으로 밀어 넣기");
+                say($"{cardName}에 손을 대고 가운뎃손가락 버튼을 누른 채\n오른쪽 단말기의 노란 칸으로 밀어 넣기");
             }
             if (waited > PunchGiveUpSeconds)
             {
@@ -229,7 +280,10 @@ public class TitleFlow : MonoBehaviour
             }
             yield return null;
         }
+        if (Pointer != null) Pointer.Aim = null;
+        if (Hands != null) Hands.Hide();
         if (Audio) Audio.PlayApproved();
+        if (Manager != null) Manager.Nod();
         Desk.EndPayment();
     }
 

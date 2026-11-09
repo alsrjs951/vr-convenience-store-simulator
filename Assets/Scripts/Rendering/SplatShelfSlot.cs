@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GaussianSplatting.Runtime;
 using UnityEngine;
 
@@ -8,9 +9,19 @@ using UnityEngine;
 /// </summary>
 public class SplatShelfSlot : MonoBehaviour
 {
-    /// <summary>Doc 7.3 step 4: two distances, so standing near one of them does not flip the copies back and forth.</summary>
-    public const float NearEnterMeters = 3f;
-    public const float FarLeaveMeters = 4f;
+    /// <summary>
+    /// Doc 7.3 step 4: two distances, so standing near one of them does not flip the copies back and forth. Both are inside
+    /// the 2.9 m or more from the till to row B, so serving at the counter never keeps a shelf on its near copy.
+    /// </summary>
+    public const float NearEnterMeters = 2.4f;
+    public const float FarLeaveMeters = 2.8f;
+    // Store stock nobody takes from (2026-11-09) only comes up close to someone walking right past it, so the gaussians
+    // stay available for the shelves being worked on.
+    const float DisplayNearEnterMeters = 1.6f;
+    const float DisplayFarLeaveMeters = 2.2f;
+    // The working shelves get the gaussian budget first (doc 7.2): while any of them is close, display stock stays on its far
+    // copy. Otherwise row D's near copies come up behind someone stocking row A + B from the aisle between them.
+    static readonly List<SplatShelfSlot> workingSlots = new List<SplatShelfSlot>();
     // What a place holds: the product's box plus 9 mm at the sides, which is short of the next place (2 cm away), and more
     // above, where crumpled bag tops stick out. P4ShelfSplats drops whatever lies outside, so hiding this box leaves no crumbs.
     const float SideMargin = 0.009f, TopMargin = 0.06f, BottomMargin = 0.02f;
@@ -28,6 +39,8 @@ public class SplatShelfSlot : MonoBehaviour
 
     GaussianCutout[] cutouts = new GaussianCutout[0];
     Vector3 center;
+    float nearEnter = NearEnterMeters, farLeave = FarLeaveMeters;
+    bool displayOnly;
 
     /// <summary>The volume one product may occupy in a merged splat, in the product root's frame.</summary>
     public static Bounds PlaceVolume(BoxCollider proxy)
@@ -65,11 +78,17 @@ public class SplatShelfSlot : MonoBehaviour
             sum += slot.UnitPosition(unit);
         }
         view.center = sum / slot.Capacity;
+        if (slot.DisplayOnly)
+        {
+            view.displayOnly = true;
+            view.nearEnter = DisplayNearEnterMeters;
+            view.farLeave = DisplayFarLeaveMeters;
+        }
 
         view.Near = view.Copy(product.Splat, nearAsset, "Near", go.transform, position, rotation, source.localScale);
         view.Far = view.Copy(product.Splat, farAsset, "Far", go.transform, position, rotation, source.localScale);
         var camera = Camera.main;
-        view.ShowingNear = camera != null && Vector3.Distance(camera.transform.position, view.center) < NearEnterMeters;
+        view.ShowingNear = camera != null && Vector3.Distance(camera.transform.position, view.center) < view.nearEnter;
         view.Near.gameObject.SetActive(view.ShowingNear);
         view.Far.gameObject.SetActive(!view.ShowingNear);
         go.SetActive(true);
@@ -104,12 +123,21 @@ public class SplatShelfSlot : MonoBehaviour
         ShownUnits = 0;
     }
 
+    void OnEnable()
+    {
+        if (!displayOnly) workingSlots.Add(this);
+    }
+
+    void OnDisable() => workingSlots.Remove(this);
+
     void Update()
     {
         var camera = Camera.main;
         if (camera == null || Time.frameCount == lastSwitchFrame) return;
         float distance = Vector3.Distance(camera.transform.position, center);
-        if (ShowingNear ? distance <= FarLeaveMeters : distance >= NearEnterMeters) return;
+        bool near = ShowingNear ? distance <= farLeave : distance < nearEnter;
+        if (displayOnly && workingSlots.Exists(slot => slot.ShowingNear)) near = false;
+        if (near == ShowingNear) return;
 
         lastSwitchFrame = Time.frameCount;
         ShowingNear = !ShowingNear;

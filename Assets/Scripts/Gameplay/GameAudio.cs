@@ -8,7 +8,7 @@ public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose,
 public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited }
 
 /// <summary>What the store manager says on the way in and at the end (game design 10.0, 2026-11-09).</summary>
-public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC }
+public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC, FirstCustomer, Alone }
 
 /// <summary>One voice's set of customer lines (the scene builder fills a female and a male set).</summary>
 [Serializable]
@@ -49,6 +49,9 @@ public class GameAudio : MonoBehaviour
     const float NarrationVolume = 0.9f;
     const float AmbienceVolume = 0.22f;
     const int EnvelopeRate = 25;
+    // A manager standing in the store is heard from where she stands, but never so far off that the instructions get lost.
+    const float PlacedNarrationBlend = 0.7f;
+    const float PlacedNarrationMinDistance = 3f;
 
     [Header("Counter (doc 5.1)")]
     public AudioClip ErrorClip;
@@ -89,6 +92,9 @@ public class GameAudio : MonoBehaviour
     public int Narrations { get; private set; }
     public string LastNarration { get; private set; } = "";
     public bool AmbiencePlaying => ambience != null && ambience.isPlaying;
+    /// <summary>While someone is there to say the narration (the manager, 2026-11-09), it comes from here. Null: in the head.</summary>
+    public Transform NarrationSource { get; set; }
+    public event Action<AudioClip> NarrationStarted;
 
     void Awake()
     {
@@ -112,10 +118,14 @@ public class GameAudio : MonoBehaviour
         if (DingClip == null) DingClip = Chime("Ding", 1568f, 1568f, 0.6f);
         if (TipClip == null) TipClip = Chime("Tip", 1568f, 2093f, 0.35f);
 
-        narrator = gameObject.AddComponent<AudioSource>();
+        // On its own object: it moves to whoever is speaking, and the counter sounds on this object must stay at the counter.
+        var voice = new GameObject("Narrator");
+        voice.transform.SetParent(transform, false);
+        narrator = voice.AddComponent<AudioSource>();
         narrator.spatialBlend = 0f;
         narrator.playOnAwake = false;
         narrator.volume = NarrationVolume;
+        narrator.minDistance = PlacedNarrationMinDistance;
         if (Ambience != null)
         {
             ambience = gameObject.AddComponent<AudioSource>();
@@ -167,9 +177,11 @@ public class GameAudio : MonoBehaviour
     }
 
     /// <summary>How loud the line is over its length, 0 to 1, for the speaker's mouth. Null if the clip cannot be read.</summary>
-    public float[] EnvelopeOf(CustomerLine line, bool female, int variant = 0)
+    public float[] EnvelopeOf(CustomerLine line, bool female, int variant = 0) => EnvelopeOf((female ? Female : Male)?.Get(line, variant));
+
+    /// <summary>The same for any clip, the manager's lines included.</summary>
+    public float[] EnvelopeOf(AudioClip clip)
     {
-        var clip = (female ? Female : Male)?.Get(line, variant);
         if (clip == null) return null;
         if (envelopes.TryGetValue(clip, out var known)) return known;
         var samples = new float[clip.samples * clip.channels];
@@ -210,10 +222,13 @@ public class GameAudio : MonoBehaviour
     {
         if (lines == null || index < 0 || index >= lines.Length || lines[index] == null) return;
         narrator.Stop();
+        narrator.spatialBlend = NarrationSource != null ? PlacedNarrationBlend : 0f;
+        if (NarrationSource != null) narrator.transform.position = NarrationSource.position;
         narrator.clip = lines[index];
         narrator.Play();
         Narrations++;
         LastNarration = lines[index].name;
+        NarrationStarted?.Invoke(lines[index]);
     }
 
     /// <summary>The Rocketbox avatars are named Female_... and Male_...; anything else (the placeholder) speaks with the male voice.</summary>

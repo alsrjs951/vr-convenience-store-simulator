@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
     const int IntakeTutorialDay = 2;
     const float BriefSeconds = 7f;
     const float RequestGuideSeconds = 12f;
+    const int AmbientCustomers = 2;
     static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check" };
 
     public int Day = 1;
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviour
     public IntakeDirector Intake;
     public IntakeTutorial IntakeTutorial;
     public TitleFlow Title;
+    public ManagerNpc Manager;
     public bool RunTutorial = true;
     public Transform BoardAnchor;
 
@@ -156,6 +158,9 @@ public class GameManager : MonoBehaviour
         boardPanel.gameObject.SetActive(false);
         // Behind the closed door the store is already stocked, so the first look through it is the finished store.
         PrepareStore(1);
+        // People are already there behind the glass: the manager at the counter's end and a couple of customers shopping.
+        if (Manager != null) Manager.Arrive();
+        Director.StartAmbient(AmbientCustomers);
         yield return Title.ChooseDay();
         Day = Title.ChosenDay;
         PrepareStore(Day);
@@ -202,6 +207,7 @@ public class GameManager : MonoBehaviour
         RestoreBoard();
         Pos.ResetDay();
         Director.ResetRun();
+        if (Manager != null) Manager.Clear();
     }
 
     void RestoreBoard()
@@ -323,6 +329,9 @@ public class GameManager : MonoBehaviour
             State = DayState.Tutorial;
             yield return Tutorial.Run();
         }
+        // From here the store is the player's: whoever was only there for the way in goes.
+        Director.DismissAmbient();
+        if (Manager != null) Manager.Leave();
 
         bool guidedIntake = intake && day == IntakeTutorialDay && IntakeTutorial != null;
         if (guidedIntake)

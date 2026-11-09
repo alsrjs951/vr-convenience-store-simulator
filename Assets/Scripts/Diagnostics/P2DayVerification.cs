@@ -102,6 +102,8 @@ public partial class P2DayVerification : MonoBehaviour
     bool walking;
     bool walkedHoldingProduct;
     bool walkedHoldingProp;
+    readonly Dictionary<DayState, int> statFrames = new Dictionary<DayState, int>();
+    readonly Dictionary<DayState, float> statSeconds = new Dictionary<DayState, float>();
 
     void Start()
     {
@@ -109,7 +111,8 @@ public partial class P2DayVerification : MonoBehaviour
         day2Mode = Array.IndexOf(args, "-p2-day2-verify") >= 0;
         titleMode = Array.IndexOf(args, "-p2-title-verify") >= 0;
         faceMode = Array.IndexOf(args, "-p2-face-verify") >= 0;
-        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode) return;
+        introMode = Array.IndexOf(args, "-p2-intro-verify") >= 0;
+        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode) return;
         if (faceMode) Game.RunTutorial = false;
         walking = Array.IndexOf(args, "-p2-walk") >= 0;
         nextDayCheck = Array.IndexOf(args, "-p2-next-day") >= 0;
@@ -118,7 +121,7 @@ public partial class P2DayVerification : MonoBehaviour
 #if UNITY_EDITOR
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 #endif
-        output = Path.Combine(Application.dataPath, faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
+        output = Path.Combine(Application.dataPath, introMode ? "../docs/p2/evidence/first_minute" : faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
         int index = Array.IndexOf(args, "-p2-evidence");
         if (index >= 0 && index + 1 < args.Length) output = args[index + 1];
         Directory.CreateDirectory(output);
@@ -128,13 +131,18 @@ public partial class P2DayVerification : MonoBehaviour
         Scanner.Scanned += _ => scansSeen++;
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
-        StartCoroutine(faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
+        StartCoroutine(introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
     }
 
     void Update()
     {
         if (keyboard == null) return;
         frames++;
+        if (Game != null)
+        {
+            statFrames[Game.State] = statFrames.TryGetValue(Game.State, out int seen) ? seen + 1 : 1;
+            statSeconds[Game.State] = (statSeconds.TryGetValue(Game.State, out float spent) ? spent : 0f) + Time.unscaledDeltaTime;
+        }
         foreach (var device in InputSystem.devices)
             if (device is Mouse real && real != mouse)
                 report.externalMouseMotion += real.delta.ReadValue().magnitude;
@@ -369,23 +377,50 @@ public partial class P2DayVerification : MonoBehaviour
     IEnumerator Tutorial()
     {
         var tutorial = Game.Tutorial;
+        var pointer = tutorial.Pointer;
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Grab, StepTimeout, "tutorial.grab_shown");
         if (finished) yield break;
         var product = tutorial.Product;
+        yield return new WaitForSeconds(0.2f);
+        var firstCustomer = tutorial.Guest;
+        Check("tutorial.first_customer_at_counter", firstCustomer != null && firstCustomer.State == CustomerState.AtCounter && Game.Director.CounterBasket != null && firstCustomer.FaceRig != null,
+            firstCustomer == null ? "nobody" : $"state={firstCustomer.State}; basket={Game.Director.CounterBasket != null}");
+        Check("tutorial.greeted", Game.Pos.Audio.SpokenCount(CustomerLine.Greet) >= 1, $"greetings={Game.Pos.Audio.SpokenCount(CustomerLine.Greet)}");
+        Check("tutorial.arrow_on_the_product_at_once", pointer.Shown && pointer.Label == "집기", $"shown={pointer.Shown}; label={pointer.Label}");
+        Check("tutorial.grip_said_in_plain_words", tutorial.Hands.RightText.Contains("가운뎃손가락") && Game.BoardText.Contains("가운뎃손가락") && !Game.BoardText.Contains("그립"), $"hand={tutorial.Hands.RightText}; board={Game.BoardText}");
         yield return Capture("02_tutorial_grab");
         yield return GrabProduct(product, "tutorial");
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Rotate, StepTimeout, "tutorial.rotate_shown");
+        yield return new WaitForSeconds(0.2f);
+        Check("tutorial.arrow_at_the_barcode", pointer.Shown && pointer.Label == "바코드" && tutorial.Hands.RightText == "", $"label={pointer.Label}; hand={tutorial.Hands.RightText}");
+        yield return Capture("02b_tutorial_barcode_arrow");
         yield return TurnBarcodeDown(product);
         yield return MoveHeldAbovePad(product);
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Scan, StepTimeout, "tutorial.scan_shown");
+        yield return new WaitForSeconds(0.1f);
+        Check("tutorial.arrow_at_the_scanner", pointer.Shown && pointer.Label == "여기에 대기", $"label={pointer.Label}");
         yield return Capture("03_tutorial_barcode_down");
         yield return LowerUntilScanned(product, "tutorial.scan");
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Bag, StepTimeout, "tutorial.bag_shown");
+        yield return new WaitForSeconds(0.1f);
+        Check("tutorial.customer_asks_for_a_bag", Game.Pos.Audio.SpokenCount(CustomerLine.Bag) >= 1 && pointer.Label == "여기에 넣기", $"bag lines={Game.Pos.Audio.SpokenCount(CustomerLine.Bag)}; label={pointer.Label}");
         yield return PutInBag(product, "tutorial.bag");
         yield return ResetHandRotation();
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Card, StepTimeout, "tutorial.card_shown");
-        yield return PayByCard(() => tutorial.Step != TutorialStep.Card, "tutorial.card");
+        yield return new WaitForSeconds(0.1f);
+        Check("tutorial.arrow_on_the_card", pointer.Shown && pointer.Label == "집기", $"label={pointer.Label}");
+        int thanksBefore = Game.Pos.Audio.SpokenCount(CustomerLine.Thanks);
+        // Paid is when the card goes away. The step itself stays until the next customer has walked up.
+        yield return PayByCard(() => Desk.CustomerCard == null, "tutorial.card");
+        yield return new WaitForSeconds(0.3f);
+        Check("tutorial.first_customer_thanks_and_leaves", Game.Pos.Audio.SpokenCount(CustomerLine.Thanks) == thanksBefore + 1 && Game.Director.LastOutcome.StartsWith("+", StringComparison.Ordinal)
+                && firstCustomer.FaceRig.Nods >= 1 && firstCustomer.FaceRig.Mood == CustomerMood.Pleased && firstCustomer.State == CustomerState.Leaving && firstCustomer.Playing == CustomerCharacter.LeaveState,
+            $"thanks={Game.Pos.Audio.SpokenCount(CustomerLine.Thanks)}; card={Game.Director.LastOutcome}; nods={firstCustomer.FaceRig.Nods}; mood={firstCustomer.FaceRig.Mood}; state={firstCustomer.State}; playing={firstCustomer.Playing}");
+        yield return Capture("03c_first_customer_thanks");
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Cash, StepTimeout, "tutorial.cash_shown");
+        yield return new WaitForSeconds(0.2f);
+        Check("tutorial.second_customer_for_the_cash", tutorial.Guest != null && tutorial.Guest != firstCustomer && tutorial.Guest.State == CustomerState.AtCounter && pointer.Shown && pointer.Label == "집기",
+            tutorial.Guest == null ? "nobody" : $"state={tutorial.Guest.State}; label={pointer.Label}");
         yield return Capture("04_tutorial_cash");
         yield return GiveBill("tutorial.cash_bill");
         yield return GiveChange(3500, 0, false, () => tutorial.Step != TutorialStep.Cash, "tutorial.cash_change");
@@ -1185,8 +1220,10 @@ public partial class P2DayVerification : MonoBehaviour
         report.runtime = Application.isEditor ? "Editor Play Mode" : "Player";
         report.hmdRuntimeActive = UnityEngine.XR.XRSettings.isDeviceActive;
         report.meanDesktopFps = frames / Mathf.Max(0.01f, Time.realtimeSinceStartup - started);
+        foreach (var state in statFrames)
+            Debug.Log($"[P2 Day] fps in {state.Key}: {state.Value / Mathf.Max(0.01f, statSeconds[state.Key]):0.0} over {statSeconds[state.Key]:0.0}s");
         report.scope = (day2Mode ? "Day 2 (intake, disposal, leaving customers). " : "") + "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.";
-        File.WriteAllText(Path.Combine(output, faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
+        File.WriteAllText(Path.Combine(output, introMode ? "intro_report.json" : faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
         WriteDay2Details();
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P2 Day] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} grade={report.grade} sales={report.sales}/{report.possibleSales} mouse={report.externalMouseMotion:0} fps={report.meanDesktopFps:0}");

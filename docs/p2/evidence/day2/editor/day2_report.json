@@ -7,11 +7,11 @@
     "scope": "Day 2 (intake, disposal, leaving customers). XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
     "hmdRuntimeActive": false,
     "externalMouseMotion": 0.0,
-    "meanDesktopFps": 225.86123657226563,
-    "maxHeldSpeedOnArrival": 0.9839403033256531,
+    "meanDesktopFps": 283.5775146484375,
+    "maxHeldSpeedOnArrival": 0.9252808690071106,
     "maxHeldSpeedAtRelease": 0.0,
-    "grade": "S",
-    "score": 90.94817352294922,
+    "grade": "A",
+    "score": 89.5273208618164,
     "sales": 19000,
     "possibleSales": 20500,
     "paid": 7,
@@ -27,1756 +27,1810 @@
     "browsersSpawned": 0,
     "stuckWarps": 0,
     "shortArrivals": 0,
-    "customerFrames": 436035,
-    "settledFrames": 297555,
+    "customerFrames": 589524,
+    "settledFrames": 407851,
     "offNavMeshFrames": 0,
     "overlapFrames": 0,
     "clerkSideFrames": 0,
-    "movingFrames": 128194,
-    "walkAnimatedFrames": 128194,
-    "standingFrames": 302792,
-    "standingAnimatedFrames": 302791,
+    "movingFrames": 171008,
+    "walkAnimatedFrames": 171008,
+    "standingFrames": 411680,
+    "standingAnimatedFrames": 411674,
     "customers": [],
     "stages": [
         {
             "name": "setup.rig_found",
             "pass": true,
             "details": "camera=True; simulator=True; rightNearFar=True",
-            "time": 4.00377082824707
+            "time": 4.003568172454834
         },
         {
             "name": "setup.product_names_readable",
             "pass": true,
             "details": "products=12; broken=",
-            "time": 4.004517555236816
+            "time": 4.004402160644531
         },
         {
             "name": "input.ready",
             "pass": true,
             "details": "mode=Translate",
-            "time": 4.580698013305664
+            "time": 4.617197513580322
         },
         {
             "name": "d2.intake_tutorial_started",
             "pass": true,
             "details": "after 0.0s",
-            "time": 4.581304550170898
+            "time": 4.617788314819336
         },
         {
             "name": "d2.setup.day_two",
             "pass": true,
             "details": "day=2; active=True; skipped=[]",
-            "time": 4.584464073181152
+            "time": 4.621155261993408
         },
         {
             "name": "d2.setup.two_boxes_on_cart",
             "pass": true,
             "details": "boxes=[신라면 ×6 → A-2 Sealed y=0.800 inner=(0.410, 0.249, 0.159), 고래밥 ×4 → B-1 Sealed y=0.800 inner=(0.410, 0.129, 0.123)]",
-            "time": 4.585125923156738
+            "time": 4.621791362762451
         },
         {
             "name": "d2.setup.target_slots_empty_and_yellow",
             "pass": true,
             "details": "A-2 A-2  0/6 lit=True; B-1 B-1  0/4 lit=True",
-            "time": 4.585351943969727
+            "time": 4.6220221519470219
         },
         {
             "name": "d2.setup.three_expired_not_in_targets",
             "pass": true,
             "details": "stock=6; expired in [B-2, B-2, A-1]",
-            "time": 4.5855302810668949
+            "time": 4.6221923828125
+        },
+        {
+            "name": "p4.setup.merged_slots",
+            "pass": true,
+            "details": "A-1 shown 2/2 near=False; A-2 shown 0/6 near=False; A-3 shown 2/2 near=False; B-1 shown 0/4 near=False; B-2 shown 2/2 near=False",
+            "time": 4.622607231140137
         },
         {
             "name": "d2.setup.guide_shows_step1",
             "pass": true,
-            "details": "board=입고 1/4 운반: 뒤쪽 창고 입구의 입고 카트에서 신라면 박스를 옆면 손잡이로 들고, 진열대 A 옆 거치대에 올리세요.",
-            "time": 4.585806846618652
+            "details": "board=입고 1/4  박스 옮기기\n카트의 신라면 박스 → 진열대 A 옆 거치대",
+            "time": 4.622775077819824
         },
         {
             "name": "d2.setup.no_customer_before_tutorial",
             "pass": true,
             "details": "shift=False; present=0; state=Tutorial",
-            "time": 4.585923194885254
+            "time": 4.622878551483154
         },
         {
             "name": "d2.setup.cutters_in_holders",
             "pass": true,
             "details": "two cutters",
-            "time": 4.58610725402832
+            "time": 4.623038291931152
         },
         {
             "name": "d2.i1.tutorial_box_is_first",
             "pass": true,
             "details": "신라면 ×6 → A-2",
-            "time": 4.7902679443359379
+            "time": 4.935371398925781
         },
         {
             "name": "d2.i1.face_forward",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 5.226998329162598
+            "time": 5.398853778839111
         },
         {
             "name": "d2.i1.grab_handle",
             "pass": true,
             "details": "after 0.0s",
-            "time": 14.072195053100586
+            "time": 14.262823104858399
         },
         {
             "name": "d2.i1.grab_handle.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 14.252276420593262
+            "time": 14.460926055908204
         },
         {
             "name": "d2.i1.carried",
             "pass": true,
             "details": "state=Carried",
-            "time": 14.252519607543946
+            "time": 14.461105346679688
         },
         {
             "name": "d2.i1.docked",
             "pass": true,
             "details": "after 0.0s",
-            "time": 27.237794876098634
+            "time": 27.731645584106447
         },
         {
             "name": "d2.i1.step_two_shown",
             "pass": true,
             "details": "after 0.0s",
-            "time": 27.53016471862793
+            "time": 28.020910263061525
         },
         {
             "name": "d2.i1.docked_with_thud",
             "pass": true,
-            "details": "state=Docked; off seat 0.000 m, 0.0°; board=입고 2/4 자르기: 거치대 앞의 커터를 집어, 박스 윗면 테이프를 한쪽 끝에서 다른 쪽 끝까지 쉬지 말고 그으세요.",
-            "time": 27.532447814941408
+            "details": "state=Docked; off seat 0.000 m, 0.0°; board=입고 2/4  테이프 자르기\n커터로 끝에서 끝까지",
+            "time": 28.024518966674806
         },
         {
             "name": "d2.i2.grab_cutter",
             "pass": true,
             "details": "after 0.0s",
-            "time": 28.526330947875978
+            "time": 29.063331604003908
         },
         {
             "name": "d2.i2.grab_cutter.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 28.72452735900879
+            "time": 29.271312713623048
         },
         {
             "name": "d2.rule.cut_pause_resets",
             "pass": true,
             "details": "progress 3->0; resets=1; stage=Sealed",
-            "time": 32.54899215698242
+            "time": 33.121337890625
         },
         {
             "name": "d2.i2.tape_cut",
             "pass": true,
             "details": "stage=TapeCut; ticks=6; progress=6",
-            "time": 33.8708381652832
+            "time": 34.48541259765625
         },
         {
             "name": "d2.i2.cutter_back_in_holder",
             "pass": true,
             "details": "after 1.0s",
-            "time": 35.17774200439453
+            "time": 35.83610916137695
         },
         {
             "name": "d2.i2.step_three_shown",
             "pass": true,
             "details": "after 0.0s",
-            "time": 35.17803955078125
+            "time": 35.836360931396487
         },
         {
             "name": "d2.rule.flap_half.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 35.764801025390628
+            "time": 36.435970306396487
         },
         {
             "name": "d2.rule.flap_half.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 35.96499252319336
+            "time": 36.638431549072269
         },
         {
             "name": "d2.rule.flap_below_110_closes",
             "pass": true,
-            "details": "reached 82°, now 0°; open=False",
-            "time": 36.696693420410159
+            "details": "reached 83°, now 0°; open=False",
+            "time": 37.38074493408203
         },
         {
             "name": "d2.i3.grab_flap",
             "pass": true,
             "details": "after 0.0s",
-            "time": 37.32132339477539
+            "time": 38.02973175048828
         },
         {
             "name": "d2.i3.grab_flap.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 37.521888732910159
+            "time": 38.230831146240237
         },
         {
             "name": "d2.i3.flap_folds_open",
             "pass": true,
             "details": "let go at 168°, now 210°",
-            "time": 38.29692077636719
+            "time": 39.04193115234375
         },
         {
             "name": "d2.i3.grab_flap",
             "pass": true,
             "details": "after 0.0s",
-            "time": 39.28064727783203
+            "time": 40.08509063720703
         },
         {
             "name": "d2.i3.grab_flap.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 39.48258972167969
+            "time": 40.30394744873047
         },
         {
             "name": "d2.i3.flap_folds_open",
             "pass": true,
-            "details": "let go at 166°, now 210°",
-            "time": 40.28232192993164
+            "details": "let go at 167°, now 210°",
+            "time": 41.11814880371094
         },
         {
             "name": "d2.i3.open_products_inside",
             "pass": true,
             "details": "stage=Open; products in box=6/6; flap sounds=3",
-            "time": 40.747318267822269
+            "time": 41.60177993774414
         },
         {
             "name": "d2.i3.step_four_shown",
             "pass": true,
             "details": "after 0.0s",
-            "time": 40.8493537902832
+            "time": 41.70966339111328
         },
         {
             "name": "d2.rule.drop.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 41.731510162353519
+            "time": 42.61576461791992
         },
         {
             "name": "d2.rule.drop.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 41.93061828613281
+            "time": 42.811973571777347
         },
         {
             "name": "d2.rule.drop.returns",
             "pass": true,
             "details": "after 3.5s",
-            "time": 46.97997283935547
+            "time": 49.299373626708987
         },
         {
             "name": "d2.rule.dropped_back_in_box_no_penalty",
             "pass": true,
             "details": "parent=Stock Box 1 (dev_shinramen_01 x6); misplaced=0",
-            "time": 47.28067398071289
+            "time": 49.59973907470703
         },
         {
             "name": "d2.i4.look_at_floor",
             "pass": true,
-            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 48.20541000366211
+            "details": "gaze off by 1.8°; right hand=True; mode=Translate",
+            "time": 50.45265197753906
         },
         {
             "name": "d2.i4.grab_unit",
             "pass": true,
             "details": "after 0.0s",
-            "time": 50.03121566772461
+            "time": 52.97426986694336
         },
         {
             "name": "d2.i4.grab_unit.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 50.231475830078128
+            "time": 53.172828674316409
         },
         {
             "name": "d2.i4.full_product_in_hand",
             "pass": true,
             "details": "order=10; kinematic=False",
-            "time": 50.231754302978519
+            "time": 53.17301940917969
+        },
+        {
+            "name": "p4.hand_full_copy",
+            "pass": true,
+            "details": "hand=112086; light=35000",
+            "time": 53.173099517822269
         },
         {
             "name": "d2.i4.ghost_at_held_product",
             "pass": true,
             "details": "ghost=True; slot=A-2; unit=4 wanted=4; headRay=False; opacity=0.08; order=5",
-            "time": 52.07514572143555
+            "time": 55.96604919433594
+        },
+        {
+            "name": "p4.ghost_light_copy",
+            "pass": true,
+            "details": "ghost gaussians=35000",
+            "time": 55.96620559692383
         },
         {
             "name": "d2.i4.ghost_follows_after_hold",
             "pass": true,
-            "details": "unit=0 wanted=0; headRay=False; switches 0->2",
-            "time": 53.38435745239258
+            "details": "unit=0 wanted=0; headRay=False; switches 2->4",
+            "time": 57.29847717285156
         },
         {
             "name": "d2.i4.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 53.78062438964844
+            "time": 57.68178939819336
         },
         {
             "name": "d2.i4.snapped_into_place",
             "pass": true,
             "details": "off 0.0000 m; count=A-2  1/6; shelved=1",
-            "time": 54.07792663574219
+            "time": 57.98039627075195
+        },
+        {
+            "name": "p4.shelved_drawn_by_merged",
+            "pass": true,
+            "details": "unit shown=True; own splat=False; shown units=1; near copy=True; switches=1",
+            "time": 57.980690002441409
         },
         {
             "name": "d2.i4.tutorial_done_shift_starts",
             "pass": true,
             "details": "after 0.0s",
-            "time": 54.07819747924805
+            "time": 57.980831146240237
         },
         {
             "name": "d2.i4.first_customer_after_tutorial",
             "pass": true,
-            "details": "tutorial 49.9s; shift started 0.00s after it",
-            "time": 54.08147048950195
+            "details": "tutorial 53.4s; shift started 0.00s after it",
+            "time": 57.983375549316409
         },
         {
             "name": "d2.i4.look_at_column",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 55.2396354675293
+            "time": 59.17416763305664
         },
         {
             "name": "d2.head_ray.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 58.06267547607422
+            "time": 61.21039581298828
         },
         {
             "name": "d2.head_ray.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 58.26466751098633
+            "time": 61.41215133666992
         },
         {
             "name": "d2.head_ray.ghost_where_head_looks",
             "pass": true,
             "details": "ghost=True; headRay=True; unit=4 wanted=4",
-            "time": 60.87244415283203
+            "time": 64.56809997558594
         },
         {
             "name": "d2.head_ray.accepted_where_looked",
             "pass": true,
             "details": "after 0.0s",
-            "time": 61.296142578125
+            "time": 65.01178741455078
         },
         {
             "name": "d2.rule.misplace.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 63.65533447265625
+            "time": 67.4478530883789
         },
         {
             "name": "d2.rule.misplace.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 63.85646057128906
+            "time": 67.64633178710938
+        },
+        {
+            "name": "p4.stock_taken_hidden_on_shelf",
+            "pass": true,
+            "details": "unit 0 shown=False; own splat=True",
+            "time": 68.09627532958985
         },
         {
             "name": "d2.rule.wrong_slot_red_outline",
             "pass": true,
             "details": "red=True; ghost=False; slot=A-2",
-            "time": 65.75933837890625
+            "time": 69.3645248413086
         },
         {
             "name": "d2.rule.misplaced_counted_and_returned",
             "pass": true,
             "details": "misplaced=1; errors +1; off home 0.000 m; A-2 A-2  2/6",
-            "time": 66.71388244628906
+            "time": 70.34980773925781
+        },
+        {
+            "name": "p4.stock_returned_shown_on_shelf",
+            "pass": true,
+            "details": "unit 0 shown=True; own splat=False",
+            "time": 70.35000610351563
         },
         {
             "name": "d2.box1.extra.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 68.79804229736328
+            "time": 72.52676391601563
         },
         {
             "name": "d2.box1.extra.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 69.0001449584961
+            "time": 72.72476196289063
         },
         {
             "name": "d2.box1.extra.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 71.70024871826172
+            "time": 75.19549560546875
         },
         {
             "name": "d2.box1.extra.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 72.06336212158203
+            "time": 75.55718994140625
         },
         {
             "name": "d2.box2.face_forward",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 72.9666519165039
+            "time": 76.65937042236328
         },
         {
             "name": "d2.box2.grab_handle",
             "pass": true,
             "details": "after 0.0s",
-            "time": 86.44754791259766
+            "time": 90.42105102539063
         },
         {
             "name": "d2.box2.grab_handle.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 86.64822387695313
+            "time": 90.62090301513672
         },
         {
             "name": "d2.box2.carried",
             "pass": true,
             "details": "state=Carried",
-            "time": 86.6484146118164
+            "time": 90.62107849121094
         },
         {
             "name": "d2.box2.docked",
             "pass": true,
             "details": "after 0.0s",
-            "time": 97.41056060791016
+            "time": 102.67219543457031
         },
         {
             "name": "d2.rule.cut_blocked.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 98.73179626464844
+            "time": 103.99579620361328
         },
         {
             "name": "d2.rule.cut_blocked.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 98.93313598632813
+            "time": 104.1976089477539
         },
         {
             "name": "d2.rule.only_one_open_box",
             "pass": true,
             "details": "stage=Sealed; progress=0; notice=열린 박스를 먼저 비우세요",
-            "time": 100.18498229980469
+            "time": 105.48057556152344
         },
         {
             "name": "d2.rule.cut_blocked.cutter_back",
             "pass": true,
             "details": "after 1.0s",
-            "time": 101.51737213134766
+            "time": 106.8165283203125
         },
         {
             "name": "d2.look_at_counter",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 106.81299591064453
+            "time": 113.73355865478516
         },
         {
             "name": "d2.order1.customer_record",
             "pass": true,
             "details": "record",
-            "time": 106.81388092041016
+            "time": 113.7347412109375
         },
         {
             "name": "d2.order1.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=1",
-            "time": 106.81401824951172
+            "details": "limit at arrival=120.0; off for the line=0.0 (in line 1.2s); bells=1",
+            "time": 113.7349624633789
         },
         {
             "name": "d2.order1.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 108.75452423095703
+            "time": 114.90814208984375
         },
         {
             "name": "d2.order1.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 108.9575424194336
+            "time": 115.1101303100586
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
-            "details": "dev_kkokkalcorn_01 angle from down=4.2",
-            "time": 110.16201782226563
+            "details": "dev_kkokkalcorn_01 angle from down=4.6",
+            "time": 116.31778717041016
         },
         {
             "name": "d2.order1.item0.scan",
             "pass": true,
-            "details": "dev_kkokkalcorn_01 scans 0->1 lowest=0.953",
-            "time": 112.28707885742188
+            "details": "dev_kkokkalcorn_01 scans 0->1 lowest=0.955",
+            "time": 118.33097839355469
         },
         {
             "name": "d2.order1.item0.bag",
             "pass": true,
             "details": "after 0.5s",
-            "time": 114.4607925415039
+            "time": 120.47689819335938
         },
         {
             "name": "d2.order1.item1.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 117.09387969970703
+            "time": 123.0787124633789
         },
         {
             "name": "d2.order1.item1.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 117.29573822021485
+            "time": 123.28156280517578
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
-            "details": "dev_cornchip_01 angle from down=4.2",
-            "time": 118.50271606445313
+            "details": "dev_cornchip_01 angle from down=4.6",
+            "time": 124.46630859375
         },
         {
             "name": "d2.order1.item1.scan",
             "pass": true,
-            "details": "dev_cornchip_01 scans 1->2 lowest=0.953",
-            "time": 120.95870208740235
+            "details": "dev_cornchip_01 scans 1->2 lowest=0.958",
+            "time": 126.7573471069336
         },
         {
             "name": "d2.order1.item1.bag",
             "pass": true,
             "details": "after 0.5s",
-            "time": 123.1578140258789
+            "time": 128.9359588623047
         },
         {
             "name": "d2.order1.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=3500",
-            "time": 123.71286010742188
+            "time": 129.48187255859376
         },
         {
             "name": "d2.order1.card.guide_hidden_before_grab",
             "pass": true,
             "details": "guide=False",
-            "time": 123.71334838867188
+            "time": 129.48236083984376
         },
         {
             "name": "d2.order1.card.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 125.78568267822266
+            "time": 131.52923583984376
         },
         {
             "name": "d2.order1.card.guide_shown_while_held",
             "pass": true,
             "details": "guide=True; held=True",
-            "time": 128.9225311279297
+            "time": 134.64169311523438
         },
         {
             "name": "d2.order1.card.card_in_slot",
             "pass": true,
-            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.819, 0.918, 0.432) socketHover=True",
-            "time": 129.17340087890626
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.819, 0.919, 0.431) socketHover=True",
+            "time": 134.8991241455078
         },
         {
             "name": "d2.order1.card.approved",
             "pass": true,
             "details": "after 0.4s",
-            "time": 129.60105895996095
+            "time": 135.3412322998047
         },
         {
             "name": "d2.order1.card.guide_hidden_after_payment",
             "pass": true,
             "details": "guide=False; inside=False",
-            "time": 129.80140686035157
+            "time": 135.53826904296876
         },
         {
             "name": "d2.order1.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 129.80166625976563
+            "time": 135.5385284423828
         },
         {
             "name": "d2.box1.rest.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 135.8647003173828
+            "time": 142.69610595703126
         },
         {
             "name": "d2.box1.rest.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 136.06747436523438
+            "time": 142.8922882080078
         },
         {
             "name": "d2.box1.rest.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 138.63038635253907
+            "time": 144.67642211914063
         },
         {
             "name": "d2.box1.rest.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 138.99468994140626
+            "time": 145.03988647460938
         },
         {
             "name": "d2.box1.rest.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 141.51864624023438
+            "time": 146.97085571289063
         },
         {
             "name": "d2.box1.rest.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 141.71983337402345
+            "time": 147.1707000732422
         },
         {
             "name": "d2.box1.rest.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 144.07936096191407
+            "time": 149.29281616210938
         },
         {
             "name": "d2.box1.rest.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 144.4429931640625
+            "time": 149.6552276611328
         },
         {
             "name": "d2.box1.rest.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 146.7723846435547
+            "time": 151.90992736816407
         },
         {
             "name": "d2.box1.rest.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 146.97296142578126
+            "time": 152.10658264160157
         },
         {
             "name": "d2.box1.rest.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 149.12184143066407
+            "time": 154.5861358642578
         },
         {
             "name": "d2.box1.rest.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 149.48524475097657
+            "time": 154.94778442382813
         },
         {
             "name": "d2.box1.empty_and_slot_full",
             "pass": true,
             "details": "stage=Empty; A-2  6/6; lit=False",
-            "time": 149.82154846191407
+            "time": 155.30560302734376
         },
         {
             "name": "d2.box1.recycle.face_forward",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 150.21617126464845
+            "time": 155.71559143066407
         },
         {
             "name": "d2.box1.recycle.grab_handle",
             "pass": true,
             "details": "after 0.0s",
-            "time": 151.44412231445313
+            "time": 157.7178497314453
         },
         {
             "name": "d2.box1.recycle.grab_handle.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 151.64471435546876
+            "time": 157.91969299316407
         },
         {
             "name": "d2.box1.lifted_off_stand",
             "pass": true,
             "details": "place=Carried; stage=Empty",
-            "time": 151.64495849609376
+            "time": 157.91990661621095
         },
         {
             "name": "d2.box1.recycled",
             "pass": true,
             "details": "after 0.2s",
-            "time": 163.75885009765626
+            "time": 170.34873962402345
         },
         {
             "name": "d2.box1.gone",
             "pass": true,
             "details": "recycled=1",
-            "time": 164.05967712402345
+            "time": 170.6488494873047
         },
         {
             "name": "d2.box2.cut.grab_cutter",
             "pass": true,
             "details": "after 0.0s",
-            "time": 173.11199951171876
+            "time": 180.8297119140625
         },
         {
             "name": "d2.box2.cut.grab_cutter.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 173.3131103515625
+            "time": 181.0344696044922
         },
         {
             "name": "d2.box2.cut.tape_cut",
             "pass": true,
             "details": "stage=TapeCut; ticks=6; progress=6",
-            "time": 175.03590393066407
+            "time": 182.8133544921875
         },
         {
             "name": "d2.box2.cut.cutter_back_in_holder",
             "pass": true,
             "details": "after 1.0s",
-            "time": 176.35885620117188
+            "time": 184.157470703125
         },
         {
             "name": "d2.box2.grab_flap",
             "pass": true,
             "details": "after 0.0s",
-            "time": 176.94927978515626
+            "time": 184.76376342773438
         },
         {
             "name": "d2.box2.grab_flap.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 177.15081787109376
+            "time": 184.96705627441407
         },
         {
             "name": "d2.box2.flap_folds_open",
             "pass": true,
-            "details": "let go at 168°, now 210°",
-            "time": 177.94488525390626
+            "details": "let go at 169°, now 210°",
+            "time": 185.7633514404297
         },
         {
             "name": "d2.box2.grab_flap",
             "pass": true,
             "details": "after 0.0s",
-            "time": 178.91250610351563
+            "time": 186.71728515625
         },
         {
             "name": "d2.box2.grab_flap.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 179.1154327392578
+            "time": 186.91773986816407
         },
         {
             "name": "d2.box2.flap_folds_open",
             "pass": true,
-            "details": "let go at 168°, now 210°",
-            "time": 179.93069458007813
+            "details": "let go at 167°, now 210°",
+            "time": 187.76075744628907
         },
         {
             "name": "d2.box2.open_products_inside",
             "pass": true,
             "details": "stage=Open; products in box=4/4; flap sounds=3",
-            "time": 180.4014434814453
+            "time": 188.2520751953125
         },
         {
             "name": "d2.box2.shelve.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 181.3202362060547
+            "time": 189.17530822753907
         },
         {
             "name": "d2.box2.shelve.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 181.52200317382813
+            "time": 189.3768310546875
         },
         {
             "name": "d2.box2.shelve.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 183.4971160888672
+            "time": 191.5014190673828
         },
         {
             "name": "d2.box2.shelve.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 183.86509704589845
+            "time": 191.86524963378907
         },
         {
             "name": "d2.box2.shelve.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 185.9285430908203
+            "time": 194.0839385986328
         },
         {
             "name": "d2.box2.shelve.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 186.13165283203126
+            "time": 194.28610229492188
         },
         {
             "name": "d2.box2.shelve.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 188.2109375
+            "time": 196.51075744628907
         },
         {
             "name": "d2.box2.shelve.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 188.5769500732422
+            "time": 196.87384033203126
         },
         {
             "name": "d2.box2.shelve.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 190.3251953125
+            "time": 199.2478485107422
         },
         {
             "name": "d2.box2.shelve.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 190.52566528320313
+            "time": 199.4473419189453
         },
         {
             "name": "d2.box2.shelve.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 192.5362548828125
+            "time": 201.5408477783203
         },
         {
             "name": "d2.box2.shelve.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 192.89959716796876
+            "time": 201.90261840820313
         },
         {
             "name": "d2.box2.shelve.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 194.98077392578126
+            "time": 204.09359741210938
         },
         {
             "name": "d2.box2.shelve.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 195.1823272705078
+            "time": 204.29269409179688
         },
         {
             "name": "d2.box2.shelve.green",
             "pass": true,
             "details": "after 0.0s",
-            "time": 197.2811279296875
+            "time": 206.488037109375
         },
         {
             "name": "d2.box2.shelve.accepted",
             "pass": true,
             "details": "after 0.0s",
-            "time": 197.64486694335938
+            "time": 206.8512725830078
         },
         {
             "name": "d2.box2.empty_and_slot_full",
             "pass": true,
             "details": "stage=Empty; B-1  4/4; lit=False",
-            "time": 197.98573303222657
+            "time": 207.2108612060547
         },
         {
             "name": "d2.box2.recycle.face_forward",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 198.35079956054688
+            "time": 207.5606231689453
         },
         {
             "name": "d2.box2.recycle.grab_handle",
             "pass": true,
             "details": "after 0.0s",
-            "time": 199.90676879882813
+            "time": 208.95773315429688
         },
         {
             "name": "d2.box2.recycle.grab_handle.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 200.10699462890626
+            "time": 209.16180419921876
         },
         {
             "name": "d2.box2.lifted_off_stand",
             "pass": true,
             "details": "place=Carried; stage=Empty",
-            "time": 200.10719299316407
+            "time": 209.16197204589845
         },
         {
             "name": "d2.box2.recycled",
             "pass": true,
             "details": "after 0.2s",
-            "time": 209.279052734375
+            "time": 219.314208984375
         },
         {
             "name": "d2.box2.gone",
             "pass": true,
             "details": "recycled=2",
-            "time": 209.58016967773438
+            "time": 219.6152801513672
         },
         {
-            "name": "d2.dispose.B0.grab",
+            "name": "d2.dispose.A0.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 219.94757080078126
+            "time": 234.71629333496095
         },
         {
-            "name": "d2.dispose.B0.grab.near_grab",
+            "name": "d2.dispose.A0.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 220.1482696533203
+            "time": 234.94493103027345
         },
         {
-            "name": "d2.dispose.B0.disposed",
+            "name": "d2.dispose.A0.disposed",
             "pass": true,
             "details": "after 0.2s",
-            "time": 228.94113159179688
+            "time": 244.5775146484375
         },
         {
-            "name": "d2.dispose.B0.removed",
+            "name": "d2.dispose.A0.removed",
             "pass": true,
             "details": "disposed=1",
-            "time": 229.14468383789063
+            "time": 244.78514099121095
         },
         {
-            "name": "d2.dispose.B1.grab",
+            "name": "d2.dispose.A1.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 237.89498901367188
+            "time": 254.4454803466797
         },
         {
-            "name": "d2.dispose.B1.grab.near_grab",
+            "name": "d2.dispose.A1.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 238.0970001220703
+            "time": 254.6461181640625
         },
         {
-            "name": "d2.dispose.B1.disposed",
+            "name": "d2.dispose.A1.disposed",
             "pass": true,
             "details": "after 0.2s",
-            "time": 246.62081909179688
+            "time": 264.03814697265627
         },
         {
-            "name": "d2.dispose.B1.removed",
+            "name": "d2.dispose.A1.removed",
             "pass": true,
             "details": "disposed=2",
-            "time": 246.82264709472657
+            "time": 264.2384948730469
         },
         {
             "name": "d2.dispose.A2.grab",
             "pass": true,
             "details": "after 0.0s",
-            "time": 255.10887145996095
+            "time": 272.9915771484375
         },
         {
             "name": "d2.dispose.A2.grab.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 255.3122100830078
+            "time": 273.1890869140625
         },
         {
             "name": "d2.dispose.A2.disposed",
             "pass": true,
             "details": "after 0.2s",
-            "time": 263.2783203125
+            "time": 281.5965576171875
         },
         {
             "name": "d2.dispose.A2.removed",
             "pass": true,
             "details": "disposed=3",
-            "time": 263.47882080078127
+            "time": 281.8000183105469
         },
         {
             "name": "d2.look_at_counter",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 264.881103515625
+            "time": 283.23602294921877
         },
         {
             "name": "d2.order3.customer_record",
             "pass": true,
             "details": "record",
-            "time": 281.96673583984377
+            "time": 283.23626708984377
         },
         {
             "name": "d2.order3.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=3",
-            "time": 281.9671630859375
+            "details": "limit at arrival=72.0; off for the line=48.0 (in line 169.7s); bells=3",
+            "time": 283.23638916015627
         },
         {
             "name": "d2.rule.false_disposal.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 285.1914367675781
+            "time": 286.4858703613281
         },
         {
             "name": "d2.rule.false_disposal.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 285.39581298828127
+            "time": 286.6987609863281
         },
         {
             "name": "d2.rule.false_disposal.counted",
             "pass": true,
             "details": "after 0.2s",
-            "time": 289.2995910644531
+            "time": 290.5774841308594
         },
         {
             "name": "d2.rule.false_disposal_returns_to_basket",
             "pass": true,
             "details": "off home 0.000 m; errors +1",
-            "time": 289.700439453125
+            "time": 290.9805908203125
         },
         {
             "name": "d2.look_at_counter",
             "pass": true,
             "details": "gaze off by 0.0°; right hand=True; mode=Translate",
-            "time": 290.9152526855469
+            "time": 292.1616516113281
         },
         {
             "name": "d2.order3.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 294.26776123046877
+            "time": 295.5018310546875
         },
         {
             "name": "d2.order3.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 294.47283935546877
+            "time": 295.70654296875
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_potato_01 angle from down=2.2",
-            "time": 295.6728515625
+            "time": 296.8946228027344
         },
         {
             "name": "d2.order3.item0.scan",
             "pass": true,
-            "details": "dev_potato_01 scans 2->3 lowest=0.951",
-            "time": 297.9452819824219
+            "details": "dev_potato_01 scans 2->3 lowest=0.957",
+            "time": 299.0198059082031
         },
         {
             "name": "d2.order3.item0.bag",
             "pass": true,
             "details": "after 0.5s",
-            "time": 300.09942626953127
+            "time": 301.1396789550781
         },
         {
             "name": "d2.order3.item1.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 302.9223937988281
+            "time": 303.9239807128906
         },
         {
             "name": "d2.order3.item1.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 303.1250305175781
+            "time": 304.1392517089844
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_sunchip_01 angle from down=2.2",
-            "time": 304.32122802734377
+            "time": 305.30377197265627
         },
         {
             "name": "d2.order3.item1.scan",
             "pass": true,
-            "details": "dev_sunchip_01 scans 3->4 lowest=0.952",
-            "time": 306.9027404785156
+            "details": "dev_sunchip_01 scans 3->4 lowest=0.956",
+            "time": 307.7536315917969
         },
         {
             "name": "d2.order3.item1.bag",
             "pass": true,
             "details": "after 0.5s",
-            "time": 309.04168701171877
+            "time": 309.8997497558594
         },
         {
             "name": "d2.order3.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=3500",
-            "time": 309.5956726074219
+            "time": 310.44561767578127
         },
         {
             "name": "d2.order3.bill.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 311.7261047363281
+            "time": 312.5524597167969
         },
         {
             "name": "d2.order3.bill.received",
             "pass": true,
             "details": "after 0.0s",
-            "time": 315.0818786621094
+            "time": 315.88275146484377
         },
         {
             "name": "d2.order3.change.take1000.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 317.29205322265627
+            "time": 318.0697937011719
         },
         {
             "name": "d2.order3.change.take500.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 322.9104309082031
+            "time": 323.5908508300781
         },
         {
             "name": "d2.order3.change.matched",
             "pass": true,
-            "details": "after 0.3s",
-            "time": 326.2616271972656
+            "details": "after 0.2s",
+            "time": 326.8984375
         },
         {
             "name": "d2.order3.change.no_false_errors",
             "pass": true,
             "details": "errors=0; expected=0; pieces=2",
-            "time": 326.2618103027344
+            "time": 326.8986511230469
         },
         {
             "name": "d2.order3.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 326.2618713378906
+            "time": 326.89874267578127
+        },
+        {
+            "name": "d2.look_at_counter",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 327.552734375
         },
         {
             "name": "d2.order4.customer_record",
             "pass": true,
             "details": "record",
-            "time": 342.4451904296875
+            "time": 343.3121337890625
         },
         {
             "name": "d2.order4.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=4",
-            "time": 342.4454040527344
+            "details": "limit at arrival=72.0; off for the line=48.0 (in line 175.4s); bells=4",
+            "time": 343.3123474121094
         },
         {
             "name": "d2.order4.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 344.7618408203125
+            "time": 345.58551025390627
         },
         {
             "name": "d2.order4.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 344.96270751953127
+            "time": 345.7878723144531
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_kkobukchip_01 angle from down=2.2",
-            "time": 346.15557861328127
+            "time": 346.9846496582031
         },
         {
             "name": "d2.order4.item0.scan",
             "pass": true,
-            "details": "dev_kkobukchip_01 scans 4->5 lowest=0.952",
-            "time": 348.4330139160156
+            "details": "dev_kkobukchip_01 scans 4->5 lowest=0.957",
+            "time": 349.169677734375
         },
         {
             "name": "d2.order4.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=2000",
-            "time": 351.64739990234377
+            "time": 352.33660888671877
         },
         {
             "name": "d2.order4.card.guide_hidden_before_grab",
             "pass": true,
             "details": "guide=False",
-            "time": 351.6475830078125
+            "time": 352.3368835449219
         },
         {
             "name": "d2.order4.card.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 354.1119689941406
+            "time": 354.7712707519531
         },
         {
             "name": "d2.order4.card.guide_shown_while_held",
             "pass": true,
             "details": "guide=True; held=True",
-            "time": 357.2108154296875
+            "time": 357.8521728515625
         },
         {
             "name": "d2.order4.card.card_in_slot",
             "pass": true,
-            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.917, 0.433) socketHover=True",
-            "time": 357.4571228027344
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.920, 0.430) socketHover=True",
+            "time": 358.11468505859377
         },
         {
             "name": "d2.order4.card.approved",
             "pass": true,
             "details": "after 0.4s",
-            "time": 357.8816833496094
+            "time": 358.5181884765625
         },
         {
             "name": "d2.order4.card.guide_hidden_after_payment",
             "pass": true,
             "details": "guide=False; inside=False",
-            "time": 358.08160400390627
+            "time": 358.7204284667969
         },
         {
             "name": "d2.order4.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 358.0817565917969
+            "time": 358.7206115722656
         },
         {
             "name": "d2.order5.customer_record",
             "pass": true,
             "details": "record",
-            "time": 374.07183837890627
+            "time": 374.9552307128906
         },
         {
             "name": "d2.order5.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=5",
-            "time": 374.07354736328127
+            "details": "limit at arrival=99.4; off for the line=20.6 (in line 86.2s); bells=5",
+            "time": 374.9554138183594
         },
         {
             "name": "d2.order5.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 376.55303955078127
+            "time": 377.39617919921877
         },
         {
             "name": "d2.order5.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 376.75762939453127
+            "time": 377.59625244140627
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_ansungtangmyun_01 angle from down=2.2",
-            "time": 377.9614562988281
+            "time": 378.7977294921875
         },
         {
             "name": "d2.order5.item0.scan",
             "pass": true,
-            "details": "dev_ansungtangmyun_01 scans 5->6 lowest=0.950",
-            "time": 380.3643798828125
+            "details": "dev_ansungtangmyun_01 scans 5->6 lowest=0.955",
+            "time": 381.0920715332031
         },
         {
             "name": "d2.order5.item0.bag",
             "pass": true,
             "details": "after 0.6s",
-            "time": 382.5993347167969
+            "time": 383.27801513671877
         },
         {
             "name": "d2.order5.item1.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 385.4841613769531
+            "time": 386.1272888183594
         },
         {
             "name": "d2.order5.item1.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 385.6868896484375
+            "time": 386.3298645019531
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_ansungtangmyun_01 angle from down=2.2",
-            "time": 386.8894348144531
+            "time": 387.51617431640627
         },
         {
             "name": "d2.order5.item1.scan",
             "pass": true,
-            "details": "dev_ansungtangmyun_01 scans 6->7 lowest=0.950",
-            "time": 389.6029357910156
+            "details": "dev_ansungtangmyun_01 scans 6->7 lowest=0.951",
+            "time": 390.1678161621094
         },
         {
             "name": "d2.order5.item1.bag",
             "pass": true,
             "details": "after 0.6s",
-            "time": 391.84027099609377
+            "time": 392.3789367675781
         },
         {
             "name": "d2.order5.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=2000",
-            "time": 392.39556884765627
+            "time": 392.9282531738281
         },
         {
             "name": "d2.order5.card.guide_hidden_before_grab",
             "pass": true,
             "details": "guide=False",
-            "time": 392.395751953125
+            "time": 392.928466796875
         },
         {
             "name": "d2.order5.card.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 394.5179748535156
+            "time": 395.05157470703127
         },
         {
             "name": "d2.order5.card.guide_shown_while_held",
             "pass": true,
             "details": "guide=True; held=True",
-            "time": 397.6228942871094
+            "time": 398.11187744140627
         },
         {
             "name": "d2.order5.card.card_in_slot",
             "pass": true,
-            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.920, 0.434) socketHover=True",
-            "time": 397.875244140625
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.920, 0.431) socketHover=True",
+            "time": 398.3582458496094
         },
         {
             "name": "d2.order5.card.approved",
             "pass": true,
             "details": "after 0.4s",
-            "time": 398.3013000488281
+            "time": 398.77801513671877
         },
         {
             "name": "d2.order5.card.guide_hidden_after_payment",
             "pass": true,
             "details": "guide=False; inside=False",
-            "time": 398.5018615722656
+            "time": 398.97882080078127
         },
         {
             "name": "d2.order5.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 398.5020751953125
+            "time": 398.9790344238281
         },
         {
             "name": "d2.order6.customer_record",
             "pass": true,
             "details": "record",
-            "time": 414.48626708984377
+            "time": 415.1931457519531
         },
         {
             "name": "d2.order6.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=6",
-            "time": 414.4864807128906
+            "details": "limit at arrival=114.2; off for the line=5.8 (in line 56.5s); bells=6",
+            "time": 415.19366455078127
         },
         {
             "name": "d2.order6.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 416.9858703613281
+            "time": 417.6583557128906
         },
         {
             "name": "d2.order6.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 417.1885070800781
+            "time": 417.8612060546875
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_goraebap_01 angle from down=2.2",
-            "time": 418.3993835449219
+            "time": 419.0742492675781
         },
         {
             "name": "d2.order6.item0.scan",
             "pass": true,
-            "details": "dev_goraebap_01 scans 7->8 lowest=0.950",
-            "time": 420.6936340332031
+            "details": "dev_goraebap_01 scans 7->8 lowest=0.955",
+            "time": 421.2535400390625
         },
         {
             "name": "d2.order6.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=2500",
-            "time": 423.72735595703127
+            "time": 424.2579650878906
         },
         {
             "name": "d2.order6.bill.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 426.09375
+            "time": 426.60211181640627
         },
         {
             "name": "d2.order6.bill.received",
             "pass": true,
             "details": "after 0.0s",
-            "time": 429.4391174316406
+            "time": 429.9566955566406
         },
         {
             "name": "d2.order6.change.take1000.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 431.6458435058594
+            "time": 432.146484375
         },
         {
             "name": "d2.order6.change.take1000.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 437.2144775390625
+            "time": 437.6413269042969
         },
         {
             "name": "d2.order6.change.take500.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 442.94488525390627
+            "time": 443.31646728515627
         },
         {
             "name": "d2.order6.change.matched",
             "pass": true,
             "details": "after 0.3s",
-            "time": 446.3423767089844
+            "time": 446.70111083984377
         },
         {
             "name": "d2.order6.change.no_false_errors",
             "pass": true,
             "details": "errors=0; expected=0; pieces=3",
-            "time": 446.3426513671875
+            "time": 446.7012939453125
         },
         {
             "name": "d2.order6.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 446.34271240234377
+            "time": 446.70135498046877
         },
         {
             "name": "d2.order7.customer_record",
             "pass": true,
             "details": "record",
-            "time": 462.5439147949219
+            "time": 463.1316833496094
         },
         {
             "name": "d2.order7.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=7",
-            "time": 462.5440979003906
+            "details": "limit at arrival=109.8; off for the line=10.2 (in line 65.4s); bells=7",
+            "time": 463.1319274902344
         },
         {
             "name": "d2.order7.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 464.6448059082031
+            "time": 465.18804931640627
         },
         {
             "name": "d2.order7.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 464.84820556640627
+            "time": 465.3993225097656
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_cheetos_01 angle from down=2.2",
-            "time": 466.0511474609375
+            "time": 466.5700378417969
         },
         {
             "name": "d2.order7.item0.scan",
             "pass": true,
-            "details": "dev_cheetos_01 scans 8->9 lowest=0.950",
-            "time": 468.2496643066406
+            "details": "dev_cheetos_01 scans 8->9 lowest=0.955",
+            "time": 468.70562744140627
         },
         {
             "name": "d2.order7.item0.bag",
             "pass": true,
             "details": "after 0.5s",
-            "time": 470.3977355957031
+            "time": 470.8372497558594
         },
         {
             "name": "d2.order7.item1.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 473.2120361328125
+            "time": 473.6261901855469
         },
         {
             "name": "d2.order7.item1.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 473.41473388671877
+            "time": 473.8298645019531
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_ogamja_01 angle from down=2.2",
-            "time": 474.6142272949219
+            "time": 475.026123046875
         },
         {
             "name": "d2.order7.item1.scan",
             "pass": true,
-            "details": "dev_ogamja_01 scans 9->10 lowest=0.952",
-            "time": 477.2469787597656
+            "details": "dev_ogamja_01 scans 9->10 lowest=0.955",
+            "time": 477.5095520019531
         },
         {
             "name": "d2.order7.item1.bag",
             "pass": true,
             "details": "after 0.5s",
-            "time": 479.3627624511719
+            "time": 479.61737060546877
         },
         {
             "name": "d2.order7.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=3500",
-            "time": 479.91986083984377
+            "time": 480.16363525390627
         },
         {
             "name": "d2.order7.card.guide_hidden_before_grab",
             "pass": true,
             "details": "guide=False",
-            "time": 479.9200439453125
+            "time": 480.163818359375
         },
         {
             "name": "d2.order7.card.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 482.05218505859377
+            "time": 482.284912109375
         },
         {
             "name": "d2.order7.card.guide_shown_while_held",
             "pass": true,
             "details": "guide=True; held=True",
-            "time": 485.1553649902344
+            "time": 485.3558349609375
         },
         {
             "name": "d2.order7.card.card_in_slot",
             "pass": true,
-            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.918, 0.434) socketHover=True",
-            "time": 485.4091491699219
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.921, 0.432) socketHover=True",
+            "time": 485.603515625
         },
         {
             "name": "d2.order7.card.approved",
             "pass": true,
             "details": "after 0.4s",
-            "time": 485.83831787109377
+            "time": 486.03759765625
         },
         {
             "name": "d2.order7.card.guide_hidden_after_payment",
             "pass": true,
             "details": "guide=False; inside=False",
-            "time": 486.0398864746094
+            "time": 486.2378845214844
         },
         {
             "name": "d2.order7.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 486.04010009765627
+            "time": 486.2380676269531
         },
         {
             "name": "d2.order8.customer_record",
             "pass": true,
             "details": "record",
-            "time": 502.0478210449219
+            "time": 502.4710693359375
         },
         {
             "name": "d2.order8.limit_120_from_counter_with_bell",
             "pass": true,
-            "details": "limit at arrival=120.0; bells=8",
-            "time": 502.0493469238281
+            "details": "limit at arrival=105.2; off for the line=14.8 (in line 74.7s); bells=8",
+            "time": 502.4713134765625
         },
         {
             "name": "d2.order8.item0.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 504.46856689453127
+            "time": 504.840576171875
         },
         {
             "name": "d2.order8.item0.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 504.66961669921877
+            "time": 505.04620361328127
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_shinramen_01 angle from down=2.2",
-            "time": 505.8728332519531
+            "time": 506.2142639160156
         },
         {
             "name": "d2.order8.item0.scan",
             "pass": true,
-            "details": "dev_shinramen_01 scans 10->11 lowest=0.950",
-            "time": 508.2033386230469
+            "details": "dev_shinramen_01 scans 10->11 lowest=0.955",
+            "time": 508.4151916503906
         },
         {
             "name": "d2.order8.item0.bag",
             "pass": true,
-            "details": "after 0.6s",
-            "time": 510.419189453125
+            "details": "after 0.5s",
+            "time": 510.5992431640625
         },
         {
             "name": "d2.order8.item1.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 513.3119506835938
+            "time": 513.4592895507813
         },
         {
             "name": "d2.order8.item1.near_grab",
             "pass": true,
             "details": "region=Near",
-            "time": 513.5140380859375
+            "time": 513.659912109375
         },
         {
             "name": "turn.barcode_faces_down",
             "pass": true,
             "details": "dev_ansungtangmyun_01 angle from down=2.2",
-            "time": 514.7182006835938
+            "time": 514.8405151367188
         },
         {
             "name": "d2.order8.item1.scan",
             "pass": true,
-            "details": "dev_ansungtangmyun_01 scans 11->12 lowest=0.950",
-            "time": 517.4459838867188
+            "details": "dev_ansungtangmyun_01 scans 11->12 lowest=0.954",
+            "time": 517.457763671875
         },
         {
             "name": "d2.order8.item1.bag",
             "pass": true,
             "details": "after 0.6s",
-            "time": 519.6809692382813
+            "time": 519.676025390625
         },
         {
             "name": "d2.order8.ready_for_payment",
             "pass": true,
             "details": "allScanned=True allBagged=True total=2000",
-            "time": 520.237548828125
+            "time": 520.2315673828125
         },
         {
             "name": "d2.order8.bill.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 522.3810424804688
+            "time": 522.3388061523438
         },
         {
             "name": "d2.order8.bill.received",
             "pass": true,
             "details": "after 0.0s",
-            "time": 525.7415771484375
+            "time": 525.6588134765625
         },
         {
             "name": "d2.order8.change.take1000.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 527.971923828125
+            "time": 527.8338623046875
         },
         {
             "name": "d2.order8.change.take1000.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 533.5506591796875
+            "time": 533.3309936523438
         },
         {
             "name": "d2.order8.change.take1000.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 539.2736206054688
+            "time": 538.9786987304688
         },
         {
             "name": "d2.order8.change.matched",
             "pass": true,
             "details": "after 0.3s",
-            "time": 542.6602172851563
+            "time": 542.3387451171875
         },
         {
             "name": "d2.order8.change.no_false_errors",
             "pass": true,
             "details": "errors=0; expected=0; pieces=3",
-            "time": 542.6603393554688
+            "time": 542.3388671875
         },
         {
             "name": "d2.order8.completed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 542.6603393554688
+            "time": 542.3389282226563
         },
         {
             "name": "d2.day.eight_processed_one_left",
             "pass": true,
             "details": "paid=7; left=1; timed out=[2]",
-            "time": 543.6587524414063
+            "time": 543.3153686523438
         },
         {
             "name": "d2.day.leaver_hurried_and_no_wave",
             "pass": true,
-            "details": "hurried at 60.00s; left at 120.00s; wave=0",
-            "time": 543.658935546875
+            "details": "hurried at 44.48s; left at 104.48s; wave=0",
+            "time": 543.3155517578125
         },
         {
             "name": "d2.day.next_called_15s_after_leaver",
             "pass": true,
             "details": "called 15.00s after",
-            "time": 543.6590576171875
+            "time": 543.315673828125
         },
         {
             "name": "d2.day.intake_counts",
             "pass": true,
             "details": "shelved 10/10; disposed 3/3; misplaced 1; false 1; recycled 2; unrecycled 0; cancels 0",
-            "time": 543.6591186523438
+            "time": 543.3157348632813
+        },
+        {
+            "name": "p4.end_of_day_shelves",
+            "pass": true,
+            "details": "A-1 shown 1/2; A-2 shown 6/6; A-3 shown 2/2; B-1 shown 4/4; B-2 shown 0/2",
+            "time": 543.31591796875
+        },
+        {
+            "name": "p4.peak_gaussians_in_budget",
+            "pass": true,
+            "details": "peak=1369228; renderers=17",
+            "time": 543.3159790039063
         },
         {
             "name": "d2.day.score_formula",
             "pass": true,
-            "details": "score=90.95 expected=90.95 grade=S; sales 19000/20500",
-            "time": 543.6591796875
+            "details": "score=89.53 expected=89.53 grade=A; sales 19000/20500",
+            "time": 543.3161010742188
         },
         {
             "name": "d2.day.board_shows_intake",
             "pass": true,
-            "details": "board=2일차 정산  등급 S (91점)\n매출 19,000원 / 20,500원 · 손님 7/8명 · 이탈 1명 · 스캔 취소 0회\n진열 10/10 · 폐기 3/3 · 오진열 1 · 폐기 오탐 1 · 빈 박스 미수거 0",
-            "time": 543.6592407226563
+            "details": "board=2일차 정산   A  ·  90점\n매출 19,000 / 20,500원 · 손님 7/8 · 이탈 1명 · 취소 0\n손님 만족 82% · 팁 1,400원\n진열 10/10 · 폐기 3/3 · 오진열 1 · 폐기 오탐 1 · 빈 박스 0",
+            "time": 543.316162109375
         },
         {
-            "name": "d2.day.no_next_day_button",
+            "name": "d2.day.next_day_button_for_day3",
             "pass": true,
-            "details": "Day 2 is the last day built",
-            "time": 543.6593627929688
+            "details": "Day 3 follows Day 2",
+            "time": 543.3162841796875
         },
         {
             "name": "d2.day.counter_cleared",
             "pass": true,
             "details": "no payment prop, no order product",
-            "time": 543.6595458984375
+            "time": 543.3164672851563
         },
         {
             "name": "input.set_downs_were_still",
             "pass": true,
             "details": "max speed at release=0.000 m/s",
-            "time": 543.6596069335938
+            "time": 543.3165893554688
         },
         {
             "name": "d2.customers.all_left_by_the_door",
             "pass": true,
-            "details": "after 7.0s",
-            "time": 550.6634521484375
+            "details": "after 7.3s",
+            "time": 550.6439819335938
         },
         {
             "name": "d2.customers.one_per_order",
             "pass": true,
             "details": "customers for orders=8",
-            "time": 550.6644897460938
+            "time": 550.6450805664063
         },
         {
             "name": "d2.customers.one_at_a_time_at_counter",
             "pass": true,
             "details": "max=1",
-            "time": 550.6646118164063
+            "time": 550.645263671875
         },
         {
             "name": "d2.customers.paid_waved_left_did_not",
             "pass": true,
             "details": "waves only after paying",
-            "time": 550.6647338867188
+            "time": 550.6453857421875
         },
         {
             "name": "d2.customers.no_stuck_walks",
             "pass": true,
-            "details": "warps=0; short=0; stopped short where the clerk stood=2; small hops off the clerk's hole=0; shelf spots skipped for the clerk=14",
-            "time": 550.664794921875
+            "details": "warps=0; short=0; stepped aside when blocked=2; stopped short where the clerk stood=0; small hops off the clerk's hole=0; shelf spots skipped for the clerk=18",
+            "time": 550.6455078125
         },
         {
             "name": "d2.customers.on_navmesh_clear_of_solids",
             "pass": true,
-            "details": "frames=436035; off=0; overlap=0; clerk side=0",
-            "time": 550.6648559570313
+            "details": "frames=589524; off=0; overlap=0; clerk side=0",
+            "time": 550.6455688476563
         },
         {
             "name": "d2.customers.line_rules",
             "pass": true,
             "details": "for orders max=3; waiting max=2",
-            "time": 550.6649169921875
+            "time": 550.6456298828125
         }
     ]
 }

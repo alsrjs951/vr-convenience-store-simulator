@@ -16,6 +16,94 @@ public partial class P2DayVerification
 
     bool titleMode;
     bool faceMode;
+    bool introMode;
+
+    /// <summary>
+    /// -p2-intro-verify: what a first-time player gets, from the title through the tutorial's two customers to the start of
+    /// the shift, with nothing skipped. The pictures are what the player's view shows at each moment. Simulator evidence only.
+    /// </summary>
+    IEnumerator RunIntroCheck()
+    {
+        yield return new WaitForSecondsRealtime(StartupSeconds);
+        if (!FindRig()) yield break;
+        rig = FindFirstObjectByType<XROrigin>().transform;
+        view.fieldOfView = ViewFieldOfView;
+        foreach (var canvas in FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            if (canvas.renderMode != RenderMode.WorldSpace) canvas.enabled = false;
+        yield return Tap(Key.Y);
+        yield return Tap(Key.R);
+        Game.LastDay = 1;
+
+        var director = Game.Director;
+        var manager = Game.Manager;
+        yield return WaitUntil(() => Game.State == DayState.Title && Title.PanelShown, 8f, "intro.title_shown");
+        if (finished) yield break;
+        yield return WaitUntil(NearTitleSpot, 6f, "intro.player_at_door");
+        if (finished) yield break;
+        yield return new WaitForSeconds(2f);
+        Check("intro.manager_in_the_store", manager != null && manager.InStore && manager.Body.FaceRig != null && manager.Body.FaceRig.HasFaceBones, manager == null || manager.Body == null ? "no manager" : $"face={manager.Body.FaceRig != null}");
+        Check("intro.people_already_shopping", director.Ambient.Count == 2 && director.Present.Count == 0 && director.Records.Count == 0, $"shopping={director.Ambient.Count}; present={director.Present.Count}; records={director.Records.Count}");
+        Check("intro.nobody_is_a_twin", TwinCount(manager, director) == 0, $"same avatar as another in the store: {TwinCount(manager, director)}");
+        Check("intro.one_thing_to_press", Title.StartButton.gameObject.activeInHierarchy && !Title.Day2Button.gameObject.activeInHierarchy, "only 출근하기 and 설정 are shown");
+        Check("intro.store_stocked_on_the_shelves_in_view", DecorPlaces() == 27, $"display-only places shown={DecorPlaces()}");
+        yield return Capture("i01_title_through_glass");
+        yield return PressButton(Title.StartButton, "intro.start");
+        yield return WaitUntil(() => Game.State == DayState.Commute, 3f, "intro.commute");
+        if (finished) yield break;
+        yield return new WaitForSeconds(0.5f);
+        var managerFace = manager.Body.FaceRig;
+        Check("intro.manager_waves_and_speaks", manager.Waves == 1 && managerFace.Talking && manager.Body.Playing == CustomerCharacter.LeaveState, $"waves={manager.Waves}; talking={managerFace.Talking}; playing={manager.Body.Playing}");
+        Check("intro.manager_looks_at_player", managerFace.GazeErrorDegrees < 35f, $"off by {managerFace.GazeErrorDegrees:0.0}°");
+        yield return Capture("i02_door_opens_and_she_waves");
+        yield return WaitUntil(() => Title.GuideShown, 3f, "intro.guide_shown");
+        if (finished) yield break;
+        var hands = Game.Tutorial.Hands;
+        yield return null;
+        Check("intro.how_to_walk_said_at_once", Title.GuideText.Contains("왼손 스틱") && hands.LeftText.Contains("스틱"), $"guide={Title.GuideText}; left={hands.LeftText}");
+        yield return WalkInAndPunch();
+        if (finished) yield break;
+        Check("intro.manager_nods_at_the_punch", managerFace.Nods >= 1, $"nods={managerFace.Nods}");
+
+        yield return WaitUntil(() => Game.State == DayState.Tutorial, 8f, "intro.tutorial_begins");
+        if (finished) yield break;
+        yield return new WaitForSeconds(1.5f);
+        yield return Capture("i03_first_customer_coming");
+        yield return Tutorial();
+        if (finished) yield break;
+        yield return null;
+        Check("intro.done_message_seen", Game.BoardText.Contains("튜토리얼 완료") && Game.State == DayState.Tutorial && Game.Pos.Audio.LastNarration == "voice_manager_alone", $"board={Game.BoardText}; state={Game.State}; narration={Game.Pos.Audio.LastNarration}");
+        yield return Capture("i09_tutorial_done");
+        yield return WaitUntil(() => Game.State == DayState.Shift, 10f, "intro.shift_starts");
+        if (finished) yield break;
+        yield return new WaitForSeconds(0.5f);
+        Check("intro.manager_goes_out", !manager.InStore, $"in store={manager.InStore}");
+        Check("intro.shoppers_gone_or_served", director.Ambient.Count == 0, $"shopping={director.Ambient.Count}");
+        yield return WaitUntil(() => manager.Body == null, 30f, "intro.manager_walked_out");
+        Check("intro.nothing_left_on_the_counter", director.CounterBasket == null && FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length <= 2, $"basket={director.CounterBasket != null}");
+        report.stuckWarps = CustomerCharacter.StuckWarps;
+        Check("intro.no_warps", CustomerCharacter.StuckWarps == 0, $"warps={CustomerCharacter.StuckWarps}; stepped aside={CustomerCharacter.StepAsides}");
+        Finish();
+    }
+
+    int DecorPlaces()
+    {
+        int places = 0;
+        foreach (var slot in Intake.DecorSlots)
+            if (slot != null && slot.Merged != null) places += slot.Merged.ShownUnits;
+        return places;
+    }
+
+    static int TwinCount(ManagerNpc manager, CustomerDirector director)
+    {
+        int twins = 0;
+        for (int i = 0; i < director.Ambient.Count; i++)
+        {
+            if (director.Ambient[i].Record.Avatar == manager.Prefab.name) twins++;
+            for (int j = i + 1; j < director.Ambient.Count; j++)
+                if (director.Ambient[i].Record.Avatar == director.Ambient[j].Record.Avatar) twins++;
+        }
+        return twins;
+    }
 
     /// <summary>-p2-face-verify: the first customer at the counter, each thing the face can do, a close picture of it.</summary>
     IEnumerator RunFaceCheck()
@@ -123,6 +211,11 @@ public partial class P2DayVerification
         yield return Stick(Key.I, 1.5f);
         yield return new WaitForSeconds(0.3f);
         Check("title.door_is_solid", view.transform.position.z < -1.65f, $"head z={view.transform.position.z:0.00}");
+        Check("title.only_start_and_settings", Title.StartButton.gameObject.activeInHierarchy && Title.MoreButton.gameObject.activeInHierarchy && !Title.Day2Button.gameObject.activeInHierarchy && !Title.SpeedButton.gameObject.activeInHierarchy, "more settings stay folded");
+        yield return PressButton(Title.MoreButton, "title.more");
+        yield return new WaitForSeconds(0.1f);
+        Check("title.settings_open", Title.MoreShown && Title.Day2Button.gameObject.activeInHierarchy && !Title.StartButton.gameObject.activeInHierarchy, $"more={Title.MoreShown}");
+        yield return Capture("t01b_title_settings");
         yield return PressButton(Title.RecenterButton, "title.recenter");
         yield return new WaitForSeconds(0.2f);
         Check("title.recenter_returns", NearTitleSpot(), $"head={view.transform.position.ToString("F2")}");
@@ -135,6 +228,9 @@ public partial class P2DayVerification
         Check("title.strong_vignette", Title.StrongVignette && Mathf.Approximately(Title.Vignette.defaultParameters.apertureSize, 0.5f), $"aperture={Title.Vignette.defaultParameters.apertureSize}");
         yield return PressButton(Title.VignetteButton, "title.vignette_back");
         Check("title.vignette_back", !Title.StrongVignette && Mathf.Approximately(Title.Vignette.defaultParameters.apertureSize, 0.7f), $"aperture={Title.Vignette.defaultParameters.apertureSize}");
+        yield return PressButton(Title.BackButton, "title.back");
+        yield return new WaitForSeconds(0.1f);
+        Check("title.settings_closed", !Title.MoreShown && Title.StartButton.gameObject.activeInHierarchy, $"more={Title.MoreShown}");
 
         yield return PressButton(Title.StartButton, "title.start");
         yield return WaitUntil(() => Game.State == DayState.Commute, 3f, "title.start_pressed");
@@ -262,6 +358,8 @@ public partial class P2DayVerification
     IEnumerator NobodyMoves()
     {
         yield return ResetHandRotation();
+        yield return PressButton(Title.MoreButton, "restart.more");
+        yield return new WaitForSeconds(0.1f);
         yield return PressButton(Title.Day2Button, "restart.day2");
         yield return WaitUntil(() => Game.State == DayState.Commute, 3f, "restart.day2_pressed");
         if (finished) yield break;

@@ -44,6 +44,7 @@ public static class P4ShelfSplats
         foreach (var path in Directory.GetFiles(LodFolder, "*_lod1.ply"))
         {
             var id = Path.GetFileName(path).Replace("_lod1.ply", "");
+            if (Made($"{ProductFolder}/{id}_LOD1.asset")) continue;
             var copy = $"{WorkFolder}/{id}_LOD1.ply";
             File.Copy(path, copy, true);
             CreateAsset(copy, ProductFolder, false);
@@ -52,8 +53,12 @@ public static class P4ShelfSplats
 
         var scene = EditorSceneManager.OpenScene(StoreScene);
         long nearTotal = 0, farTotal = 0;
+        int madeSlots = 0;
         foreach (var slot in UnityEngine.Object.FindObjectsByType<ShelfSlotZone>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
+            // Slots made before keep their assets. A slot whose size has changed needs its Shelf_{id}_* files deleted first.
+            if (Made($"{MergedFolder}/Shelf_{slot.SlotId}_LOD1.asset") && (slot.FarOnly || Made($"{MergedFolder}/Shelf_{slot.SlotId}_LOD0.asset"))) continue;
+            madeSlots++;
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{slot.ProductId}.prefab")?.GetComponent<ProductPrefab>()
                          ?? throw new Exception("No prefab for " + slot.ProductId);
             var splat = prefab.Splat.transform;
@@ -69,18 +74,23 @@ public static class P4ShelfSplats
             {
                 var shift = toProduct * (slot.UnitPosition(unit) - slot.UnitPosition(0));
                 var offset = new Vector3(shift.x / splat.localScale.x, shift.y / splat.localScale.y, shift.z / splat.localScale.z);
-                nearParts.Add((unit % slot.Rows == 0 ? near : back, offset));
+                // Display stock is only ever passed by, so even its front row takes the lighter copy.
+                nearParts.Add((!slot.DisplayOnly && unit % slot.Rows == 0 ? near : back, offset));
                 farParts.Add((far, offset));
             }
-            nearTotal += Merge($"{WorkFolder}/Shelf_{slot.SlotId}_LOD0.ply", nearParts);
+            if (!slot.FarOnly)
+            {
+                nearTotal += Merge($"{WorkFolder}/Shelf_{slot.SlotId}_LOD0.ply", nearParts);
+                CreateAsset($"{WorkFolder}/Shelf_{slot.SlotId}_LOD0.ply", MergedFolder, true);
+            }
             farTotal += Merge($"{WorkFolder}/Shelf_{slot.SlotId}_LOD1.ply", farParts);
-            CreateAsset($"{WorkFolder}/Shelf_{slot.SlotId}_LOD0.ply", MergedFolder, true);
             CreateAsset($"{WorkFolder}/Shelf_{slot.SlotId}_LOD1.ply", MergedFolder, false);
         }
-        if (nearTotal == 0) throw new Exception("No shelf slots in " + scene.path);
         AssetDatabase.SaveAssets();
-        Debug.Log($"[ShelfSplats] PASS merged near={nearTotal} far={farTotal}");
+        Debug.Log($"[ShelfSplats] PASS new slots={madeSlots} merged near={nearTotal} far={farTotal} in {scene.path}");
     }
+
+    static bool Made(string assetPath) => File.Exists(assetPath);
 
     static Ply Read(string path)
     {
