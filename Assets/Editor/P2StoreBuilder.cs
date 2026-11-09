@@ -624,6 +624,8 @@ public static class P2StoreBuilder
         P3StoreDetails.Apply(environment);
 
         if (!EditorSceneManager.SaveScene(scene, StoreScene)) throw new Exception("Scene save failed.");
+        // The light is baked into the saved scene (-no-bake leaves the old even light).
+        P3StoreLighting.Bake(scene, environment);
     }
 
     static Quaternion Facing(Vector3 position) => Quaternion.LookRotation(position - EyePosition);

@@ -7,9 +7,9 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// What makes the room read as a working store rather than a showroom (2026-11-09): the store's light, the floor with its
-/// pools of light and contact shadows painted in, price tags, misted fridge doors and closed cartons waiting on the bare
-/// shelves. The textures come from scripts/windows/make_store_signage.py.
+/// What makes the room read as a working store rather than a showroom (2026-11-09): the terrazzo floor, price tags,
+/// misted fridge doors and closed cartons waiting on the bare shelves. The textures come from
+/// scripts/windows/make_store_signage.py. Light and shadow are not painted in: P3StoreLighting bakes them.
 ///
 /// Words only where a real store has them (2026-11-10): the name, section names, price tags, the legal notices. A place
 /// with no product stays plain rather than being filled with a slogan, a poster or a label.
@@ -23,7 +23,6 @@ public static class P3StoreDetails
     const string Folder = "Assets/Art/Signage";
     const string MaterialFolder = "Assets/Materials/P3/Signage";
     const string P2Materials = "Assets/Materials/P2";
-    const string P3Materials = "Assets/Materials/P3";
 
     const float InnerFar = P2StoreBuilder.RoomFar + 0.06f, InnerRight = P2StoreBuilder.RoomNear - 0.06f, InnerBack = P2StoreBuilder.RoomBack + 0.06f;
     const float InnerFront = P2StoreBuilder.RoomFront - 0.06f;
@@ -56,8 +55,7 @@ public static class P3StoreDetails
 
         var root = new GameObject("Store Details").transform;
         root.SetParent(environment, false);
-        Lighting();
-        FloorAndWalls(environment, root);
+        Floor(environment, root);
         GondolaBacks(root);
         PriceRails(root);
         Cartons(root);
@@ -78,40 +76,14 @@ public static class P3StoreDetails
         Debug.Log($"[P3] Store details: {root.GetComponentsInChildren<Renderer>(true).Length} renderers, {Made.Count} materials");
     }
 
-    // ---------- Light ----------
-
-    /// <summary>A neutral, bright store light like the reference photo's. The splats are unlit, so this moves the room around them, a little, and not them.</summary>
-    static void Lighting()
+    /// <summary>One picture of the whole floor: polished terrazzo tiles, and the pavement outside the glass. The floor box under it stays hidden.</summary>
+    static void Floor(Transform environment, Transform root)
     {
-        RenderSettings.ambientMode = AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(0.97f, 0.97f, 0.97f);
-        RenderSettings.ambientEquatorColor = new Color(0.86f, 0.86f, 0.86f);
-        RenderSettings.ambientGroundColor = new Color(0.56f, 0.56f, 0.55f);
-
-        var sun = (GameObject.Find("Directional Light") ?? throw new Exception("Directional Light missing.")).GetComponent<Light>();
-        sun.color = new Color(1f, 0.99f, 0.97f);
-        sun.intensity = 0.42f;
-
-        var ceiling = Load<Material>($"{P3Materials}/P3_Ceiling.mat");
-        ceiling.SetColor("_BaseColor", new Color(0.97f, 0.97f, 0.96f));
-        ceiling.SetColor("_EmissionColor", new Color(0.5f, 0.5f, 0.49f));
-        EditorUtility.SetDirty(ceiling);
-    }
-
-    static void FloorAndWalls(Transform environment, Transform root)
-    {
-        // One picture of the whole floor, so the light can differ from place to place. The tiled floor box stays for its collider-free shape only.
         foreach (var t in environment.GetComponentsInChildren<Transform>(true))
             if (t.name == "Floor Visual") t.GetComponent<Renderer>().enabled = false;
-        var floor = Printed("floor_baked", 0.72f);
+        var floor = Printed("floor_terrazzo", 0.72f);
         float width = P2StoreBuilder.RoomNear - P2StoreBuilder.RoomFar, depth = P2StoreBuilder.RoomFront - P2StoreBuilder.RoomBack;
         Surface("Floor Painted", root, new Vector3((P2StoreBuilder.RoomNear + P2StoreBuilder.RoomFar) * 0.5f, 0.002f, (P2StoreBuilder.RoomFront + P2StoreBuilder.RoomBack) * 0.5f), new Vector2(width, depth), Quaternion.Euler(90f, 0f, 0f), floor);
-
-        var wall = Load<Material>($"{P2Materials}/P2_Wall.mat");
-        wall.SetTexture("_BaseMap", Load<Texture2D>($"{Folder}/wall_shade.png"));
-        wall.SetTextureScale("_BaseMap", new Vector2(6f, 1f));
-        wall.SetColor("_BaseColor", new Color(0.98f, 0.975f, 0.96f));
-        EditorUtility.SetDirty(wall);
     }
 
     // ---------- Gondolas and shelf C ----------
@@ -518,9 +490,9 @@ public static class P3StoreDetails
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
             if (!(AssetImporter.GetAtPath(path) is TextureImporter importer)) continue;
-            int size = path.EndsWith("floor_baked.png") ? 4096 : path.Contains("/rail_") ? 2048 : 1024;
-            int aniso = path.EndsWith("floor_baked.png") ? 16 : 8;
-            var wrap = path.EndsWith("wall_shade.png") || path.EndsWith("ceiling_tile.png") ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
+            int size = path.EndsWith("floor_terrazzo.png") ? 4096 : path.Contains("/rail_") ? 2048 : 1024;
+            int aniso = path.EndsWith("floor_terrazzo.png") ? 16 : 8;
+            var wrap = path.EndsWith("ceiling_tile.png") ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
             if (importer.maxTextureSize == size && importer.anisoLevel == aniso && importer.wrapMode == wrap && importer.sRGBTexture && importer.npotScale == TextureImporterNPOTScale.None) continue;
             importer.textureType = TextureImporterType.Default;
             importer.sRGBTexture = true;

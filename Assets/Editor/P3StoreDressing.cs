@@ -70,12 +70,7 @@ public static class P3StoreDressing
         steel = Plain("P3_Steel", new Color(0.78f, 0.8f, 0.83f), 0.7f, 1f);
         strip = Emissive("P3_LedStrip", Color.white, new Color(1f, 1f, 0.98f) * 3.2f);
 
-        // The lit strips do not light anything by themselves (no baked GI): a bright, even indoor ambient stands in for
-        // them. The Gaussian splat products are unlit and do not change.
-        RenderSettings.ambientMode = AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(0.9f, 0.91f, 0.93f);
-        RenderSettings.ambientEquatorColor = new Color(0.78f, 0.78f, 0.79f);
-        RenderSettings.ambientGroundColor = new Color(0.45f, 0.44f, 0.43f);
+        // The lit strips are only the look of a light: what lights the room is P3StoreLighting, once the scene is saved.
 
         var dressing = new GameObject("Store Dressing").transform;
         dressing.SetParent(environment, false);
@@ -163,7 +158,7 @@ public static class P3StoreDressing
             Visual("AC Slot", parent, cassette + offset, size, graphite, 0.001f);
     }
 
-    /// <summary>Where the rows are; the floor texture's lit bands follow the same numbers (scripts/windows/make_store_signage.py).</summary>
+    /// <summary>Where the rows are; the baked area lights hang at the same places (P3StoreLighting).</summary>
     public static readonly float[] LightRows = { -5.1f, -3.7f, -2.3f, -0.9f, 0.5f, 1.9f, 3.3f };
     public static readonly (float z0, float z1)[] LightSpans = { (-1.2f, 0.95f), (1.1f, 3.25f), (3.4f, 5.3f) };
 
@@ -747,8 +742,9 @@ public static class P3StoreDressing
             if (!(AssetImporter.GetAtPath(path) is ModelImporter importer)) continue;
             // The OBJ's slots are told apart by the names from its .mtl, so it keeps its (unused) imported materials.
             var materials = path.EndsWith(".obj") ? ModelImporterMaterialImportMode.ImportViaMaterialDescription : ModelImporterMaterialImportMode.None;
-            if (importer.materialImportMode == materials && !importer.importAnimation && !importer.importCameras && !importer.importLights) continue;
+            if (importer.materialImportMode == materials && !importer.importAnimation && !importer.importCameras && !importer.importLights && importer.generateSecondaryUV) continue;
             importer.materialImportMode = materials;
+            importer.generateSecondaryUV = true;  // for the baked light (P3StoreLighting)
             importer.importAnimation = false;
             importer.importCameras = false;
             importer.importLights = false;
@@ -965,6 +961,14 @@ public static class P3StoreDressing
         // Otherwise the first frames show Unity's placeholder shader while variants compile.
         ShaderUtil.allowAsyncCompilation = false;
         foreach (var sign in UnityEngine.Object.FindObjectsByType<StoreSign>(FindObjectsSortMode.None)) sign.BuildNow();
+        // A scene opened in batch mode draws its baked reflection probes black until their picture is set again (seen
+        // 2026-11-10, Unity 6000.3.26f1). Only for these stills: the scene is not saved.
+        foreach (var probe in UnityEngine.Object.FindObjectsByType<ReflectionProbe>(FindObjectsSortMode.None))
+        {
+            var picture = probe.bakedTexture;
+            probe.mode = ReflectionProbeMode.Custom;
+            probe.customBakedTexture = picture;
+        }
         var views = new List<(string name, Vector3 position, Vector3 lookAt)>
         {
             // The reference photo's viewpoint: over the near end of the counter, looking along it toward the fridges.

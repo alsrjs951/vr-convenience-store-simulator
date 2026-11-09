@@ -1,5 +1,5 @@
-"""Generates the store's printed and painted surfaces (no downloads, no product pictures): the floor with its light and
-shadow painted in, the wall shading, price rails, the few notices, fridge door films and floor stickers.
+"""Generates the store's printed and painted surfaces (no downloads, no product pictures): the terrazzo floor and the
+pavement, price rails, the few notices, fridge door films and floor stickers. Light and shadow are not painted in.
 
 Words only where a real store has them (2026-11-10): the store name, section names, price tags and the legal notices.
 Slogans, event posters, end-cap boards and labels that only filled an empty place are gone; an empty place stays plain.
@@ -60,81 +60,13 @@ def nineteen(draw, cx, cy, radius):
     draw.text((cx, cy), '19', font=font(round(radius * 1.0), HEAVY), fill=BLACK, anchor='mm')
 
 
-# ---------- Floor: tiles with the room's light and contact shadows painted in ----------
+# ---------- Floor: polished terrazzo tiles, plain. Light and shadow are baked in Unity (P3StoreLighting) ----------
 # Room x -6..4.5, z -2.5..5.5. Image row 0 is z = 5.5 and column 0 is x = -6, which is how a floor quad maps it.
 
 ROOM_X0, ROOM_Z0, ROOM_W, ROOM_D = -6.0, -2.5, 10.5, 8.0
 FLOOR_W, FLOOR_H = 4096, 3120
-LOW = 4  # the light and shadow fields are smooth, so they are made small and enlarged
 
-
-def field_axes(width, height):
-    x = ROOM_X0 + (np.arange(width) + 0.5) / width * ROOM_W
-    z = ROOM_Z0 + ROOM_D - (np.arange(height) + 0.5) / height * ROOM_D
-    return np.meshgrid(x, z)
-
-
-def resize_field(field, width, height):
-    return np.asarray(Image.fromarray(field.astype(np.float32), 'F').resize((width, height), Image.BICUBIC), np.float32)
-
-
-def blurred(mask, radius_m, width):
-    radius_px = radius_m / ROOM_W * width
-    return gaussian_filter(mask.astype(np.float32), radius_px, mode='nearest')
-
-
-low_w, low_h = FLOOR_W // LOW, FLOOR_H // LOW
-lx, lz = field_axes(low_w, low_h)
-
-# Bands of light under the rows of strip lights (P3StoreDressing.LightRows, LightSpans), over a dimmer room, and the
-# polished floor's mirror image of each strip as a narrower, brighter streak.
-light_rows = (-5.1, -3.7, -2.3, -0.9, 0.5, 1.9, 3.3)
-light_spans = ((-1.2, 0.95), (1.1, 3.25), (3.4, 5.3))
-
-
-def strip_field(xs, zs, width):
-    field = np.zeros_like(xs, np.float32)
-    for row in light_rows:
-        for z0, z1 in light_spans:
-            beyond = np.maximum(np.maximum(z0 - zs, zs - z1), 0)
-            field += np.exp(-((xs - row) ** 2 + beyond ** 2) / (2 * width ** 2))
-    return field
-
-
-light = strip_field(lx, lz, 0.75)
-light = 0.78 + 0.26 * np.clip(light, 0, 1.3) / 1.3
-sheen = strip_field(lx, lz, 0.16)
-
-# Contact shadow where furniture stands on the floor. x0, x1, z0, z1 in metres.
-solids = [
-    (-3.4, -0.4, 2.95, 3.45), (-4.05, -2.55, 0.55, 1.05),   # gondola row A + B, row D
-    (-2.55, -2.23, 0.55, 1.05),                             # row D's end bay
-    (-3.9, -3.4, 3.0, 3.5), (-0.4, 0.1, 3.0, 3.5),          # box stands
-    (-1.0, 2.0, 0.35, 0.95),                                # counter with its extension
-    (-5.94, -5.0, -1.55, 3.19),                             # fridges and their filler
-    (-5.94, -5.44, 3.25, 4.55),                             # microwave cabinet
-    (-3.8, 4.2, 4.6, 5.44), (-5.44, -3.82, 4.6, 5.44),      # chilled cases, corner cupboard
-    (-1.7, 1.85, -1.75, -1.35),                             # tobacco wall
-    (0.35, 1.1, 2.75, 4.15),                                # chest freezer
-    (3.99, 4.44, 1.4, 4.42),                                # shelf C
-    (2.95, 4.05, -1.85, -1.25), (2.3, 2.9, -1.9, -1.25),    # cart, empty-box bin
-    (-1.2, -0.8, -0.9, -0.5),                               # waste bin
-]
-occupied = np.zeros((low_h, low_w), np.float32)
-for x0, x1, z0, z1 in solids:
-    occupied[(lx >= x0) & (lx <= x1) & (lz >= z0) & (lz <= z1)] = 1.0
-walls = np.zeros((low_h, low_w), np.float32)
-walls[(lx < -5.94) | (lx > 4.44) | (lz < -2.44) | (lz > 5.44)] = 1.0
-tight = blurred(occupied, 0.05, low_w)
-wide = blurred(occupied, 0.28, low_w)
-wall_wide = blurred(walls, 0.35, low_w)
-shade = (1 - 0.62 * np.clip(tight * 1.3, 0, 1)) * (1 - 0.34 * np.clip(wide * 1.4, 0, 1)) * (1 - 0.22 * np.clip(wall_wide * 1.6, 0, 1))
-shade[occupied > 0.5] = 0.3
-
-lighting = resize_field(light * shade, FLOOR_W, FLOOR_H)
-reflection = resize_field(sheen * (1 - np.clip(wide * 1.6, 0, 1)), FLOOR_W, FLOOR_H)
-
-fx, fz = field_axes(FLOOR_W, FLOOR_H)
+fx, fz = np.meshgrid(ROOM_X0 + (np.arange(FLOOR_W) + 0.5) / FLOOR_W * ROOM_W, ROOM_Z0 + ROOM_D - (np.arange(FLOOR_H) + 0.5) / FLOOR_H * ROOM_D)
 TILE = 0.6
 x_in = (fx - ROOM_X0) % TILE
 z_in = (fz - ROOM_Z0) % TILE
@@ -151,14 +83,12 @@ floor = np.stack([np.full_like(edge, 0.585), np.full_like(edge, 0.585), np.full_
 floor *= (1.0 + (mottle - 0.5) * 0.11 + tile_tone - dark_chips * 1.4 + light_chips * 1.5)[..., None]
 grout = np.array([0.42, 0.42, 0.41], np.float32)
 floor = floor * bevel[..., None] + grout * (1 - bevel[..., None])
-floor *= lighting[..., None]
-floor += reflection[..., None] * np.array([0.21, 0.21, 0.205], np.float32)
 # The strip of pavement outside the street front.
 outside = (fx < -1.75) & (fz < -1.6)
 pavement = (0.5 + (mottle[outside] - 0.5) * 0.12)
 floor[outside] = np.stack([pavement, pavement, pavement * 0.97], -1)
-save(Image.fromarray((np.clip(floor, 0, 1) * 255 + 0.5).astype(np.uint8)), 'floor_baked')
-del floor, lighting, reflection, fx, fz, x_in, z_in, edge, mottle, bevel, tile_tone, tile_col, tile_row, dark_chips, light_chips, outside, pavement
+save(Image.fromarray((np.clip(floor, 0, 1) * 255 + 0.5).astype(np.uint8)), 'floor_terrazzo')
+del floor, fx, fz, x_in, z_in, edge, mottle, bevel, tile_tone, tile_col, tile_row, dark_chips, light_chips, outside, pavement
 
 # ---------- Ceiling: one 60 cm T-bar tile, speckled board in a slim metal grid; the material repeats it ----------
 
@@ -170,14 +100,6 @@ board -= holes[..., None] * 0.28
 board[:5, :] = board[-5:, :] = 0.8
 board[:, :5] = board[:, -5:] = 0.8
 save(Image.fromarray((np.clip(board, 0, 1) * 255 + 0.5).astype(np.uint8)), 'ceiling_tile')
-
-# ---------- Walls: one tall strip, dark at the floor and a little dark at the ceiling (row 0 is the top) ----------
-
-h = np.linspace(1.0, 0.0, 1024, dtype=np.float32)   # 1 at the ceiling
-tone = 1.0 - 0.26 * np.exp(-(h / 0.09) ** 1.2) - 0.09 * np.exp(-((1 - h) / 0.12) ** 1.2) - 0.05 * (1 - h)
-wall = np.stack([tone * 1.0, tone * 0.988, tone * 0.965], -1)
-wall = np.tile(wall[:, None, :], (1, 8, 1))
-save(Image.fromarray((np.clip(wall, 0, 1) * 255 + 0.5).astype(np.uint8)), 'wall_shade')
 
 
 # ---------- Price rails: 1.46 m by 4.2 cm on a navy strip, one white tag per product ----------

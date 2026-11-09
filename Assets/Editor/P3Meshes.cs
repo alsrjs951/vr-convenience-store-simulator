@@ -5,7 +5,8 @@ using UnityEngine;
 
 /// <summary>
 /// Rounded boxes for the store's fixtures and counter devices (P3 dressing), saved as mesh assets so the scene keeps
-/// them. A box with soft edges reads as a made object; a sharp cube reads as a placeholder.
+/// them. A box with soft edges reads as a made object; a sharp cube reads as a placeholder. Each mesh carries a second
+/// UV set for the baked light (P3StoreLighting).
 /// </summary>
 public static class P3Meshes
 {
@@ -96,6 +97,7 @@ public static class P3Meshes
         mesh.SetTriangles(triangles, 0);
         mesh.RecalculateBounds();
         mesh.RecalculateTangents();
+        Unwrapping.GenerateSecondaryUVSet(mesh);
         if (fresh) AssetDatabase.CreateAsset(mesh, path);
         else EditorUtility.SetDirty(mesh);
         made[key] = mesh;
@@ -159,6 +161,7 @@ public static class P3Meshes
         mesh.SetTriangles(triangles, 0);
         mesh.RecalculateBounds();
         mesh.RecalculateTangents();
+        Unwrapping.GenerateSecondaryUVSet(mesh);
     }
 
     /// <summary>Coordinates along one face axis: dense over the rounded strips at both ends, one step across the flat middle.</summary>
