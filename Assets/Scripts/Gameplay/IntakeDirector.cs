@@ -378,6 +378,6 @@ public class IntakeDirector : MonoBehaviour
             new Vector2(260f, 70f), BadgeMetersPerPixel, new Color(0.62f, 0.1f, 0.18f, 0.96f));
         var text = WorldUi.AddText(panel, 0f, 0f, 260f, 70f, 38, TextAnchor.MiddleCenter);
         text.text = "! 기한 지남";
-        text.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(text);
     }
 }

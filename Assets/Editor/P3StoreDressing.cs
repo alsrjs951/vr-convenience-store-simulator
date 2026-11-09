@@ -655,14 +655,13 @@ public static class P3StoreDressing
         var bagFront = Find(null, "Bag Wall F");
         Sign(parent, "Bag Name", bagFront.transform.position + new Vector3(0f, 0.005f, -0.006f), Quaternion.identity, new Vector2(0.26f, 0.06f), "동아편의점", "", new Color(0, 0, 0, 0), Navy, false);
 
-        // Two screens on stands: the POS on the left, the order screen on the right. Backs carry the name.
+        // Two screens on stands: the POS on the left, the order screen on the right. Plain backs.
         foreach (var (center, sizePx) in new[] { (posScreen, new Vector2(860f, 660f)), (orderScreen, new Vector2(620f, 470f)) })
         {
             var rotation = Quaternion.LookRotation(center - eye);
             var panel = sizePx * 0.0007f;
             var housing = Visual("Screen Housing", parent, center + rotation * new Vector3(0f, 0f, 0.019f), new Vector3(panel.x + 0.04f, panel.y + 0.04f, 0.03f), graphite, 0.012f);
             housing.transform.rotation = rotation;
-            Sign(parent, "Screen Back", center + rotation * new Vector3(0f, 0f, 0.036f), rotation * Quaternion.Euler(0f, 180f, 0f), new Vector2(panel.x * 0.5f, 0.07f), "동아편의점", "", new Color(0, 0, 0, 0), new Color(1f, 1f, 1f, 0.75f), false);
             var neckTop = center + rotation * new Vector3(0f, -panel.y * 0.5f + 0.04f, 0.04f);
             var baseAt = new Vector3(center.x, 0.9f, Mathf.Min(center.z - 0.1f, far - 0.08f));
             var neck = Visual("Screen Neck", parent, (neckTop + baseAt) * 0.5f, new Vector3(0.04f, Vector3.Distance(neckTop, baseAt), 0.025f), steel, 0.008f);

@@ -37,9 +37,9 @@ public class WristWatch : MonoBehaviour
         dayText.color = WorldUi.Palette.TextDim;
         waitingText = WorldUi.AddText(panel, 268f, 12f, 230f, 44f, 36, TextAnchor.UpperRight);
         customerText = WorldUi.AddText(panel, 22f, 62f, 290f, 80f, 48, TextAnchor.MiddleLeft);
-        customerText.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(customerText);
         timeText = WorldUi.AddText(panel, 300f, 58f, 198f, 88f, 68, TextAnchor.MiddleRight);
-        timeText.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(timeText);
         WorldUi.AddBox(panel, 20f, 152f, BarWidth, 26f, new Color(1f, 1f, 1f, 0.15f));
         bar = WorldUi.AddBox(panel, 20f, 152f, BarWidth, 26f, WorldUi.Palette.Good);
         bar.type = Image.Type.Filled;

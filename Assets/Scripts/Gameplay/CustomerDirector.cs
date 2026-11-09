@@ -160,7 +160,7 @@ public class CustomerDirector : MonoBehaviour
     {
         var panel = WorldUi.CreatePanel(transform, "Order HUD", transform.position, transform.rotation, new Vector2(620f, 470f), MetersPerPixel, WorldUi.Palette.Panel);
         hudTitle = WorldUi.AddText(panel, 28f, 20f, 560f, 50f, 36);
-        hudTitle.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(hudTitle);
         hud = WorldUi.AddText(panel, 28f, 82f, 564f, 250f, 36);
         hudPay = WorldUi.AddBox(panel, 28f, 340f, 170f, 52f, WorldUi.Palette.Accent);
         hudPayText = WorldUi.AddText((RectTransform)hudPay.transform, 0f, 0f, 170f, 52f, 30, TextAnchor.MiddleCenter);
@@ -174,7 +174,7 @@ public class CustomerDirector : MonoBehaviour
         // Added after the time bar: SetHudVisible finds the bar's background as the sibling just before it.
         hudSpecial = WorldUi.AddBox(panel, 28f, 276f, 564f, 52f, WorldUi.Palette.Warn);
         hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 30, TextAnchor.MiddleCenter);
-        hudSpecialText.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(hudSpecialText);
         // Half way along the bar: finish while the bar is past this mark and it is a tip.
         hudHalf = WorldUi.AddBox(panel, 28f + 564f * FastShare - 2f, 408f, 4f, 34f, Color.white);
         SetHudVisible(false);
@@ -617,7 +617,7 @@ public class CustomerDirector : MonoBehaviour
         if (OutcomeAnchor == null) return;
         outcomePanel = WorldUi.CreatePanel(transform, "Outcome Card", OutcomeAnchor.position, OutcomeAnchor.rotation, new Vector2(620f, 120f), OutcomeMetersPerPixel, WorldUi.Palette.Panel);
         outcomeText = WorldUi.AddText(outcomePanel, 10f, 0f, 600f, 120f, 46, TextAnchor.MiddleCenter);
-        outcomeText.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(outcomeText);
         outcomeGroup = outcomePanel.gameObject.AddComponent<CanvasGroup>();
         outcomePanel.gameObject.SetActive(false);
     }

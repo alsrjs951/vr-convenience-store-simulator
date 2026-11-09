@@ -48,7 +48,7 @@ public class ControllerHint : MonoBehaviour
     {
         var panel = WorldUi.CreatePanel(hand, "Controller Hint", hand.position, hand.rotation, PanelPixels, MetersPerPixel, WorldUi.Palette.Panel);
         text = WorldUi.AddText(panel, 8f, 0f, PanelPixels.x - 16f, PanelPixels.y, 44, TextAnchor.MiddleCenter);
-        text.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(text);
         panel.gameObject.SetActive(false);
         return panel;
     }

@@ -149,7 +149,7 @@ public class ManagerNpc : MonoBehaviour
         var badgeAt = Over(chest, 0.105f, bibTop - 0.055f) + forward * 0.003f;
         var badge = WorldUi.CreatePanel(chest, "Name Badge", badgeAt, Quaternion.LookRotation(-forward), new Vector2(190f, 66f), 0.00042f, Color.white);
         var name = WorldUi.AddText(badge, 0f, 0f, 190f, 66f, 44, TextAnchor.MiddleCenter);
-        name.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(name);
         name.color = WorldUi.Palette.Navy;
         name.text = "점장";
         Keep(badge);

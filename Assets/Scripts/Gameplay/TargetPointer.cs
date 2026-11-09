@@ -53,7 +53,7 @@ public class TargetPointer : MonoBehaviour
 
         labelPanel = WorldUi.CreatePanel(transform, "Arrow Label", transform.position, transform.rotation, new Vector2(280f, 70f), LabelMetersPerPixel, WorldUi.Palette.Panel);
         labelText = WorldUi.AddText(labelPanel, 0f, 0f, 280f, 70f, 42, TextAnchor.MiddleCenter);
-        labelText.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(labelText);
         labelPanel.gameObject.SetActive(false);
     }
 

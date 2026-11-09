@@ -90,7 +90,7 @@ public class TitleFlow : MonoBehaviour
         mainGroup = Group("Main");
         var main = (RectTransform)mainGroup.transform;
         var title = WorldUi.AddText(main, 0f, 18f, PanelWidth, 110f, 96, TextAnchor.MiddleCenter);
-        title.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(title);
         title.text = "동아편의점";
         var subtitle = WorldUi.AddText(main, 0f, 132f, PanelWidth, 56f, 42, TextAnchor.MiddleCenter);
         subtitle.color = WorldUi.Palette.TextDim;
@@ -104,7 +104,7 @@ public class TitleFlow : MonoBehaviour
         moreGroup = Group("More");
         var more = (RectTransform)moreGroup.transform;
         var moreTitle = WorldUi.AddText(more, 0f, 14f, PanelWidth, 70f, 54, TextAnchor.MiddleCenter);
-        moreTitle.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(moreTitle);
         moreTitle.text = "설정";
         Day2Button = Button(more, 50f, 96f, 370f, 72f, "2일차부터", 38, false);
         Day3Button = Button(more, 440f, 96f, 370f, 72f, "3일차부터", 38, false);

@@ -211,7 +211,7 @@ public class StockBox : MonoBehaviour
         var panel = WorldUi.CreatePanel(transform, "Box Label", transform.TransformPoint(local), transform.rotation * turn, new Vector2(620f, height / 0.0006f), 0.0006f, new Color(1f, 1f, 1f, 0.92f));
         var text = WorldUi.AddText(panel, 0f, 0f, 620f, height / 0.0006f, 38, TextAnchor.MiddleCenter);
         text.color = WorldUi.Palette.Navy;
-        text.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(text);
         text.text = WorldUi.Clean(Label);
     }
 

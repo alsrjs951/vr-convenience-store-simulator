@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 
 /// <summary>
-/// Builds the world-space panels. uGUI text with a Windows font, since this is a PCVR-only build. One look everywhere
-/// (2026-11-08, "동아편의점"): rounded panels in Dong-A navy (Pantone 282C) with white text and few words.
+/// Builds the world-space panels. One look everywhere (2026-11-08, "동아편의점"): rounded panels in Dong-A navy
+/// (Pantone 282C) with white text and few words. The type is Pretendard (Assets/Resources/Fonts, SIL OFL), the family the
+/// store's printed surfaces use too (scripts/windows/make_store_signage.py).
 /// </summary>
 public static class WorldUi
 {
@@ -25,10 +26,35 @@ public static class WorldUi
 
     const int CornerPixels = 22;
 
-    static Font font;
+    static Font regular, bold, heavy;
     static Sprite rounded;
 
-    static Font Font => font != null ? font : font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 40);
+    // Each weight is its own font file, so bold text takes the bold file rather than a thickened regular.
+    static Font Regular => regular != null ? regular : regular = Face("Pretendard-Regular");
+    static Font BoldFace => bold != null ? bold : bold = Face("Pretendard-Bold");
+    static Font HeavyFace => heavy != null ? heavy : heavy = Face("Pretendard-ExtraBold");
+
+    static Font Face(string name)
+    {
+        var face = Resources.Load<Font>("Fonts/" + name);
+        if (face != null) return face;
+        Debug.LogWarning($"[UI] Font {name} is missing from Resources/Fonts; using a Windows font.");
+        return Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 40);
+    }
+
+    /// <summary>Bold text: panel titles, buttons, amounts.</summary>
+    public static void Bold(Text text)
+    {
+        text.font = BoldFace;
+        text.fontStyle = FontStyle.Normal;
+    }
+
+    /// <summary>The heaviest weight, for the store's signs.</summary>
+    public static void Heavy(Text text)
+    {
+        text.font = HeavyFace;
+        text.fontStyle = FontStyle.Normal;
+    }
 
     /// <summary>A white rounded square, sliced so the corners keep their size on any panel.</summary>
     public static Sprite Rounded
@@ -82,7 +108,7 @@ public static class WorldUi
         go.transform.SetParent(panel, false);
         Place((RectTransform)go.transform, x, y, width, height);
         var text = go.AddComponent<Text>();
-        text.font = Font;
+        text.font = Regular;
         text.fontSize = fontSize;
         text.alignment = anchor;
         text.color = Palette.Text;
@@ -100,7 +126,7 @@ public static class WorldUi
         var button = image.gameObject.AddComponent<Button>();
         button.targetGraphic = image;
         var text = AddText((RectTransform)image.transform, 0f, 0f, width, height, fontSize, TextAnchor.MiddleCenter);
-        text.fontStyle = FontStyle.Bold;
+        Bold(text);
         text.text = label;
         return button;
     }

@@ -7,9 +7,12 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 /// <summary>
-/// What makes the room read as a working store rather than a showroom (2026-11-09): a warmer light, the floor with its
-/// pools of light and contact shadows painted in, price tags, posters, hanging signs, misted fridge doors and closed cartons
-/// waiting on the bare shelves. The textures come from scripts/windows/make_store_signage.py.
+/// What makes the room read as a working store rather than a showroom (2026-11-09): the store's light, the floor with its
+/// pools of light and contact shadows painted in, price tags, misted fridge doors and closed cartons waiting on the bare
+/// shelves. The textures come from scripts/windows/make_store_signage.py.
+///
+/// Words only where a real store has them (2026-11-10): the name, section names, price tags, the legal notices. A place
+/// with no product stays plain rather than being filled with a slogan, a poster or a label.
 ///
 /// Looks only, and no colliders, so the NavMesh, the routes and every rule stay as they were. Everything is an opaque
 /// surface on purpose: world-space UI draws over the splat products, which write no depth. No picture or model of a product
@@ -42,7 +45,6 @@ public static class P3StoreDetails
     static readonly Dictionary<string, Material> Made = new Dictionary<string, Material>();
     static System.Random random;
     static Material cardboard;
-    static Material[] cartonLabels;
 
     public static void Apply(Transform environment)
     {
@@ -51,7 +53,6 @@ public static class P3StoreDetails
         Made.Clear();
         random = new System.Random(20261109);
         cardboard = Load<Material>($"{P2Materials}/P2_Cardboard.mat");
-        cartonLabels = new[] { Printed("carton_snack"), Printed("carton_noodle"), Printed("carton_daily"), Printed("carton_ready") };
 
         var root = new GameObject("Store Details").transform;
         root.SetParent(environment, false);
@@ -60,13 +61,13 @@ public static class P3StoreDetails
         GondolaBacks(root);
         PriceRails(root);
         Cartons(root);
-        EndCaps(root);
+        EndBay(root);
         Posters(root);
         CategorySign(root);
         FridgeDoors(environment, root);
         ChilledTrays(root);
         TobaccoFaces(root);
-        FreezerFace(root);
+        FreezerStock(root);
         CounterExtensionThings(root);
         Entrance(root);
         Street(root);
@@ -159,22 +160,22 @@ public static class P3StoreDetails
         foreach (var x in new[] { ShelfA, ShelfB })
             foreach (var board in new[] { 0.1f, 0.55f })
             {
-                RowAlongX(parent, x - inset, x + inset, board, front + depth * 0.5f, depth, 0.38f, -1f);
-                RowAlongX(parent, x - inset, x + inset, board, back - depth * 0.5f, depth, 0.38f, 1f);
+                RowAlongX(parent, x - inset, x + inset, board, front + depth * 0.5f, depth, 0.38f);
+                RowAlongX(parent, x - inset, x + inset, board, back - depth * 0.5f, depth, 0.38f);
             }
         foreach (var x in new[] { ShelfA, ShelfB })
-            RowAlongX(parent, x - inset, x + inset, 1.0f, back - depth * 0.5f, depth, 0.34f, 1f);
+            RowAlongX(parent, x - inset, x + inset, 1.0f, back - depth * 0.5f, depth, 0.34f);
         // The boards at 1.4 and row D's face toward the street hold real products (P2StoreBuilder.BuildDecorSlots).
-        RowAlongX(parent, ShelfB - inset, ShelfB - inset + 0.34f, 1.0f, front + depth * 0.5f, depth, 0.34f, -1f);
+        RowAlongX(parent, ShelfB - inset, ShelfB - inset + 0.34f, 1.0f, front + depth * 0.5f, depth, 0.34f);
 
         // Row D holds no deliveries: every board on the far side, the bottom board on the near side, and the overstock on top.
         foreach (var board in GondolaBoards)
         {
-            if (board < 0.5f) RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDFront + 0.02f + depth * 0.5f, depth, 0.34f, -1f);
-            RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDBack - 0.02f - depth * 0.5f, depth, 0.34f, 1f);
+            if (board < 0.5f) RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDFront + 0.02f + depth * 0.5f, depth, 0.34f);
+            RowAlongX(parent, ShelfD - inset, ShelfD + inset, board, ShelfDBack - 0.02f - depth * 0.5f, depth, 0.34f);
         }
-        RowAlongX(parent, ShelfD - inset, ShelfD + inset, 1.8f, SpineDZ, 0.3f, 0.3f, -1f);
-        RowAlongX(parent, ShelfA - inset, ShelfB + inset, 1.8f, SpineZ, 0.3f, 0.3f, -1f);
+        RowAlongX(parent, ShelfD - inset, ShelfD + inset, 1.8f, SpineDZ, 0.3f, 0.3f);
+        RowAlongX(parent, ShelfA - inset, ShelfB + inset, 1.8f, SpineZ, 0.3f, 0.3f);
 
         foreach (var board in ShelfCBoards)
         {
@@ -182,45 +183,27 @@ public static class P3StoreDetails
             while (z < ShelfCFar - 0.32f)
             {
                 float width = Range(0.28f, 0.36f), height = Range(0.24f, 0.34f);
-                var center = new Vector3(ShelfCFace + 0.22f, board + height * 0.5f, z + width * 0.5f);
-                Carton(parent, center, new Vector3(0.38f, height, width), new Vector3(-1f, 0f, 0f));
+                Cube("Carton", parent, new Vector3(ShelfCFace + 0.22f, board + height * 0.5f, z + width * 0.5f), new Vector3(0.38f, height, width), cardboard);
                 z += width + Range(0.02f, 0.06f);
             }
         }
     }
 
-    static void RowAlongX(Transform parent, float from, float to, float board, float z, float depth, float maxHeight, float faceZ)
+    static void RowAlongX(Transform parent, float from, float to, float board, float z, float depth, float maxHeight)
     {
         float x = from;
         while (true)
         {
             float width = Range(0.26f, 0.34f), height = Range(0.22f, maxHeight);
             if (x + width > to) break;
-            Carton(parent, new Vector3(x + width * 0.5f, board + height * 0.5f, z), new Vector3(width, height, depth), new Vector3(0f, 0f, faceZ));
+            Cube("Carton", parent, new Vector3(x + width * 0.5f, board + height * 0.5f, z), new Vector3(width, height, depth), cardboard);
             x += width + Range(0.015f, 0.05f);
         }
     }
 
-    static void Carton(Transform parent, Vector3 center, Vector3 size, Vector3 facing)
+    /// <summary>A shallow bay of shelves on the end of row D that faces the near end of the store, the end the photo looks at.</summary>
+    static void EndBay(Transform root)
     {
-        var box = Cube("Carton", parent, center, size, cardboard);
-        float half = Mathf.Abs(Vector3.Dot(size, facing)) * 0.5f;
-        var labelAt = center + facing * (half + 0.002f) + Vector3.up * (size.y * 0.08f);
-        // Seen looking against the way the face points.
-        Surface("Carton Label", box.transform.parent, labelAt, new Vector2(0.16f, 0.08f), Quaternion.LookRotation(-facing), cartonLabels[random.Next(cartonLabels.Length)]);
-    }
-
-    /// <summary>
-    /// A shallow bay of shelves on the end of row D that faces the near end of the store, the end the photo looks at, and
-    /// printed boards on the other ends. Row A + B's ends have the box stands, so their boards hang above the stands.
-    /// </summary>
-    static void EndCaps(Transform root)
-    {
-        const float outerY = 1.33f, width = 0.46f, height = 0.92f;
-        Surface("End Cap", root, new Vector3(ShelfA - 0.753f, outerY, SpineZ), new Vector2(width, height), SeenLookingRight, Printed("endcap_noodle"));
-        Surface("End Cap", root, new Vector3(ShelfB + 0.753f, outerY, SpineZ), new Vector2(width, height), SeenLookingLeft, Printed("endcap_ready"));
-        Surface("End Cap", root, new Vector3(ShelfD - 0.753f, 0.95f, SpineDZ), new Vector2(width, height), SeenLookingRight, Printed("endcap_snack"));
-
         var parent = new GameObject("Row D End Bay").transform;
         parent.SetParent(root, false);
         var frame = Plain("Back_Dark", new Color(0.17f, 0.18f, 0.19f));
@@ -237,7 +220,7 @@ public static class P3StoreDetails
             while (z < ShelfDBack - 0.17f)
             {
                 float w = Range(0.13f, 0.17f), h = Range(0.2f, 0.3f);
-                Carton(parent, new Vector3(xc + 0.03f, board + h * 0.5f, z + w * 0.5f), new Vector3(0.22f, h, w), Vector3.right);
+                Cube("Carton", parent, new Vector3(xc + 0.03f, board + h * 0.5f, z + w * 0.5f), new Vector3(0.22f, h, w), cardboard);
                 z += w + 0.012f;
             }
         }
@@ -246,25 +229,10 @@ public static class P3StoreDetails
 
     // ---------- Walls, ceiling, doors ----------
 
+    /// <summary>One notice, back of house by the warehouse door. The walls the customers see carry no posters.</summary>
     static void Posters(Transform root)
     {
-        var a2 = new Vector2(0.56f, 0.79f);
-        var a3 = new Vector2(0.4f, 0.565f);
-        // Near wall, over the empty stretch beside the line.
-        Surface("Poster", root, new Vector3(InnerRight - 0.003f, 1.6f, 0.75f), a2, SeenLookingRight, Printed("poster_1plus1"));
-        Surface("Poster", root, new Vector3(InnerRight - 0.003f, 1.6f, 0f), a2, SeenLookingRight, Printed("poster_2plus1"));
-        Surface("Poster", root, new Vector3(InnerRight - 0.003f, 1.6f, -0.75f), a3, SeenLookingRight, Printed("poster_expiry"));
-        // Back of house, by the warehouse door.
-        Surface("Poster", root, new Vector3(1.9f, 1.6f, InnerBack + 0.003f), a2, SeenLookingBack, Printed("poster_recruit"));
-        // Above the microwave corner, as in the photo.
-        Surface("Poster", root, new Vector3(InnerFar + 0.003f, 2.14f, 3.55f), a3, SeenLookingLeft, Printed("poster_hot_noodle"));
-        Surface("Poster", root, new Vector3(InnerFar + 0.003f, 2.14f, 4.15f), a3, SeenLookingLeft, Printed("poster_ready_meal"));
-        // On the outside of the partition, seen from the pavement.
-        Surface("Poster", root, new Vector3(PartitionX - 0.056f, 1.5f, -2.4f), a3, SeenLookingRight, Printed("poster_service"));
-        // On the counter's customer side, either side of the store name.
-        const float counterFace = 0.9635f;
-        Surface("Counter Notice", root, new Vector3(-0.8f, 0.47f, counterFace), new Vector2(0.26f, 0.368f), SeenLookingBack, Printed("poster_nineteen"));
-        Surface("Counter Notice", root, new Vector3(0.8f, 0.47f, counterFace), new Vector2(0.26f, 0.368f), SeenLookingBack, Printed("poster_expiry"));
+        Surface("Poster", root, new Vector3(1.9f, 1.6f, InnerBack + 0.003f), new Vector2(0.56f, 0.79f), SeenLookingBack, Printed("poster_recruit"));
     }
 
     /// <summary>The photo's box sign, high up at the near end of the rows, read from the counter side and from the door side.</summary>
@@ -281,10 +249,21 @@ public static class P3StoreDetails
             Cube("Hanging Wire", root, new Vector3(center.x, (top + ceiling) * 0.5f, center.z + side), new Vector3(0.006f, ceiling - top, 0.006f), Plain("Wire", new Color(0.3f, 0.3f, 0.32f)));
     }
 
-    /// <summary>Misted film on the fridge doors: the fridges stay empty until there is a Gaussian budget for them.</summary>
+    /// <summary>
+    /// Misted film on the fridge doors, with nothing written on it: the fridges stay empty until there is a Gaussian budget
+    /// for them. A plain lit panel covers the model's own "Icey Drinks" sign over each door.
+    /// </summary>
     static void FridgeDoors(Transform environment, Transform root)
     {
-        var films = new[] { "fridge_soda", "fridge_juice", "fridge_coffee", "fridge_milk", "fridge_water" };
+        var film = Printed("fridge_mist", 0.55f);
+        var topper = Asset("Fridge_Topper");
+        topper.SetColor("_BaseColor", new Color(0.62f, 0.7f, 0.8f));
+        topper.SetFloat("_Smoothness", 0.4f);
+        topper.SetFloat("_Metallic", 0f);
+        topper.EnableKeyword("_EMISSION");
+        topper.SetColor("_EmissionColor", new Color(0.16f, 0.2f, 0.26f));
+        topper.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        EditorUtility.SetDirty(topper);
         for (int i = 1; i <= P3StoreDressing.FridgeCount; i++)
         {
             Transform fridge = null;
@@ -293,11 +272,14 @@ public static class P3StoreDetails
             if (fridge == null) throw new Exception($"Drinks Fridge {i} missing.");
             var bounds = BoundsOf(fridge.gameObject);
             var center = new Vector3(bounds.max.x + 0.003f, bounds.min.y + bounds.size.y * 0.5f + FilmLift, bounds.center.z);
-            Surface("Fridge Film", root, center, new Vector2(bounds.size.z * FilmWidth, bounds.size.y * FilmHeight), SeenLookingLeft, Printed(films[(i - 1) % films.Length]));
+            Surface("Fridge Film", root, center, new Vector2(bounds.size.z * FilmWidth, bounds.size.y * FilmHeight), SeenLookingLeft, film);
+            // A box rather than a face, and as wide as the fridge and its gap, so the sign does not show past it from the side.
+            float topperHeight = bounds.size.y * TopperHeight;
+            Cube("Fridge Topper", root, new Vector3(bounds.max.x + 0.003f - TopperDepth * 0.5f, bounds.max.y - topperHeight * 0.5f, bounds.center.z), new Vector3(TopperDepth, topperHeight, bounds.size.z + 0.012f), topper);
         }
     }
 
-    const float FilmWidth = 0.84f, FilmHeight = 0.74f, FilmLift = 0.05f;
+    const float FilmWidth = 0.84f, FilmHeight = 0.74f, FilmLift = 0.05f, TopperHeight = 0.11f, TopperDepth = 0.14f;
 
     static void Entrance(Transform root)
     {
@@ -348,15 +330,19 @@ public static class P3StoreDetails
         Primitive(PrimitiveType.Cylinder, "Extinguisher Top", root, foot + Vector3.up * 0.54f, new Vector3(0.05f, 0.04f, 0.05f), black);
     }
 
-    // ---------- The fixtures' printed faces (words and colour only, D9) ----------
+    // ---------- The fixtures' printed faces (colour only, D9) ----------
 
-    /// <summary>Delivery trays on the decks of the chilled cases: one printed strip per deck and module, no food shown.</summary>
+    /// <summary>
+    /// Delivery crates on the decks of the chilled cases, no food shown: a row on every bottom deck and on a few of the
+    /// decks above, as when a delivery waits to be put out. The other decks stay bare and lit.
+    /// </summary>
     static void ChilledTrays(Transform root)
     {
         var parent = new GameObject("Chilled Trays").transform;
         parent.SetParent(root, false);
-        var strips = new[] { "tray_lunchbox", "tray_kimbap", "tray_sandwich", "tray_salad", "tray_milk" };
-        var body = Plain("Tray_Body", new Color(0.33f, 0.47f, 0.6f));
+        var front = Printed("tray_crate");
+        var body = Plain("Tray_Body", new Color(0.275f, 0.361f, 0.463f));
+        var pick = new System.Random(7);
         float moduleWidth = (P3StoreDressing.ChilledNear - P3StoreDressing.ChilledFar) / P3StoreDressing.ChilledModules;
         var decks = P3StoreDressing.ChilledDecks;
         for (int module = 0; module < P3StoreDressing.ChilledModules; module++)
@@ -364,12 +350,13 @@ public static class P3StoreDetails
             float xc = P3StoreDressing.ChilledFar + (module + 0.5f) * moduleWidth;
             for (int deck = 0; deck < decks.Length; deck++)
             {
+                if (deck > 0 && pick.NextDouble() > 0.3) continue;
                 var (y, reach) = decks[deck];
                 // The trays stand level, set back from the deck's lower front edge.
                 float height = deck == 0 ? 0.2f : 0.15f, trayDepth = reach - 0.1f, zCenter = InnerFront - 0.09f - trayDepth * 0.5f;
                 var center = new Vector3(xc, y + 0.02f + height * 0.5f, zCenter);
                 Cube("Tray", parent, center, new Vector3(moduleWidth - 0.1f, height, trayDepth), body);
-                Surface("Tray Face", parent, center + new Vector3(0f, 0f, -trayDepth * 0.5f - 0.002f), new Vector2(moduleWidth - 0.1f, height), SeenLookingFront, Printed(strips[(module + deck) % strips.Length]));
+                Surface("Tray Face", parent, center + new Vector3(0f, 0f, -trayDepth * 0.5f - 0.002f), new Vector2(moduleWidth - 0.1f, height), SeenLookingFront, front);
             }
         }
     }
@@ -386,12 +373,9 @@ public static class P3StoreDetails
         Surface("Tobacco Lightbox Face", root, new Vector3((P3StoreDressing.TobaccoLeft + bayLeft) * 0.5f, 1.72f, z + 0.062f), new Vector2(bayLeft - P3StoreDressing.TobaccoLeft - 0.03f, 2.44f), SeenLookingBack, Printed("lightbox_tobacco", 0.4f, new Color(1.05f, 1.05f, 1.05f)));
     }
 
-    static void FreezerFace(Transform root)
+    /// <summary>Cartons of stock lying in the freezer, under the glass.</summary>
+    static void FreezerStock(Transform root)
     {
-        float zc = (P3StoreDressing.FreezerZ0 + P3StoreDressing.FreezerZ1) * 0.5f;
-        Surface("Freezer Poster", root, new Vector3(P3StoreDressing.FreezerX1 + 0.002f, 0.42f, zc), new Vector2(0.62f, 0.5f), SeenLookingLeft, Printed("poster_icecream"));
-        Surface("Freezer Poster", root, new Vector3(P3StoreDressing.FreezerX0 - 0.002f, 0.42f, zc), new Vector2(0.62f, 0.5f), SeenLookingRight, Printed("poster_icecream"));
-        // Cartons of stock lying in the freezer, under the glass.
         var parent = new GameObject("Freezer Stock").transform;
         parent.SetParent(root, false);
         float xc = (P3StoreDressing.FreezerX0 + P3StoreDressing.FreezerX1) * 0.5f;
@@ -402,7 +386,7 @@ public static class P3StoreDetails
         }
     }
 
-    /// <summary>What sits on the counter's far extension: a sign, a coin tray, a calculator, a basket of cartons, and bags on hooks.</summary>
+    /// <summary>What sits on the counter's far extension: a coin tray, a calculator, a basket of cartons, and bags on hooks.</summary>
     static void CounterExtensionThings(Transform root)
     {
         var parent = new GameObject("Counter Extension Things").transform;
@@ -411,13 +395,6 @@ public static class P3StoreDetails
         var dark = Plain("Device_Dark", new Color(0.07f, 0.075f, 0.09f));
         var steelish = Plain("Device_Steel", new Color(0.68f, 0.7f, 0.73f));
         var white = Plain("Bag_White", new Color(0.97f, 0.97f, 0.96f));
-
-        // A stand-up membership card, angled to the customers.
-        var card = new Vector3(1.32f, top + 0.15f, 0.68f);
-        var rotation = Quaternion.Euler(0f, 180f, 0f) * Quaternion.Euler(-8f, 0f, 0f);
-        var board = Cube("Membership Stand", parent, card, new Vector3(0.22f, 0.3f, 0.012f), dark);
-        board.transform.rotation = rotation;
-        Surface("Membership Card", parent, card + rotation * new Vector3(0f, 0f, -0.0075f), new Vector2(0.2f, 0.28f), rotation, Printed("sign_membership"));
 
         // The calculator and the coin tray by the customer's edge.
         var calculator = new Vector3(1.6f, top + 0.012f, 0.74f);

@@ -27,7 +27,7 @@ public class POSScreen : MonoBehaviour
         var header = WorldUi.AddText(panel, 30f, 18f, 800f, 44f, 28);
         header.text = "동아편의점";
         header.color = WorldUi.Palette.Grey;
-        header.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(header);
         WorldUi.AddBox(panel, 30f, 70f, 800f, 3f, new Color(1f, 1f, 1f, 0.12f));
         for (int i = 0; i < MaxRows; i++)
         {
@@ -43,7 +43,7 @@ public class POSScreen : MonoBehaviour
         }
         WorldUi.AddBox(panel, 30f, 462f, 800f, 3f, new Color(1f, 1f, 1f, 0.12f));
         total = WorldUi.AddText(panel, 30f, 476f, 800f, 70f, 54, TextAnchor.UpperRight);
-        total.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(total);
         change = WorldUi.AddText(panel, 30f, 548f, 800f, 44f, 30, TextAnchor.UpperRight);
         change.color = WorldUi.Palette.TextDim;
         notice = WorldUi.AddText(panel, 30f, 600f, 800f, 50f, 30);

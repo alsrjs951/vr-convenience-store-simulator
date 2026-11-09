@@ -46,7 +46,7 @@ public class StoreSign : MonoBehaviour
         bool two = !string.IsNullOrEmpty(Subtitle);
         float titleHeight = two ? size.y * 0.58f : size.y - pad * 2f;
         var title = WorldUi.AddText(panel, pad * 1.5f, two ? pad * 0.6f : pad, size.x - pad * 3f, titleHeight, Mathf.RoundToInt(size.y * TitleScale), Alignment);
-        title.fontStyle = FontStyle.Bold;
+        WorldUi.Heavy(title);
         title.color = TextColor;
         title.text = Title;
         title.verticalOverflow = VerticalWrapMode.Truncate;
