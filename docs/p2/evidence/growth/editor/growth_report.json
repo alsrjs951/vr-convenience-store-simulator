@@ -1,0 +1,354 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "runtime": "Editor Play Mode",
+    "scope": "The growing store's rules and its flow from the title through two generated days, the ordering terminal and the save file. No hands: buttons through onClick, customers paid through the POS, the time card set in the slot. Nothing about reach, pressing, legibility in a headset, balance or fun. Prices and numbers are proposals.",
+    "savePath": "C:\\Users\\LeeMinGeon\\AppData\\Local\\Temp\\claude\\82fd05eb5e375374\\3bcf428f-fe93-47ad-9eae-32775af96719\\scratchpad\\growth_save\\store_progress.json",
+    "meanDesktopFps": 225.06336975097657,
+    "checks": 57,
+    "failed": 0,
+    "stages": [
+        {
+            "name": "setup.growing_store",
+            "pass": true,
+            "details": "growth=True; unlocks=16; tablet=True; cabinet=True",
+            "time": 5.0027689933776859
+        },
+        {
+            "name": "setup.new_store",
+            "pass": true,
+            "details": "day=1; graduated=False; budget=0; path=C:\\Users\\LeeMinGeon\\AppData\\Local\\Temp\\claude\\82fd05eb5e375374\\3bcf428f-fe93-47ad-9eae-32775af96719\\scratchpad\\growth_save\\store_progress.json",
+            "time": 5.003067970275879
+        },
+        {
+            "name": "rule.opening_store",
+            "pass": true,
+            "details": "assortment=5; ordered=0; services=0; customers=6",
+            "time": 5.005671977996826
+        },
+        {
+            "name": "rule.same_day_same_customers",
+            "pass": true,
+            "details": "1:Cash:0:none:90:dev_ogamja_01x1+dev_shinramen_01x1 2:Card:0:none:90:dev_ogamja_01x1+dev_shinramen_01x1 3:Card:0:none:90:dev_squidpeanut_01x1+dev_shinramen_01x1 4:Card:1:none:90:dev_shinramen_01x1 5:Card:0:none:90:dev_goraebap_01x1 6:Cash:0:none:90:dev_ogamja_01x1",
+            "time": 5.0060834884643559
+        },
+        {
+            "name": "rule.opening_orders_plain",
+            "pass": true,
+            "details": "from assortment=True; cash small=True; no requests or rush=True; 1-2 items=True",
+            "time": 5.006193161010742
+        },
+        {
+            "name": "rule.full_store_is_busy",
+            "pass": true,
+            "details": "assortment=16; customers=13 (expected 13); rush=4",
+            "time": 5.006507873535156
+        },
+        {
+            "name": "rule.requests_follow_equipment",
+            "pass": true,
+            "details": "microwave=2; hot water=2; 1+1=2; right product first and rush last=True; cash small=True",
+            "time": 5.006570339202881
+        },
+        {
+            "name": "rule.next_day_differs",
+            "pass": true,
+            "details": "day 9 against day 10",
+            "time": 5.006768703460693
+        },
+        {
+            "name": "rule.customers_capped",
+            "pass": true,
+            "details": "6 to 14",
+            "time": 5.00682258605957
+        },
+        {
+            "name": "rule.budget",
+            "pass": true,
+            "details": "A=5200; S=6200; C=3000",
+            "time": 5.0069427490234379
+        },
+        {
+            "name": "rule.catalog",
+            "pass": true,
+            "details": "products=9; equipment=7; total=71000",
+            "time": 5.007007122039795
+        },
+        {
+            "name": "rule.new_lines_voiced",
+            "pass": true,
+            "details": "intake lines=5; manager lines=10 of 10",
+            "time": 5.007116794586182
+        },
+        {
+            "name": "save.round_trip",
+            "pass": true,
+            "details": "day=7; budget=1234; owned=cutter; arriving=music",
+            "time": 5.0095438957214359
+        },
+        {
+            "name": "save.missing_file_is_a_new_store",
+            "pass": true,
+            "details": "day=1; started=False",
+            "time": 5.010302543640137
+        },
+        {
+            "name": "title.shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 5.011129856109619
+        },
+        {
+            "name": "title.new_store_offers_one_start",
+            "pass": true,
+            "details": "start=출근하기; fresh shown=False",
+            "time": 5.014681816101074
+        },
+        {
+            "name": "title.store_opens_sparse",
+            "pass": true,
+            "details": "display shelves stocked=0/9; microwave=False; dispenser=False",
+            "time": 5.01544713973999
+        },
+        {
+            "name": "title.skip_in_place_of_day_2_and_3",
+            "pass": true,
+            "details": "skip=True; day2=False",
+            "time": 5.088776588439941
+        },
+        {
+            "name": "title.skip_chosen",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 5.192076683044434
+        },
+        {
+            "name": "skip.store_starts_after_training",
+            "pass": true,
+            "details": "choice=SkipTraining; day=4; graduated=True; budget=4000",
+            "time": 5.192275047302246
+        },
+        {
+            "name": "skip.saved_at_once",
+            "pass": true,
+            "details": "C:\\Users\\LeeMinGeon\\AppData\\Local\\Temp\\claude\\82fd05eb5e375374\\3bcf428f-fe93-47ad-9eae-32775af96719\\scratchpad\\growth_save\\store_progress.json",
+            "time": 5.19315767288208
+        },
+        {
+            "name": "commute.at_the_counter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 6.800365924835205
+        },
+        {
+            "name": "punch_in.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 7.360947132110596
+        },
+        {
+            "name": "day4.shift",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 10.351755142211914
+        },
+        {
+            "name": "day4.opening_store",
+            "pass": true,
+            "details": "orders=6; boxes=2; expired=3; shelves=0; checkpoints=6; scan angle=50; coins=False; line grace=45",
+            "time": 10.351963996887207
+        },
+        {
+            "name": "day4.terminal_dark_in_the_shift",
+            "pass": true,
+            "details": "terminal=False",
+            "time": 10.352120399475098
+        },
+        {
+            "name": "day4.all_served",
+            "pass": true,
+            "details": "paid=6/6; left=0",
+            "time": 116.21854400634766
+        },
+        {
+            "name": "day4.customers_buy_what_the_store_sells",
+            "pass": true,
+            "details": "orders seen=6; assortment=5",
+            "time": 116.21882629394531
+        },
+        {
+            "name": "day4.settled",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 116.2190170288086
+        },
+        {
+            "name": "day4.budget_earned",
+            "pass": true,
+            "details": "sales=13700; tips=1400; grade=A; earned=5140 (rule 5140); budget=9140; board=4일차 정산   A  ·  80점 / 매출 13,700 / 13,700원 · 손님 6/6 · 이탈 0명 · 취소 0 / 손님 만족 100% · 팁 1,400원 / 진열 0/10 · 폐기 0/3 · 오진열 0 · 폐기 오탐 0 · 빈 박스 0 / 발주 예산 +5,140원  ·  잔액 9,140원",
+            "time": 116.22907257080078
+        },
+        {
+            "name": "day4.saved",
+            "pass": true,
+            "details": "day=5; budget=9140; worked=1; sales=13700",
+            "time": 116.22993469238281
+        },
+        {
+            "name": "terminal.lit_after_the_day",
+            "pass": true,
+            "details": "shown=True; summary=구색 5/14  ·  설비 0/7; budget=9,140원; next=5일차 출근",
+            "time": 116.23095703125
+        },
+        {
+            "name": "terminal.products_ordered",
+            "pass": true,
+            "details": "budget 9140 -> 3140; arriving=dev_pocachip_01,dev_onionring_01; row0=포카칩 오리지널|3,000|내일 도착; notice=양파링  ·  내일 아침에 들어옵니다",
+            "time": 116.38175964355469
+        },
+        {
+            "name": "terminal.sample_on_the_counter",
+            "pass": true,
+            "details": "samples=dev_pocachip_01,dev_onionring_01; shelves still empty=True",
+            "time": 116.38194274902344
+        },
+        {
+            "name": "terminal.cannot_overspend",
+            "pass": true,
+            "details": "budget=3140; notice=예산이 6,860원 모자랍니다; button interactable=False",
+            "time": 116.39793395996094
+        },
+        {
+            "name": "terminal.equipment_ordered",
+            "pass": true,
+            "details": "arriving=9; summary=구색 7/14  ·  설비 7/7; nothing in the store yet: microwave=False, scan angle=50",
+            "time": 116.53123474121094
+        },
+        {
+            "name": "day5.begins",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 116.54548645019531
+        },
+        {
+            "name": "day5.orders_arrived",
+            "pass": true,
+            "details": "owned=9; arriving=0; board=5일차 출근 / 새로 들어옴  포카칩 오리지널 · 양파링 · 온수기 · 전자레인지 · 1+1 행사 참여 · 새 커터 · 신형 스캐너 · 매장 음악 · 동전 자동 지급기",
+            "time": 116.55462646484375
+        },
+        {
+            "name": "day5.shelves_filled",
+            "pass": true,
+            "details": "display shelves stocked=2; D-1=True; D-2=True",
+            "time": 116.5551528930664
+        },
+        {
+            "name": "day5.equipment_in_place",
+            "pass": true,
+            "details": "microwave=True; dispenser=True; lamp off=True; scan angle=65; coins=True; line grace=65; music on=True (playing=True)",
+            "time": 116.55533599853516
+        },
+        {
+            "name": "day5.music_plays",
+            "pass": true,
+            "details": "clip=shop_theme; length=88.0s; playing=True; silent before it was bought=True",
+            "time": 116.55549621582031
+        },
+        {
+            "name": "day5.shift",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 119.54606628417969
+        },
+        {
+            "name": "day5.busier_store",
+            "pass": true,
+            "details": "orders=10 (expected 10); boxes=2; checkpoints=4",
+            "time": 119.5462875366211
+        },
+        {
+            "name": "coins.dispensed_onto_the_tray",
+            "pass": true,
+            "details": "bill=5000; total=2800; change=2200; coins due=200 in 2 pieces; dispensed=2; on tray=200; bill taken=True",
+            "time": 139.83993530273438
+        },
+        {
+            "name": "day5.all_served",
+            "pass": true,
+            "details": "paid=10/10; left=0",
+            "time": 272.1123352050781
+        },
+        {
+            "name": "day5.customers_follow_the_store",
+            "pass": true,
+            "details": "assortment=9; orders seen=10; requests=3; rush customers=4; a product ordered in was bought today=True",
+            "time": 272.1125183105469
+        },
+        {
+            "name": "day5.settled",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 272.11279296875
+        },
+        {
+            "name": "day5.terminal_remembers",
+            "pass": true,
+            "details": "summary=구색 7/14  ·  설비 7/7; row0=포카칩 오리지널|3,000|들어옴; row2 can be ordered=True",
+            "time": 272.1214294433594
+        },
+        {
+            "name": "leave.punch_out",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 272.1295471191406
+        },
+        {
+            "name": "leave.terminal_off",
+            "pass": true,
+            "details": "terminal=False",
+            "time": 272.1297302246094
+        },
+        {
+            "name": "punch_out.done",
+            "pass": true,
+            "details": "after 4.0s",
+            "time": 276.67962646484377
+        },
+        {
+            "name": "leave.back_at_the_title",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 276.6800231933594
+        },
+        {
+            "name": "title.store_to_go_back_to",
+            "pass": true,
+            "details": "start=이어서 출근; fresh=새로 시작; day=6; file day=6",
+            "time": 277.6873474121094
+        },
+        {
+            "name": "title.store_as_left",
+            "pass": true,
+            "details": "shelves=2; microwave=True",
+            "time": 277.6878967285156
+        },
+        {
+            "name": "title.fresh_asks_first",
+            "pass": true,
+            "details": "state=Title; label=기록을 지우고 새로 시작; owned=9",
+            "time": 277.7813415527344
+        },
+        {
+            "name": "title.fresh_chosen",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 277.7869567871094
+        },
+        {
+            "name": "fresh.new_store",
+            "pass": true,
+            "details": "day=1; budget=0; owned=0; shelves=0; microwave=False; scan angle=50",
+            "time": 277.7878112792969
+        }
+    ]
+}

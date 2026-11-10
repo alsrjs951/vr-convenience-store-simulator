@@ -62,7 +62,9 @@ public class CustomerDirector : MonoBehaviour
     const int TipStep = 100;
     // Days 2 and 3: time in line beyond the grace comes off the customer's limit, at this rate, up to this share of it. So
     // slow service at the counter arrives as impatience from the people behind, which is what makes the peak pile up.
-    public const float LineGraceSeconds = 45f;
+    public const float DefaultLineGrace = 45f;
+    /// <summary>Not a constant: store music (an equipment unlock) makes the line more patient.</summary>
+    public static float LineGraceSeconds = DefaultLineGrace;
     public const float LinePenaltyPerSecond = 0.5f;
     public const float MaxLinePenaltyShare = 0.4f;
     const float OutcomeSeconds = 1.8f;
@@ -86,6 +88,11 @@ public class CustomerDirector : MonoBehaviour
     public int BrowserTarget = 2;
     /// <summary>Doc 6.3: on Days 2 and 3 the day ends at once when this many customers have left.</summary>
     public int LeaveLimit = 3;
+    /// <summary>
+    /// The days of learning in a store that is kept (docs/p2/해금_성장_기획_2026-11-10.md 3): nobody leaves and a long line
+    /// costs nothing, on any day. Running out of time only sounds the warning, as on the fixed Day 1.
+    /// </summary>
+    public bool Lenient;
 
     public int Paid { get; private set; }
     public int Sales { get; private set; }
@@ -503,7 +510,7 @@ public class CustomerDirector : MonoBehaviour
         SpawnProducts(order);
         Pos.BeginOrder(order);
         BeginPayment(order);
-        linePenalty = order.Day > 1 && customer.Record.QueuedAt >= 0f ? LinePenalty(customer.Record.CalledAt - customer.Record.QueuedAt, order.TimeLimitSeconds) : 0f;
+        linePenalty = order.Day > 1 && !Lenient && customer.Record.QueuedAt >= 0f ? LinePenalty(customer.Record.CalledAt - customer.Record.QueuedAt, order.TimeLimitSeconds) : 0f;
         customer.Record.LinePenalty = linePenalty;
         if (customer.FaceRig != null) customer.FaceRig.SetMood(linePenalty > 0f ? CustomerMood.Impatient : CustomerMood.Neutral);
         remaining = order.TimeLimitSeconds - linePenalty;
@@ -550,7 +557,7 @@ public class CustomerDirector : MonoBehaviour
             if (remaining <= 0f)
             {
                 // Day 1 only warns (doc 6.3); later days lose the customer.
-                if (order.Day > 1) break;
+                if (order.Day > 1 && !Lenient) break;
                 if (!warned)
                 {
                     warned = true;
@@ -801,7 +808,7 @@ public class CustomerDirector : MonoBehaviour
             while (Line.IndexOf(customer) == slot)
             {
                 // Past the grace the wait starts to cost time at the counter (LinePenalty), and it shows on the face first.
-                if (!fedUp && dayOrders.Count > 0 && dayOrders[0].Day > 1 && Time.time - customer.Record.QueuedAt > LineGraceSeconds)
+                if (!fedUp && !Lenient && dayOrders.Count > 0 && dayOrders[0].Day > 1 && Time.time - customer.Record.QueuedAt > LineGraceSeconds)
                 {
                     fedUp = true;
                     if (customer.FaceRig != null)

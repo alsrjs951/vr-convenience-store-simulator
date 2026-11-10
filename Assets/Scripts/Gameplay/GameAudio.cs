@@ -8,7 +8,8 @@ public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose,
 public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited }
 
 /// <summary>What the store manager says on the way in and at the end (game design 10.0, 2026-11-09).</summary>
-public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC, FirstCustomer, Alone }
+/// <summary>New lines go at the end: the scene builder fills GameAudio.ManagerLines in this order, and a line without a clip is silent.</summary>
+public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC, FirstCustomer, Alone, Graduated }
 
 /// <summary>One voice's set of customer lines (the scene builder fills a female and a male set).</summary>
 [Serializable]
@@ -60,6 +61,8 @@ public class GameAudio : MonoBehaviour
     [Header("Store")]
     public AudioClip BellClip;
     public AudioClip DoorClip, HurryClip, DeliveryClip, Ambience;
+    /// <summary>Store music, once the store has it (an equipment unlock). Empty: the unlock still works, in silence.</summary>
+    public AudioClip Music;
 
     [Header("Intake (doc 5.7)")]
     public AudioClip ThudClip;
@@ -83,7 +86,8 @@ public class GameAudio : MonoBehaviour
     /// <summary>In the order of <see cref="ManagerLine"/>.</summary>
     public AudioClip[] ManagerLines = new AudioClip[0];
 
-    AudioSource speaker, narrator, ambience;
+    const float MusicVolume = 0.16f;
+    AudioSource speaker, narrator, ambience, music;
     readonly Dictionary<AudioClip, float[]> envelopes = new Dictionary<AudioClip, float[]>();
 
     /// <summary>How many times each sound was asked for, for the checks. Sounds are not listened to.</summary>
@@ -135,6 +139,27 @@ public class GameAudio : MonoBehaviour
             ambience.clip = Ambience;
             ambience.Play();
         }
+    }
+
+    public bool MusicOn { get; private set; }
+    public bool MusicPlaying => music != null && music.isPlaying;
+
+    /// <summary>Switches the store music on or off. It plays under everything else, like the ambience.</summary>
+    public void SetMusic(bool on)
+    {
+        MusicOn = on;
+        if (Music == null) return;
+        if (music == null)
+        {
+            music = gameObject.AddComponent<AudioSource>();
+            music.spatialBlend = 0f;
+            music.loop = true;
+            music.playOnAwake = false;
+            music.volume = MusicVolume;
+            music.clip = Music;
+        }
+        if (on && !music.isPlaying) music.Play();
+        else if (!on && music.isPlaying) music.Stop();
     }
 
     public void PlayError() { Count(StoreSound.Error); speaker.PlayOneShot(ErrorClip); }
@@ -209,7 +234,7 @@ public class GameAudio : MonoBehaviour
     /// <summary>Tutorial step 1 to 6; a new step cuts the one still talking.</summary>
     public void NarrateTutorial(int step) => Narrate(TutorialLines, step - 1);
 
-    /// <summary>Intake step 1 to 4.</summary>
+    /// <summary>Intake step 1 to 4, and 5 for the disposal step of the training.</summary>
     public void NarrateIntake(int step) => Narrate(IntakeLines, step - 1);
 
     /// <summary>The guide line for a request that has come up for the first time.</summary>

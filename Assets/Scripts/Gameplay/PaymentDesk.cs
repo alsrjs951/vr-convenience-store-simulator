@@ -29,6 +29,10 @@ public class PaymentDesk : MonoBehaviour
     public readonly Dictionary<int, PaymentProp> StockItems = new Dictionary<int, PaymentProp>();
     /// <summary>What to say when a card or bill comes too early. Set for customers' orders; the tutorial keeps the default.</summary>
     public Func<string> NotReadyNotice;
+    /// <summary>The coin dispenser (an equipment unlock): the coins of the change land on the tray by themselves; bills are still handed over.</summary>
+    public bool AutoCoins;
+    /// <summary>Coins the dispenser has put out for the payment going on, for the checks.</summary>
+    public int CoinsDispensed { get; private set; }
 
     readonly List<PaymentProp> spawned = new List<PaymentProp>();
     Action done;
@@ -162,6 +166,21 @@ public class PaymentDesk : MonoBehaviour
         }
         stockActive = true;
         Tray.Begin(change);
+        if (AutoCoins) DispenseCoins(change % 1000);
+    }
+
+    /// <summary>Lays the coin part of the change on the tray, side by side so none lands in another.</summary>
+    void DispenseCoins(int amount)
+    {
+        const float spacing = 0.07f;
+        var coinSize = new Vector3(0.045f, 0.008f, 0.045f);
+        CoinsDispensed = 0;
+        foreach (int value in new[] { 500, 100 })
+            for (; amount >= value; amount -= value, CoinsDispensed++)
+            {
+                var offset = new Vector3((CoinsDispensed % 3 - 1) * spacing, 0f, (CoinsDispensed / 3 == 0 ? 0.035f : -0.035f));
+                Spawn($"Dispensed {value}", coinSize, CoinMaterial, value, false, $"{value:N0}", new Vector3(Tray.transform.position.x, CustomerPlate.position.y, Tray.transform.position.z) + offset);
+            }
     }
 
     void OnChangeMatched()

@@ -31,7 +31,9 @@ public class StockBox : MonoBehaviour
     const float FloorRespawnSeconds = 3f;
     const float CheckpointRadius = 0.03f;
     const float CheckpointGapSeconds = 2f;
-    const int Checkpoints = 6;
+    public const int DefaultCheckpoints = 6;
+    /// <summary>How many checkpoints the next boxes get along their tape. A sharper cutter (an equipment unlock) needs fewer.</summary>
+    public static int CheckpointsPerBox = DefaultCheckpoints;
     const float NoticeSeconds = 3f;
     const float HintAfterDockedSeconds = 20f;
     const float FlapHintSeconds = 15f;
@@ -69,6 +71,8 @@ public class StockBox : MonoBehaviour
     readonly List<Collider> bodyColliders = new List<Collider>();
     readonly List<GameObject> beads = new List<GameObject>();
     Vector3[] checkpointLocal;
+    // Fixed when the box is made: its beads are built to this number.
+    int checkpoints = DefaultCheckpoints;
     Transform[] minorFlaps;
     Transform tapeA, tapeB;
     Text notice;
@@ -160,11 +164,12 @@ public class StockBox : MonoBehaviour
 
         // Six checkpoints along the tape line (doc 5.7.1 B3). Blade tips are tested against them each frame, so a quick
         // stroke cannot skip one between physics steps.
-        checkpointLocal = new Vector3[Checkpoints];
+        checkpoints = Mathf.Max(2, CheckpointsPerBox);
+        checkpointLocal = new Vector3[checkpoints];
         float span = Inner.x - 0.04f;
-        for (int i = 0; i < Checkpoints; i++)
+        for (int i = 0; i < checkpoints; i++)
         {
-            checkpointLocal[i] = new Vector3(-span * 0.5f + span * i / (Checkpoints - 1), OuterHeight + 0.006f, 0f);
+            checkpointLocal[i] = new Vector3(-span * 0.5f + span * i / (checkpoints - 1), OuterHeight + 0.006f, 0f);
             var bead = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             Destroy(bead.GetComponent<Collider>());
             bead.name = $"Checkpoint {i + 1}";
@@ -343,14 +348,14 @@ public class StockBox : MonoBehaviour
             if (!lastTip.TryGetValue(cutter, out var previous)) previous = tip;
             lastTip[cutter] = tip;
             if (CutProgress > 0 && Time.time - lastCheckpointTime > CheckpointGapSeconds) ResetCut();
-            for (int guard = 0; guard < Checkpoints; guard++)
+            for (int guard = 0; guard < checkpoints; guard++)
             {
-                int next = CutProgress == 0 ? -1 : cutDirection > 0 ? CutProgress : Checkpoints - 1 - CutProgress;
+                int next = CutProgress == 0 ? -1 : cutDirection > 0 ? CutProgress : checkpoints - 1 - CutProgress;
                 bool advanced = false;
                 if (next < 0)
                 {
                     if (Touches(previous, tip, 0)) advanced = BeginCut(+1, cutter);
-                    else if (Touches(previous, tip, Checkpoints - 1)) advanced = BeginCut(-1, cutter);
+                    else if (Touches(previous, tip, checkpoints - 1)) advanced = BeginCut(-1, cutter);
                 }
                 else if (Touches(previous, tip, next))
                 {
@@ -392,8 +397,8 @@ public class StockBox : MonoBehaviour
         CutProgress++;
         lastCheckpointTime = Time.time;
         cutter.Tick();
-        if (Intake.Audio) Intake.Audio.PlayAt(StoreSound.Tape, transform.TransformPoint(checkpointLocal[cutDirection > 0 ? CutProgress - 1 : Checkpoints - CutProgress]));
-        if (CutProgress >= Checkpoints) FinishCut();
+        if (Intake.Audio) Intake.Audio.PlayAt(StoreSound.Tape, transform.TransformPoint(checkpointLocal[cutDirection > 0 ? CutProgress - 1 : checkpoints - CutProgress]));
+        if (CutProgress >= checkpoints) FinishCut();
         Changed?.Invoke(this);
         return true;
     }
@@ -415,7 +420,7 @@ public class StockBox : MonoBehaviour
 
     /// <summary>Where checkpoint i is now, for tests aiming the blade.</summary>
     public Vector3 CheckpointWorld(int i) => transform.TransformPoint(checkpointLocal[i]);
-    public int CheckpointCount => Checkpoints;
+    public int CheckpointCount => checkpoints;
 
     void FinishCut()
     {

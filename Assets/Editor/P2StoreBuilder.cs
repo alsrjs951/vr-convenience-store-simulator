@@ -27,12 +27,20 @@ public static class P2StoreBuilder
     const string CatalogPath = "Assets/Data/SO/ProductCatalog.asset";
     // Doc 6.5: the order scenario is Data/scenarios.csv at the repository root (designer-owned). The build copies it into
     // the project as a TextAsset, after checking every row of every day parses against the catalog.
-    const string ScenarioSource = "Data/scenarios.csv";
-    const string ScenarioPath = "Assets/Data/Generated/scenarios.csv";
+    const string ScenarioSourceDefault = "Data/scenarios.csv";
+    const string ScenarioPathDefault = "Assets/Data/Generated/scenarios.csv";
     const int ScenarioDays = 3;
     // Doc 6.5: the intake boxes are Data/deliveries.csv at the repository root; the build copies it in like the scenario.
     const string DeliveriesSource = "Data/deliveries.csv";
     const string DeliveriesPath = "Assets/Data/Generated/deliveries.csv";
+    // What the ordering terminal offers (docs/p2/해금_성장_기획_2026-11-10.md), copied in like the other two.
+    const string UnlocksSource = "Data/unlocks.csv";
+    const string UnlocksPath = "Assets/Data/Generated/unlocks.csv";
+    // The short days of learning of a store that is kept: same schemas as the scenario and the deliveries.
+    const string TrainingScenarioSource = "Data/training_scenarios.csv";
+    const string TrainingScenarioPath = "Assets/Data/Generated/training_scenarios.csv";
+    const string TrainingDeliveriesSource = "Data/training_deliveries.csv";
+    const string TrainingDeliveriesPath = "Assets/Data/Generated/training_deliveries.csv";
     const string ManifestFolder = "Assets/Data/Provisional";
     const string MaterialFolder = "Assets/Materials/P2";
     const string Evidence = "docs/p2/evidence/day1";
@@ -647,6 +655,13 @@ public static class P2StoreBuilder
         game.Title.Hands = hands;
         game.Title.Manager = manager;
         BuildWristWatch(game, director);
+        game.Unlocks = ImportUnlocks(intake);
+        game.TrainingScenario = ImportScenario(catalog, TrainingScenarioSource, TrainingScenarioPath);
+        if (!File.Exists(TrainingDeliveriesSource)) throw new Exception("Deliveries missing: " + TrainingDeliveriesSource);
+        File.Copy(TrainingDeliveriesSource, TrainingDeliveriesPath, true);
+        AssetDatabase.ImportAsset(TrainingDeliveriesPath);
+        game.TrainingDeliveries = AssetDatabase.LoadAssetAtPath<TextAsset>(TrainingDeliveriesPath) ?? throw new Exception("Deliveries missing: " + TrainingDeliveriesPath);
+        game.Tablet = BuildOrderTerminal(environment, systems);
 
         var verification = new GameObject("P2 Day Verification").AddComponent<P2DayVerification>();
         verification.Intake = intake;
@@ -661,6 +676,9 @@ public static class P2StoreBuilder
         verification.Bag = bagZone;
         verification.Desk = desk;
         new GameObject("P2 Locomotion Verification").AddComponent<P2LocomotionVerification>();
+        var growth = new GameObject("P2 Growth Verification").AddComponent<P2GrowthVerification>();
+        growth.Game = game;
+        growth.Intake = intake;
         // P3 counter devices and screens: looks only, after everything they sit around exists.
         P3StoreDressing.DressCounter(environment, new Vector3(-0.62f, 1.32f, 0.98f), new Vector3(0.62f, 1.32f, 0.98f), EyePosition);
         // Printed and painted details, looks only, after the NavMesh bake: nothing here has a collider.
@@ -816,6 +834,29 @@ public static class P2StoreBuilder
         OnePlus = Sound($"voice_special_oneplus_{gender}"),
     };
 
+    const string StoreMusicPath = "Assets/ThirdParty/StoreAssets/OpenGameArt/shop_theme/shop_theme.ogg";
+
+    /// <summary>
+    /// What plays once the store has bought its music (docs/p2/해금_성장_기획_2026-11-10.md 5): a CC0 loop of 88 s
+    /// (Assets/ThirdParty/StoreAssets/README.md). Kept compressed in memory, as a minute and a half of stereo is some 15 MB
+    /// decompressed, and loaded in the background so the scene does not wait for it.
+    /// </summary>
+    static AudioClip StoreMusic()
+    {
+        var importer = AssetImporter.GetAtPath(StoreMusicPath) as AudioImporter ?? throw new Exception($"Store music missing: {StoreMusicPath}");
+        var settings = importer.defaultSampleSettings;
+        if (settings.loadType != AudioClipLoadType.CompressedInMemory || settings.compressionFormat != AudioCompressionFormat.Vorbis || !importer.loadInBackground)
+        {
+            settings.loadType = AudioClipLoadType.CompressedInMemory;
+            settings.compressionFormat = AudioCompressionFormat.Vorbis;
+            settings.quality = 0.6f;
+            importer.defaultSampleSettings = settings;
+            importer.loadInBackground = true;
+            importer.SaveAndReimport();
+        }
+        return AssetDatabase.LoadAssetAtPath<AudioClip>(StoreMusicPath) ?? throw new Exception($"Store music did not import: {StoreMusicPath}");
+    }
+
     static AudioClip[] Lines(string stem, int count)
     {
         var clips = new AudioClip[count];
@@ -835,6 +876,7 @@ public static class P2StoreBuilder
         audio.HurryClip = Sound("sfx_hurry");
         audio.DeliveryClip = Sound("sfx_delivery");
         audio.Ambience = Sound("amb_store_loop");
+        audio.Music = StoreMusic();
         audio.ThudClip = Sound("sfx_box_thud");
         audio.TapeClip = Sound("sfx_tape");
         audio.FlapClip = Sound("sfx_flap");
@@ -846,13 +888,14 @@ public static class P2StoreBuilder
         audio.Female = Voice("f");
         audio.Male = Voice("m");
         audio.TutorialLines = Lines("voice_tutorial", 6);
-        audio.IntakeLines = Lines("voice_intake", 4);
+        // The fifth is the disposal step of the training (IntakeTutorial.TeachDisposal); the fixed Day 2 never asks for it.
+        audio.IntakeLines = Lines("voice_intake", 5);
         audio.SpecialGuideLines = new[] { Sound("voice_guide_microwave"), Sound("voice_guide_hotwater"), Sound("voice_guide_oneplus") };
         audio.ManagerLines = new[]
         {
             Sound("voice_manager_welcome"), Sound("voice_manager_punch_in"), Sound("voice_manager_punch_out"),
             Sound("voice_ending_s"), Sound("voice_ending_a"), Sound("voice_ending_b"), Sound("voice_ending_c"),
-            Sound("voice_manager_first_customer"), Sound("voice_manager_alone"),
+            Sound("voice_manager_first_customer"), Sound("voice_manager_alone"), Sound("voice_manager_graduated"),
         };
     }
 
@@ -885,10 +928,10 @@ public static class P2StoreBuilder
     }
 
     /// <summary>Copies Data/scenarios.csv into Assets and fails the build if any row of any day is skipped or a day is empty.</summary>
-    static TextAsset ImportScenario(ProductCatalog catalog)
+    static TextAsset ImportScenario(ProductCatalog catalog, string source = ScenarioSourceDefault, string imported = ScenarioPathDefault)
     {
-        if (!File.Exists(ScenarioSource)) throw new Exception("Scenario missing: " + ScenarioSource);
-        var text = File.ReadAllText(ScenarioSource);
+        if (!File.Exists(source)) throw new Exception("Scenario missing: " + source);
+        var text = File.ReadAllText(source);
         // A fresh list straight from the prefabs: the catalog's references can be stale after the character setup's imports.
         _ = catalog;
         catalog = ScriptableObject.CreateInstance<ProductCatalog>();
@@ -904,15 +947,83 @@ public static class P2StoreBuilder
         for (int day = 1; day <= ScenarioDays; day++)
         {
             var orders = DayScenarioLoader.Parse(text, day, catalog, day == 1 ? skipped : null);
-            if (orders.Count == 0) throw new Exception($"{ScenarioSource} has no orders for day {day}.");
+            if (orders.Count == 0) throw new Exception($"{source} has no orders for day {day}.");
             counts.Add($"day {day}: {orders.Count}");
         }
-        if (skipped.Count > 0) throw new Exception($"{ScenarioSource}: {skipped.Count} rows skipped:\n" + string.Join("\n", skipped));
-        Directory.CreateDirectory(Path.GetDirectoryName(ScenarioPath));
-        File.WriteAllText(ScenarioPath, text);
-        AssetDatabase.ImportAsset(ScenarioPath);
-        Debug.Log($"[P2] Scenario imported from {ScenarioSource}: {string.Join(", ", counts)}");
-        return AssetDatabase.LoadAssetAtPath<TextAsset>(ScenarioPath) ?? throw new Exception("Scenario import failed: " + ScenarioPath);
+        if (skipped.Count > 0) throw new Exception($"{source}: {skipped.Count} rows skipped:\n" + string.Join("\n", skipped));
+        Directory.CreateDirectory(Path.GetDirectoryName(imported));
+        File.WriteAllText(imported, text);
+        AssetDatabase.ImportAsset(imported);
+        Debug.Log($"[P2] Scenario imported from {source}: {string.Join(", ", counts)}");
+        return AssetDatabase.LoadAssetAtPath<TextAsset>(imported) ?? throw new Exception("Scenario import failed: " + imported);
+    }
+
+    /// <summary>
+    /// Copies Data/unlocks.csv into Assets and fails the build on a row that does not parse, or on a product whose shelf is
+    /// not one of the display slots holding that product: ordering it in must fill a shelf that exists.
+    /// </summary>
+    static TextAsset ImportUnlocks(IntakeDirector intake)
+    {
+        if (!File.Exists(UnlocksSource)) throw new Exception("Unlocks missing: " + UnlocksSource);
+        var text = File.ReadAllText(UnlocksSource);
+        // A fresh list straight from the prefabs, as for the scenario.
+        var catalog = ScriptableObject.CreateInstance<ProductCatalog>();
+        foreach (var path in Directory.GetFiles(ManifestFolder, "dev_*.json"))
+        {
+            if (path.EndsWith(".box_fit.json")) continue;
+            var id = JsonUtility.FromJson<Manifest>(File.ReadAllText(path)).id;
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{id}.prefab")?.GetComponent<ProductPrefab>();
+            if (prefab != null) catalog.Products.Add(prefab);
+        }
+        var skipped = new List<string>();
+        var items = UnlockCatalog.Parse(text, catalog, skipped);
+        if (skipped.Count > 0) throw new Exception($"{UnlocksSource}: {skipped.Count} rows skipped:\n" + string.Join("\n", skipped));
+        int products = 0;
+        foreach (var item in items)
+        {
+            if (item.Kind != UnlockKind.Product) continue;
+            products++;
+            var slot = Array.Find(intake.DecorSlots, s => s != null && s.SlotId == item.Slot);
+            if (slot == null) throw new Exception($"{UnlocksSource}: {item.Id} names slot {item.Slot}, which is not a display slot.");
+            if (slot.ProductId != item.Id) throw new Exception($"{UnlocksSource}: slot {item.Slot} holds {slot.ProductId}, not {item.Id}.");
+        }
+        Directory.CreateDirectory(Path.GetDirectoryName(UnlocksPath));
+        File.WriteAllText(UnlocksPath, text);
+        AssetDatabase.ImportAsset(UnlocksPath);
+        Debug.Log($"[P2] Unlocks imported from {UnlocksSource}: {products} products, {items.Count - products} equipment");
+        return AssetDatabase.LoadAssetAtPath<TextAsset>(UnlocksPath) ?? throw new Exception("Unlocks import failed: " + UnlocksPath);
+    }
+
+    /// <summary>
+    /// The ordering terminal: a monitor on a stand at the end of the counter past the card terminal, turned to the clerk's
+    /// place. It stands there all day with its screen off; OrderTablet lights the screen between days. Looks only, no
+    /// colliders, like the other things on the counter's extension.
+    /// </summary>
+    static OrderTablet BuildOrderTerminal(Transform environment, Transform systems)
+    {
+        var screenCenter = new Vector3(1.25f, 1.27f, 0.8f);
+        var facing = Facing(screenCenter);
+        var go = new GameObject("Order Tablet");
+        go.transform.SetParent(systems, false);
+        go.transform.SetPositionAndRotation(screenCenter, facing);
+        var tablet = go.AddComponent<OrderTablet>();
+
+        var dark = Material("P2_OrderTerminal", new Color(0.05f, 0.055f, 0.065f));
+        var root = new GameObject("Order Terminal").transform;
+        root.SetParent(environment, false);
+        float width = OrderTablet.Size.x * OrderTablet.MetersPerPixel, height = OrderTablet.Size.y * OrderTablet.MetersPerPixel;
+        // The screen is read from the side its forward points away from, so the monitor's body is just beyond it.
+        var body = Box("Order Terminal Monitor", screenCenter + facing * new Vector3(0f, 0f, 0.014f), new Vector3(width + 0.04f, height + 0.04f, 0.022f), dark, root, false);
+        body.transform.rotation = facing;
+        var away = Vector3.ProjectOnPlane(screenCenter - EyePosition, Vector3.up).normalized;
+        var upright = Quaternion.LookRotation(away);
+        var foot = new Vector3(screenCenter.x, 0f, screenCenter.z) + away * 0.06f;
+        float neckTop = screenCenter.y - height * 0.25f;
+        var neck = Box("Order Terminal Neck", foot + Vector3.up * (CounterTop + neckTop) * 0.5f, new Vector3(0.06f, neckTop - CounterTop, 0.03f), dark, root, false);
+        neck.transform.rotation = upright;
+        var stand = Box("Order Terminal Foot", foot + Vector3.up * (CounterTop + 0.008f), new Vector3(0.26f, 0.016f, 0.18f), dark, root, false);
+        stand.transform.rotation = upright;
+        return tablet;
     }
 
     static T FindInScene<T>() where T : UnityEngine.Object => UnityEngine.Object.FindFirstObjectByType<T>() ?? throw new Exception(typeof(T).Name + " missing.");

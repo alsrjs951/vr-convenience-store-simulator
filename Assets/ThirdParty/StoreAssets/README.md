@@ -14,8 +14,14 @@ was checked on the source's own page. Converted for URP by `scripts/windows/impo
 | `PolyHaven/industrial_pastic_container` | Industrial Plastic Container, FBX + 2k JPG | https://polyhaven.com/a/industrial_pastic_container | CC0 1.0 |
 | `PolyHaven/hand_truck` | Hand Truck, FBX + 2k JPG | https://polyhaven.com/a/hand_truck | CC0 1.0 |
 | `Khronos/CommercialRefrigerator` | Commercial Refrigerator, GLB | https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CommercialRefrigerator | **CC BY 4.0** |
+| `OpenGameArt/shop_theme` | "Shop Theme" ("Buy Something!") by Cleyton Kauffman, OGG, 88 s loop | https://opengameart.org/content/shop-theme | CC0 1.0 |
 
 CC0 assets need no attribution (Poly Haven: https://polyhaven.com/license, ambientCG: https://docs.ambientcg.com/license/).
+
+The store music was downloaded 2026-11-11 with the user's approval (`shop_theme.zip`, 13,931,428 bytes, SHA-256
+`127e5556…9965c836`; license read on the OpenGameArt page that day). It is what plays once the store has bought
+"매장 음악" (`GameAudio.Music`, linked by `P2StoreBuilder.StoreMusic`). The author's page asks for no credit but gives
+one: "Music by Cleyton Kauffman - https://soundcloud.com/cleytonkauffman".
 
 **The refrigerator needs attribution** wherever the game is shown or shared (credits, presentation):
 
@@ -42,5 +48,8 @@ and LED panel textures (`Assets/Art/Generated`, `scripts/windows/make_store_text
 - `CommercialRefrigerator`: converted from GLB to OBJ with node transforms applied (no glTF importer package in the
   project). The champagne bottles (113k vertices, with a label) are left out. The door glass uses a plain transparent
   URP material instead of KHR_materials_transmission.
+- `shop_theme`: `Buy Something!.ogg` renamed to `shop_theme.ogg`, otherwise as it came. The zip's MP3s and its
+  "Radio Edit" are not here: the radio edit climbs 11 dB from its start to its end (8 s averages of -30 to -18 dB), so
+  as a loop it would drop every time it starts over.
 - ambientCG: only Color, NormalGL and the generated mask are kept; displacement, `.blend`, `.usdc`, `.mtlx` and
   `.tres` files are not.

@@ -6,6 +6,9 @@ using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Comfort;
 using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
+/// <summary>What was pressed on the title of a store that is kept between sessions.</summary>
+public enum TitleChoice { Fresh, Continue, SkipTraining }
+
 /// <summary>
 /// The way into the shift and out of it (game design 10.0, 2026-11-09). The game waits at the closed store door with a
 /// title on it, so nothing runs until someone has the headset on and chooses. The door slides open, the player walks to the
@@ -47,6 +50,12 @@ public class TitleFlow : MonoBehaviour
 
     /// <summary>The day the player chose to start from; 0 until then.</summary>
     public int ChosenDay { get; private set; }
+    /// <summary>How a store that is kept between sessions is entered (see <see cref="OfferStore"/>).</summary>
+    public TitleChoice Choice { get; private set; }
+    public Button FreshButton { get; private set; }
+    public Button SkipButton { get; private set; }
+    public string StartLabel => startLabel != null ? startLabel.text : "";
+    public string FreshLabel => freshLabel != null ? freshLabel.text : "";
     public Button StartButton { get; private set; }
     public Button MoreButton { get; private set; }
     public Button BackButton { get; private set; }
@@ -68,7 +77,12 @@ public class TitleFlow : MonoBehaviour
     RectTransform panel, guidePanel;
     GameObject mainGroup, moreGroup;
     Text guideText, speedLabel, vignetteLabel;
+    Text subtitle, hint, startLabel, freshLabel, skipLabel;
     Vector3[] leafClosed = new Vector3[0];
+    // A store kept between sessions: 0 while the title is the plain three days, else the first day after the training.
+    int afterTraining;
+    int continueDay;
+    bool freshArmed, skipArmed;
 
     void Awake()
     {
@@ -92,13 +106,18 @@ public class TitleFlow : MonoBehaviour
         var title = WorldUi.AddText(main, 0f, 18f, PanelWidth, 110f, 96, TextAnchor.MiddleCenter);
         WorldUi.Bold(title);
         title.text = "동아편의점";
-        var subtitle = WorldUi.AddText(main, 0f, 132f, PanelWidth, 56f, 42, TextAnchor.MiddleCenter);
+        subtitle = WorldUi.AddText(main, 0f, 132f, PanelWidth, 56f, 42, TextAnchor.MiddleCenter);
         subtitle.color = WorldUi.Palette.TextDim;
         subtitle.text = "오늘은 첫 출근 날입니다";
         StartButton = Button(main, 150f, 204f, 560f, 120f, "출근하기", 66, true);
-        var hint = WorldUi.AddText(main, 0f, 338f, PanelWidth, 50f, 32, TextAnchor.MiddleCenter);
+        startLabel = StartButton.GetComponentInChildren<Text>();
+        hint = WorldUi.AddText(main, 0f, 338f, PanelWidth, 50f, 32, TextAnchor.MiddleCenter);
         hint.color = WorldUi.Palette.TextDim;
         hint.text = "컨트롤러로 가리키고 검지 버튼을 누르세요";
+        // In the hint's place once there is a store to go back to: someone who has one knows how to press.
+        FreshButton = Button(main, 200f, 334f, 460f, 58f, "새로 시작", 32, false);
+        freshLabel = FreshButton.GetComponentInChildren<Text>();
+        FreshButton.gameObject.SetActive(false);
         MoreButton = Button(main, 340f, 404f, 180f, 62f, "설정", 34, false);
 
         moreGroup = Group("More");
@@ -108,6 +127,10 @@ public class TitleFlow : MonoBehaviour
         moreTitle.text = "설정";
         Day2Button = Button(more, 50f, 96f, 370f, 72f, "2일차부터", 38, false);
         Day3Button = Button(more, 440f, 96f, 370f, 72f, "3일차부터", 38, false);
+        // In their place when the store is kept between sessions: the training can be skipped, not entered half way.
+        SkipButton = Button(more, 50f, 96f, 760f, 72f, "수습 건너뛰기", 38, false);
+        skipLabel = SkipButton.GetComponentInChildren<Text>();
+        SkipButton.gameObject.SetActive(false);
         SpeedButton = Button(more, 50f, 182f, 370f, 72f, "", 32, false);
         VignetteButton = Button(more, 440f, 182f, 370f, 72f, "", 32, false);
         RecenterButton = Button(more, 50f, 268f, 760f, 66f, "시점 다시 맞추기", 34, false);
@@ -116,7 +139,32 @@ public class TitleFlow : MonoBehaviour
         speedLabel = SpeedButton.GetComponentInChildren<Text>();
         vignetteLabel = VignetteButton.GetComponentInChildren<Text>();
 
-        StartButton.onClick.AddListener(() => Choose(1));
+        StartButton.onClick.AddListener(() =>
+        {
+            if (continueDay > 0) Choose(continueDay, TitleChoice.Continue);
+            else Choose(1, TitleChoice.Fresh);
+        });
+        FreshButton.onClick.AddListener(() =>
+        {
+            // Starting over throws the store away, so it takes a second press.
+            if (freshArmed)
+            {
+                Choose(1, TitleChoice.Fresh);
+                return;
+            }
+            freshArmed = true;
+            freshLabel.text = "기록을 지우고 새로 시작";
+        });
+        SkipButton.onClick.AddListener(() =>
+        {
+            if (continueDay == 0 || skipArmed)
+            {
+                Choose(afterTraining, TitleChoice.SkipTraining);
+                return;
+            }
+            skipArmed = true;
+            skipLabel.text = "기록을 지우고 수습 건너뛰기";
+        });
         MoreButton.onClick.AddListener(() => ShowMore(true));
         BackButton.onClick.AddListener(() => ShowMore(false));
         Day2Button.onClick.AddListener(() => Choose(2));
@@ -159,9 +207,35 @@ public class TitleFlow : MonoBehaviour
         return button;
     }
 
-    void Choose(int day)
+    void Choose(int day, TitleChoice choice = TitleChoice.Fresh)
     {
-        if (ChosenDay == 0) ChosenDay = day;
+        if (ChosenDay != 0) return;
+        ChosenDay = day;
+        Choice = choice;
+    }
+
+    /// <summary>
+    /// The title for a store that is kept between sessions (docs/p2/해금_성장_기획_2026-11-10.md 3). With a store to go
+    /// back to, the big button goes on with it and 새로 시작 sits under it; the settings offer skipping the training in
+    /// place of starting at Day 2 or 3. Call before <see cref="ChooseDay"/>.
+    /// </summary>
+    /// <param name="savedDay">The day the saved store is at, or 0 when there is none.</param>
+    /// <param name="firstDayAfterTraining">Where skipping the training starts.</param>
+    public void OfferStore(int savedDay, int firstDayAfterTraining)
+    {
+        afterTraining = firstDayAfterTraining;
+        continueDay = savedDay;
+        freshArmed = skipArmed = false;
+        bool saved = savedDay > 0;
+        subtitle.text = saved ? $"근무 {savedDay}일차" : "오늘은 첫 출근 날입니다";
+        startLabel.text = saved ? "이어서 출근" : "출근하기";
+        freshLabel.text = "새로 시작";
+        skipLabel.text = "수습 건너뛰기";
+        hint.gameObject.SetActive(!saved);
+        FreshButton.gameObject.SetActive(saved);
+        Day2Button.gameObject.SetActive(false);
+        Day3Button.gameObject.SetActive(false);
+        SkipButton.gameObject.SetActive(true);
     }
 
     /// <summary>Game design 16: for anyone feeling queasy, a slower walk and a stronger vignette. They stay for the next run.</summary>

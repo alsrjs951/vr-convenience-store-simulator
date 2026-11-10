@@ -34,6 +34,7 @@
     { "id": "voice_intake_2", "speaker": "manager", "when": "2일차 입고 2/4 테이프 자르기", "text": "거치대 앞에 커터 있죠? 그걸로 박스 위 테이프를 끝에서 끝까지 쭉 그어 줘요.", "direction": "옆에서 가르치듯" },
     { "id": "voice_intake_3", "speaker": "manager", "when": "2일차 입고 3/4 박스 열기", "text": "이제 박스 날개를 하나씩 잡고, 바깥으로 끝까지 젖혀요.", "direction": "옆에서 가르치듯" },
     { "id": "voice_intake_4", "speaker": "manager", "when": "2일차 입고 4/4 진열", "text": "물건을 하나 꺼내 들고 노란 칸을 봐요. 놓일 자리가 초록색으로 뜨면, 그때 손을 놓으면 돼요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_intake_5", "speaker": "manager", "when": "수습 2일차, 입고 안내 뒤 폐기 안내(매장을 키우는 흐름에서만)", "text": "유통기한 지난 건 표시가 붙어 있어요. 집어서 계산대 왼쪽 폐기함에 넣어 주세요.", "direction": "옆에서 가르치듯" },
 
     { "id": "voice_guide_microwave", "speaker": "manager", "when": "3일차, 데워 달라는 주문이 처음 왔을 때", "text": "데워 달라는 손님이네요. 찍고 나서 왼쪽 냉장고 옆 전자레인지에 넣고, 땡 소리 나면 꺼내 드려요.", "direction": "바쁜 와중에 빠르게 알려 주듯" },
     { "id": "voice_guide_hotwater", "speaker": "manager", "when": "3일차, 물을 부어 달라는 주문이 처음 왔을 때", "text": "물 부어 달라는 손님이에요. 찍고 나서 전자레인지 옆 온수기 밑에 잠깐 대고 있어요.", "direction": "바쁜 와중에 빠르게 알려 주듯" },
@@ -43,6 +44,8 @@
     { "id": "voice_ending_s", "speaker": "manager", "when": "결말, 종합 S", "text": "와, 알바 처음 맞아요? 다음 달부터 정식으로 같이 일해요, 우리.", "direction": "감탄해서" },
     { "id": "voice_ending_a", "speaker": "manager", "when": "결말, 종합 A", "text": "아주 잘했어요. 다음 주 근무표에도 이름 넣어 둘게요.", "direction": "만족스럽게" },
     { "id": "voice_ending_b", "speaker": "manager", "when": "결말, 종합 B", "text": "수고했어요. 손에 좀 더 익으면 금방 늘 거예요.", "direction": "격려하듯" },
-    { "id": "voice_ending_c", "speaker": "manager", "when": "결말, 종합 C", "text": "첫 알바는 다들 그래요. 다음에 한 번 더 해 봐요.", "direction": "위로하듯" }
+    { "id": "voice_ending_c", "speaker": "manager", "when": "결말, 종합 C", "text": "첫 알바는 다들 그래요. 다음에 한 번 더 해 봐요.", "direction": "위로하듯" },
+
+    { "id": "voice_manager_graduated", "speaker": "manager", "when": "수습 3일차 정산 뒤, 점장이 돌아와 발주 단말기를 맡길 때", "text": "사흘 동안 수고했어요. 이제 발주도 맡겨 볼게요. 오른쪽 끝 단말기에서 내일 들일 걸 골라 봐요.", "direction": "대견해하며, 일을 맡기듯" }
   ]
 }

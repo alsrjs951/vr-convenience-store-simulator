@@ -1,0 +1,6 @@
+# file: Data/training_deliveries.csv
+# 수습 2·3일차의 입고 박스. 형식은 Data/deliveries.csv와 같다 (docs/p2/해금_성장_기획_2026-11-10.md 3장).
+# 하루에 한 상자만 온다. 2일차 상자는 입고 안내(I1~I4)가 쓰는 신라면 상자다.
+delivery_id,day,box_seq,product_id,case_qty,target_slot,arrive_after_order
+t_d02_01,2,1,dev_shinramen_01,6,A-2,0
+t_d03_01,3,1,dev_goraebap_01,4,B-1,0

@@ -36,6 +36,21 @@ public class GameManager : MonoBehaviour
     const int AmbientCustomers = 2;
     static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check" };
 
+    // ---------- A store that is kept and grows (docs/p2/해금_성장_기획_2026-11-10.md). All numbers are [제안]. ----------
+    /// <summary>The days of learning. From the next one the customers follow from what the store sells.</summary>
+    public const int TrainingDays = 3;
+    /// <summary>The share of a day's sales that comes back as budget for the ordering tablet; tips are added whole.</summary>
+    public const float BudgetShare = 0.2f;
+    public const int GraduationGrant = 4000;
+    public const float NewScannerAngle = 65f, MusicLineGrace = 65f;
+    public const int NewCutterCheckpoints = 4;
+    const float LeaveSeconds = 4f;
+    const int SampleSpots = 2;
+    const float SampleSpacing = 0.22f;
+    // With these the game is the fixed three days it was, the whole store stocked and nothing saved: the checks written
+    // for them go through the title. Those that skip the title (NoTitleArguments) are the fixed days anyway.
+    static readonly string[] FixedDaysArguments = { "-fixed-days", "-p2-title-verify", "-p2-intro-verify" };
+
     public int Day = 1;
     public int LastDay = 3;
     public TextAsset Scenario;
@@ -51,6 +66,22 @@ public class GameManager : MonoBehaviour
     public ManagerNpc Manager;
     public bool RunTutorial = true;
     public Transform BoardAnchor;
+    /// <summary>Data/unlocks.csv: what the ordering tablet offers.</summary>
+    public TextAsset Unlocks;
+    public OrderTablet Tablet;
+    /// <summary>Data/training_scenarios.csv and training_deliveries.csv: the short days of learning of a store that is kept.</summary>
+    public TextAsset TrainingScenario, TrainingDeliveries;
+    public int TrainingExpiredPerDay = 2;
+
+    /// <summary>The store is kept between sessions and grows by what the player orders. False under every automatic check of the fixed days.</summary>
+    public bool Growth { get; private set; }
+    public StoreProgress Progress { get; private set; }
+    public readonly List<UnlockItem> UnlockItems = new List<UnlockItem>();
+    public Button LeaveButton { get; private set; }
+    /// <summary>What the last finished day added to the budget.</summary>
+    public int LastEarned { get; private set; }
+    /// <summary>Products ordered today, standing on the counter to be looked at until the next morning. An empty place is null.</summary>
+    public readonly ProductPrefab[] Samples = new ProductPrefab[SampleSpots];
 
     public DayState State { get; private set; } = DayState.Intro;
     public int OrderCount { get; private set; }
@@ -76,11 +107,21 @@ public class GameManager : MonoBehaviour
     RectTransform boardPanel;
     Text board;
     Text nextDayLabel;
-    bool nextDayPressed;
+    bool nextDayPressed, leavePressed;
     Coroutine intakeTutorialRun, briefMessage;
     string shiftText = "";
     int peakStartsAt = -1;
     int preparedDay;
+    ScannerZone scanner;
+    float builtScanAngle;
+    Transform cookingCorner;
+    string arrivedToday = "";
+    int samplesPlaced;
+    TextAsset storeDeliveries;
+    int storeExpiredPerDay;
+
+    /// <summary>A day of learning in a store that is kept: short, unscored, and nobody leaves.</summary>
+    public bool IsTraining(int day) => Growth && day <= TrainingDays;
 
     void Awake()
     {
@@ -105,16 +146,55 @@ public class GameManager : MonoBehaviour
         });
         buttonPanel.gameObject.SetActive(false);
 
+        // Beside it once the store is the player's: going home for the day, which is also where the game is left.
+        var leavePosition = BoardAnchor.position + BoardAnchor.rotation * new Vector3(0.36f, -0.25f, 0f);
+        var leavePanel = WorldUi.CreatePanel(BoardAnchor, "Leave Panel", leavePosition, BoardAnchor.rotation, new Vector2(300f, 120f), BoardMetersPerPixel, new Color(0f, 0f, 0f, 0f), interactive: true);
+        LeaveButton = WorldUi.AddButton(leavePanel, 0f, 0f, 300f, 120f, "퇴근", 52);
+        LeaveButton.GetComponent<Image>().color = new Color(0.17f, 0.29f, 0.47f);
+        LeaveButton.onClick.AddListener(() => leavePressed = true);
+        leavePanel.gameObject.SetActive(false);
+
         var args = Environment.GetCommandLineArgs();
         int index = Array.IndexOf(args, "-start-day");
         if (index >= 0 && index + 1 < args.Length && int.TryParse(args[index + 1], out int start) && start >= 1) Day = start;
         UsesTitle = Title != null && !Array.Exists(args, argument => Array.IndexOf(NoTitleArguments, argument) >= 0);
         Director.OrderArrived += OnOrderArrived;
         Director.OrderEnded += OnOrderEnded;
+
+        // Statics outlive a scene; every run starts from the store as built.
+        StockBox.CheckpointsPerBox = StockBox.DefaultCheckpoints;
+        CustomerDirector.LineGraceSeconds = CustomerDirector.DefaultLineGrace;
+        Growth = UsesTitle && Unlocks != null && Tablet != null && Intake != null
+                 && !Array.Exists(args, argument => Array.IndexOf(FixedDaysArguments, argument) >= 0);
+        if (!Growth) return;
+        UnlockItems.AddRange(UnlockCatalog.Parse(Unlocks.text, Catalog));
+        Progress = StoreProgress.Load(SavePath(args));
+        scanner = FindFirstObjectByType<ScannerZone>();
+        builtScanAngle = scanner != null ? scanner.MaxBarcodeAngle : 0f;
+        var corner = GameObject.Find("Microwave Cabinet");
+        cookingCorner = corner != null ? corner.transform : null;
+        storeDeliveries = Intake.Deliveries;
+        storeExpiredPerDay = Intake.ExpiredPerDay;
+        if (IntakeTutorial != null) IntakeTutorial.TeachDisposal = true;
+        // The tutorial's product is one the store sells from the start.
+        var opening = OpeningAssortment();
+        if (opening.Count > 0) Tutorial.ProductId = opening[0].Data.Id;
+        Tablet.Bought += OnBought;
+        Debug.Log($"[Game] Growing store: {UnlockItems.Count} things to order, save at {(string.IsNullOrEmpty(Progress.Path) ? "(none)" : Progress.Path)}");
+    }
+
+    /// <summary>-save-path FILE keeps the store there (the checks use their own); -no-save keeps it in memory only.</summary>
+    static string SavePath(string[] args)
+    {
+        if (Array.IndexOf(args, "-no-save") >= 0) return null;
+        int index = Array.IndexOf(args, "-save-path");
+        if (index >= 0 && index + 1 < args.Length) return args[index + 1];
+        return System.IO.Path.Combine(Application.persistentDataPath, StoreProgress.FileName);
     }
 
     void OnDestroy()
     {
+        if (Tablet != null) Tablet.Bought -= OnBought;
         if (Director == null) return;
         Director.OrderArrived -= OnOrderArrived;
         Director.OrderEnded -= OnOrderEnded;
@@ -130,10 +210,191 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             yield return RunTitle();
-            yield return RunDays();
-            yield return RunEnding();
+            if (Growth)
+            {
+                yield return RunStoreDays();
+                yield return RunPunchOut();
+            }
+            else
+            {
+                yield return RunDays();
+                yield return RunEnding();
+            }
             ResetRun();
         }
+    }
+
+    // ---------- A store that is kept and grows ----------
+
+    /// <summary>
+    /// Day after day with no last one: each ends in its settlement, what it earned for the budget, the ordering tablet
+    /// (once the training is done), and the choice between the next day and going home.
+    /// </summary>
+    IEnumerator RunStoreDays()
+    {
+        while (true)
+        {
+            yield return RunDay(Day);
+            DaysFinished++;
+            bool graduatedNow = !Progress.graduated && Day >= TrainingDays;
+            LastEarned = BudgetFor(Director.Sales, Director.Tips, Grade) + (graduatedNow ? GraduationGrant : 0);
+            Progress.budget += LastEarned;
+            Progress.totalSales += Director.Sales;
+            Progress.daysWorked++;
+            Progress.day = Day + 1;
+            Progress.graduated |= graduatedNow;
+            Progress.Save();
+
+            // One more line on the board, which grows by it.
+            if (graduatedNow)
+            {
+                // The training is over: the manager is back, and the store's ordering is handed to the player.
+                board.fontSize = 40;
+                board.text = $"수습 수료\n{board.text.Substring(board.text.IndexOf('\n') + 1)}\n계산대 오른쪽 끝 발주 단말기에서 내일 들일 것을 고르세요";
+                if (Manager != null) Manager.Arrive();
+                if (Pos.Audio) Pos.Audio.NarrateManager(ManagerLine.Graduated);
+            }
+            board.text += graduatedNow ? $"\n발주 예산 {Progress.budget:N0}원  (수료 지원금 {GraduationGrant:N0}원 포함)" : $"\n발주 예산 +{LastEarned:N0}원  ·  잔액 {Progress.budget:N0}원";
+            boardPanel.sizeDelta = new Vector2(BoardWidth, BoardHeight + 50f);
+            board.rectTransform.sizeDelta = new Vector2(board.rectTransform.sizeDelta.x, BoardHeight + 20f);
+            if (Intake.Active) Intake.SetGuide(board.text);
+            Debug.Log($"[Game] Store day={Day} earned={LastEarned} budget={Progress.budget} graduated={Progress.graduated} owned={Progress.owned.Count}");
+
+            if (Progress.graduated) Tablet.Open(Progress, UnlockItems, OpeningAssortment().Count, graduatedNow ? "내일 들일 것을 골라 보세요" : "");
+            // The arrow goes to the terminal the first time, until something is ordered or the day is left.
+            var pointer = Title != null ? Title.Pointer : null;
+            if (graduatedNow && pointer != null)
+            {
+                var top = Tablet.transform.position + Vector3.up * (OrderTablet.Size.y * OrderTablet.MetersPerPixel * 0.5f + 0.03f);
+                pointer.Aim = () => Progress.arriving.Count == 0 ? PointerAim.Down(top, "발주") : (PointerAim?)null;
+            }
+            yield return WaitForChoice($"{Day + 1}일차 출근");
+            if (graduatedNow && pointer != null) pointer.Aim = null;
+            Tablet.Close();
+            if (leavePressed) yield break;
+            Day++;
+        }
+    }
+
+    /// <summary>What a day adds to the budget: a share of the sales, the tips, and a bonus for a day graded well.</summary>
+    public static int BudgetFor(int sales, int tips, string grade) =>
+        Mathf.RoundToInt(sales * BudgetShare) + tips + (grade == "S" ? 2000 : grade == "A" ? 1000 : grade == "B" ? 500 : 0);
+
+    /// <summary>Going home: the time card again, and the title is the door to the same store next time.</summary>
+    IEnumerator RunPunchOut()
+    {
+        State = DayState.Ending;
+        yield return Title.Punch("퇴근 카드", ManagerLine.PunchOut, Say);
+        RestoreBoard();
+        Say($"퇴근\n다음 출근은 {Progress.day}일차입니다");
+        yield return new WaitForSeconds(LeaveSeconds);
+    }
+
+    IEnumerator WaitForChoice(string nextLabel)
+    {
+        nextDayPressed = leavePressed = false;
+        nextDayLabel.text = nextLabel;
+        NextDayButton.transform.parent.gameObject.SetActive(true);
+        LeaveButton.transform.parent.gameObject.SetActive(true);
+        while (!nextDayPressed && !leavePressed) yield return null;
+        NextDayButton.transform.parent.gameObject.SetActive(false);
+        LeaveButton.transform.parent.gameObject.SetActive(false);
+    }
+
+    /// <summary>What the store sells before anything is ordered in: the products of the shelves the clerk stocks.</summary>
+    List<ProductPrefab> OpeningAssortment()
+    {
+        var products = new List<ProductPrefab>();
+        foreach (var slot in Intake.Slots)
+        {
+            var product = slot != null ? Catalog.Find(slot.ProductId) : null;
+            if (product != null && !products.Contains(product)) products.Add(product);
+        }
+        return products;
+    }
+
+    /// <summary>The store as the day's customers find it: the opening assortment, what was ordered in, and what the equipment brought.</summary>
+    public ShiftPlan PlanFor(int day)
+    {
+        var plan = new ShiftPlan { Day = day };
+        plan.Assortment.AddRange(OpeningAssortment());
+        foreach (var item in UnlockItems)
+        {
+            if (!Progress.Has(item.Id)) continue;
+            if (item.Kind == UnlockKind.Product) plan.OrderedProducts++;
+            if (item.Product != null && !plan.Assortment.Contains(item.Product)) plan.Assortment.Add(item.Product);
+            if (item.Id == UnlockCatalog.Microwave) plan.MicrowaveItem = item.Product;
+            else if (item.Id == UnlockCatalog.HotWater) plan.HotWaterItem = item.Product;
+            else if (item.Id == UnlockCatalog.OnePlus) plan.OnePlus = true;
+        }
+        return plan;
+    }
+
+    /// <summary>
+    /// The morning: what was ordered yesterday is in the store, and the equipment the store has is switched to what it does.
+    /// The shelves follow in PrepareStore, after the day's stock is laid out.
+    /// </summary>
+    void OpenStore()
+    {
+        var arrived = new List<string>();
+        foreach (var item in UnlockItems)
+            if (Progress.arriving.Contains(item.Id)) arrived.Add(item.Name);
+        Progress.ReceiveArrivals();
+        arrivedToday = string.Join(" · ", arrived);
+        ClearSamples();
+
+        if (scanner != null) scanner.MaxBarcodeAngle = Progress.Has(UnlockCatalog.Scanner) ? NewScannerAngle : builtScanAngle;
+        StockBox.CheckpointsPerBox = Progress.Has(UnlockCatalog.Cutter) ? NewCutterCheckpoints : StockBox.DefaultCheckpoints;
+        CustomerDirector.LineGraceSeconds = Progress.Has(UnlockCatalog.Music) ? MusicLineGrace : CustomerDirector.DefaultLineGrace;
+        if (Pos.Audio) Pos.Audio.SetMusic(Progress.Has(UnlockCatalog.Music));
+        if (Director.Desk != null) Director.Desk.AutoCoins = Progress.Has(UnlockCatalog.Coins);
+        ShowCooking(Progress.Has(UnlockCatalog.Microwave), Progress.Has(UnlockCatalog.HotWater));
+    }
+
+    /// <summary>The microwave and the hot water dispenser stand on their cabinet only once the store has them.</summary>
+    void ShowCooking(bool microwave, bool hotWater)
+    {
+        if (cookingCorner == null) return;
+        foreach (Transform part in cookingCorner)
+        {
+            bool ofMicrowave = part.name.StartsWith("Microwave", StringComparison.Ordinal);
+            bool ofDispenser = part.name.StartsWith("Dispenser", StringComparison.Ordinal) || part.name.StartsWith("Water", StringComparison.Ordinal);
+            if (!ofMicrowave && !ofDispenser) continue;
+            bool there = ofMicrowave ? microwave : hotWater;
+            // The oven's light and the stream of water are their zones' to switch on while they work.
+            if (there && (part.name == "Microwave Lit" || part.name == "Dispenser Water")) continue;
+            part.gameObject.SetActive(there);
+        }
+    }
+
+    /// <summary>The display shelves that hold their product: one for each product ordered in.</summary>
+    HashSet<string> StockedDecor()
+    {
+        var slots = new HashSet<string>();
+        foreach (var item in UnlockItems)
+            if (item.Kind == UnlockKind.Product && Progress.Has(item.Id)) slots.Add(item.Slot);
+        return slots;
+    }
+
+    /// <summary>A product just ordered stands on the counter, the real thing to pick up and turn over before it is on the shelf.</summary>
+    void OnBought(UnlockItem item)
+    {
+        if (item.Kind != UnlockKind.Product || item.Product == null || Director.BasketAnchor == null) return;
+        // Two places side by side; a third order takes the place of the oldest sample.
+        int spot = samplesPlaced++ % SampleSpots;
+        if (Samples[spot] != null) Destroy(Samples[spot].gameObject);
+        var place = Director.BasketAnchor.position + Vector3.right * (spot * SampleSpacing) + Vector3.up * (item.Product.Proxy.size.y * 0.5f + 0.004f);
+        Samples[spot] = Instantiate(item.Product, place, Quaternion.Euler(0f, 180f, 0f));
+    }
+
+    void ClearSamples()
+    {
+        for (int i = 0; i < Samples.Length; i++)
+        {
+            if (Samples[i] != null) Destroy(Samples[i].gameObject);
+            Samples[i] = null;
+        }
+        samplesPlaced = 0;
     }
 
     IEnumerator RunDays()
@@ -158,13 +419,34 @@ public class GameManager : MonoBehaviour
     {
         State = DayState.Title;
         boardPanel.gameObject.SetActive(false);
-        // Behind the closed door the store is already stocked, so the first look through it is the finished store.
-        PrepareStore(1);
+        if (Growth) Title.OfferStore(Progress.Started ? Progress.day : 0, TrainingDays + 1);
+        // Behind the closed door the store is already stocked, so the first look through it is the finished store. A store
+        // that is kept shows as it will be this morning, with what was ordered yesterday already on the shelves.
+        PrepareStore(Growth ? Progress.day : 1);
         // People are already there behind the glass: the manager at the counter's end and a couple of customers shopping.
         if (Manager != null) Manager.Arrive();
         Director.StartAmbient(AmbientCustomers);
         yield return Title.ChooseDay();
-        Day = Title.ChosenDay;
+        if (Growth)
+        {
+            if (Title.Choice != TitleChoice.Continue)
+            {
+                Progress.Reset();
+                if (Title.Choice == TitleChoice.SkipTraining)
+                {
+                    Progress.graduated = true;
+                    Progress.day = TrainingDays + 1;
+                    Progress.budget = GraduationGrant;
+                }
+                Progress.Save();
+                preparedDay = 0;
+            }
+            Day = Progress.day;
+        }
+        else
+        {
+            Day = Title.ChosenDay;
+        }
         PrepareStore(Day);
         State = DayState.Commute;
         yield return Title.WalkIn();
@@ -211,6 +493,8 @@ public class GameManager : MonoBehaviour
         Pos.ResetDay();
         Director.ResetRun();
         if (Manager != null) Manager.Clear();
+        if (Tablet != null) Tablet.Close();
+        ClearSamples();
     }
 
     void RestoreBoard()
@@ -224,7 +508,16 @@ public class GameManager : MonoBehaviour
     void PrepareStore(int day)
     {
         if (preparedDay == day || Intake == null) return;
-        Intake.BeginDay(day, ParseOrders(day).Count);
+        if (Growth)
+        {
+            OpenStore();
+            bool training = IsTraining(day) && TrainingDeliveries != null;
+            Intake.Deliveries = training ? TrainingDeliveries : storeDeliveries;
+            Intake.ExpiredPerDay = training ? TrainingExpiredPerDay : storeExpiredPerDay;
+        }
+        // The days after the training have no delivery rows of their own: they get the boxes of the first intake day.
+        Intake.BeginDay(day, ParseOrders(day).Count, Growth && day > TrainingDays ? IntakeTutorialDay : 0);
+        if (Growth) Intake.ShowDecor(StockedDecor());
         preparedDay = day;
     }
 
@@ -279,6 +572,9 @@ public class GameManager : MonoBehaviour
 
     System.Collections.Generic.List<Order> ParseOrders(int day)
     {
+        // Past the training there are no rows: the customers follow from what the store sells.
+        if (Growth && day > TrainingDays) return OrderGenerator.Build(PlanFor(day));
+        if (IsTraining(day) && TrainingScenario != null) return DayScenarioLoader.Parse(TrainingScenario.text, day, Catalog);
         var text = Scenario != null ? Scenario.text : "";
         foreach (var more in MoreScenarios)
             if (more != null) text += "\n" + more.text;
@@ -302,7 +598,9 @@ public class GameManager : MonoBehaviour
         Score = 0f;
         Grade = "";
         ShiftStartedAt = -1f;
-        board.fontSize = 46;
+        RestoreBoard();
+        // Before the orders are made: what came in this morning is part of what today's customers buy.
+        if (Growth) PrepareStore(day);
         var orders = ParseOrders(day);
         OrderCount = orders.Count;
         PossibleSales = 0;
@@ -321,9 +619,14 @@ public class GameManager : MonoBehaviour
             intake = Intake.Active;
         }
 
+        bool training = IsTraining(day);
+        Director.Lenient = training;
         board.text = !intake ? $"{day}일차 출근\n계산대에서 손님을 맞습니다"
+            : training && day > IntakeTutorialDay ? $"{day}일차 출근\n오늘은 혼자 근무합니다"
+            : Growth && day > TrainingDays ? $"{day}일차 출근\n" + (arrivedToday.Length > 0 ? $"새로 들어옴  {arrivedToday}" : $"손님 {orders.Count}명 · 입고 {Intake.Boxes.Count}상자")
             : day > IntakeTutorialDay ? $"{day}일차 출근\n피크 타임 · 특수 요청 · 중간 입고"
             : $"{day}일차 출근\n입고 · 진열 · 폐기가 더해집니다";
+        arrivedToday = "";
         if (intake) Intake.SetGuide(board.text);
         yield return new WaitForSeconds(IntroSeconds);
 
@@ -351,7 +654,8 @@ public class GameManager : MonoBehaviour
 
         State = DayState.Shift;
         ShiftStartedAt = Time.time;
-        shiftText = intake ? $"{day}일차 근무 중\n손님이 없을 때 진열 · 폐기" : $"{day}일차 근무 중\n시간 막대가 절반을 넘기 전에 끝내면 팁";
+        // The last day of learning says the tip rule again: from the next day it is what pays for the store.
+        shiftText = intake && !(training && day > IntakeTutorialDay) ? $"{day}일차 근무 중\n손님이 없을 때 진열 · 폐기" : $"{day}일차 근무 중\n시간 막대가 절반을 넘기 전에 끝내면 팁";
         if (!intake) board.text = shiftText;
         else if (!guidedIntake || IntakeTutorial.Step == IntakeTutorialStep.Done) Say(shiftText);
         yield return Director.RunDay(orders);
@@ -361,6 +665,15 @@ public class GameManager : MonoBehaviour
         if (intakeTutorialRun != null) StopCoroutine(intakeTutorialRun);
         intakeTutorialRun = null;
         if (intake) Intake.EndDay();
+        if (training)
+        {
+            // Learning is not graded: what was done, and what it brought in.
+            board.text = $"{day}일차 끝\n손님 {Director.Paid}명 · 매출 {Director.Sales:N0}원 · 팁 {Director.Tips:N0}원";
+            if (intake) Intake.SetGuide(board.text);
+            Debug.Log($"[Game] Training day={day} done: paid={Director.Paid}/{OrderCount} sales={Director.Sales} tips={Director.Tips}");
+            State = DayState.DayEnd;
+            yield break;
+        }
         CalculateScore(day, intake);
         RecordResult(day, intake);
         if (intake)

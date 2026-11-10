@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum IntakeTutorialStep { NotStarted, Carry, Cut, Open, Shelve, Done }
+public enum IntakeTutorialStep { NotStarted, Carry, Cut, Open, Shelve, Dispose, Done }
 
 /// <summary>
 /// Doc 5.7.4: the four intake steps, on the first box of Day 2 only. Guidance is text on the guide board and the panels by
@@ -17,9 +17,16 @@ public class IntakeTutorial : MonoBehaviour
     const int BeadsAfterResets = 2;
     const int AutoCutAfterResets = 4;
 
+    const float DisposeGiveUpSeconds = 40f;
+
     public IntakeDirector Intake;
     public PlacementPreview Preview;
     public Text Board;
+    /// <summary>
+    /// A fifth step, for the training of a store that is kept (docs/p2/해금_성장_기획_2026-11-10.md 3): one expired product
+    /// into the waste bin. The fixed Day 2 leaves disposal to the board's last line, as doc 5.7.4 has it.
+    /// </summary>
+    public bool TeachDisposal;
 
     public IntakeTutorialStep Step { get; private set; } = IntakeTutorialStep.NotStarted;
     public StockBox Box { get; private set; }
@@ -119,6 +126,16 @@ public class IntakeTutorial : MonoBehaviour
                 Say($"입고 4/4  진열\n노란 칸({slot}) 가까이 가져가기");
             }
             yield return null;
+        }
+
+        if (TeachDisposal && Intake.ExpiredTotal > 0)
+        {
+            Step = IntakeTutorialStep.Dispose;
+            Narrate(5);
+            Say("폐기\n'기한 지남' 표시가 붙은 상품 → 계산대 왼쪽 폐기함");
+            begun = Time.time;
+            // Whoever cannot find one is not kept from the day's customers (game design 3, "막히지 않게").
+            while (Intake.Disposed == 0 && Time.time - begun < DisposeGiveUpSeconds) yield return null;
         }
 
         Step = IntakeTutorialStep.Done;

@@ -102,7 +102,9 @@ public class IntakeDirector : MonoBehaviour
     }
 
     /// <summary>Sets up a day. Day 1 has no intake: every slot is full of display stock and plain (no highlight or count).</summary>
-    public void BeginDay(int day, int orderCount)
+    /// <param name="deliveriesOfDay">Which day's rows of the deliveries file to use: a day with no rows of its own (the
+    /// days after the training) takes another day's boxes. 0: the day's own.</param>
+    public void BeginDay(int day, int orderCount, int deliveriesOfDay = 0)
     {
         StockDecor();
         Clear();
@@ -116,7 +118,7 @@ public class IntakeDirector : MonoBehaviour
             return;
         }
 
-        Today.AddRange(DeliveryLoader.Parse(Deliveries.text, day, Catalog, SlotsById, orderCount, SkippedDeliveries));
+        Today.AddRange(DeliveryLoader.Parse(Deliveries.text, deliveriesOfDay > 0 ? deliveriesOfDay : day, Catalog, SlotsById, orderCount, SkippedDeliveries));
         var emptied = new Dictionary<string, int>();
         var targetsNow = new HashSet<string>();
         foreach (var delivery in Today)
@@ -263,6 +265,17 @@ public class IntakeDirector : MonoBehaviour
             gaussians += slot.Merged.Far.m_Asset.splatCount;
         }
         Debug.Log($"[Intake] Decor stock: {places} places on {DecorSlots.Length} slots, far gaussians={gaussians}");
+    }
+
+    /// <summary>
+    /// Which of the shelves that are only looked at hold their product (docs/p2/해금_성장_기획_2026-11-10.md 4): a store
+    /// that grows opens with them empty and fills one for each product ordered in. Null: all of them, as the store was built.
+    /// The whole slot is switched, not its renderers, which the slot's own distance switching turns on and off.
+    /// </summary>
+    public void ShowDecor(ICollection<string> stockedSlotIds)
+    {
+        foreach (var slot in DecorSlots)
+            if (slot != null) slot.gameObject.SetActive(stockedSlotIds == null || stockedSlotIds.Contains(slot.SlotId));
     }
 
     string SlotOf(ProductPrefab product)
