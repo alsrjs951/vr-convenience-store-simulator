@@ -49,6 +49,7 @@ public partial class P2DayVerification
         public bool endedEarly;
         public int splatRenderersAtPeak;
         public long gaussiansAtPeak;
+        public string peakBreakdown;
         public List<string> expiredSlots = new List<string>();
         public List<string> customers = new List<string>();
         public List<string> boxes = new List<string>();
@@ -65,13 +66,14 @@ public partial class P2DayVerification
     // Behind the counter the walk uses a lane along z = -0.3, in front of the bins and the cart, and steps back from it.
     static readonly Dictionary<string, Vector2> Nodes = new Dictionary<string, Vector2>
     {
-        { "C", new Vector2(0f, 0f) }, { "KA", new Vector2(0.6f, -0.3f) }, { "KD", new Vector2(1.75f, -0.3f) }, { "D", new Vector2(-0.4f, -0.7f) },
+        { "C", new Vector2(0f, 0f) }, { "KA", new Vector2(0.6f, -0.3f) }, { "KD", new Vector2(2.45f, -0.3f) }, { "D", new Vector2(-0.4f, -0.7f) },
         { "KR", new Vector2(2.6f, -0.3f) }, { "R", new Vector2(2.6f, -0.95f) }, { "KC1", new Vector2(3.22f, -0.3f) }, { "CART1", new Vector2(3.22f, -0.95f) },
         { "KC2", new Vector2(3.78f, -0.3f) }, { "CART2", new Vector2(3.78f, -0.95f) },
-        { "PR", new Vector2(1.9f, 1.7f) }, { "PL0", new Vector2(-1.6f, 0f) },
-        // SA/SB: between a box stand (gondola outer end) and the delivery slot (A-2, B-1). SA1/SB2: in front of the other slots.
-        { "PL", new Vector2(-1.6f, 1.5f) }, { "SA", new Vector2(-2.8f, 2.6f) }, { "SA1", new Vector2(-1.9f, 2.6f) },
-        { "SB", new Vector2(2.8f, 2.6f) }, { "SB2", new Vector2(2.1f, 2.6f) },
+        // PR: past the end of the counter's extension.
+        { "PR", new Vector2(2.45f, 1.7f) }, { "PL0", new Vector2(-1.6f, 0f) },
+        // SA/SB: between a box stand (the row's ends) and the delivery slot (A-2, B-1). SA1/SB2: in front of the other slots.
+        { "PL", new Vector2(-1.6f, 1.5f) }, { "SA", new Vector2(-3.25f, 2.6f) }, { "SA1", new Vector2(-2.35f, 2.6f) },
+        { "SB", new Vector2(-0.55f, 2.6f) }, { "SB2", new Vector2(-1.25f, 2.6f) },
     };
 
     static readonly string[][] Edges =
@@ -214,7 +216,7 @@ public partial class P2DayVerification
         if (finished) yield break;
         CheckSetup();
         yield return Capture("d2_01_day2_start");
-        yield return CaptureFrom("d2_02_shelf_a_overview", new Vector3(-1.6f, 1.7f, 1.6f), new Vector3(-2.8f, 1.0f, 3.1f), 60f);
+        yield return CaptureFrom("d2_02_shelf_a_overview", new Vector3(-1.9f, 1.7f, 1.6f), new Vector3(-3.25f, 1.0f, 3.1f), 60f);
         yield return CaptureFrom("d2_03_cart_overview", new Vector3(2.2f, 1.6f, 0.2f), new Vector3(3.4f, 0.8f, -1.6f), 60f);
 
         if (Array.IndexOf(Environment.GetCommandLineArgs(), "-p2-ghost-shots") >= 0)
@@ -526,7 +528,7 @@ public partial class P2DayVerification
         // Open floor 0.85 m in front of gondola A, toward the counter from SA. Nearer, the held product's centre could come
         // within the preview's 0.6 m of slot A-2 depending on how it sits in the hand; with the head on the shelf that is a
         // green place, and letting go shelves it instead of dropping it (seen twice, 2026-11-08).
-        yield return MoveProduct(dropped.Product, new Vector3(-2.35f, 1.1f, 2.1f), "d2.rule.drop.over_floor");
+        yield return MoveProduct(dropped.Product, new Vector3(-2.8f, 1.1f, 2.1f), "d2.rule.drop.over_floor");
         float previewGone = Time.realtimeSinceStartup;
         while (Preview.GhostVisible && Time.realtimeSinceStartup - previewGone < 1f) yield return null;
         heldKeys.Remove(Key.G);
@@ -560,7 +562,7 @@ public partial class P2DayVerification
         // column the preview goes there; moved to the left-hand column, it follows once that has held 0.2 s.
         // Straight down just in front of SA: the view's right axis is then world +x, so the hand's moves from column to
         // column stay along the shelf and do not swing out of the slot's reach on the way.
-        yield return LookAt(new Vector3(-2.8f, 0.05f, 2.75f), "d2.i4.look_at_floor");
+        yield return LookAt(new Vector3(-3.25f, 0.05f, 2.75f), "d2.i4.look_at_floor");
         var unit = NextUnit(box);
         var product = unit.Product;
         yield return GrabAt(product.transform.position, () => product.Grab.interactorsSelecting.Contains(rightInteractor), "d2.i4.grab_unit");
@@ -945,6 +947,10 @@ public partial class P2DayVerification
         {
             details.gaussiansAtPeak = gaussians;
             details.splatRenderersAtPeak = renderers;
+            var parts = new List<string>();
+            foreach (var splat in FindObjectsByType<GaussianSplatting.Runtime.GaussianSplatRenderer>(FindObjectsSortMode.None))
+                if (splat.isActiveAndEnabled && splat.m_Asset != null) parts.Add($"{splat.m_Asset.name}={splat.m_Asset.splatCount}");
+            details.peakBreakdown = $"state={Game.State}; camera={Camera.main.transform.position.ToString("F2")}; " + string.Join(", ", parts);
         }
     }
 

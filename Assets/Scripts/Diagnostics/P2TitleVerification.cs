@@ -122,7 +122,7 @@ public partial class P2DayVerification
         // The door holds. Walking into it for a second stays on the porch; the view button brings the player back.
         yield return Stick(Key.I, 1.5f);
         yield return new WaitForSeconds(0.3f);
-        Check("title.door_is_solid", view.transform.position.x < -4.55f, $"head x={view.transform.position.x:0.00}");
+        Check("title.door_is_solid", view.transform.position.z < -1.65f, $"head z={view.transform.position.z:0.00}");
         yield return PressButton(Title.RecenterButton, "title.recenter");
         yield return new WaitForSeconds(0.2f);
         Check("title.recenter_returns", NearTitleSpot(), $"head={view.transform.position.ToString("F2")}");
@@ -174,17 +174,15 @@ public partial class P2DayVerification
         Check("walkin.path_and_guide", Title.CommutePath.activeSelf && Title.GuideShown && Game.Pos.Audio.LastNarration == "voice_manager_welcome",
             $"path={Title.CommutePath.activeSelf}; guide={Title.GuideShown}; narration={Game.Pos.Audio.LastNarration}");
         yield return Capture("t02_door_open");
-        yield return WalkTo(new Vector3(-4.1f, 0f, 2.3f), "walkin.through_door");
+        yield return WalkTo(new Vector3(-3.6f, 0f, -1f), "walkin.through_door");
         yield return Capture("t03_walking_in");
-        yield return WalkTo(new Vector3(-1.6f, 0f, 1.5f), "walkin.across_the_store");
-        yield return WalkTo(new Vector3(-1.6f, 0f, 0.05f), "walkin.round_the_counter");
+        yield return WalkTo(new Vector3(-2f, 0f, -0.3f), "walkin.along_the_street_front");
         yield return WalkTo(new Vector3(-0.45f, 0f, 0f), "walkin.to_the_ring");
         yield return WaitUntil(() => Game.State == DayState.PunchIn, 6f, "walkin.arrived_at_counter");
         if (finished) yield break;
         Check("walkin.no_rescue_needed", !Title.WalkGaveUp && !Title.CommutePath.activeSelf && !Title.GuideShown, $"gave up={Title.WalkGaveUp}");
         yield return ResetHandRotation();
-        // Arrived walking along the counter; two snap turns to the left face it.
-        yield return Turn(-2);
+        // The title faces the player toward +z and walking does not turn the rig, so the counter is already in front.
         Check("punch.facing_counter", view.transform.forward.z > 0.9f, $"forward={view.transform.forward.ToString("F2")}");
 
         yield return WaitUntil(() => Desk.CustomerCard != null, 3f, "punch.card_on_plate");

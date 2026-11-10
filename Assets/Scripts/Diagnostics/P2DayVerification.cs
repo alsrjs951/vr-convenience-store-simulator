@@ -157,7 +157,8 @@ public partial class P2DayVerification : MonoBehaviour
             bool walking = customer.Agent.enabled;
             if (!walking) report.settledFrames++;
             else if (!customer.Agent.isOnNavMesh) report.offNavMeshFrames++;
-            if (position.z < CounterFarEdge + 0.1f) report.clerkSideFrames++;
+            // The floor between the street front and row D (x below -1.4) is the customers'; past it is the clerk's side.
+            if (position.z < CounterFarEdge + 0.1f && position.x > -1.4f) report.clerkSideFrames++;
             if (Physics.CheckCapsule(position + Vector3.up * 0.4f, position + Vector3.up * 1.4f, 0.15f, 1, QueryTriggerInteraction.Ignore))
                 report.overlapFrames++;
             if (customer.Animator == null) continue;
@@ -209,8 +210,8 @@ public partial class P2DayVerification : MonoBehaviour
         Check("input.ready", simulator.manipulatingRightController && simulator.mouseTransformationMode == XRDeviceSimulator.TransformationMode.Translate, $"mode={simulator.mouseTransformationMode}");
         yield return Capture("01_tutorial_or_intro");
         CheckDisplayStock();
-        yield return CaptureFrom("01b_day1_shelf_a", new Vector3(-1.6f, 1.7f, 1.6f), new Vector3(-2.8f, 1.0f, 3.1f), 60f);
-        yield return CaptureFrom("01c_day1_shelf_b", new Vector3(1.6f, 1.7f, 1.6f), new Vector3(2.8f, 1.0f, 3.1f), 60f);
+        yield return CaptureFrom("01b_day1_shelf_a", new Vector3(-1.9f, 1.7f, 1.6f), new Vector3(-3.25f, 1.0f, 3.1f), 60f);
+        yield return CaptureFrom("01c_day1_shelf_b", new Vector3(-0.5f, 1.7f, 1.6f), new Vector3(-1.2f, 1.0f, 3.1f), 60f);
 
         yield return Tutorial();
         if (finished) yield break;
@@ -276,7 +277,7 @@ public partial class P2DayVerification : MonoBehaviour
         Check("customers.on_navmesh_every_frame", report.customerFrames > 1000 && report.offNavMeshFrames == 0 && report.settledFrames > 0,
             $"customer frames={report.customerFrames}; standing as obstacles={report.settledFrames}; walking off NavMesh={report.offNavMeshFrames}");
         Check("customers.never_inside_walls_shelves_counter", report.overlapFrames == 0, $"overlapping frames={report.overlapFrames}");
-        Check("customers.never_on_clerk_side", report.clerkSideFrames == 0, $"frames nearer than z={CounterFarEdge + 0.1f}: {report.clerkSideFrames}");
+        Check("customers.never_on_clerk_side", report.clerkSideFrames == 0, $"frames nearer than z={CounterFarEdge + 0.1f} with x above -1.4: {report.clerkSideFrames}");
         float walkShare = report.movingFrames > 0 ? (float)report.walkAnimatedFrames / report.movingFrames : 0f;
         float standShare = report.standingFrames > 0 ? (float)report.standingAnimatedFrames / report.standingFrames : 0f;
         Check("customers.walk_clip_while_moving", report.movingFrames > 300 && walkShare > 0.97f, $"moving frames={report.movingFrames}; with walk clip={walkShare:P1}");
@@ -414,7 +415,7 @@ public partial class P2DayVerification : MonoBehaviour
                 yield return CaptureFrom("16_customer_at_counter", new Vector3(0f, 1.55f, 0.15f), new Vector3(0f, 1.25f, 1.6f), 70f);
                 yield return CaptureFrom("17_customer_side_overview", new Vector3(0.2f, 2.4f, -1.4f), new Vector3(-0.4f, 0.7f, 3.4f), 80f);
                 // The line from its right-hand side, where the empty baskets hang.
-                yield return CaptureFrom("18_line_with_empty_baskets", new Vector3(-1.3f, 1.35f, 2.2f), new Vector3(0.25f, 0.85f, 2.55f), 60f);
+                yield return CaptureFrom("18_line_with_empty_baskets", new Vector3(-1.3f, 1.35f, 2.2f), new Vector3(0.9f, 0.85f, 1.6f), 60f);
             }
             if (walking) yield return WalkBeforeOrder(number);
             yield return Capture($"1{number}a_order{number}_arrived");
@@ -1111,7 +1112,7 @@ public partial class P2DayVerification : MonoBehaviour
                     broken.Add(product.Data.Id);
                     break;
                 }
-        Check("setup.product_names_readable", broken.Count == 0 && Game.Catalog.Products.Count == 12, $"products={Game.Catalog.Products.Count}; broken={string.Join(",", broken)}");
+        Check("setup.product_names_readable", broken.Count == 0 && Game.Catalog.Products.Count == 21, $"products={Game.Catalog.Products.Count}; broken={string.Join(",", broken)}");
     }
 
     /// <summary>

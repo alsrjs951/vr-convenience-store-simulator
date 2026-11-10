@@ -46,13 +46,14 @@ public class P2LocomotionVerification : MonoBehaviour
     const float ApertureTolerance = 0.01f;
     const float VignetteEaseSeconds = 0.3f;
 
-    // From the layout in P2StoreBuilder (2026-11-08: door in the left wall, fridge wall along the front, gondolas facing
-    // the counter with box stands at their inner ends).
+    // From the layout in P2StoreBuilder (2026-11-09: the reference photo's plan, fridges along the far wall, chilled cases
+    // along the front wall, the tobacco wall behind the clerk, one row of gondolas A + B facing the counter).
     const float CounterNearEdge = 0.35f, CounterFarEdge = 0.95f;
-    const float BackWall = -2.45f, LeftWall = -4.45f, RightWall = 4.45f;
-    const float ShelfAFrontEdge = 2.95f, ShelfAX = -2.2f;
-    // The lane up past the counter's right end (x 1.0) to gondola B's front (x 1.45..2.95, z 2.95).
-    const float RightLaneX = 1.6f, ShelfBFrontEdge = 2.95f;
+    // Behind the clerk is now the front of the tobacco wall. The lane along z = -0.1 clears the waste bin (z up to -0.5).
+    const float TobaccoFront = -1.35f, ClerkLaneZ = -0.1f, RightWall = 4.45f;
+    const float ShelfAFrontEdge = 2.95f, ShelfAX = -2.65f;
+    // The lane up past the end of the counter's extension (x 2.0), the open floor in front of the row (z = 2.0), and gondola B.
+    const float RightLaneX = 2.6f, FloorLaneZ = 2f, ShelfBFrontEdge = 2.95f, ShelfBX = -1.15f;
     const float BodyRadius = 0.2f;
     const float SkinWidth = 0.02f;
     const float ContactTolerance = 0.02f;
@@ -254,8 +255,9 @@ public class P2LocomotionVerification : MonoBehaviour
         var stoppedShot = lastShot;
         Check("vignette.corners_lit_again", stoppedShot.corners > movingShot.corners * 2f, $"corners moving={movingShot.corners:0.000}; stopped={stoppedShot.corners:0.000}");
         yield return WalkFor("move.backward", 2f, Key.K, Vector3.left, null);
-        yield return WalkFor("move.strafe_right", 1f, Key.L, Vector3.back, null);
-        yield return WalkFor("move.strafe_left", 1f, Key.J, Vector3.forward, null);
+        // 0.7 s: the tobacco wall stands 1.35 m behind the start.
+        yield return WalkFor("move.strafe_right", 0.7f, Key.L, Vector3.back, null);
+        yield return WalkFor("move.strafe_left", 0.7f, Key.J, Vector3.forward, null);
         // The diagonal must not add up to more than the single-axis speed.
         yield return WalkFor("move.diagonal_keeps_speed", 1f, new[] { Key.I, Key.L }, (Vector3.right + Vector3.back).normalized, null);
         yield return WalkFor("move.diagonal_back", 1f, new[] { Key.K, Key.J }, (Vector3.left + Vector3.forward).normalized, null);
@@ -464,29 +466,38 @@ public class P2LocomotionVerification : MonoBehaviour
         Check("collide.slides_along_counter", Origin.x > slideFrom.x + 0.3f && Mathf.Abs(Origin.z - slideFrom.z) < 0.01f, $"{slideFrom.ToString("F3")}->{Origin.ToString("F3")}");
         yield return Hold(new[] { Key.J }, 0.35f);
 
-        yield return PushAgainst("collide.back_wall", Key.K, 2.2f, () => Origin.z - BodyRadius - SkinWidth, BackWall, "11_back_wall", true);
-        yield return PushAgainst("collide.left_wall", Key.J, 3.5f, () => Origin.x - BodyRadius - SkinWidth, LeftWall, null, true);
-        yield return PushAgainst("collide.right_wall", Key.L, 6.2f, () => Origin.x + BodyRadius + SkinWidth, RightWall, "12_right_wall");
+        yield return PushAgainst("collide.tobacco_wall", Key.K, 2f, () => Origin.z - BodyRadius - SkinWidth, TobaccoFront, "11_back_wall", true);
 
-        // Up the lane past the counter's right end to gondola B's front.
+        // Back to the lane in front of the waste bin, then to the far wall's fridges and across to the near wall.
+        yield return Hold(new[] { Key.I }, (ClerkLaneZ - Origin.z) / Speed);
+        yield return PushAgainst("collide.left_wall", Key.J, 4.6f, () => Origin.x - BodyRadius - SkinWidth, FridgeFront(), null, true);
+        yield return PushAgainst("collide.right_wall", Key.L, 7.2f, () => Origin.x + BodyRadius + SkinWidth, RightWall, "12_right_wall");
+
+        // Up the lane past the end of the counter's extension to the chilled cases.
         yield return Hold(new[] { Key.J }, (Origin.x - RightLaneX) / Speed);
-        yield return PushAgainst("collide.shelf_b", Key.I, 4.5f, () => Origin.z + BodyRadius + SkinWidth, ShelfBFrontEdge, "13_shelf_b");
+        yield return PushAgainst("collide.chilled_cases", Key.I, 3.6f, () => Origin.z + BodyRadius + SkinWidth, ChilledFront(), "13_chilled_cases");
 
-        // Along gondola B to the middle aisle, then up to the fridge wall.
-        yield return Hold(new[] { Key.J }, Origin.x / Speed);
-        yield return PushAgainst("collide.fridge_wall", Key.I, 2.5f, () => Origin.z + BodyRadius + SkinWidth, FridgeFront(), "13b_fridge_wall");
+        // Back onto the open floor, along it, and up to gondola B.
+        yield return Hold(new[] { Key.K }, (Origin.z - FloorLaneZ) / Speed);
+        yield return Hold(new[] { Key.J }, (Origin.x - ShelfBX) / Speed);
+        yield return PushAgainst("collide.shelf_b", Key.I, 1.5f, () => Origin.z + BodyRadius + SkinWidth, ShelfBFrontEdge, "13b_shelf_b");
 
-        // Back toward the counter from the customer side. It must stop on this side.
-        yield return PushAgainst("collide.counter_far_side", Key.K, 3.6f, () => Origin.z - BodyRadius - SkinWidth, CounterFarEdge, null, true);
+        // To the fridges along the open floor.
+        yield return Hold(new[] { Key.K }, (Origin.z - FloorLaneZ) / Speed);
+        yield return PushAgainst("collide.fridge_wall", Key.J, 3.6f, () => Origin.x - BodyRadius - SkinWidth, FridgeFront(), "13c_fridge_wall", true);
+
+        // Back along the floor to the counter, from the customer side. It must stop on this side.
+        yield return Hold(new[] { Key.L }, (0f - Origin.x) / Speed);
+        yield return PushAgainst("collide.counter_far_side", Key.K, 1.6f, () => Origin.z - BodyRadius - SkinWidth, CounterFarEdge, null, true);
         Check("collide.still_on_customer_side", Origin.z > CounterFarEdge, $"z={Origin.z:0.000}");
 
-        // Shelf A.
-        float toShelf = (Origin.x - ShelfAX) / Speed;
-        yield return Hold(new[] { Key.J }, toShelf);
+        // Shelf A, from the open floor.
+        yield return Hold(new[] { Key.I }, (FloorLaneZ - Origin.z) / Speed);
+        yield return Hold(new[] { Key.J }, (Origin.x - ShelfAX) / Speed);
         yield return PushAgainst("collide.shelf", Key.I, 1.5f, () => Origin.z + BodyRadius + SkinWidth, ShelfAFrontEdge, "14_shelf");
 
-        // Around the counter's left end, back to the start.
-        yield return Hold(new[] { Key.L }, (ShelfAX * -1f - 1.5f) / Speed);
+        // Around the counter's far end, back to the start.
+        yield return Hold(new[] { Key.L }, (-1.6f - Origin.x) / Speed);
         yield return Hold(new[] { Key.K }, Origin.z / Speed);
         yield return Hold(new[] { Key.L }, (0f - Origin.x) / Speed);
         Check("collide.walked_back_to_start", Flat(Origin).magnitude < 0.3f, $"origin={Origin.ToString("F3")}");
@@ -498,13 +509,21 @@ public class P2LocomotionVerification : MonoBehaviour
         Check("collide.nothing_on_the_counter_moved", moved.Count == 0, $"checked={props.Count}; moved=[{string.Join(", ", moved)}]");
     }
 
-    /// <summary>The fridges' front faces (their colliders are built from the model's bounds).</summary>
+    /// <summary>The fridges' front faces along the far wall (their colliders are built from the model's bounds).</summary>
     static float FridgeFront()
     {
-        float front = float.MaxValue;
+        float front = float.MinValue;
         foreach (var collider in FindObjectsByType<BoxCollider>(FindObjectsSortMode.None))
-            if (collider.name.StartsWith("Drinks Fridge")) front = Mathf.Min(front, collider.bounds.min.z);
+            if (collider.name.StartsWith("Drinks Fridge")) front = Mathf.Max(front, collider.bounds.max.x);
         return front;
+    }
+
+    /// <summary>The front face of the chilled cases along the front wall.</summary>
+    static float ChilledFront()
+    {
+        foreach (var collider in FindObjectsByType<BoxCollider>(FindObjectsSortMode.None))
+            if (collider.name == "Chilled Cases") return collider.bounds.min.z;
+        throw new Exception("Chilled Cases missing.");
     }
 
     /// <summary>

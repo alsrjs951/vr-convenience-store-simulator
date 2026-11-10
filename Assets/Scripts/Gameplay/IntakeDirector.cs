@@ -18,6 +18,8 @@ public class IntakeDirector : MonoBehaviour
     public ProductCatalog Catalog;
     public GameAudio Audio;
     public ShelfSlotZone[] Slots = new ShelfSlotZone[0];
+    /// <summary>Stock that is only there to be seen, on every day. Not intake slots: nothing here is counted or restocked.</summary>
+    public ShelfSlotZone[] DecorSlots = new ShelfSlotZone[0];
     public BoxStandSocket[] Stands = new BoxStandSocket[0];
     public BoxCutter[] Cutters = new BoxCutter[0];
     public Transform[] CartSpots = new Transform[0];
@@ -101,6 +103,7 @@ public class IntakeDirector : MonoBehaviour
     /// <summary>Sets up a day. Day 1 has no intake: every slot is full of display stock and plain (no highlight or count).</summary>
     public void BeginDay(int day, int orderCount)
     {
+        StockDecor();
         Clear();
         Day = day;
         Active = day >= 2 && Deliveries != null;
@@ -234,6 +237,31 @@ public class IntakeDirector : MonoBehaviour
             if (slot.Merged != null) DisplayGaussians += slot.Merged.Active.m_Asset.splatCount;
         }
         Debug.Log($"[Intake] Day {Day}: no intake; display stock={DisplayCount} on {Slots.Length} slots, gaussians={DisplayGaussians}");
+    }
+
+    bool decorStocked;
+
+    /// <summary>
+    /// The shelves seen from the door and the counter (2026-11-09), once and for good. Only with merged splats: every place
+    /// as its own full-quality product would be far over the gaussian budget, so those shelves then stay as they were built.
+    /// </summary>
+    void StockDecor()
+    {
+        if (decorStocked || Catalog == null) return;
+        decorStocked = true;
+        if (ShelfSlotZone.IndividualOnly) return;
+        int places = 0;
+        long gaussians = 0;
+        foreach (var slot in DecorSlots)
+        {
+            if (slot == null || slot.MergedNear == null || slot.MergedFar == null) continue;
+            var prefab = Catalog.Find(slot.ProductId);
+            if (prefab == null || prefab.Splat == null) continue;
+            for (int unit = 0; unit < slot.Capacity; unit++) slot.Display(prefab, unit);
+            places += slot.Capacity;
+            gaussians += slot.Merged.Far.m_Asset.splatCount;
+        }
+        Debug.Log($"[Intake] Decor stock: {places} places on {DecorSlots.Length} slots, far gaussians={gaussians}");
     }
 
     string SlotOf(ProductPrefab product)

@@ -224,6 +224,9 @@ public static class P1InteractionTrial
         if (error > 1e-3f) throw new Exception($"PLY-to-product transform error {error}");
     }
 
+    /// <summary>A thin product's plate has to leave room for the body to reach the scanner without the barcode.</summary>
+    static float BarcodeThickness(float depth) => Mathf.Min(BarcodeTriggerThickness, depth * 0.25f);
+
     static void PlaceBarcodeTrigger(BoxCollider trigger, Vector3 normal, Vector3 size)
     {
         normal = normal.normalized;
@@ -231,9 +234,10 @@ public static class P1InteractionTrial
         if (Mathf.Abs(Mathf.Max(absolute.x, absolute.y, absolute.z) - 1f) > 1e-4f)
             throw new Exception("Barcode normal must be a product axis.");
         var triggerSize = size;
-        if (absolute.x > 0.5f) triggerSize.x = BarcodeTriggerThickness;
-        if (absolute.y > 0.5f) triggerSize.y = BarcodeTriggerThickness;
-        if (absolute.z > 0.5f) triggerSize.z = BarcodeTriggerThickness;
+        float thickness = BarcodeThickness(Mathf.Abs(Vector3.Dot(size, normal)));
+        if (absolute.x > 0.5f) triggerSize.x = thickness;
+        if (absolute.y > 0.5f) triggerSize.y = thickness;
+        if (absolute.z > 0.5f) triggerSize.z = thickness;
         trigger.size = triggerSize;
         trigger.center = Vector3.Scale(normal, (size - triggerSize) * 0.5f);
     }
@@ -289,7 +293,7 @@ public static class P1InteractionTrial
         float depthAlongBarcode = Mathf.Abs(Vector3.Dot(size, normal));
         // The zone's half size must stay under the part of the depth the barcode trigger does not fill,
         // or the body cannot enter the zone without the barcode on a very thin product.
-        float freeDepth = depthAlongBarcode - BarcodeTriggerThickness;
+        float freeDepth = depthAlongBarcode - BarcodeThickness(depthAlongBarcode);
         float scannerSize = Mathf.Min(MaxScannerSize, depthAlongBarcode * ScannerToDepthRatio, 2f * freeDepth * ScannerToDepthRatio);
         scannerCollider.size = Vector3.one * scannerSize;
         var scannerZone = scanner.AddComponent<ScannerZone>();

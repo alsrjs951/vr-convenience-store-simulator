@@ -49,10 +49,10 @@ def fitted(draw, text, max_width, size, bold=True):
 
 
 # ---------- Floor: tiles with the room's light and contact shadows painted in ----------
-# Room x -4.5..4.5, z -2.5..5.5. Image row 0 is z = 5.5 and column 0 is x = -4.5, which is how a floor quad maps it.
+# Room x -6..4.5, z -2.5..5.5. Image row 0 is z = 5.5 and column 0 is x = -6, which is how a floor quad maps it.
 
-ROOM_X0, ROOM_Z0, ROOM_W, ROOM_D = -4.5, -2.5, 9.0, 8.0
-FLOOR_W, FLOOR_H = 4096, 3640
+ROOM_X0, ROOM_Z0, ROOM_W, ROOM_D = -6.0, -2.5, 10.5, 8.0
+FLOOR_W, FLOOR_H = 4096, 3120
 LOW = 4  # the light and shadow fields are smooth, so they are made small and enlarged
 
 
@@ -74,29 +74,45 @@ def blurred(mask, radius_m, width):
 low_w, low_h = FLOOR_W // LOW, FLOOR_H // LOW
 lx, lz = field_axes(low_w, low_h)
 
-# Pools of light under the ceiling panels (P3StoreDressing.Ceiling), over a dimmer room.
-panels = [(x, z) for x in (-3.0, -1.0, 1.0, 3.0) for z in (1.9, 3.95)] + [(x, -1.1) for x in (-2.4, 0.0, 2.4)]
-light = np.zeros((low_h, low_w), np.float32)
-for px, pz in panels:
-    light += np.exp(-((lx - px) ** 2 + (lz - pz) ** 2) / (2 * 0.95 ** 2))
-light = 0.80 + 0.26 * np.clip(light, 0, 1.25) / 1.25
+# Bands of light under the rows of strip lights (P3StoreDressing.LightRows, LightSpans), over a dimmer room, and the
+# polished floor's mirror image of each strip as a narrower, brighter streak.
+light_rows = (-5.1, -3.7, -2.3, -0.9, 0.5, 1.9, 3.3)
+light_spans = ((-1.2, 0.95), (1.1, 3.25), (3.4, 5.3))
+
+
+def strip_field(xs, zs, width):
+    field = np.zeros_like(xs, np.float32)
+    for row in light_rows:
+        for z0, z1 in light_spans:
+            beyond = np.maximum(np.maximum(z0 - zs, zs - z1), 0)
+            field += np.exp(-((xs - row) ** 2 + beyond ** 2) / (2 * width ** 2))
+    return field
+
+
+light = strip_field(lx, lz, 0.75)
+light = 0.78 + 0.26 * np.clip(light, 0, 1.3) / 1.3
+sheen = strip_field(lx, lz, 0.16)
 
 # Contact shadow where furniture stands on the floor. x0, x1, z0, z1 in metres.
 solids = [
-    (-2.95, -1.45, 2.95, 3.45), (1.45, 2.95, 2.95, 3.45),   # gondolas A, B
-    (-3.45, -2.95, 3.0, 3.5), (2.95, 3.45, 3.0, 3.5),       # box stands
-    (-1.0, 1.0, 0.35, 0.95),                                # counter
-    (-4.3, 4.3, 4.495, 5.5),                                # fridges
-    (3.99, 4.44, 2.6, 4.42), (3.94, 4.44, 1.05, 2.35),      # shelf C, microwave cabinet
+    (-3.4, -0.4, 2.95, 3.45), (-4.05, -2.55, 0.55, 1.05),   # gondola row A + B, row D
+    (-2.55, -2.23, 0.55, 1.05),                             # row D's end bay
+    (-3.9, -3.4, 3.0, 3.5), (-0.4, 0.1, 3.0, 3.5),          # box stands
+    (-1.0, 2.0, 0.35, 0.95),                                # counter with its extension
+    (-5.94, -5.0, -1.55, 3.19),                             # fridges and their filler
+    (-5.94, -5.44, 3.25, 4.55),                             # microwave cabinet
+    (-3.8, 4.2, 4.6, 5.44), (-5.44, -3.82, 4.6, 5.44),      # chilled cases, corner cupboard
+    (-1.7, 1.85, -1.75, -1.35),                             # tobacco wall
+    (0.35, 1.1, 2.75, 4.15),                                # chest freezer
+    (3.99, 4.44, 1.4, 4.42),                                # shelf C
     (2.95, 4.05, -1.85, -1.25), (2.3, 2.9, -1.9, -1.25),    # cart, empty-box bin
     (-1.2, -0.8, -0.9, -0.5),                               # waste bin
-    (-4.44, -3.9, -1.9, -0.5),                              # stock shelf
 ]
 occupied = np.zeros((low_h, low_w), np.float32)
 for x0, x1, z0, z1 in solids:
     occupied[(lx >= x0) & (lx <= x1) & (lz >= z0) & (lz <= z1)] = 1.0
 walls = np.zeros((low_h, low_w), np.float32)
-walls[(lx < -4.44) | (lx > 4.44) | (lz < -2.44) | (lz > 5.44)] = 1.0
+walls[(lx < -5.94) | (lx > 4.44) | (lz < -2.44) | (lz > 5.44)] = 1.0
 tight = blurred(occupied, 0.05, low_w)
 wide = blurred(occupied, 0.28, low_w)
 wall_wide = blurred(walls, 0.35, low_w)
@@ -104,6 +120,7 @@ shade = (1 - 0.62 * np.clip(tight * 1.3, 0, 1)) * (1 - 0.34 * np.clip(wide * 1.4
 shade[occupied > 0.5] = 0.3
 
 lighting = resize_field(light * shade, FLOOR_W, FLOOR_H)
+reflection = resize_field(sheen * (1 - np.clip(wide * 1.6, 0, 1)), FLOOR_W, FLOOR_H)
 
 fx, fz = field_axes(FLOOR_W, FLOOR_H)
 TILE = 0.6
@@ -112,16 +129,35 @@ z_in = (fz - ROOM_Z0) % TILE
 edge = np.minimum(np.minimum(x_in, TILE - x_in), np.minimum(z_in, TILE - z_in)).astype(np.float32)
 tile_col = ((fx - ROOM_X0) // TILE).astype(np.int32)
 tile_row = ((fz - ROOM_Z0) // TILE).astype(np.int32)
-tile_tone = rng.uniform(-0.018, 0.018, (32, 32)).astype(np.float32)[tile_row % 32, tile_col % 32]
-mottle = np.asarray(Image.fromarray((rng.random((128, 146)) * 255).astype(np.uint8)).resize((FLOOR_W, FLOOR_H), Image.BICUBIC), np.float32) / 255.0
-bevel = np.clip((edge - 0.0016) / 0.003, 0, 1)
-floor = np.stack([np.full_like(edge, 0.80), np.full_like(edge, 0.79), np.full_like(edge, 0.765)], -1)
-floor *= (1.0 + (mottle - 0.5) * 0.045 + tile_tone)[..., None]
-grout = np.array([0.50, 0.49, 0.47], np.float32)
+tile_tone = rng.uniform(-0.03, 0.03, (32, 32)).astype(np.float32)[tile_row % 32, tile_col % 32]
+mottle = np.asarray(Image.fromarray((rng.random((156, 205)) * 255).astype(np.uint8)).resize((FLOOR_W, FLOOR_H), Image.BICUBIC), np.float32) / 255.0
+# Polished grey terrazzo: a mid grey with dark and light chips in it.
+dark_chips = gaussian_filter((rng.random((FLOOR_H, FLOOR_W)) < 0.018).astype(np.float32), 0.8)
+light_chips = gaussian_filter((rng.random((FLOOR_H, FLOOR_W)) < 0.012).astype(np.float32), 0.8)
+bevel = np.clip((edge - 0.0012) / 0.0025, 0, 1)
+floor = np.stack([np.full_like(edge, 0.585), np.full_like(edge, 0.585), np.full_like(edge, 0.57)], -1)
+floor *= (1.0 + (mottle - 0.5) * 0.11 + tile_tone - dark_chips * 1.4 + light_chips * 1.5)[..., None]
+grout = np.array([0.42, 0.42, 0.41], np.float32)
 floor = floor * bevel[..., None] + grout * (1 - bevel[..., None])
 floor *= lighting[..., None]
+floor += reflection[..., None] * np.array([0.21, 0.21, 0.205], np.float32)
+# The strip of pavement outside the street front.
+outside = (fx < -1.75) & (fz < -1.6)
+pavement = (0.5 + (mottle[outside] - 0.5) * 0.12)
+floor[outside] = np.stack([pavement, pavement, pavement * 0.97], -1)
 save(Image.fromarray((np.clip(floor, 0, 1) * 255 + 0.5).astype(np.uint8)), 'floor_baked')
-del floor, lighting, fx, fz, x_in, z_in, edge, mottle, bevel, tile_tone, tile_col, tile_row
+del floor, lighting, reflection, fx, fz, x_in, z_in, edge, mottle, bevel, tile_tone, tile_col, tile_row, dark_chips, light_chips, outside, pavement
+
+# ---------- Ceiling: one 60 cm T-bar tile, speckled board in a slim metal grid; the material repeats it ----------
+
+w, h = 256, 256
+board = np.full((h, w, 3), 0.93, np.float32)
+board -= gaussian_filter(rng.random((h, w), dtype=np.float32), 0.7)[..., None] * 0.05
+holes = gaussian_filter((rng.random((h, w)) < 0.05).astype(np.float32), 0.6)
+board -= holes[..., None] * 0.28
+board[:5, :] = board[-5:, :] = 0.8
+board[:, :5] = board[:, -5:] = 0.8
+save(Image.fromarray((np.clip(board, 0, 1) * 255 + 0.5).astype(np.uint8)), 'ceiling_tile')
 
 # ---------- Walls: one tall strip, dark at the floor and a little dark at the ceiling (row 0 is the top) ----------
 
@@ -331,5 +367,175 @@ w, h = 512, 192
 image, draw = poster_frame(w, h, (20, 150, 80))
 centered(draw, w, h / 2, '비상구', 120, WHITE)
 save(image, 'exit_sign')
+
+
+# ---------- The street through the glass: shapes and colour only, soft as an out-of-focus background ----------
+
+w, h = 2048, 1448
+image = Image.new('RGB', (w, h), (214, 228, 240))
+draw = ImageDraw.Draw(image)
+for i in range(h // 2):
+    t = i / (h / 2)
+    draw.line((0, i, w, i), fill=(int(186 + 44 * t), int(212 + 26 * t), int(238 + 8 * t)))
+for x, width, top, tone in ((0, 460, 240, 200), (420, 520, 330, 182), (900, 380, 180, 214), (1250, 430, 300, 190), (1650, 420, 220, 206)):
+    draw.rectangle((x, top, x + width, 1040), fill=(tone, tone - 4, tone - 12))
+    for row in range(top + 40, 980, 90):
+        for col in range(x + 30, x + width - 40, 90):
+            draw.rectangle((col, row, col + 50, row + 54), fill=(tone - 70, tone - 56, tone - 40))
+draw.rectangle((0, 1040, w, 1200), fill=(136, 138, 142))
+draw.rectangle((0, 1200, w, h), fill=(168, 168, 164))
+for x, r in ((260, 190), (1000, 230), (1720, 200)):
+    draw.rectangle((x - 16, 760, x + 16, 1130), fill=(92, 74, 58))
+    draw.ellipse((x - r, 500, x + r, 880), fill=(88, 128, 76))
+    draw.ellipse((x - r * 0.7, 420, x + r * 0.8, 760), fill=(108, 148, 86))
+for x in range(0, w, 70):
+    draw.rectangle((x, 1110, x + 7, 1230), fill=(70, 74, 80))
+draw.rectangle((0, 1120, w, 1130), fill=(70, 74, 80))
+save(image.filter(ImageFilter.GaussianBlur(5)), 'street_backdrop')
+
+
+# ---------- Tobacco wall: colour blocks with shelf numbers, no pack pictures and no brands (D9) ----------
+
+def tobacco_grid(name, start):
+    w, h = 1560, 1250
+    rows, cols = 5, 13
+    palette = [(238, 240, 244), (206, 216, 232), (70, 110, 170), (28, 62, 120), (190, 42, 48), (232, 190, 80), (120, 160, 120), (150, 150, 158), (56, 58, 66), (240, 226, 190)]
+    image = Image.new('RGB', (w, h), (18, 20, 26))
+    draw = ImageDraw.Draw(image)
+    row_h = h / rows
+    cell = w / cols
+    number = start
+    local = np.random.default_rng(start)
+    for r in range(rows):
+        y0 = r * row_h + 34
+        y1 = (r + 1) * row_h - 26
+        for c in range(cols):
+            x0 = c * cell + 9
+            x1 = (c + 1) * cell - 9
+            base = palette[int(local.integers(len(palette)))]
+            accent = palette[int(local.integers(len(palette)))]
+            draw.rectangle((x0, y0, x1, y1), fill=base)
+            draw.rectangle((x0, y0, x1, y0 + (y1 - y0) * 0.26), fill=accent)
+            ink = BLACK if sum(base) > 400 else WHITE
+            draw.text(((x0 + x1) / 2, y0 + (y1 - y0) * 0.64), str(number), font=font(46), fill=ink, anchor='mm')
+            number += 1
+    save(image, name)
+
+
+tobacco_grid('tobacco_grid_1', 1)
+tobacco_grid('tobacco_grid_2', 66)
+
+w, h = 2048, 472
+top = np.array((8, 24, 58), np.float32) / 255.0
+bottom = np.array((20, 66, 130), np.float32) / 255.0
+t = np.linspace(0, 1, h, dtype=np.float32)[:, None, None]
+x = np.linspace(-1, 1, w, dtype=np.float32)[None, :, None]
+glow = np.exp(-((x - 0.45) ** 2) / 0.09) * 0.24
+gradient = np.clip(top * (1 - t) + bottom * t + glow, 0, 1)
+image = Image.fromarray((gradient * 255 + 0.5).astype(np.uint8))
+draw = ImageDraw.Draw(image)
+draw.text((90, 180), '언제나 가까운 동아편의점', font=font(124), fill=WHITE, anchor='lm')
+draw.rounded_rectangle((90, 300, 330, 396), radius=12, fill=YELLOW)
+draw.text((210, 348), '안내', font=font(66), fill=NAVY, anchor='mm')
+draw.text((370, 348), '19세 미만 담배 판매 금지', font=font(76, False), fill=WHITE, anchor='lm')
+save(image, 'header_tobacco')
+
+w, h = 256, 1980
+image = Image.new('RGB', (w, h), NAVY)
+draw = ImageDraw.Draw(image)
+draw.rectangle((0, h - 320, w, h), fill=(240, 242, 246))
+y = 200
+for ch in '신분증을보여주세요':
+    centered(draw, w, y, ch, 126, WHITE)
+    y += 170
+centered(draw, w, h - 200, '성인', 96, NAVY)
+centered(draw, w, h - 90, '확인', 96, NAVY)
+save(image, 'lightbox_tobacco')
+
+
+# ---------- Other new prints ----------
+
+w, h = 744, 600
+image, draw = poster_frame(w, h, (42, 56, 130))
+centered(draw, w, 140, '아이스크림', 120, WHITE)
+centered(draw, w, 280, '할인', 120, WHITE)
+draw.rounded_rectangle((110, 396, w - 110, 526), radius=60, fill=WHITE)
+centered(draw, w, 460, '2개 3,500원', 80, RED)
+save(image, 'poster_icecream')
+
+w, h = 512, 724
+image, draw = poster_frame(w, h, WHITE)
+draw.rectangle((0, 0, w, 40), fill=RED)
+centered(draw, w, 190, '따뜻한', 96, BLACK)
+centered(draw, w, 330, '컵라면', 120, RED)
+centered(draw, w, 480, '온수 무료', 62, BLACK, False)
+centered(draw, w, 640, '동아편의점', 44, NAVY)
+save(image, 'poster_hot_noodle')
+
+image, draw = poster_frame(w, h, NAVY)
+centered(draw, w, 220, '간편식', 124, WHITE)
+centered(draw, w, 370, '데워 드려요', 70, YELLOW)
+centered(draw, w, 520, '전자레인지 이용', 52, WHITE, False)
+save(image, 'poster_ready_meal')
+
+w, h = 700, 780
+image, draw = poster_frame(w, h, NAVY)
+draw.ellipse((w / 2 - 130, 110, w / 2 + 130, 370), outline=WHITE, width=16)
+draw.rectangle((w / 2 - 70, 190, w / 2 + 70, 290), fill=WHITE)
+centered(draw, w, 560, '간편식', 170, WHITE)
+save(image, 'sign_ready_meals')
+
+w, h = 400, 560
+image, draw = poster_frame(w, h, NAVY)
+centered(draw, w, 130, '동아', 104, WHITE)
+centered(draw, w, 250, '멤버십', 92, YELLOW)
+centered(draw, w, 400, '포인트 적립하고', 42, WHITE, False)
+centered(draw, w, 462, '혜택 받으세요', 42, WHITE, False)
+save(image, 'sign_membership')
+
+w, h = 256, 256
+image, draw = poster_frame(w, h, WHITE)
+draw.ellipse((22, 22, w - 22, h - 22), outline=NAVY, width=16)
+centered(draw, w, h / 2, '동아', 74, NAVY)
+save(image, 'sign_bag_logo')
+
+w, h = 256, 384
+image, draw = poster_frame(w, h, (28, 30, 36))
+draw.rectangle((18, 18, w - 18, 96), fill=(168, 190, 158))
+draw.text((w - 34, 58), '3,500', font=font(50), fill=BLACK, anchor='rm')
+for row in range(5):
+    for col in range(4):
+        x0 = 20 + col * 56
+        y0 = 120 + row * 50
+        draw.rounded_rectangle((x0, y0, x0 + 46, y0 + 38), radius=7, fill=(208, 210, 214) if col < 3 else (216, 120, 60))
+save(image, 'device_calculator')
+
+
+# ---------- Chilled case decks: stackable delivery trays with their content written on them, no food shown (D9) ----------
+
+def tray_strip(name, label, colour):
+    w, h = 1024, 96
+    image = Image.new('RGB', (w, h), colour)
+    draw = ImageDraw.Draw(image)
+    light = tuple(min(255, c + 34) for c in colour)
+    dark = tuple(max(0, c - 44) for c in colour)
+    draw.rectangle((0, 0, w, 12), fill=light)
+    draw.rectangle((0, h - 8, w, h), fill=dark)
+    n = 5
+    cell = w / n
+    for i in range(n):
+        x0 = i * cell + 7
+        x1 = (i + 1) * cell - 7
+        draw.rounded_rectangle((x0, 18, x1, h - 13), radius=6, outline=dark, width=3)
+        draw.rounded_rectangle((x0 + 34, 28, x1 - 34, h - 22), radius=4, fill=WHITE)
+        draw.text(((x0 + x1) / 2, 53), label, font=font(fitted(draw, label, x1 - x0 - 90, 34)), fill=NAVY, anchor='mm')
+    save(image, name)
+
+
+tray_strip('tray_lunchbox', '도시락', (58, 96, 150))
+tray_strip('tray_kimbap', '김밥', (70, 130, 112))
+tray_strip('tray_sandwich', '샌드위치', (160, 116, 62))
+tray_strip('tray_salad', '샐러드', (96, 140, 76))
+tray_strip('tray_milk', '유제품', (110, 138, 176))
 
 print('wrote', len([n for n in os.listdir(out) if n.endswith('.png')]), 'textures')

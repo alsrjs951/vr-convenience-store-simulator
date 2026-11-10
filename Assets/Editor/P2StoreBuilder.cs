@@ -48,31 +48,40 @@ public static class P2StoreBuilder
     // The Starter Assets skin of 0.08 would keep the body 0.28 m from walls instead of the 0.2 m the doc asks for.
     const float CapsuleSkin = 0.02f;
 
-    // Customers (doc 6.1, D12). Layout of 2026-11-08 (game design 4.2 as the clerk sees it): the door is in the left wall
-    // just in front of the counter, the drinks fridges fill the far (front) wall, gondolas A and B face the counter with the
-    // queue running between them, and the microwave/hot water corner and shelf C stand along the right wall.
+    // Customers (doc 6.1, D12). Layout of 2026-11-09, after a photo of a Korean convenience store taken from the near end of
+    // the counter, looking along it. The counter and the clerk's place did not move, so the photo's view runs toward -x: its
+    // back wall of drinks fridges is the far wall (x = RoomFar), its right wall of chilled cases is the front wall (z = RoomFront),
+    // and the tobacco wall behind the clerk and the glass street front with the door are on its left (toward -z). Gondolas run
+    // along x, in depth as the photo sees them: row D in line with the counter past its far end, row A + B behind it.
     const string NavMeshPath = "Assets/Data/Navigation/StoreNavMesh.asset";
     const float AgentRadius = 0.25f;
     const float CounterFar = 0.95f;
-    static readonly Vector3 DoorCenter = new Vector3(-4.5f, 0f, 2.4f);
+    public const float RoomFar = -6f, RoomNear = 4.5f, RoomBack = -2.5f, RoomFront = 5.5f;
+    // The street front runs along z = StorefrontZ from the far wall to the partition at the end of the tobacco wall.
+    public const float StorefrontZ = -1.6f, PartitionX = -1.75f;
+    public static readonly Vector3 DoorCenter = new Vector3(-3.6f, 0f, StorefrontZ);
     // 2.4 m so a customer coming in and one going out can pass in the doorway (agents are 0.5 m across). At 1.4 m they
     // could not (2026-11-08, IL2CPP player run); at 2.0 m in the left wall one still waited out a warp there.
-    const float DoorWidth = 2.4f, DoorHeight = 2.2f, VestibuleDepth = 1.5f;
+    public const float DoorWidth = 2.4f, DoorHeight = 2.2f, VestibuleDepth = 1.5f;
 
     const float CounterTop = 0.9f;
+    // The counter goes on past the end where the card terminal is, as in the photo, with nothing on it the rules use.
+    public const float CounterExtensionEnd = 2f;
 
     // Day 2 intake (doc 5.7, 6.4). Slot assignment is provisional (game design 19). Everything in the clerk's area keeps off
-    // the routes the locomotion check walks: along the back wall (z < -1.95), the start lane near x = 0, the walks from the
-    // start (+x along z = 0.05, the diagonal to (1.04, -1.01)), the room-scale walk to the right wall along z = -0.13 and
-    // the slide down that wall to z = -0.84 (x > 4.0), the lane up x = 1.6 past the counter's right end, and the way back
-    // round the counter's left end (x = -1.5, then z = 0). The stands sit at the gondolas' outer ends (by the walls) with the
-    // delivery slots beside them, so the clerk works away from the middle aisle the customers use: at the inner ends the
-    // standing clerk's NavMesh hole closed that crossing (three warps in the IL2CPP player run, 2026-11-08).
-    const float ShelfFront = 2.95f, ShelfBack = 3.45f, ShelfWidth = 1.5f, ShelfHeight = 1.8f;
-    const float ShelfAX = -2.2f, ShelfBX = 2.2f;
+    // the routes the locomotion check walks: the start lane near x = 0, the walks from the start (+x along z = 0.05, the
+    // diagonal to (1.04, -1.01)), the lane along z = -0.1 between the far wall and the near wall, the room-scale walk to the
+    // near wall along z = -0.13 and the slide down that wall to z = -0.84 (x > 4.0), and the way back round the counter's far
+    // end (x = -1.6, then z = 0). The stands sit at the ends of the row, so the clerk works away from the aisle in front of it.
+    public const float ShelfFront = 2.95f, ShelfBack = 3.45f, ShelfWidth = 1.5f, ShelfHeight = 1.8f;
+    public const float ShelfAX = -2.65f, ShelfBX = -1.15f;
+    // Row D stands in line with the counter. It has no delivery slots.
+    // Customers may walk the floor up to here between the street front and row D; wide enough for two to pass the counter's far end.
+    const float CustomerFloorEnd = -1.2f;
+    public const float ShelfDX = -3.3f, ShelfDFront = 0.55f, ShelfDBack = 1.05f, ShelfDBayDepth = 0.32f;
     static readonly float[] ShelfBoardTops = { 0.55f, 1.0f, 1.4f };
     const float StandTop = 0.8f;
-    static readonly Vector3 StandACenter = new Vector3(-3.2f, 0f, 3.25f), StandBCenter = new Vector3(3.2f, 0f, 3.25f);
+    static readonly Vector3 StandACenter = new Vector3(ShelfAX - ShelfWidth * 0.5f - 0.25f, 0f, 3.25f), StandBCenter = new Vector3(ShelfBX + ShelfWidth * 0.5f + 0.25f, 0f, 3.25f);
     static readonly Vector3 CartCenter = new Vector3(3.5f, 0f, -1.55f);
     const float CartWidth = 1.1f, CartSpotOffset = 0.28f;
     static readonly Vector3 RecycleCenter = new Vector3(2.6f, 0f, -1.575f);
@@ -285,28 +294,38 @@ public static class P2StoreBuilder
         var bag = Material("P2_Bag", new Color(0.9f, 0.9f, 0.86f));
 
         var environment = new GameObject("Environment").transform;
-        Box("Floor Visual", new Vector3(0f, -0.05f, 1.5f), new Vector3(9f, 0.1f, 8f), floor, environment, false);
-        Box("Back Wall", new Vector3(0f, 1.5f, -2.5f), new Vector3(9f, 3f, 0.1f), white, environment, true);
-        // The door customers come in by (D12) is in the left wall in front of the counter, so the clerk sees who comes in:
-        // an open doorway onto a short porch, so they walk in instead of appearing in the room. The locomotion check meets
-        // the left wall behind the counter (z = -2.2), clear of the door.
-        float doorNear = DoorCenter.z - DoorWidth * 0.5f, doorFar = DoorCenter.z + DoorWidth * 0.5f;
-        Box("Front Wall", new Vector3(0f, 1.5f, 5.5f), new Vector3(9f, 3f, 0.1f), white, environment, true);
-        Box("Left Wall Back", new Vector3(-4.5f, 1.5f, (-2.5f + doorNear) * 0.5f), new Vector3(0.1f, 3f, doorNear + 2.5f), white, environment, true);
-        Box("Left Wall Front", new Vector3(-4.5f, 1.5f, (doorFar + 5.5f) * 0.5f), new Vector3(0.1f, 3f, 5.5f - doorFar), white, environment, true);
-        Box("Door Lintel", new Vector3(-4.5f, (DoorHeight + 3f) * 0.5f, DoorCenter.z), new Vector3(0.1f, 3f - DoorHeight, DoorWidth), white, environment, true);
+        float roomCenterX = (RoomFar + RoomNear) * 0.5f, roomWidth = RoomNear - RoomFar, roomCenterZ = (RoomBack + RoomFront) * 0.5f, roomDepth = RoomFront - RoomBack;
+        Box("Floor Visual", new Vector3(roomCenterX, -0.05f, roomCenterZ), new Vector3(roomWidth, 0.1f, roomDepth), floor, environment, false);
+        Box("Back Wall", new Vector3((PartitionX + RoomNear) * 0.5f, 1.5f, RoomBack), new Vector3(RoomNear - PartitionX, 3f, 0.1f), white, environment, true);
+        Box("Front Wall", new Vector3(roomCenterX, 1.5f, RoomFront), new Vector3(roomWidth, 3f, 0.1f), white, environment, true);
+        Box("Far Wall", new Vector3(RoomFar, 1.5f, (StorefrontZ + RoomFront) * 0.5f), new Vector3(0.1f, 3f, RoomFront - StorefrontZ), white, environment, true);
+        Box("Right Wall", new Vector3(RoomNear, 1.5f, roomCenterZ), new Vector3(0.1f, 3f, roomDepth), white, environment, true);
+
+        // The door customers come in by (D12) is in the glass street front past the counter's far end, so the clerk sees who
+        // comes in: an open doorway onto a strip of pavement, so they walk in instead of appearing in the room.
+        float doorLeft = DoorCenter.x - DoorWidth * 0.5f, doorRight = DoorCenter.x + DoorWidth * 0.5f;
+        float frontCenter = (RoomFar + PartitionX) * 0.5f, frontLength = PartitionX - RoomFar;
+        var storeGlass = TransparentMaterial("P2_StoreGlass", new Color(0.72f, 0.84f, 0.9f, 0.16f));
+        Box("Storefront Header", new Vector3(frontCenter, (DoorHeight + 3f) * 0.5f, StorefrontZ), new Vector3(frontLength, 3f - DoorHeight, 0.1f), white, environment, true);
+        Box("Storefront Glass Far", new Vector3((RoomFar + doorLeft) * 0.5f, DoorHeight * 0.5f, StorefrontZ), new Vector3(doorLeft - RoomFar, DoorHeight, 0.02f), storeGlass, environment, true);
+        Box("Storefront Glass Near", new Vector3((doorRight + PartitionX) * 0.5f, DoorHeight * 0.5f, StorefrontZ), new Vector3(PartitionX - doorRight, DoorHeight, 0.02f), storeGlass, environment, true);
         var porch = Material("P2_Porch", new Color(0.16f, 0.17f, 0.19f));
-        float porchX = -4.5f - VestibuleDepth * 0.5f;
-        Box("Porch Floor", new Vector3(porchX, -0.05f, DoorCenter.z), new Vector3(VestibuleDepth, 0.1f, DoorWidth + 0.2f), porch, environment, false);
-        Box("Porch Wall Near", new Vector3(porchX, 1.5f, doorNear - 0.1f), new Vector3(VestibuleDepth, 3f, 0.1f), porch, environment, true);
-        Box("Porch Wall Far", new Vector3(porchX, 1.5f, doorFar + 0.1f), new Vector3(VestibuleDepth, 3f, 0.1f), porch, environment, true);
-        Box("Porch Back", new Vector3(-4.5f - VestibuleDepth - 0.05f, 1.5f, DoorCenter.z), new Vector3(0.1f, 3f, DoorWidth + 0.3f), porch, environment, true);
-        Box("Porch Roof", new Vector3(porchX, DoorHeight + 0.05f, DoorCenter.z), new Vector3(VestibuleDepth, 0.1f, DoorWidth + 0.3f), porch, environment, false);
-        Box("Right Wall", new Vector3(4.5f, 1.5f, 1.5f), new Vector3(0.1f, 3f, 8f), white, environment, true);
-        // Gondolas with boards (Day 2 puts products on them), fronts toward the counter, the queue between them.
-        Gondola("Shelf A", ShelfAX, shelf, environment);
-        Gondola("Shelf B", ShelfBX, shelf, environment);
+        float porchZ = StorefrontZ - VestibuleDepth * 0.5f;
+        Box("Porch Floor", new Vector3(frontCenter, -0.05f, porchZ), new Vector3(frontLength, 0.1f, VestibuleDepth), porch, environment, false);
+        Box("Street Backdrop", new Vector3(frontCenter, 1.5f, StorefrontZ - VestibuleDepth - 0.05f), new Vector3(frontLength, 3f, 0.1f), porch, environment, true);
+        Box("Porch Side", new Vector3(RoomFar, 1.5f, porchZ), new Vector3(0.1f, 3f, VestibuleDepth), porch, environment, true);
+        Box("Partition", new Vector3(PartitionX, 1.5f, (RoomBack - 0.65f + StorefrontZ) * 0.5f), new Vector3(0.1f, 3f, StorefrontZ - RoomBack + 0.65f), white, environment, true);
+        Box("Porch Roof", new Vector3(frontCenter, 3.05f, porchZ), new Vector3(frontLength, 0.1f, VestibuleDepth), porch, environment, false);
+
+        // Gondolas with boards (Day 2 puts products on row A + B), fronts toward the counter.
+        Gondola("Shelf A", ShelfAX, ShelfFront, ShelfBack, shelf, environment);
+        Gondola("Shelf B", ShelfBX, ShelfFront, ShelfBack, shelf, environment);
+        Gondola("Shelf D", ShelfDX, ShelfDFront, ShelfDBack, shelf, environment);
+        // The solid part of the shallow bay on the row's near end. P3StoreDetails draws it; the NavMesh and the player need it here.
+        Box("Row D End Bay Solid", new Vector3(ShelfDX + ShelfWidth * 0.5f + ShelfDBayDepth * 0.5f, 0.95f, (ShelfDFront + ShelfDBack) * 0.5f), new Vector3(ShelfDBayDepth, 1.9f, ShelfDBack - ShelfDFront), shelf, environment, true)
+            .GetComponent<Renderer>().enabled = false;
         Box("Counter", new Vector3(0f, CounterTop * 0.5f, 0.65f), new Vector3(2f, CounterTop, 0.6f), wood, environment, true);
+        Box("Counter Extension", new Vector3((1f + CounterExtensionEnd) * 0.5f, CounterTop * 0.5f, 0.65f), new Vector3(CounterExtensionEnd - 1f, CounterTop, 0.6f), wood, environment, true);
 
         // ---------- Scanner: a solid pad with a thin zone on top, so only the face touching the pad can scan ----------
         var padTop = CounterTop + 0.05f;
@@ -482,7 +501,8 @@ public static class P2StoreBuilder
         var customers = new GameObject("Customers").transform;
         var towardClerk = Quaternion.Euler(0f, 180f, 0f);
         var towardFront = Quaternion.identity;
-        director.Door = Marker("Door", new Vector3(DoorCenter.x - VestibuleDepth + 0.4f, 0f, DoorCenter.z), Quaternion.Euler(0f, 90f, 0f), customers);
+        var towardFarWall = Quaternion.Euler(0f, -90f, 0f);
+        director.Door = Marker("Door", new Vector3(DoorCenter.x, 0f, StorefrontZ - VestibuleDepth + 0.4f), towardFront, customers);
         director.Counter = Marker("Counter Front", new Vector3(0f, 0f, 1.35f), towardClerk, customers);
         // The line stands along the counter on the side away from the door, so leaving customers do not cut through it. Not
         // straight back toward the gondolas: a line there walls the store in two (2026-11-08 layout, customers stuck).
@@ -493,12 +513,12 @@ public static class P2StoreBuilder
         };
         director.BrowseSpots = new[]
         {
-            // In front of the gondolas and in front of the fridges. Not in the 1 m aisles behind the gondolas: a customer
+            // In front of the row, at the fridges and at the chilled cases. Not in the 1 m aisle behind the row: a customer
             // standing there is a carved obstacle and closes the aisle (2026-11-08, two warps in the day 1 and 2 runs).
             Marker("Browse Shelf A", new Vector3(ShelfAX, 0f, 2.45f), towardFront, customers),
-            Marker("Browse Fridge L", new Vector3(-0.6f, 0f, 3.98f), towardFront, customers),
+            Marker("Browse Fridges", new Vector3(-4.5f, 0f, 1.75f), towardFarWall, customers),
             Marker("Browse Shelf B", new Vector3(ShelfBX, 0f, 2.45f), towardFront, customers),
-            Marker("Browse Fridge R", new Vector3(0.6f, 0f, 3.98f), towardFront, customers),
+            Marker("Browse Chilled Cases", new Vector3(2.1f, 0f, 3.98f), towardFront, customers),
         };
         director.Characters = characters;
         var outcomePosition = new Vector3(0f, 1.28f, 0.98f);
@@ -583,11 +603,11 @@ public static class P2StoreBuilder
 
     // ---------- The way in (game design 10.0, 2026-11-09) ----------
 
-    // On the porch, a metre from the closed door, which is where the title is read. The porch is 1.5 m deep and the door
-    // 2.4 m wide; the leaves slide into the wall either side of it and the title panel is on them.
-    static readonly Vector3 TitleStand = new Vector3(-5.55f, 0f, DoorCenter.z);
-    // Along the customers' side, round the counter's left end the check walks too (x = -1.6), to the clerk's start.
-    static readonly Vector3[] CommuteRoute = { new Vector3(-4.1f, 0f, 2.3f), new Vector3(-1.6f, 0f, 1.5f), new Vector3(-1.6f, 0f, 0.05f), new Vector3(-0.45f, 0f, 0f) };
+    // On the pavement, a metre from the closed door, which is where the title is read. The pavement is 1.5 m deep and the door
+    // 2.4 m wide; the leaves slide along the glass either side of it and the title panel is on them.
+    static readonly Vector3 TitleStand = new Vector3(DoorCenter.x, 0f, StorefrontZ - 1.05f);
+    // In at the door and along the inside of the street front, past the counter's far end, to the clerk's start.
+    public static readonly Vector3[] CommuteRoute = { new Vector3(DoorCenter.x, 0f, StorefrontZ + 0.6f), new Vector3(-2f, 0f, -0.3f), new Vector3(-0.45f, 0f, 0f) };
 
     /// <summary>
     /// The door, the title's and guide's places, and the floor arrows. All of it is made after the NavMesh bake and left
@@ -604,10 +624,10 @@ public static class P2StoreBuilder
         title.Vignette = origin.GetComponentInChildren<TunnelingVignetteController>(true);
         title.Desk = desk;
         title.Audio = audio;
-        var towardStore = Quaternion.LookRotation(Vector3.right);
+        var towardStore = Quaternion.LookRotation(Vector3.forward);
         title.StandSpot = Marker("Title Stand", TitleStand, towardStore, root);
-        title.PanelAnchor = Marker("Title Panel Anchor", new Vector3(DoorCenter.x - 0.04f, 1.42f, DoorCenter.z), towardStore, root);
-        var guidePosition = new Vector3(-3.0f, 1.9f, 1.75f);
+        title.PanelAnchor = Marker("Title Panel Anchor", new Vector3(DoorCenter.x, 1.42f, StorefrontZ - 0.04f), towardStore, root);
+        var guidePosition = new Vector3(-2.6f, 1.9f, 0.15f);
         title.GuideAnchor = Marker("Commute Guide Anchor", guidePosition, Quaternion.LookRotation(guidePosition - new Vector3(DoorCenter.x, 1.5f, DoorCenter.z)), root);
         title.CounterSpot = Marker("Counter Spot", Vector3.zero, Quaternion.identity, root);
 
@@ -615,11 +635,11 @@ public static class P2StoreBuilder
         var doorMaterial = Material("P2_TitleDoor", new Color(0.635f, 0.667f, 0.678f));
         title.DoorLeaves = new[]
         {
-            Box("Title Door Near", new Vector3(DoorCenter.x, DoorHeight * 0.5f, DoorCenter.z - DoorWidth * 0.25f - 0.002f), new Vector3(0.06f, DoorHeight, DoorWidth * 0.5f), doorMaterial, root, true).transform,
-            Box("Title Door Far", new Vector3(DoorCenter.x, DoorHeight * 0.5f, DoorCenter.z + DoorWidth * 0.25f + 0.002f), new Vector3(0.06f, DoorHeight, DoorWidth * 0.5f), doorMaterial, root, true).transform,
+            Box("Title Door Near", new Vector3(DoorCenter.x - DoorWidth * 0.25f - 0.002f, DoorHeight * 0.5f, StorefrontZ), new Vector3(DoorWidth * 0.5f, DoorHeight, 0.06f), doorMaterial, root, true).transform,
+            Box("Title Door Far", new Vector3(DoorCenter.x + DoorWidth * 0.25f + 0.002f, DoorHeight * 0.5f, StorefrontZ), new Vector3(DoorWidth * 0.5f, DoorHeight, 0.06f), doorMaterial, root, true).transform,
         };
         foreach (var leaf in title.DoorLeaves) leaf.gameObject.SetActive(false);
-        title.LeafSlide = new Vector3(0f, 0f, DoorWidth * 0.5f - 0.02f);
+        title.LeafSlide = new Vector3(DoorWidth * 0.5f - 0.02f, 0f, 0f);
 
         var path = new GameObject("Commute Path").transform;
         path.SetParent(root, false);
@@ -740,6 +760,7 @@ public static class P2StoreBuilder
     {
         var cabinet = environment.Find("Store Dressing/Microwave Cabinet") ?? throw new Exception("Microwave Cabinet missing.");
         var towardWall = Quaternion.Euler(0f, 90f, 0f);
+        // Built against the near wall with its parts at those coordinates, then the whole corner goes to the far wall below.
 
         var microwave = Zone<MicrowaveZone>("MicrowaveZone", cabinet, P3StoreDressing.MicrowaveCavity, P3StoreDressing.MicrowaveCavitySize);
         microwave.Pos = pos;
@@ -755,6 +776,7 @@ public static class P2StoreBuilder
         dispenser.WorkingLoop = Sound("sfx_water_pour");
         dispenser.Stream = (cabinet.Find("Dispenser Water") ?? throw new Exception("Dispenser water missing.")).gameObject;
         dispenser.PromptAnchor = Marker("Water Prompt", new Vector3(4.05f, 1.44f, P3StoreDressing.UnderTap.z), towardWall, cabinet);
+        cabinet.SetPositionAndRotation(P3StoreDressing.CabinetPlace, Quaternion.Euler(0f, 180f, 0f));
     }
 
     /// <summary>Copies Data/scenarios.csv into Assets and fails the build if any row of any day is skipped or a day is empty.</summary>
@@ -791,11 +813,11 @@ public static class P2StoreBuilder
     static T FindInScene<T>() where T : UnityEngine.Object => UnityEngine.Object.FindFirstObjectByType<T>() ?? throw new Exception(typeof(T).Name + " missing.");
 
     /// <summary>A double-sided gondola: base, spine, end panels, three boards and a top, inside the old block's footprint.</summary>
-    static void Gondola(string name, float centerX, Material material, Transform environment)
+    static void Gondola(string name, float centerX, float front, float back, Material material, Transform environment)
     {
         var root = new GameObject(name).transform;
         root.SetParent(environment, false);
-        float z = (ShelfFront + ShelfBack) * 0.5f, depth = ShelfBack - ShelfFront;
+        float z = (front + back) * 0.5f, depth = back - front;
         Box(name + " Base", new Vector3(centerX, 0.05f, z), new Vector3(ShelfWidth, 0.1f, depth), material, root, true);
         Box(name + " Spine", new Vector3(centerX, ShelfHeight * 0.5f, z), new Vector3(ShelfWidth, ShelfHeight, 0.03f), material, root, true);
         Box(name + " End L", new Vector3(centerX - ShelfWidth * 0.5f + 0.01f, ShelfHeight * 0.5f, z), new Vector3(0.02f, ShelfHeight, depth), material, root, true);
@@ -849,6 +871,7 @@ public static class P2StoreBuilder
             Slot("B-1", "dev_goraebap_01", 2, 2, ShelfBX + 0.35f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
             Slot("B-2", "dev_ogamja_01", 2, 1, ShelfBX - 0.13f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
         };
+        intake.DecorSlots = BuildDecorSlots(catalog, yellow, green, red, audio, slots);
 
         // Stands and cutters (doc 5.7.1 B2, B3; 5.7.3 one cutter per stand).
         var stands = new List<BoxStandSocket>();
@@ -923,8 +946,38 @@ public static class P2StoreBuilder
         return intake;
     }
 
+    /// <summary>
+    /// Real products on the shelves a player sees first (2026-11-09): row D's face toward the street, passed on the walk in,
+    /// and the eye-level boards of row A + B that were still cartons, seen across the counter. They are display stock only,
+    /// and hold the products filmed on 2026-11-08. Row A + B's are far copies throughout, so standing at those shelves on
+    /// Day 2 stays inside the gaussian budget.
+    /// </summary>
+    static ShelfSlotZone[] BuildDecorSlots(ProductCatalog catalog, Material yellow, Material green, Material red, GameAudio audio, Transform parent)
+    {
+        const float half = 0.36f;
+        var made = new List<ShelfSlotZone>();
+        void Add(string id, string product, float centerX, float board, float frontZ, bool farOnly)
+        {
+            var slot = Slot(id, product, 3, 1, centerX, board, catalog, yellow, green, red, audio, parent, frontZ, farOnly);
+            slot.DisplayOnly = true;
+            slot.FarOnly = farOnly;
+            slot.GetComponent<BoxCollider>().enabled = false;
+            made.Add(slot);
+        }
+        Add("D-1", "dev_pocachip_01", ShelfDX - half, ShelfBoardTops[2], ShelfDFront, false);
+        Add("D-2", "dev_onionring_01", ShelfDX + half, ShelfBoardTops[2], ShelfDFront, false);
+        Add("D-3", "dev_gamjakkang_01", ShelfDX - half, ShelfBoardTops[1], ShelfDFront, false);
+        Add("D-4", "dev_indianbap_01", ShelfDX + half, ShelfBoardTops[1], ShelfDFront, false);
+        Add("D-5", "dev_caramelcorn_01", ShelfDX - half, ShelfBoardTops[0], ShelfDFront, false);
+        Add("D-6", "dev_kkokkalcorn_02", ShelfDX + half, ShelfBoardTops[0], ShelfDFront, false);
+        Add("E-1", "dev_shinjjang_01", ShelfAX - half, ShelfBoardTops[2], ShelfFront, true);
+        Add("E-2", "dev_jollypong_01", ShelfBX - half, ShelfBoardTops[2], ShelfFront, true);
+        Add("E-3", "dev_almondchoco_01", ShelfBX + half, ShelfBoardTops[2], ShelfFront, true);
+        return made.ToArray();
+    }
+
     static ShelfSlotZone Slot(string id, string productId, int columns, int rows, float centerX, float boardTop, ProductCatalog catalog,
-        Material yellow, Material green, Material red, GameAudio audio, Transform parent)
+        Material yellow, Material green, Material red, GameAudio audio, Transform parent, float frontZ = ShelfFront, bool farOnly = false)
     {
         // Straight from the prefab: the catalog's references can go stale after the character setup imports assets.
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{productId}.prefab")?.GetComponent<ProductPrefab>()
@@ -933,7 +986,7 @@ public static class P2StoreBuilder
         var size = prefab.Proxy.size;
         var go = new GameObject("Slot " + id) { layer = LayerMask.NameToLayer("Zone") };
         go.transform.SetParent(parent, false);
-        go.transform.SetPositionAndRotation(new Vector3(centerX, boardTop, ShelfFront + 0.005f), Quaternion.identity);
+        go.transform.SetPositionAndRotation(new Vector3(centerX, boardTop, frontZ + 0.005f), Quaternion.identity);
         var slot = go.AddComponent<ShelfSlotZone>();
         slot.SlotId = id;
         slot.ProductId = productId;
@@ -947,14 +1000,14 @@ public static class P2StoreBuilder
         slot.Red = red;
         slot.Audio = audio;
         // Empty until P4ShelfSplats.Generate has run; the slot then simply draws each product.
-        slot.MergedNear = AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"{P4ShelfSplats.MergedFolder}/Shelf_{id}_LOD0.asset");
         slot.MergedFar = AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"{P4ShelfSplats.MergedFolder}/Shelf_{id}_LOD1.asset");
+        slot.MergedNear = farOnly ? slot.MergedFar : AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"{P4ShelfSplats.MergedFolder}/Shelf_{id}_LOD0.asset");
         var zone = go.GetComponent<BoxCollider>();
         zone.isTrigger = true;
         float height = size.y + 0.03f;
         zone.size = new Vector3(columns * slot.CellWidth, height, rows * slot.CellDepth);
         zone.center = new Vector3(0f, height * 0.5f, rows * slot.CellDepth * 0.5f);
-        if (go.transform.position.z + rows * slot.CellDepth > (ShelfFront + ShelfBack) * 0.5f - 0.015f) throw new Exception($"Slot {id} is deeper than the shelf face.");
+        if (rows * slot.CellDepth + 0.005f > (ShelfBack - ShelfFront) * 0.5f - 0.015f) throw new Exception($"Slot {id} is deeper than the shelf face.");
         return slot;
     }
 
@@ -1074,8 +1127,10 @@ public static class P2StoreBuilder
         settings.agentSlope = 10f;
         var sources = new List<NavMeshBuildSource>
         {
-            FloorSource(new Vector3(-4.5f, 0f, CounterFar), new Vector3(4.5f, 0f, 5.5f)),
-            FloorSource(new Vector3(-4.5f - VestibuleDepth, 0f, DoorCenter.z - DoorWidth * 0.5f - 0.05f), new Vector3(-4.45f, 0f, DoorCenter.z + DoorWidth * 0.5f + 0.05f)),
+            FloorSource(new Vector3(RoomFar, 0f, CounterFar), new Vector3(RoomNear, 0f, RoomFront)),
+            // Between the street front and row D, up to the gap past the counter's far end; the clerk's side has no floor source.
+            FloorSource(new Vector3(RoomFar, 0f, StorefrontZ), new Vector3(CustomerFloorEnd, 0f, CounterFar)),
+            FloorSource(new Vector3(DoorCenter.x - DoorWidth * 0.5f - 0.05f, 0f, StorefrontZ - VestibuleDepth), new Vector3(DoorCenter.x + DoorWidth * 0.5f + 0.05f, 0f, StorefrontZ + 0.05f)),
         };
         // Customers keep out of the aisles behind the gondolas (too narrow for two to pass); the clerk may still walk there.
         foreach (var x in new[] { ShelfAX, ShelfBX })
@@ -1106,7 +1161,7 @@ public static class P2StoreBuilder
                 area = 1,
             });
         }
-        var bounds = new Bounds(new Vector3(-0.75f, 1f, 1.5f), new Vector3(12.5f, 4f, 10f));
+        var bounds = new Bounds(new Vector3(-0.75f, 1f, 1.2f), new Vector3(12.5f, 4f, 10.5f));
         var data = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, Vector3.zero, Quaternion.identity);
         if (data == null) throw new Exception("NavMesh bake failed.");
         data.name = "StoreNavMesh";
