@@ -24,6 +24,8 @@ public class StoreProgress
     public List<string> owned = new List<string>();
     /// <summary>Ordered today; in the store from the next morning.</summary>
     public List<string> arriving = new List<string>();
+    /// <summary>Everything there is to order is in the store, and the morning that said so has been.</summary>
+    public bool completed;
 
     /// <summary>Where this is written. Null: kept in memory only.</summary>
     [NonSerialized] public string Path;
@@ -58,6 +60,7 @@ public class StoreProgress
         day = 1;
         graduated = false;
         budget = totalSales = daysWorked = 0;
+        completed = false;
         owned.Clear();
         arriving.Clear();
     }

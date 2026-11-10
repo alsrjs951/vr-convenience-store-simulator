@@ -110,7 +110,13 @@ public class P2GrowthVerification : MonoBehaviour
         if (finished) yield break;
         yield return SecondStoreDay();
         if (finished) yield break;
+        yield return FillTheStore();
+        if (finished) yield break;
         yield return HomeAndBack();
+        if (finished) yield break;
+        yield return CompleteStoreDay();
+        if (finished) yield break;
+        yield return StartOver();
         Finish();
     }
 
@@ -182,7 +188,7 @@ public class P2GrowthVerification : MonoBehaviour
         var audio = Game.Pos.Audio;
         int managerLines = Enum.GetValues(typeof(ManagerLine)).Length;
         bool voiced = audio != null && audio.IntakeLines.Length == 5 && audio.IntakeLines[4] != null && audio.IntakeLines[4].name == "voice_intake_5"
-            && audio.ManagerLines.Length == managerLines && audio.ManagerLines[(int)ManagerLine.Graduated] != null && audio.ManagerLines[(int)ManagerLine.Graduated].name == "voice_manager_graduated";
+            && audio.ManagerLines.Length > (int)ManagerLine.Graduated && audio.ManagerLines[(int)ManagerLine.Graduated] != null && audio.ManagerLines[(int)ManagerLine.Graduated].name == "voice_manager_graduated";
         Check("rule.new_lines_voiced", voiced, audio == null ? "no audio" : $"intake lines={audio.IntakeLines.Length}; manager lines={audio.ManagerLines.Length} of {managerLines}");
     }
 
@@ -258,6 +264,8 @@ public class P2GrowthVerification : MonoBehaviour
                 && Mathf.Approximately(CustomerDirector.LineGraceSeconds, CustomerDirector.DefaultLineGrace),
             $"orders={Game.OrderCount}; boxes={Intake.Boxes.Count}; expired={Intake.ExpiredTotal}; shelves={DecorShown()}; checkpoints={Intake.Boxes[0].CheckpointCount}; scan angle={scanner.MaxBarcodeAngle}; coins={desk.AutoCoins}; line grace={CustomerDirector.LineGraceSeconds}");
         musicWasSilent = !Game.Pos.Audio.MusicOn && !Game.Pos.Audio.MusicPlaying;
+        Check("day4.no_equipment_to_see_yet", LooksShown() == 0 && !PartShown("Microwave Sign") && !PartShown("Dispenser Sign"),
+            $"equipment looks shown={LooksShown()}/4; microwave sign={PartShown("Microwave Sign")}; hot water sign={PartShown("Dispenser Sign")}");
         Check("day4.terminal_dark_in_the_shift",!Game.Tablet.Shown && !Game.LeaveButton.gameObject.activeInHierarchy, $"terminal={Game.Tablet.Shown}");
         yield return CaptureFrom("g03_day4_display_shelves_empty", ShelfView(0), ShelfTarget(0), 60f);
 
@@ -356,6 +364,17 @@ public class P2GrowthVerification : MonoBehaviour
         var cabinetTop = cooking.Find("Cabinet Top");
         if (cabinetTop != null) yield return CaptureFrom("g07_day5_cooking_corner", cabinetTop.position + new Vector3(1.5f, 0.75f, 0f), cabinetTop.position + Vector3.up * 0.2f, 55f);
 
+        // What was ordered is seen: the scanner's head, the coin dispenser by the tray, the speakers, the cutters' grips.
+        Check("day5.equipment_seen", LooksShown() == 4 && PartShown("Microwave Sign") && PartShown("Dispenser Sign"),
+            $"scanner={Game.LookShown(GameManager.ScannerLook)}; coins={Game.LookShown(GameManager.CoinLook)}; speakers={Game.LookShown(GameManager.MusicLook)}; cutters={Game.LookShown(GameManager.CutterLook)}; signs={PartShown("Microwave Sign")},{PartShown("Dispenser Sign")}");
+        yield return CaptureFrom("g07b_day5_counter_equipment", new Vector3(-0.2f, 1.45f, 0.05f), new Vector3(-0.2f, 1.0f, 0.78f), 62f);
+        yield return CaptureFrom("g07c_day5_ceiling_speakers", new Vector3(0.4f, 1.4f, 0.1f), new Vector3(0.5f, 3f, 1.9f), 60f);
+        if (Intake.Cutters.Length > 0)
+        {
+            var cutter = Intake.Cutters[0].transform.position;
+            yield return CaptureFrom("g07d_day5_new_cutter", cutter + new Vector3(0.05f, 0.3f, -0.4f), cutter, 30f);
+        }
+
         var seen = new List<Order>();
         yield return Serve(expected, "day5", seen);
         if (finished) yield break;
@@ -381,6 +400,58 @@ public class P2GrowthVerification : MonoBehaviour
             $"summary={Game.Tablet.SummaryText}; row0={Game.Tablet.RowText(0)}; row2 can be ordered={Game.Tablet.BuyButtons[2].gameObject.activeSelf}");
     }
 
+    /// <summary>The rest of the catalogue, ordered at the end of the second day; the budget is topped up for it.</summary>
+    IEnumerator FillTheStore()
+    {
+        var tablet = Game.Tablet;
+        var progress = Game.Progress;
+        progress.budget += 30000;
+        tablet.Refresh();
+        for (int row = 0; row < OrderTablet.Rows; row++)
+            if (tablet.BuyButtons[row].gameObject.activeSelf) tablet.BuyButtons[row].onClick.Invoke();
+        yield return null;
+        bool nothingLeft = true;
+        foreach (var button in tablet.BuyButtons) nothingLeft &= !button.gameObject.activeSelf;
+        Check("terminal.store_filled", progress.arriving.Count == 7 && progress.owned.Count == 9 && tablet.SummaryText == "구색 14/14  ·  설비 7/7" && tablet.NoticeText.Contains("다 채웠습니다") && nothingLeft && !progress.completed,
+            $"arriving={progress.arriving.Count}; owned={progress.owned.Count}; summary={tablet.SummaryText}; notice={tablet.NoticeText}; nothing left to order={nothingLeft}; completed yet={progress.completed}");
+    }
+
+    /// <summary>The first morning with everything in: the board says so once, and the day is as busy as the store gets.</summary>
+    IEnumerator CompleteStoreDay()
+    {
+        var title = Game.Title;
+        int day = GameManager.TrainingDays + 3;
+        title.StartButton.onClick.Invoke();
+        yield return Wait(() => Game.State == DayState.Commute, 5f, "continue.chosen");
+        if (finished) yield break;
+        Check("continue.same_store", title.Choice == TitleChoice.Continue && Game.Day == day && Game.Progress.owned.Count == 16, $"choice={title.Choice}; day={Game.Day}; owned={Game.Progress.owned.Count}");
+        yield return new WaitForSeconds(1.6f);
+        title.PlacePlayer(title.CounterSpot);
+        yield return Wait(() => Game.State == DayState.PunchIn, 10f, "continue.at_the_counter");
+        if (finished) yield break;
+        yield return PutCardIn(() => Game.State != DayState.PunchIn, "punch_in_again");
+        if (finished) yield break;
+        yield return Wait(() => Game.Day == day && Game.BoardText.Contains($"{day}일차 출근"), 15f, "day6.begins");
+        if (finished) yield break;
+        Check("day6.store_complete", Game.BoardText.Contains("매장 완성") && Game.Progress.completed && DecorShown() == 9 && LooksShown() == 4,
+            $"board={Game.BoardText.Replace("\n", " / ")}; completed={Game.Progress.completed}; shelves={DecorShown()}; equipment looks={LooksShown()}/4");
+        yield return Capture("g09_day6_store_complete");
+
+        yield return Wait(() => Game.State == DayState.Shift, 30f, "day6.shift");
+        if (finished) yield break;
+        int expected = OrderGenerator.CustomersFor(9, 3);
+        int assortment = Game.PlanFor(day).Assortment.Count;
+        Check("day6.as_busy_as_it_gets", Game.OrderCount == expected && expected == 13 && assortment == 16, $"orders={Game.OrderCount} (expected {expected}); assortment={assortment}");
+        var seen = new List<Order>();
+        yield return Serve(expected, "day6", seen);
+        if (finished) yield break;
+        yield return Wait(() => Game.State == DayState.DayEnd && Game.LeaveButton.gameObject.activeInHierarchy, 60f, "day6.settled");
+        if (finished) yield break;
+        var saved = StoreProgress.Load(Game.Progress.Path);
+        Check("day6.said_once", saved.completed && saved.owned.Count == 16 && saved.arriving.Count == 0 && Game.Tablet.Shown && Game.Tablet.NoticeText.Contains("다 채웠습니다") && !Game.BoardText.Contains("매장 완성"),
+            $"file completed={saved.completed}; owned={saved.owned.Count}; terminal notice={Game.Tablet.NoticeText}; board={Game.BoardText.Replace("\n", " / ")}");
+    }
+
     IEnumerator HomeAndBack()
     {
         var title = Game.Title;
@@ -397,19 +468,36 @@ public class P2GrowthVerification : MonoBehaviour
         yield return new WaitForSeconds(1f);
         Check("title.store_to_go_back_to", title.StartLabel == "이어서 출근" && title.FreshButton.gameObject.activeInHierarchy && title.FreshLabel == "새로 시작" && Game.Progress.day == next && StoreProgress.Load(Game.Progress.Path).day == next,
             $"start={title.StartLabel}; fresh={title.FreshLabel}; day={Game.Progress.day}; file day={StoreProgress.Load(Game.Progress.Path).day}");
-        Check("title.store_as_left", DecorShown() == 2 && PartShown("Microwave Top") && StoreProgress.Load(Game.Progress.Path).owned.Count == 9, $"shelves={DecorShown()}; microwave={PartShown("Microwave Top")}");
+        // Behind the door the store is as it will be tomorrow morning: what was ordered tonight is already on the shelves.
+        var left = StoreProgress.Load(Game.Progress.Path);
+        Check("title.store_as_it_will_open", DecorShown() == 9 && PartShown("Microwave Top") && left.owned.Count == 9 && left.arriving.Count == 7,
+            $"shelves={DecorShown()}; microwave={PartShown("Microwave Top")}; file owned={left.owned.Count}, arriving={left.arriving.Count}");
         yield return Capture("g08_title_store_to_go_back_to");
+    }
 
-        // Starting over takes two presses, and only then is the store gone.
+    /// <summary>Home again after the third day, and the store given up: starting over takes two presses.</summary>
+    IEnumerator StartOver()
+    {
+        var title = Game.Title;
+        Game.LeaveButton.onClick.Invoke();
+        yield return Wait(() => Game.State == DayState.Ending, 5f, "leave_again.punch_out");
+        if (finished) yield break;
+        yield return PutCardIn(() => Game.State == DayState.Title, "punch_out_again");
+        if (finished) yield break;
+        yield return Wait(() => Game.State == DayState.Title && title.PanelShown, 30f, "leave_again.back_at_the_title");
+        if (finished) yield break;
+        yield return new WaitForSeconds(1f);
+
         title.FreshButton.onClick.Invoke();
         yield return null;
-        Check("title.fresh_asks_first", Game.State == DayState.Title && title.FreshLabel.Contains("지우고") && Game.Progress.owned.Count == 9, $"state={Game.State}; label={title.FreshLabel}; owned={Game.Progress.owned.Count}");
+        Check("title.fresh_asks_first", Game.State == DayState.Title && title.FreshLabel.Contains("지우고") && Game.Progress.owned.Count == 16, $"state={Game.State}; label={title.FreshLabel}; owned={Game.Progress.owned.Count}");
         title.FreshButton.onClick.Invoke();
         yield return Wait(() => Game.State == DayState.Commute, 5f, "title.fresh_chosen");
         if (finished) yield break;
         Check("fresh.new_store", title.Choice == TitleChoice.Fresh && Game.Day == 1 && Game.Progress.day == 1 && !Game.Progress.graduated && Game.Progress.budget == 0 && Game.Progress.owned.Count == 0
-                && DecorShown() == 0 && !PartShown("Microwave Top") && Mathf.Approximately(scanner.MaxBarcodeAngle, 50f) && !StoreProgress.Load(Game.Progress.Path).Started,
-            $"day={Game.Day}; budget={Game.Progress.budget}; owned={Game.Progress.owned.Count}; shelves={DecorShown()}; microwave={PartShown("Microwave Top")}; scan angle={scanner.MaxBarcodeAngle}");
+                && DecorShown() == 0 && !PartShown("Microwave Top") && Mathf.Approximately(scanner.MaxBarcodeAngle, 50f) && !StoreProgress.Load(Game.Progress.Path).Started
+                && LooksShown() == 0 && !Game.Progress.completed,
+            $"day={Game.Day}; budget={Game.Progress.budget}; owned={Game.Progress.owned.Count}; shelves={DecorShown()}; microwave={PartShown("Microwave Top")}; scan angle={scanner.MaxBarcodeAngle}; equipment looks={LooksShown()}; completed={Game.Progress.completed}");
     }
 
     // ---------- The three days of learning ----------
@@ -603,6 +691,15 @@ public class P2GrowthVerification : MonoBehaviour
         int shown = 0;
         foreach (var slot in Intake.DecorSlots)
             if (slot != null && slot.gameObject.activeInHierarchy && slot.Merged != null && slot.Merged.ShownUnits == slot.Capacity) shown++;
+        return shown;
+    }
+
+    /// <summary>How many of the four pieces of equipment that only change a number are seen in the store.</summary>
+    int LooksShown()
+    {
+        int shown = 0;
+        foreach (var look in new[] { GameManager.ScannerLook, GameManager.CoinLook, GameManager.MusicLook, GameManager.CutterLook })
+            if (Game.LookShown(look)) shown++;
         return shown;
     }
 

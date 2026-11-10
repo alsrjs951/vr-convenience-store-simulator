@@ -43,6 +43,11 @@ public class GameManager : MonoBehaviour
     public const float BudgetShare = 0.2f;
     public const int GraduationGrant = 4000;
     public const float NewScannerAngle = 65f, MusicLineGrace = 65f;
+    /// <summary>
+    /// The looks of the equipment that only changes a number: groups under "Equipment Looks" (and a child of each cutter)
+    /// that the scene builder makes switched off and OpenStore switches on.
+    /// </summary>
+    public const string EquipmentLooks = "Equipment Looks", ScannerLook = "Scanner Upgrade", CoinLook = "Coin Dispenser", MusicLook = "Music Speakers", CutterLook = "New Model";
     public const int NewCutterCheckpoints = 4;
     const float LeaveSeconds = 4f;
     const int SampleSpots = 2;
@@ -114,8 +119,9 @@ public class GameManager : MonoBehaviour
     int preparedDay;
     ScannerZone scanner;
     float builtScanAngle;
-    Transform cookingCorner;
+    Transform cookingCorner, equipmentLooks;
     string arrivedToday = "";
+    bool completedToday;
     int samplesPlaced;
     TextAsset storeDeliveries;
     int storeExpiredPerDay;
@@ -173,6 +179,8 @@ public class GameManager : MonoBehaviour
         builtScanAngle = scanner != null ? scanner.MaxBarcodeAngle : 0f;
         var corner = GameObject.Find("Microwave Cabinet");
         cookingCorner = corner != null ? corner.transform : null;
+        var looks = GameObject.Find(EquipmentLooks);
+        equipmentLooks = looks != null ? looks.transform : null;
         storeDeliveries = Intake.Deliveries;
         storeExpiredPerDay = Intake.ExpiredPerDay;
         if (IntakeTutorial != null) IntakeTutorial.TeachDisposal = true;
@@ -349,6 +357,35 @@ public class GameManager : MonoBehaviour
         if (Pos.Audio) Pos.Audio.SetMusic(Progress.Has(UnlockCatalog.Music));
         if (Director.Desk != null) Director.Desk.AutoCoins = Progress.Has(UnlockCatalog.Coins);
         ShowCooking(Progress.Has(UnlockCatalog.Microwave), Progress.Has(UnlockCatalog.HotWater));
+        // What was paid for is seen in the store, not only felt in a number.
+        ShowLook(ScannerLook, Progress.Has(UnlockCatalog.Scanner));
+        ShowLook(CoinLook, Progress.Has(UnlockCatalog.Coins));
+        ShowLook(MusicLook, Progress.Has(UnlockCatalog.Music));
+        foreach (var cutter in Intake.Cutters)
+        {
+            var model = cutter != null ? cutter.transform.Find(CutterLook) : null;
+            if (model != null) model.gameObject.SetActive(Progress.Has(UnlockCatalog.Cutter));
+        }
+
+        // The first morning with everything in: said once, on the board of that day.
+        bool everything = UnlockItems.Count > 0 && UnlockItems.TrueForAll(item => Progress.Has(item.Id));
+        completedToday |= everything && !Progress.completed;
+        Progress.completed = everything;
+    }
+
+    void ShowLook(string look, bool there)
+    {
+        var group = equipmentLooks != null ? equipmentLooks.Find(look) : null;
+        if (group != null) group.gameObject.SetActive(there);
+    }
+
+    /// <summary>Whether the looks of a piece of equipment stand in the store (one of the ...Look names).</summary>
+    public bool LookShown(string look)
+    {
+        if (look == CutterLook)
+            return Intake.Cutters.Length > 0 && Array.TrueForAll(Intake.Cutters, cutter => cutter != null && cutter.transform.Find(CutterLook) is Transform model && model.gameObject.activeInHierarchy);
+        var group = equipmentLooks != null ? equipmentLooks.Find(look) : null;
+        return group != null && group.gameObject.activeInHierarchy;
     }
 
     /// <summary>The microwave and the hot water dispenser stand on their cabinet only once the store has them.</summary>
@@ -623,10 +660,13 @@ public class GameManager : MonoBehaviour
         Director.Lenient = training;
         board.text = !intake ? $"{day}일차 출근\n계산대에서 손님을 맞습니다"
             : training && day > IntakeTutorialDay ? $"{day}일차 출근\n오늘은 혼자 근무합니다"
+            : Growth && day > TrainingDays && completedToday ? $"{day}일차 출근  ·  매장 완성\n들일 수 있는 상품과 설비를 모두 들였습니다"
             : Growth && day > TrainingDays ? $"{day}일차 출근\n" + (arrivedToday.Length > 0 ? $"새로 들어옴  {arrivedToday}" : $"손님 {orders.Count}명 · 입고 {Intake.Boxes.Count}상자")
             : day > IntakeTutorialDay ? $"{day}일차 출근\n피크 타임 · 특수 요청 · 중간 입고"
             : $"{day}일차 출근\n입고 · 진열 · 폐기가 더해집니다";
         arrivedToday = "";
+        if (completedToday && Pos.Audio) Pos.Audio.NarrateManager(ManagerLine.StoreComplete);
+        completedToday = false;
         if (intake) Intake.SetGuide(board.text);
         yield return new WaitForSeconds(IntroSeconds);
 

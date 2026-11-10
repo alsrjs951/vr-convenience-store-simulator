@@ -1258,6 +1258,25 @@ public static class P2StoreBuilder
         var cutter = root.AddComponent<BoxCutter>();
         cutter.Tip = tip;
         cutter.Holder = holder;
+        // The newer cutter a store that is kept can order in: a dark grip over the handle and a guard at the blade.
+        // Looks only and off as built; GameManager.OpenStore shows it.
+        var model = new GameObject(GameManager.CutterLook).transform;
+        model.SetParent(root.transform, false);
+        foreach (var (partName, at, scale, material) in new[]
+        {
+            ("Grip", new Vector3(-0.02f, 0f, 0f), new Vector3(0.085f, 0.03f, 0.036f), Material("P2_CutterGrip", new Color(0.1f, 0.11f, 0.13f))),
+            ("Guard", new Vector3(0.056f, 0.002f, 0f), new Vector3(0.014f, 0.034f, 0.036f), bladeMaterial),
+        })
+        {
+            var part = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            part.name = partName;
+            UnityEngine.Object.DestroyImmediate(part.GetComponent<Collider>());
+            part.transform.SetParent(model, false);
+            part.transform.localPosition = at;
+            part.transform.localScale = scale;
+            part.GetComponent<Renderer>().sharedMaterial = material;
+        }
+        model.gameObject.SetActive(false);
         root.transform.SetParent(holder.parent, true);
         return cutter;
     }

@@ -142,7 +142,7 @@ public class OrderTablet : MonoBehaviour
             return;
         }
         progress.Save();
-        message = $"{item.Name}  ·  내일 아침에 들어옵니다";
+        message = items.TrueForAll(other => progress.Ordered(other.Id)) ? "매장을 다 채웠습니다  ·  내일 아침에 모두 들어옵니다" : $"{item.Name}  ·  내일 아침에 들어옵니다";
         Debug.Log($"[Tablet] Ordered {item.Id} for {item.Price}; budget={progress.budget}");
         Refresh();
         Bought?.Invoke(item);

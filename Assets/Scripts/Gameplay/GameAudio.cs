@@ -9,7 +9,7 @@ public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlu
 
 /// <summary>What the store manager says on the way in and at the end (game design 10.0, 2026-11-09).</summary>
 /// <summary>New lines go at the end: the scene builder fills GameAudio.ManagerLines in this order, and a line without a clip is silent.</summary>
-public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC, FirstCustomer, Alone, Graduated }
+public enum ManagerLine { Welcome, PunchIn, PunchOut, EndingS, EndingA, EndingB, EndingC, FirstCustomer, Alone, Graduated, StoreComplete }
 
 /// <summary>One voice's set of customer lines (the scene builder fills a female and a male set).</summary>
 [Serializable]

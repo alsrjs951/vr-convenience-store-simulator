@@ -85,6 +85,7 @@ public static class P3StoreDressing
         }
 
         Ceiling(dressing);
+        MusicSpeakers(environment);
         StreetFront(dressing);
         Baseboards(dressing);
         foreach (var (x, front, back) in new[]
@@ -156,6 +157,22 @@ public static class P3StoreDressing
             (new Vector3(-0.31f, -0.021f, 0f), new Vector3(0.06f, 0.004f, 0.62f)), (new Vector3(0.31f, -0.021f, 0f), new Vector3(0.06f, 0.004f, 0.62f)),
         })
             Visual("AC Slot", parent, cassette + offset, size, graphite, 0.001f);
+    }
+
+    /// <summary>
+    /// Round ceiling speakers, there once the store has bought its music (docs/p2/해금_성장_기획_2026-11-10.md 5): two over
+    /// the aisle in front of the counter, where the clerk sees them, and one further in. Between the light rows and clear of
+    /// the cameras and the air conditioner.
+    /// </summary>
+    static void MusicSpeakers(Transform environment)
+    {
+        var group = EquipmentGroup(environment, GameManager.MusicLook);
+        var grille = Plain("P3_SpeakerGrille", new Color(0.56f, 0.57f, 0.59f), 0.35f, 0.5f);
+        foreach (var at in new[] { new Vector3(-0.2f, CeilingHeight, 1.9f), new Vector3(1.2f, CeilingHeight, 1.9f), new Vector3(-3f, CeilingHeight, 2.9f) })
+        {
+            Disc("Speaker Ring", group, at + Vector3.down * 0.008f, 0.26f, 0.016f, white);
+            Disc("Speaker Grille", group, at + Vector3.down * 0.018f, 0.2f, 0.006f, grille);
+        }
     }
 
     /// <summary>Where the rows are; the baked area lights hang at the same places (P3StoreLighting).</summary>
@@ -502,7 +519,9 @@ public static class P3StoreDressing
         Visual("Dispenser Tray", root, hw + new Vector3(-0.17f, -0.215f, 0f), new Vector3(0.1f, 0.02f, 0.18f), grey, 0.005f);
         // From the tap's mouth to the tray; shown while pouring (WaterDispenserZone.Stream).
         Visual("Dispenser Water", root, hw + new Vector3(-0.17f, -0.135f, 0f), new Vector3(0.012f, 0.14f, 0.012f), Plain("P3_HotWater", new Color(0.82f, 0.91f, 1f), 0.92f), 0.005f).SetActive(false);
-        Sign(root, "Corner Sign", new Vector3(InnerRight - 0.004f, 1.72f, zc), Quaternion.Euler(0f, 90f, 0f), new Vector2(1.2f, 0.2f), "전자레인지 · 온수", "", Navy, Color.white, false);
+        // One sign over each: a store that is kept can have either without the other (GameManager.ShowCooking goes by the names).
+        Sign(root, "Microwave Sign", new Vector3(InnerRight - 0.004f, 1.72f, mw.z), Quaternion.Euler(0f, 90f, 0f), new Vector2(0.62f, 0.2f), "전자레인지", "", Navy, Color.white, false);
+        Sign(root, "Dispenser Sign", new Vector3(InnerRight - 0.004f, 1.72f, hw.z), Quaternion.Euler(0f, 90f, 0f), new Vector2(0.36f, 0.2f), "온수", "", Navy, Color.white, false);
     }
 
     // ---------- Counter (after the builder made it): looks only ----------
@@ -579,6 +598,18 @@ public static class P3StoreDressing
         foreach (float side in new[] { -1f, 1f })
             for (int i = 0; i < 5; i++)
                 Visual("Scanner Vent", parent, origin + new Vector3(side * (size.x * 0.5f + 0.0012f), 0.1f + i * 0.022f, 0.09f), new Vector3(0.003f, 0.006f, 0.045f), graphite, 0.001f);
+
+        // The newer model a store that is kept can order in (docs/p2/해금_성장_기획_2026-11-10.md 5, reads at a wider angle):
+        // a head on the tower with a blue light bar, and a reading window in each side. Looks only, above and beside the
+        // tower, so the clerk's view of the upright window and the hand's paths over the pad stay as they are.
+        var upgrade = EquipmentGroup(environment, GameManager.ScannerLook);
+        var bar = Emissive("P3_ScannerBar", new Color(0.08f, 0.22f, 0.5f), new Color(0.2f, 0.55f, 1.3f));
+        const float headHeight = 0.06f, headDepth = 0.075f;
+        var headCenter = new Vector3(p.x, bottom + towerHeight + headHeight * 0.5f, towerFront + towerLean + headDepth * 0.5f);
+        Visual("Scanner Head", upgrade, headCenter, new Vector3(size.x + 0.02f, headHeight, headDepth), body, 0.01f);
+        Visual("Scanner Head Bar", upgrade, headCenter + new Vector3(0f, 0f, -headDepth * 0.5f - 0.001f), new Vector3(size.x - 0.03f, 0.012f, 0.003f), bar, 0.001f);
+        foreach (float side in new[] { -1f, 1f })
+            Visual("Scanner Side Window", upgrade, origin + new Vector3(side * (size.x * 0.5f + 0.0015f), 0.24f, towerLean * 0.24f / towerHeight + 0.034f), new Vector3(0.003f, 0.07f, 0.05f), flatGlass, 0.001f);
     }
 
     /// <summary>The counter, the devices on it and the two screens' housings. Colliders and zones are untouched.</summary>
@@ -653,6 +684,16 @@ public static class P3StoreDressing
                 Visual(trayName + " Lip", parent, p + offset, rim, grey, 0.002f);
         }
 
+        // Coin dispenser, there once the store has ordered it (docs/p2/해금_성장_기획_2026-11-10.md 5): a small machine left
+        // of the change tray, under the POS screen, with a chute onto the tray, where PaymentDesk lays the coins. Looks only.
+        var changeTray = Find(environment, "Change Tray").transform;
+        var coins = EquipmentGroup(environment, GameManager.CoinLook);
+        var machine = new Vector3(changeTray.position.x - changeTray.localScale.x * 0.5f - 0.075f, size.y, changeTray.position.z + 0.02f);
+        Visual("Coin Dispenser Body", coins, machine + new Vector3(0f, 0.065f, 0f), new Vector3(0.11f, 0.13f, 0.13f), graphite, 0.012f);
+        Visual("Coin Dispenser Hopper", coins, machine + new Vector3(0f, 0.134f, 0f), new Vector3(0.09f, 0.01f, 0.11f), steel, 0.004f);
+        Visual("Coin Dispenser Display", coins, machine + new Vector3(0f, 0.095f, -0.066f), new Vector3(0.07f, 0.028f, 0.004f), screenGlow, 0.002f);
+        Visual("Coin Dispenser Chute", coins, machine + new Vector3(0.075f, 0.035f, 0f), new Vector3(0.07f, 0.004f, 0.05f), steel, 0.001f).transform.rotation = Quaternion.Euler(0f, 0f, -28f);
+
         // The bag: white plastic with the store name on the clerk's side.
         var bagFront = Find(null, "Bag Wall F");
         Sign(parent, "Bag Name", bagFront.transform.position + new Vector3(0f, 0.005f, -0.006f), Quaternion.identity, new Vector2(0.26f, 0.06f), "동아편의점", "", new Color(0, 0, 0, 0), Navy, false);
@@ -678,6 +719,39 @@ public static class P3StoreDressing
     }
 
     // ---------- Pieces ----------
+
+    /// <summary>
+    /// The looks of one piece of equipment a store that is kept orders in: a group under "Equipment Looks", off as built
+    /// (so the fixed days never show it and the bake leaves it out) and switched on by GameManager.OpenStore.
+    /// </summary>
+    static Transform EquipmentGroup(Transform environment, string name)
+    {
+        var root = environment.Find(GameManager.EquipmentLooks);
+        if (root == null)
+        {
+            root = new GameObject(GameManager.EquipmentLooks).transform;
+            root.SetParent(environment, false);
+        }
+        var group = new GameObject(name).transform;
+        group.SetParent(root, false);
+        group.gameObject.SetActive(false);
+        return group;
+    }
+
+    /// <summary>A flat cylinder with no collider, its axis upright.</summary>
+    static GameObject Disc(string name, Transform parent, Vector3 center, float diameter, float thickness, Material material)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());
+        go.name = name;
+        go.transform.SetParent(parent, false);
+        go.transform.position = center;
+        go.transform.localScale = new Vector3(diameter, thickness * 0.5f, diameter);
+        var renderer = go.GetComponent<Renderer>();
+        renderer.sharedMaterial = material;
+        renderer.shadowCastingMode = ShadowCastingMode.Off;
+        return go;
+    }
 
     /// <summary>A rounded box with no collider: looks only.</summary>
     static GameObject Visual(string name, Transform parent, Vector3 center, Vector3 size, Material material, float radius)
