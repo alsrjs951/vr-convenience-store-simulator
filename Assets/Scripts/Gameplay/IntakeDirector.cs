@@ -43,6 +43,7 @@ public class IntakeDirector : MonoBehaviour
             if (anchor == null) continue;
             var panel = WorldUi.CreatePanel(anchor, "Intake Guide", anchor.position, anchor.rotation, new Vector2(1300f, 190f), 0.0007f, WorldUi.Palette.Panel);
             var text = WorldUi.AddText(panel, 30f, 14f, 1240f, 162f, 40, TextAnchor.MiddleCenter);
+            HeadlineText.On(text);
             texts.Add(text);
             panel.gameObject.SetActive(false);
         }
@@ -378,6 +379,6 @@ public class IntakeDirector : MonoBehaviour
             new Vector2(260f, 70f), BadgeMetersPerPixel, new Color(0.62f, 0.1f, 0.18f, 0.96f));
         var text = WorldUi.AddText(panel, 0f, 0f, 260f, 70f, 38, TextAnchor.MiddleCenter);
         text.text = "! 기한 지남";
-        text.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(text);
     }
 }

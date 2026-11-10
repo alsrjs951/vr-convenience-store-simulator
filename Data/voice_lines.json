@@ -1,0 +1,48 @@
+{
+  "about": "Every spoken line in the game, as it is said. The voice generators read this file (scripts/windows/make_game_voices.ps1 now, an ElevenLabs script later) and write one clip per line named by its id; customer lines are made in a female and a male voice (id_f, id_m). Numbers and signs are spelled the way they are read aloud. 'when' and 'direction' are for whoever voices the line and are not spoken.",
+  "speakers": {
+    "manager": "점장. 40대 여성. 첫날 온 알바를 옆에서 가르치는 사람. 다정하지만 일은 분명하게 시킨다. 해요체.",
+    "customer": "편의점 손님. 여성과 남성이 같은 대사를 한다. 계산대 앞에서 짧게 말한다."
+  },
+  "lines": [
+    { "id": "voice_greet_1", "speaker": "customer", "when": "계산대에 도착해서", "text": "안녕하세요.", "direction": "가볍게, 지나가는 인사" },
+    { "id": "voice_greet_2", "speaker": "customer", "when": "계산대에 도착해서", "text": "이거 계산이요.", "direction": "바구니를 올려놓으며" },
+    { "id": "voice_greet_3", "speaker": "customer", "when": "계산대에 도착해서", "text": "계산 좀 해 주세요.", "direction": "평범하게" },
+    { "id": "voice_greet_4", "speaker": "customer", "when": "계산대에 도착해서", "text": "이것만 계산할게요.", "direction": "조금 바쁜 듯이" },
+    { "id": "voice_bag", "speaker": "customer", "when": "봉투가 필요한 주문에서 인사 뒤에", "text": "봉투에 좀 담아 주세요.", "direction": "부탁하듯" },
+    { "id": "voice_hurry", "speaker": "customer", "when": "제한시간의 절반이 지났을 때", "text": "저기요, 제가 좀 급한데, 조금만 빨리 부탁드려요.", "direction": "짜증은 누르고, 재촉" },
+    { "id": "voice_leave", "speaker": "customer", "when": "제한시간이 끝나 나가면서", "text": "아, 너무 오래 걸리네요. 그냥 갈게요.", "direction": "한숨 섞어서, 화는 내지 않고" },
+    { "id": "voice_special_microwave", "speaker": "customer", "when": "3일차, 데워 달라는 주문", "text": "이거 좀 데워 주실 수 있어요?", "direction": "가볍게 묻듯" },
+    { "id": "voice_special_hotwater", "speaker": "customer", "when": "3일차, 컵라면에 물을 부어 달라는 주문", "text": "이 컵라면에 뜨거운 물 좀 부어 주실래요?", "direction": "가볍게 묻듯" },
+    { "id": "voice_special_oneplus", "speaker": "customer", "when": "3일차, 1+1 상품을 두 개 가져와서", "text": "이거 원 플러스 원 하는 거 맞죠?", "direction": "확인하듯" },
+    { "id": "voice_thanks", "speaker": "customer", "when": "계산이 끝나고", "text": "감사합니다, 수고하세요.", "direction": "돌아서며" },
+    { "id": "voice_thanks_fast", "speaker": "customer", "when": "재촉 전에 계산이 끝나 팁을 줄 때", "text": "와, 빠르시네요. 감사합니다!", "direction": "기분 좋게 놀라서" },
+    { "id": "voice_waited", "speaker": "customer", "when": "줄에서 오래 기다린 뒤 계산대에 와서", "text": "한참 기다렸네요. 이거 계산 좀 해 주세요.", "direction": "지쳤지만 예의는 지키며" },
+
+    { "id": "voice_manager_welcome", "speaker": "manager", "when": "타이틀에서 출근하기를 누르고 문이 열릴 때", "text": "어, 왔네요! 저 점장이에요. 노란 화살표 따라서 계산대 안쪽으로 들어와요.", "direction": "반갑게, 손을 흔들며" },
+    { "id": "voice_manager_punch_in", "speaker": "manager", "when": "계산대 안쪽에 도착했을 때", "text": "출근부터 찍어야죠. 계산대 위 출근 카드를 집어서 단말기에 꽂아 봐요.", "direction": "차근차근" },
+    { "id": "voice_manager_first_customer", "speaker": "manager", "when": "출근 카드를 꽂은 직후 첫 손님이 올 때", "text": "마침 손님 오시네요. 제가 옆에서 하나씩 알려 줄게요.", "direction": "안심시키듯" },
+    { "id": "voice_tutorial_1", "speaker": "manager", "when": "튜토리얼 1/6 상품 잡기", "text": "손님 물건에 손을 대고, 컨트롤러 옆 가운뎃손가락 버튼을 꾹 누르면 잡혀요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_tutorial_2", "speaker": "manager", "when": "튜토리얼 2/6 바코드 찾기", "text": "손목을 돌려서, 바코드 있는 면이 스캐너를 보게 해 봐요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_tutorial_3", "speaker": "manager", "when": "튜토리얼 3/6 스캔", "text": "이제 그 면을 스캐너 유리에 갖다 대요. 삑 소리 나면 찍힌 거예요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_tutorial_4", "speaker": "manager", "when": "튜토리얼 4/6 봉투에 담기, 손님이 봉투를 부탁한 뒤", "text": "찍은 건 봉투 위로 가져가서 손을 놓으면 돼요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_tutorial_5", "speaker": "manager", "when": "튜토리얼 5/6 카드 결제", "text": "카드네요. 손님 카드를 받아서, 오른쪽 단말기 앞 노란 칸에 쭉 밀어 넣어요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_tutorial_6", "speaker": "manager", "when": "튜토리얼 6/6 현금 결제. 금액은 TutorialController의 CashBill 5,000원, CashPrice 1,500원과 맞아야 한다", "text": "이번엔 현금이에요. 계산은 제가 찍어 놨어요. 오천 원은 왼쪽 서랍에 넣고, 거스름돈 삼천오백 원을 접시에 올려 드려요.", "direction": "천천히, 숫자는 또박또박" },
+    { "id": "voice_manager_alone", "speaker": "manager", "when": "튜토리얼이 끝났을 때", "text": "잘하네요! 이제 혼자서도 되겠어요. 저는 은행 좀 다녀올게요.", "direction": "칭찬하고, 나갈 채비를 하며" },
+
+    { "id": "voice_intake_1", "speaker": "manager", "when": "2일차 입고 1/4 박스 옮기기", "text": "뒤쪽 창고 입구 카트에서 첫 번째 박스를 옆면 손잡이로 들어서, 노란 칸 진열대 옆 거치대에 올려놔요.", "direction": "일을 시키듯, 차근차근" },
+    { "id": "voice_intake_2", "speaker": "manager", "when": "2일차 입고 2/4 테이프 자르기", "text": "거치대 앞에 커터 있죠? 그걸로 박스 위 테이프를 끝에서 끝까지 쭉 그어 줘요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_intake_3", "speaker": "manager", "when": "2일차 입고 3/4 박스 열기", "text": "이제 박스 날개를 하나씩 잡고, 바깥으로 끝까지 젖혀요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_intake_4", "speaker": "manager", "when": "2일차 입고 4/4 진열", "text": "물건을 하나 꺼내 들고 노란 칸을 봐요. 놓일 자리가 초록색으로 뜨면, 그때 손을 놓으면 돼요.", "direction": "옆에서 가르치듯" },
+
+    { "id": "voice_guide_microwave", "speaker": "manager", "when": "3일차, 데워 달라는 주문이 처음 왔을 때", "text": "데워 달라는 손님이네요. 찍고 나서 왼쪽 냉장고 옆 전자레인지에 넣고, 땡 소리 나면 꺼내 드려요.", "direction": "바쁜 와중에 빠르게 알려 주듯" },
+    { "id": "voice_guide_hotwater", "speaker": "manager", "when": "3일차, 물을 부어 달라는 주문이 처음 왔을 때", "text": "물 부어 달라는 손님이에요. 찍고 나서 전자레인지 옆 온수기 밑에 잠깐 대고 있어요.", "direction": "바쁜 와중에 빠르게 알려 주듯" },
+    { "id": "voice_guide_oneplus", "speaker": "manager", "when": "3일차, 1+1 주문이 처음 왔을 때", "text": "원 플러스 원 행사 상품이에요. 두 개 다 찍어도 값은 하나만 계산돼요.", "direction": "바쁜 와중에 빠르게 알려 주듯" },
+
+    { "id": "voice_manager_punch_out", "speaker": "manager", "when": "마지막 날 정산 뒤", "text": "오늘 고생 많았어요. 퇴근 카드 찍고 얼른 들어가요.", "direction": "하루를 마치며, 따뜻하게" },
+    { "id": "voice_ending_s", "speaker": "manager", "when": "결말, 종합 S", "text": "와, 알바 처음 맞아요? 다음 달부터 정식으로 같이 일해요, 우리.", "direction": "감탄해서" },
+    { "id": "voice_ending_a", "speaker": "manager", "when": "결말, 종합 A", "text": "아주 잘했어요. 다음 주 근무표에도 이름 넣어 둘게요.", "direction": "만족스럽게" },
+    { "id": "voice_ending_b", "speaker": "manager", "when": "결말, 종합 B", "text": "수고했어요. 손에 좀 더 익으면 금방 늘 거예요.", "direction": "격려하듯" },
+    { "id": "voice_ending_c", "speaker": "manager", "when": "결말, 종합 C", "text": "첫 알바는 다들 그래요. 다음에 한 번 더 해 봐요.", "direction": "위로하듯" }
+  ]
+}

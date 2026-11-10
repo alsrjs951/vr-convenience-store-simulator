@@ -32,6 +32,7 @@ public class CustomerDirector : MonoBehaviour
     const float BrowserGapMin = 8f;
     const float BrowserGapMax = 20f;
     const int MaxCharacters = 5;
+    const float AmbientFirstLookMin = 7f, AmbientFirstLookMax = 14f;
     const float ItemSpacing = 0.25f;
     const float SpawnClearance = 0.004f;
     const float MetersPerPixel = 0.0007f;
@@ -120,6 +121,10 @@ public class CustomerDirector : MonoBehaviour
     public readonly List<CustomerCharacter> Browsers = new List<CustomerCharacter>();
     public readonly List<CustomerCharacter> Present = new List<CustomerCharacter>();
     public readonly List<CustomerRecord> Records = new List<CustomerRecord>();
+    /// <summary>In the store before the shift (see StartAmbient). Not in Present.</summary>
+    public readonly List<CustomerCharacter> Ambient = new List<CustomerCharacter>();
+    /// <summary>The manager's body: nobody shopping should be her twin.</summary>
+    public string ReservedAvatar { get; set; } = "";
     public int MaxPresent { get; private set; }
     public int MaxWaitingSeen { get; private set; }
     public int MaxLineSeen { get; private set; }
@@ -129,7 +134,7 @@ public class CustomerDirector : MonoBehaviour
     public int BrowsersSpawned { get; private set; }
     public Transform CounterBasket { get; private set; }
 
-    Text hud, hudTitle, hudPayText, hudBagText, hudSpecialText;
+    Text hud, hudTitle, hudIdle, hudPayText, hudBagText, hudSpecialText;
     Image hudPay, hudBag, hudTime, hudSpecial;
     Image hudBackground, hudHalf;
     RectTransform outcomePanel;
@@ -153,25 +158,37 @@ public class CustomerDirector : MonoBehaviour
 
     void Start()
     {
-        var panel = WorldUi.CreatePanel(transform, "Order HUD", transform.position, transform.rotation, new Vector2(620f, 470f), MetersPerPixel, WorldUi.Palette.Panel);
-        hudTitle = WorldUi.AddText(panel, 28f, 20f, 560f, 50f, 36);
-        hudTitle.fontStyle = FontStyle.Bold;
-        hud = WorldUi.AddText(panel, 28f, 82f, 564f, 250f, 36);
+        // The order screen is one of the store's own screens, so it is laid out like the POS beside it: a navy header,
+        // a light page, square corners.
+        var panel = WorldUi.CreatePanel(transform, "Order HUD", transform.position, transform.rotation, new Vector2(620f, 470f), MetersPerPixel, WorldUi.Palette.Paper);
+        WorldUi.Square(panel.GetComponent<Image>());
+        WorldUi.Square(WorldUi.AddBox(panel, 0f, 0f, 620f, 64f, WorldUi.Palette.Navy));
+        hudTitle = WorldUi.AddText(panel, 28f, 0f, 564f, 64f, 34, TextAnchor.MiddleLeft);
+        WorldUi.Bold(hudTitle);
+        hudIdle = WorldUi.AddText(panel, 28f, 0f, 564f, 64f, 26, TextAnchor.MiddleLeft);
+        hudIdle.text = "주문 확인";
+        hudIdle.color = WorldUi.Palette.TextDim;
+        hud = WorldUi.AddText(panel, 28f, 84f, 564f, 190f, 34);
+        hud.color = WorldUi.Palette.Ink;
         hudPay = WorldUi.AddBox(panel, 28f, 340f, 170f, 52f, WorldUi.Palette.Accent);
-        hudPayText = WorldUi.AddText((RectTransform)hudPay.transform, 0f, 0f, 170f, 52f, 30, TextAnchor.MiddleCenter);
-        hudBag = WorldUi.AddBox(panel, 212f, 340f, 200f, 52f, WorldUi.Palette.Grey);
-        hudBagText = WorldUi.AddText((RectTransform)hudBag.transform, 0f, 0f, 200f, 52f, 30, TextAnchor.MiddleCenter);
-        WorldUi.AddBox(panel, 28f, 414f, 564f, 22f, new Color(1f, 1f, 1f, 0.15f));
+        hudPayText = WorldUi.AddText((RectTransform)hudPay.transform, 0f, 0f, 170f, 52f, 28, TextAnchor.MiddleCenter);
+        WorldUi.Bold(hudPayText);
+        hudBag = WorldUi.AddBox(panel, 212f, 340f, 200f, 52f, WorldUi.Palette.Band);
+        hudBagText = WorldUi.AddText((RectTransform)hudBag.transform, 0f, 0f, 200f, 52f, 28, TextAnchor.MiddleCenter);
+        hudBagText.color = WorldUi.Palette.Ink;
+        WorldUi.Bold(hudBagText);
+        WorldUi.Square(WorldUi.AddBox(panel, 28f, 414f, 564f, 22f, WorldUi.Palette.Rule));
         hudTime = WorldUi.AddBox(panel, 28f, 414f, 564f, 22f, WorldUi.Palette.Good);
         hudTime.type = Image.Type.Filled;
         hudTime.fillMethod = Image.FillMethod.Horizontal;
         hudTime.sprite = null;
         // Added after the time bar: SetHudVisible finds the bar's background as the sibling just before it.
         hudSpecial = WorldUi.AddBox(panel, 28f, 276f, 564f, 52f, WorldUi.Palette.Warn);
-        hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 30, TextAnchor.MiddleCenter);
-        hudSpecialText.fontStyle = FontStyle.Bold;
+        hudSpecialText = WorldUi.AddText((RectTransform)hudSpecial.transform, 0f, 0f, 564f, 52f, 28, TextAnchor.MiddleCenter);
+        hudSpecialText.color = WorldUi.Palette.Ink;
+        WorldUi.Bold(hudSpecialText);
         // Half way along the bar: finish while the bar is past this mark and it is a tip.
-        hudHalf = WorldUi.AddBox(panel, 28f + 564f * FastShare - 2f, 408f, 4f, 34f, Color.white);
+        hudHalf = WorldUi.Square(WorldUi.AddBox(panel, 28f + 564f * FastShare - 2f, 408f, 4f, 34f, WorldUi.Palette.Ink));
         SetHudVisible(false);
         BuildOutcomeCard();
         hudBackground = panel.GetComponent<Image>();
@@ -207,7 +224,7 @@ public class CustomerDirector : MonoBehaviour
             if (customer != null && customer.State == CustomerState.AtCounter) atCounter++;
         MaxAtCounterSeen = Mathf.Max(MaxAtCounterSeen, atCounter);
         if (hudBackground != null)
-            hudBackground.color = HudFlashing && Mathf.Repeat(Time.time, 0.5f) < 0.25f ? new Color(0.62f, 0.44f, 0.06f, 0.96f) : hudColor;
+            hudBackground.color = HudFlashing && Mathf.Repeat(Time.time, 0.5f) < 0.25f ? new Color(1f, 0.82f, 0.36f) : hudColor;
     }
 
     /// <summary>Clears the day's numbers and records before the next day. Customers still walking out finish leaving.</summary>
@@ -239,6 +256,153 @@ public class CustomerDirector : MonoBehaviour
     {
         ResetDay();
         specialsSeen.Clear();
+        ClearAmbient();
+    }
+
+    // ---------- Before the shift: people already shopping, and the two the tutorial serves (2026-11-09) ----------
+
+    /// <summary>
+    /// People in the store when the player first looks in, so the glass door shows a store that is open and the tutorial's
+    /// customers are people who were already there. Outside Present and Records: the shift's own numbers do not count them.
+    /// </summary>
+    public void StartAmbient(int count)
+    {
+        ClearAmbient();
+        // In front of row B and at the fridges: the two browse spots that can be seen through the door.
+        var opening = new[] { 2, 1 };
+        for (int i = 0; i < count && i < opening.Length && opening[i] < BrowseSpots.Length; i++)
+        {
+            var spot = BrowseSpots[opening[i]];
+            var guest = NewGuest(spot.position, spot.rotation);
+            guest.State = CustomerState.Wandering;
+            guest.Settle();
+            guest.Resting = CustomerCharacter.BrowseState;
+            reservedSpots[spot] = guest;
+            lastSpot[guest] = spot;
+            Ambient.Add(guest);
+            behaviours[guest] = StartCoroutine(KeepShopping(guest));
+        }
+    }
+
+    /// <summary>A while at a shelf, then on to another one, until called to the counter or sent home.</summary>
+    IEnumerator KeepShopping(CustomerCharacter guest)
+    {
+        // Staggered, and long enough at first for the player to have looked in.
+        yield return new WaitForSeconds(Random.Range(AmbientFirstLookMin, AmbientFirstLookMax));
+        while (true)
+        {
+            guest.Resting = CustomerCharacter.IdleState;
+            ReleaseSpot(guest);
+            yield return Browse(guest, CustomerState.Wandering);
+        }
+    }
+
+    /// <summary>The ones still shopping when the shift starts walk out; the shift brings its own.</summary>
+    public void DismissAmbient()
+    {
+        foreach (var guest in Ambient)
+        {
+            if (guest == null) continue;
+            StopBehaviour(guest);
+            ReleaseSpot(guest);
+            behaviours[guest] = StartCoroutine(LeaveStore(guest, false));
+        }
+        Ambient.Clear();
+    }
+
+    public void ClearAmbient()
+    {
+        foreach (var guest in Ambient)
+        {
+            if (guest == null) continue;
+            StopBehaviour(guest);
+            ReleaseSpot(guest);
+            lastSpot.Remove(guest);
+            Destroy(guest.gameObject);
+        }
+        Ambient.Clear();
+    }
+
+    /// <summary>The next person for the tutorial: someone already shopping, or else someone new from the door.</summary>
+    public CustomerCharacter CallGuest()
+    {
+        CustomerCharacter guest;
+        if (Ambient.Count > 0)
+        {
+            guest = Ambient[0];
+            Ambient.RemoveAt(0);
+            StopBehaviour(guest);
+            ReleaseSpot(guest);
+        }
+        else
+        {
+            guest = NewGuest(DoorEntry, Door.rotation);
+            if (Audio) Audio.PlayAt(StoreSound.Door, Door.position + Vector3.up * DoorChimeHeight);
+        }
+        guest.State = CustomerState.ToCounter;
+        guest.Resting = CustomerCharacter.IdleState;
+        guest.Agent.avoidancePriority = 30;
+        return guest;
+    }
+
+    public IEnumerator BringGuest(CustomerCharacter guest)
+    {
+        yield return guest.WalkTo(Counter.position);
+        yield return guest.Face(Counter.rotation);
+        guest.State = CustomerState.AtCounter;
+        guest.Resting = CustomerCharacter.IdleState;
+    }
+
+    /// <summary>The basket comes off the arm onto the counter. The tutorial makes the product that stands in it.</summary>
+    public void GuestPutsBasketDown(CustomerCharacter guest)
+    {
+        if (guest.Basket != null) Destroy(guest.Basket.gameObject);
+        guest.Basket = null;
+        CounterBasket = BuildBasket("Basket (on counter)", 0.26f, false);
+        CounterBasket.position = BasketAnchor.position + Vector3.up * BasketHeight;
+        CounterBasket.rotation = Quaternion.Euler(0f, 90f, 0f);
+    }
+
+    /// <summary>The line and the mouth moving with it. Returns its length.</summary>
+    public float GuestSays(CustomerCharacter guest, CustomerLine line, int variant = 0) => Audio ? Speak(guest, line, variant) : 0f;
+
+    /// <summary>The end of a served guest: the money on the card, thanks, a nod, a wave, and out.</summary>
+    public void GuestLeaves(CustomerCharacter guest, int amount)
+    {
+        ShowOutcome($"+{amount:N0}원", WorldUi.Palette.Good);
+        if (Audio) Speak(guest, CustomerLine.Thanks);
+        if (guest.FaceRig != null)
+        {
+            guest.FaceRig.SetMood(CustomerMood.Pleased);
+            guest.FaceRig.Nod();
+        }
+        if (CounterBasket) Destroy(CounterBasket.gameObject);
+        CounterBasket = null;
+        behaviours[guest] = StartCoroutine(LeaveStore(guest, true));
+    }
+
+    CustomerCharacter NewGuest(Vector3 position, Quaternion rotation)
+    {
+        spawnedTotal++;
+        var prefab = PickCharacter();
+        string avatar = prefab != null ? prefab.name : "placeholder";
+        CustomerCharacter guest;
+        if (prefab != null)
+        {
+            guest = Instantiate(prefab, position, rotation);
+        }
+        else
+        {
+            guest = CreatePlaceholder();
+            guest.Agent.Warp(position);
+            guest.transform.rotation = rotation;
+        }
+        guest.name = $"Guest {spawnedTotal} ({avatar})";
+        guest.Agent.avoidancePriority = 60 + spawnedTotal % 10;
+        guest.Record.Name = guest.name;
+        guest.Record.Avatar = avatar;
+        guest.Basket = CreateBasket(guest);
+        return guest;
     }
 
     public IEnumerator RunDay(List<Order> orders)
@@ -465,7 +629,7 @@ public class CustomerDirector : MonoBehaviour
         if (OutcomeAnchor == null) return;
         outcomePanel = WorldUi.CreatePanel(transform, "Outcome Card", OutcomeAnchor.position, OutcomeAnchor.rotation, new Vector2(620f, 120f), OutcomeMetersPerPixel, WorldUi.Palette.Panel);
         outcomeText = WorldUi.AddText(outcomePanel, 10f, 0f, 600f, 120f, 46, TextAnchor.MiddleCenter);
-        outcomeText.fontStyle = FontStyle.Bold;
+        WorldUi.Bold(outcomeText);
         outcomeGroup = outcomePanel.gameObject.AddComponent<CanvasGroup>();
         outcomePanel.gameObject.SetActive(false);
     }
@@ -760,7 +924,7 @@ public class CustomerDirector : MonoBehaviour
 
     // Door faces into the store, so its right is the right-hand side of someone coming in.
     Vector3 DoorEntry => Door.position + Door.right * DoorLane;
-    Vector3 DoorExit => Door.position - Door.right * DoorLane;
+    public Vector3 DoorExit => Door.position - Door.right * DoorLane;
 
     CustomerCharacter Spawn(bool forOrder)
     {
@@ -803,9 +967,11 @@ public class CustomerDirector : MonoBehaviour
         foreach (var candidate in Characters)
         {
             if (candidate == null) continue;
-            int count = 0;
+            int count = candidate.name == ReservedAvatar ? 1 : 0;
             foreach (var present in Present)
                 if (present != null && present.Record.Avatar == candidate.name) count++;
+            foreach (var guest in Ambient)
+                if (guest != null && guest.Record.Avatar == candidate.name) count++;
             if (count < fewest)
             {
                 fewest = count;
@@ -928,7 +1094,7 @@ public class CustomerDirector : MonoBehaviour
         RefreshSpecial(order);
         hudPayText.text = order.Payment == PaymentMethod.Card ? "카드" : "현금";
         hudBagText.text = order.NeedsBag ? (Pos.AllBagged ? "봉투 ✓" : "봉투") : "봉투 없음";
-        hudBag.color = order.NeedsBag ? (Pos.AllBagged ? WorldUi.Palette.Good : WorldUi.Palette.Warn) : new Color(1f, 1f, 1f, 0.15f);
+        hudBag.color = order.NeedsBag ? (Pos.AllBagged ? WorldUi.Palette.Good : WorldUi.Palette.Warn) : WorldUi.Palette.Band;
         float share = order.TimeLimitSeconds > 0f ? Mathf.Clamp01(remaining / order.TimeLimitSeconds) : 0f;
         hudTime.fillAmount = share;
         hudTime.color = share > 0.5f ? WorldUi.Palette.Good : share > 0.25f ? WorldUi.Palette.Warn : WorldUi.Palette.Bad;
@@ -944,7 +1110,9 @@ public class CustomerDirector : MonoBehaviour
         hudSpecialText.text = order.Special == Order.Microwave ? (done ? "전자레인지 데우기 ✓" : "전자레인지 데우기")
             : order.Special == Order.HotWater ? (done ? "온수 붓기 ✓" : "온수 붓기")
             : "1+1 행사 · 1개 값만 받기";
-        hudSpecial.color = done ? WorldUi.Palette.Good : order.Special == Order.OnePlus ? WorldUi.Palette.Accent : WorldUi.Palette.Warn;
+        bool onePlus = !done && order.Special == Order.OnePlus;
+        hudSpecial.color = done ? WorldUi.Palette.Good : onePlus ? WorldUi.Palette.Accent : WorldUi.Palette.Warn;
+        hudSpecialText.color = onePlus ? WorldUi.Palette.Text : WorldUi.Palette.Ink;
     }
 
     /// <summary>Between customers the card shows only its title line (the day's message).</summary>
@@ -958,5 +1126,7 @@ public class CustomerDirector : MonoBehaviour
         hudTime.gameObject.SetActive(order);
         if (hudHalf != null) hudHalf.gameObject.SetActive(order);
         if (!order) hudTitle.text = "";
+        // With no order the header names the screen instead.
+        hudIdle.gameObject.SetActive(!order);
     }
 }

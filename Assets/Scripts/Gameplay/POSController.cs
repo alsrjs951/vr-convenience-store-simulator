@@ -132,7 +132,7 @@ public class POSController : MonoBehaviour
         line.Scanned++;
         scannedProducts.Add(product);
         Notice = line.Scanned > line.Ordered ? $"{product.Data.Name}: 주문보다 많이 찍혔습니다. [-]로 취소하세요."
-            : NeedsCooking(product) ? (Current.Special == Order.HotWater ? "오른쪽 벽 온수기 아래에 두세요." : "오른쪽 벽 전자레인지에 넣으세요.")
+            : NeedsCooking(product) ? (Current.Special == Order.HotWater ? "전자레인지 옆 온수기 아래에 두세요." : "왼쪽 냉장고 옆 전자레인지에 넣으세요.")
             : "";
         ItemScanned?.Invoke(product.Data);
         Changed?.Invoke();

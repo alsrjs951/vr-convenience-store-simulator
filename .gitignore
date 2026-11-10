@@ -9,3 +9,4 @@ capture/
 *.csproj
 *.sln
 *.user
+__pycache__/

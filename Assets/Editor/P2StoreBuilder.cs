@@ -525,6 +525,9 @@ public static class P2StoreBuilder
         director.OutcomeAnchor = Marker("Outcome Anchor", outcomePosition, Facing(outcomePosition), customers);
         director.BasketMaterial = Material("P2_Basket", new Color(0.78f, 0.12f, 0.1f));
         director.BodyMaterial = Material("P2_CustomerBody", new Color(0.35f, 0.5f, 0.65f));
+        // Past the counter's far end, where the door and the clerk can both see her and customers still get by. Facing the
+        // street front, halfway between the two places she looks at, so her head turns to each without going past its limit.
+        var managerSpot = Marker("Manager Spot", new Vector3(-1.7f, 0f, 1.55f), Quaternion.LookRotation(new Vector3(0.15f, 0f, -1f)), customers);
 
         // The intake furniture (stands, bins, cart) goes in first: the NavMesh has to know the stands are solid.
         var intake = BuildIntake(catalog, gameAudio, environment, systems);
@@ -532,7 +535,7 @@ public static class P2StoreBuilder
         P3StoreDressing.Dress(environment);
         BuildCookingZones(pos, gameAudio, environment);
         var navMesh = BakeNavMesh(environment);
-        CheckNavMesh(navMesh, director);
+        CheckNavMesh(navMesh, director, managerSpot);
         Directory.CreateDirectory(Path.GetDirectoryName(NavMeshPath));
         AssetDatabase.CreateAsset(navMesh, NavMeshPath);
         var navObject = new GameObject("Store NavMesh").AddComponent<StoreNavMesh>();
@@ -551,6 +554,26 @@ public static class P2StoreBuilder
         tutorial.Bag = bagZone;
         tutorial.Desk = desk;
         tutorial.BasketAnchor = basket;
+        tutorial.Director = director;
+
+        // What shows the player where and how (2026-11-09): an arrow over the next thing, and a line at the controllers.
+        var pointer = new GameObject("Target Pointer").AddComponent<TargetPointer>();
+        pointer.transform.SetParent(systems, false);
+        pointer.Material = Material("P2_PointerYellow", new Color(1f, 0.8f, 0.08f));
+        var hands = BuildControllerHint(systems);
+        tutorial.Pointer = pointer;
+        tutorial.Hands = hands;
+
+        var manager = new GameObject("Store Manager Npc").AddComponent<ManagerNpc>();
+        manager.transform.SetParent(systems, false);
+        // Her lines are in the female TTS voice.
+        // Straight from the prefab, as for the slots: the references the setup returned can go stale when it imports assets.
+        manager.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Customers/Female_Adult_17.prefab")?.GetComponent<CustomerCharacter>() ?? throw new Exception("Manager's body missing.");
+        manager.Spot = managerSpot;
+        manager.Director = director;
+        manager.Audio = gameAudio;
+        manager.ApronMaterial = Material("P2_ManagerApron", new Color(0.03f, 0.16f, 0.36f));
+        tutorial.Manager = manager;
 
         var boardPosition = new Vector3(0f, 1.95f, 1.3f);
         var boardAnchor = new GameObject("Board Anchor").transform;
@@ -563,6 +586,7 @@ public static class P2StoreBuilder
         game.Director = director;
         game.Tutorial = tutorial;
         game.BoardAnchor = boardAnchor;
+        game.Manager = manager;
 
         game.MoreScenarios = new TextAsset[0];
         game.LastDay = ScenarioDays;
@@ -576,6 +600,9 @@ public static class P2StoreBuilder
         intakeTutorial.Preview = preview;
         game.IntakeTutorial = intakeTutorial;
         game.Title = BuildTitle(desk, gameAudio, systems);
+        game.Title.Pointer = pointer;
+        game.Title.Hands = hands;
+        game.Title.Manager = manager;
         BuildWristWatch(game, director);
 
         var verification = new GameObject("P2 Day Verification").AddComponent<P2DayVerification>();
@@ -597,6 +624,8 @@ public static class P2StoreBuilder
         P3StoreDetails.Apply(environment);
 
         if (!EditorSceneManager.SaveScene(scene, StoreScene)) throw new Exception("Scene save failed.");
+        // The light is baked into the saved scene (-no-bake leaves the old even light).
+        P3StoreLighting.Bake(scene, environment);
     }
 
     static Quaternion Facing(Vector3 position) => Quaternion.LookRotation(position - EyePosition);
@@ -626,17 +655,19 @@ public static class P2StoreBuilder
         title.Audio = audio;
         var towardStore = Quaternion.LookRotation(Vector3.forward);
         title.StandSpot = Marker("Title Stand", TitleStand, towardStore, root);
-        title.PanelAnchor = Marker("Title Panel Anchor", new Vector3(DoorCenter.x, 1.42f, StorefrontZ - 0.04f), towardStore, root);
+        // Below eye level, so the store and the people in it are seen over the top of it.
+        title.PanelAnchor = Marker("Title Panel Anchor", new Vector3(DoorCenter.x, 1.14f, StorefrontZ - 0.05f), towardStore, root);
         var guidePosition = new Vector3(-2.6f, 1.9f, 0.15f);
         title.GuideAnchor = Marker("Commute Guide Anchor", guidePosition, Quaternion.LookRotation(guidePosition - new Vector3(DoorCenter.x, 1.5f, DoorCenter.z)), root);
         title.CounterSpot = Marker("Counter Spot", Vector3.zero, Quaternion.identity, root);
 
-        // Dong-A grey (429C): the navy title panel has to stand out from the door it is on.
-        var doorMaterial = Material("P2_TitleDoor", new Color(0.635f, 0.667f, 0.678f));
+        // Glass in aluminium, like the street front it stands in: the first thing seen is the store through it, lit and open.
+        var doorGlass = TransparentMaterial("P2_StoreGlass", new Color(0.72f, 0.84f, 0.9f, 0.16f));
+        var doorFrame = Material("P2_TitleDoorFrame", new Color(0.72f, 0.74f, 0.76f));
         title.DoorLeaves = new[]
         {
-            Box("Title Door Near", new Vector3(DoorCenter.x - DoorWidth * 0.25f - 0.002f, DoorHeight * 0.5f, StorefrontZ), new Vector3(DoorWidth * 0.5f, DoorHeight, 0.06f), doorMaterial, root, true).transform,
-            Box("Title Door Far", new Vector3(DoorCenter.x + DoorWidth * 0.25f + 0.002f, DoorHeight * 0.5f, StorefrontZ), new Vector3(DoorWidth * 0.5f, DoorHeight, 0.06f), doorMaterial, root, true).transform,
+            GlassLeaf("Title Door Near", DoorCenter.x - DoorWidth * 0.25f - 0.002f, 1f, doorGlass, doorFrame, root),
+            GlassLeaf("Title Door Far", DoorCenter.x + DoorWidth * 0.25f + 0.002f, -1f, doorGlass, doorFrame, root),
         };
         foreach (var leaf in title.DoorLeaves) leaf.gameObject.SetActive(false);
         title.LeafSlide = new Vector3(DoorWidth * 0.5f - 0.02f, 0f, 0f);
@@ -661,6 +692,36 @@ public static class P2StoreBuilder
         path.gameObject.SetActive(false);
         title.CommutePath = path.gameObject;
         return title;
+    }
+
+    /// <summary>One sliding leaf: an empty at its centre holding the glass (the solid part) and the frame.</summary>
+    /// <param name="meetingSide">+1 when the side where the two leaves meet is toward +x.</param>
+    static Transform GlassLeaf(string name, float centerX, float meetingSide, Material glass, Material frame, Transform parent)
+    {
+        const float stile = 0.06f, rail = 0.08f, depth = 0.05f;
+        float width = DoorWidth * 0.5f, y = DoorHeight * 0.5f, z = StorefrontZ;
+        var leaf = new GameObject(name).transform;
+        leaf.SetParent(parent, false);
+        leaf.position = new Vector3(centerX, y, z);
+        Box("Door Glass", leaf.position, new Vector3(width, DoorHeight, 0.02f), glass, leaf, true);
+        foreach (float side in new[] { -1f, 1f })
+            Box("Door Stile", new Vector3(centerX + side * (width * 0.5f - stile * 0.5f), y, z), new Vector3(stile, DoorHeight, depth), frame, leaf, false);
+        Box("Door Rail Top", new Vector3(centerX, DoorHeight - rail * 0.5f, z), new Vector3(width, rail, depth), frame, leaf, false);
+        Box("Door Rail Bottom", new Vector3(centerX, rail * 0.5f, z), new Vector3(width, rail, depth), frame, leaf, false);
+        // Above the title sign, which covers the middle of the door at waist height.
+        Box("Door Handle", new Vector3(centerX + meetingSide * (width * 0.5f - stile - 0.04f), 1.65f, z - 0.05f), new Vector3(0.025f, 0.46f, 0.025f), frame, leaf, false);
+        return leaf;
+    }
+
+    /// <summary>A line on each controller while a control is new. Attached like the wrist watch.</summary>
+    static ControllerHint BuildControllerHint(Transform systems)
+    {
+        var origin = UnityEngine.Object.FindFirstObjectByType<XROrigin>() ?? throw new Exception("XR Origin missing.");
+        var hint = new GameObject("Controller Hint").AddComponent<ControllerHint>();
+        hint.transform.SetParent(systems, false);
+        hint.LeftHand = origin.transform.Find("Camera Offset/Left Controller") ?? throw new Exception("Left Controller missing.");
+        hint.RightHand = origin.transform.Find("Camera Offset/Right Controller") ?? throw new Exception("Right Controller missing.");
+        return hint;
     }
 
     /// <summary>A flat arrowhead on the floor, pointing along <paramref name="direction"/>. Opaque, so it never blends with splats.</summary>
@@ -700,7 +761,7 @@ public static class P2StoreBuilder
 
     static CustomerVoice Voice(string gender) => new CustomerVoice
     {
-        Greet = new[] { Sound($"voice_greet_1_{gender}"), Sound($"voice_greet_2_{gender}") },
+        Greet = new[] { Sound($"voice_greet_1_{gender}"), Sound($"voice_greet_2_{gender}"), Sound($"voice_greet_3_{gender}"), Sound($"voice_greet_4_{gender}") },
         Bag = Sound($"voice_bag_{gender}"),
         Thanks = Sound($"voice_thanks_{gender}"),
         ThanksFast = Sound($"voice_thanks_fast_{gender}"),
@@ -748,6 +809,7 @@ public static class P2StoreBuilder
         {
             Sound("voice_manager_welcome"), Sound("voice_manager_punch_in"), Sound("voice_manager_punch_out"),
             Sound("voice_ending_s"), Sound("voice_ending_a"), Sound("voice_ending_b"), Sound("voice_ending_c"),
+            Sound("voice_manager_first_customer"), Sound("voice_manager_alone"),
         };
     }
 
@@ -1182,12 +1244,12 @@ public static class P2StoreBuilder
     }
 
     /// <summary>Fails the build if a marker is off the NavMesh, unreachable from the door, or the clerk's side is walkable.</summary>
-    static void CheckNavMesh(NavMeshData data, CustomerDirector director)
+    static void CheckNavMesh(NavMeshData data, CustomerDirector director, Transform managerSpot)
     {
         var instance = NavMesh.AddNavMeshData(data);
         try
         {
-            var markers = new List<Transform> { director.Counter };
+            var markers = new List<Transform> { director.Counter, managerSpot };
             markers.AddRange(director.QueueSlots);
             markers.AddRange(director.BrowseSpots);
             var door = director.Door.position;

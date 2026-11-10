@@ -8,6 +8,7 @@ Usage:
   python scripts/windows/make_game_sounds.py <tts_raw_dir> <out_dir>
 The TTS step writes <tts_raw_dir>/<name>.wav first. <out_dir> is Assets/Audio/Generated.
 """
+import json
 import os
 import sys
 
@@ -244,9 +245,9 @@ def trim(x, sr, threshold=0.02, pad=0.06):
 
 
 # Lines said by customers come as a female (Heami) and a male (pitched down) version. Narration is Heami only.
-CUSTOMER_LINES = ['voice_greet_1', 'voice_greet_2', 'voice_bag', 'voice_hurry', 'voice_leave',
-                  'voice_special_microwave', 'voice_special_hotwater', 'voice_special_oneplus',
-                  'voice_thanks', 'voice_thanks_fast', 'voice_waited']
+# Which lines are a customer's is in the script itself, Data/voice_lines.json.
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'Data', 'voice_lines.json'), encoding='utf-8') as script:
+    CUSTOMER_LINES = [line['id'] for line in json.load(script)['lines'] if line['speaker'] == 'customer']
 MALE_FACTOR = 0.68   # about 200 Hz down to about 136 Hz
 
 

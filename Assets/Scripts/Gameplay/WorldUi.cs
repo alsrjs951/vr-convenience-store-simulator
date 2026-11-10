@@ -3,8 +3,11 @@ using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.UI;
 
 /// <summary>
-/// Builds the world-space panels. uGUI text with a Windows font, since this is a PCVR-only build. One look everywhere
-/// (2026-11-08, "동아편의점"): rounded panels in Dong-A navy (Pantone 282C) with white text and few words.
+/// Builds the world-space panels. Three looks, so a thing can be told by what it is (2026-11-10):
+/// the store's signs are Dong-A navy (Pantone 282C); what the game says to the player floats on a plain dark glass that is
+/// nobody's brand; the store's own screens (the POS, the order screen) are light, ruled and square like till software.
+/// The type is Pretendard (Assets/Resources/Fonts, SIL OFL), the family the store's printed surfaces use too
+/// (scripts/windows/make_store_signage.py).
 /// </summary>
 public static class WorldUi
 {
@@ -12,8 +15,15 @@ public static class WorldUi
     public static class Palette
     {
         public static readonly Color Navy = new Color(0.016f, 0.118f, 0.259f);
-        public static readonly Color Panel = new Color(0.016f, 0.118f, 0.259f, 0.94f);
-        public static readonly Color PanelSoft = new Color(0.016f, 0.118f, 0.259f, 0.78f);
+        /// <summary>The dark glass behind what the game tells the player.</summary>
+        public static readonly Color Panel = new Color(0.07f, 0.08f, 0.095f, 0.9f);
+        public static readonly Color PanelSoft = new Color(0.07f, 0.08f, 0.095f, 0.72f);
+        /// <summary>The store's screens: the page, what is written on it, its rules and its shaded bands.</summary>
+        public static readonly Color Paper = new Color(0.9f, 0.91f, 0.925f);
+        public static readonly Color Ink = new Color(0.09f, 0.11f, 0.15f);
+        public static readonly Color InkDim = new Color(0.09f, 0.11f, 0.15f, 0.58f);
+        public static readonly Color Rule = new Color(0.09f, 0.11f, 0.15f, 0.2f);
+        public static readonly Color Band = new Color(0.8f, 0.825f, 0.855f);
         public static readonly Color Accent = new Color(0.24f, 0.49f, 0.86f);
         public static readonly Color Grey = new Color(0.635f, 0.667f, 0.678f);
         public static readonly Color Text = Color.white;
@@ -23,12 +33,38 @@ public static class WorldUi
         public static readonly Color Bad = new Color(0.95f, 0.33f, 0.3f);
     }
 
-    const int CornerPixels = 22;
+    // Small: a card's corner, not a pill.
+    const int CornerPixels = 10;
 
-    static Font font;
+    static Font regular, bold, heavy;
     static Sprite rounded;
 
-    static Font Font => font != null ? font : font = Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 40);
+    // Each weight is its own font file, so bold text takes the bold file rather than a thickened regular.
+    static Font Regular => regular != null ? regular : regular = Face("Pretendard-Regular");
+    static Font BoldFace => bold != null ? bold : bold = Face("Pretendard-Bold");
+    static Font HeavyFace => heavy != null ? heavy : heavy = Face("Pretendard-ExtraBold");
+
+    static Font Face(string name)
+    {
+        var face = Resources.Load<Font>("Fonts/" + name);
+        if (face != null) return face;
+        Debug.LogWarning($"[UI] Font {name} is missing from Resources/Fonts; using a Windows font.");
+        return Font.CreateDynamicFontFromOSFont(new[] { "Malgun Gothic", "Arial" }, 40);
+    }
+
+    /// <summary>Bold text: panel titles, buttons, amounts.</summary>
+    public static void Bold(Text text)
+    {
+        text.font = BoldFace;
+        text.fontStyle = FontStyle.Normal;
+    }
+
+    /// <summary>The heaviest weight, for the store's signs.</summary>
+    public static void Heavy(Text text)
+    {
+        text.font = HeavyFace;
+        text.fontStyle = FontStyle.Normal;
+    }
 
     /// <summary>A white rounded square, sliced so the corners keep their size on any panel.</summary>
     public static Sprite Rounded
@@ -75,6 +111,14 @@ public static class WorldUi
         return rect;
     }
 
+    /// <summary>Square corners: a screen's page, or a band or rule on it.</summary>
+    public static Image Square(Image image)
+    {
+        image.sprite = null;
+        image.type = Image.Type.Simple;
+        return image;
+    }
+
     /// <summary>Text anchored to a pixel rectangle measured from the panel's top-left corner.</summary>
     public static Text AddText(RectTransform panel, float x, float y, float width, float height, int fontSize, TextAnchor anchor = TextAnchor.UpperLeft)
     {
@@ -82,7 +126,7 @@ public static class WorldUi
         go.transform.SetParent(panel, false);
         Place((RectTransform)go.transform, x, y, width, height);
         var text = go.AddComponent<Text>();
-        text.font = Font;
+        text.font = Regular;
         text.fontSize = fontSize;
         text.alignment = anchor;
         text.color = Palette.Text;
@@ -100,7 +144,7 @@ public static class WorldUi
         var button = image.gameObject.AddComponent<Button>();
         button.targetGraphic = image;
         var text = AddText((RectTransform)image.transform, 0f, 0f, width, height, fontSize, TextAnchor.MiddleCenter);
-        text.fontStyle = FontStyle.Bold;
+        Bold(text);
         text.text = label;
         return button;
     }

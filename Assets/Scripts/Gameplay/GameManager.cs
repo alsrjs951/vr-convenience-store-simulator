@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
     const int IntakeTutorialDay = 2;
     const float BriefSeconds = 7f;
     const float RequestGuideSeconds = 12f;
+    const int AmbientCustomers = 2;
     static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check" };
 
     public int Day = 1;
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviour
     public IntakeDirector Intake;
     public IntakeTutorial IntakeTutorial;
     public TitleFlow Title;
+    public ManagerNpc Manager;
     public bool RunTutorial = true;
     public Transform BoardAnchor;
 
@@ -85,6 +87,8 @@ public class GameManager : MonoBehaviour
         boardPanel = WorldUi.CreatePanel(BoardAnchor, "Guide Board", BoardAnchor.position, BoardAnchor.rotation, new Vector2(BoardWidth, BoardHeight), BoardMetersPerPixel, WorldUi.Palette.Panel);
         var panel = boardPanel;
         board = WorldUi.AddText(panel, 40f, 18f, 1420f, 190f, 46, TextAnchor.MiddleCenter);
+        // Drawn as a headline and what follows it; the text is still set and read through board.
+        HeadlineText.On(board);
         Tutorial.Board = board;
         if (IntakeTutorial) IntakeTutorial.Board = board;
 
@@ -156,6 +160,9 @@ public class GameManager : MonoBehaviour
         boardPanel.gameObject.SetActive(false);
         // Behind the closed door the store is already stocked, so the first look through it is the finished store.
         PrepareStore(1);
+        // People are already there behind the glass: the manager at the counter's end and a couple of customers shopping.
+        if (Manager != null) Manager.Arrive();
+        Director.StartAmbient(AmbientCustomers);
         yield return Title.ChooseDay();
         Day = Title.ChosenDay;
         PrepareStore(Day);
@@ -175,10 +182,11 @@ public class GameManager : MonoBehaviour
         RestoreBoard();
         var line = FinalGrade == "S" ? ManagerLine.EndingS : FinalGrade == "A" ? ManagerLine.EndingA : FinalGrade == "B" ? ManagerLine.EndingB : ManagerLine.EndingC;
         if (Pos.Audio) Pos.Audio.NarrateManager(line);
-        string ending = FinalGrade == "S" ? "정규직 제안\n\"다음 달부터 정식으로 같이 일해 볼래요?\""
-            : FinalGrade == "A" ? "다음 주 근무표 확정\n\"다음 주에도 이름 올려 둘게요.\""
-            : FinalGrade == "B" ? "수습 기간 연장\n\"조금만 더 손에 익히면 금방 좋아질 거예요.\""
-            : "재교육 대상\n\"첫 알바는 원래 어려워요. 다시 한번 해 봐요.\"";
+        // The words in quotes are the manager's, from her spoken ending (Data/voice_lines.json).
+        string ending = FinalGrade == "S" ? "정규직 제안\n\"다음 달부터 정식으로 같이 일해요, 우리.\""
+            : FinalGrade == "A" ? "다음 주 근무표 확정\n\"다음 주 근무표에도 이름 넣어 둘게요.\""
+            : FinalGrade == "B" ? "수습 기간 연장\n\"손에 좀 더 익으면 금방 늘 거예요.\""
+            : "재교육 대상\n\"첫 알바는 다들 그래요. 다음에 한 번 더 해 봐요.\"";
         int sales = 0, tips = 0;
         foreach (var result in Results)
         {
@@ -202,6 +210,7 @@ public class GameManager : MonoBehaviour
         RestoreBoard();
         Pos.ResetDay();
         Director.ResetRun();
+        if (Manager != null) Manager.Clear();
     }
 
     void RestoreBoard()
@@ -225,8 +234,8 @@ public class GameManager : MonoBehaviour
     void OnOrderArrived(Order order, bool firstOfItsKind)
     {
         if (!firstOfItsKind) return;
-        string guide = order.Special == Order.Microwave ? "특수 요청  전자레인지\n스캔 → 오른쪽 벽 전자레인지에 넣기 → '땡' 뒤 꺼내기"
-            : order.Special == Order.HotWater ? "특수 요청  온수\n스캔 → 오른쪽 벽 온수기 탭 아래에 2초"
+        string guide = order.Special == Order.Microwave ? "특수 요청  전자레인지\n스캔 → 왼쪽 냉장고 옆 전자레인지에 넣기 → '땡' 뒤 꺼내기"
+            : order.Special == Order.HotWater ? "특수 요청  온수\n스캔 → 전자레인지 옆 온수기 탭 아래에 2초"
             : "특수 요청  1+1 행사\n2개 모두 스캔하면 1개 값만 계산됩니다";
         ShowBriefly(guide, RequestGuideSeconds);
     }
@@ -323,6 +332,9 @@ public class GameManager : MonoBehaviour
             State = DayState.Tutorial;
             yield return Tutorial.Run();
         }
+        // From here the store is the player's: whoever was only there for the way in goes.
+        Director.DismissAmbient();
+        if (Manager != null) Manager.Leave();
 
         bool guidedIntake = intake && day == IntakeTutorialDay && IntakeTutorial != null;
         if (guidedIntake)

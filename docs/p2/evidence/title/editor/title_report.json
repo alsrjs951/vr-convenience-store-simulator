@@ -7,7 +7,7 @@
     "scope": "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
     "hmdRuntimeActive": false,
     "externalMouseMotion": 0.0,
-    "meanDesktopFps": 304.63836669921877,
+    "meanDesktopFps": 306.0711669921875,
     "maxHeldSpeedOnArrival": 0.0,
     "maxHeldSpeedAtRelease": 0.0,
     "grade": "",
@@ -27,448 +27,466 @@
     "browsersSpawned": 0,
     "stuckWarps": 0,
     "shortArrivals": 0,
-    "customerFrames": 53201,
-    "settledFrames": 24084,
+    "customerFrames": 88051,
+    "settledFrames": 36398,
     "offNavMeshFrames": 0,
-    "overlapFrames": 62,
+    "overlapFrames": 0,
     "clerkSideFrames": 0,
-    "movingFrames": 26987,
-    "walkAnimatedFrames": 26986,
-    "standingFrames": 24966,
-    "standingAnimatedFrames": 24965,
+    "movingFrames": 48820,
+    "walkAnimatedFrames": 48820,
+    "standingFrames": 37288,
+    "standingAnimatedFrames": 37284,
     "customers": [],
     "stages": [
         {
             "name": "setup.rig_found",
             "pass": true,
             "details": "camera=True; simulator=True; rightNearFar=True",
-            "time": 4.005697727203369
+            "time": 4.003302097320557
         },
         {
             "name": "rules.satisfaction",
             "pass": true,
             "details": "0.8->1.00, 0.25->0.70, 0->0.40",
-            "time": 4.047475337982178
+            "time": 4.033431529998779
         },
         {
             "name": "rules.tip",
             "pass": true,
             "details": "3300->300, 1000->100, 0->100",
-            "time": 4.047699928283691
+            "time": 4.033637046813965
         },
         {
             "name": "rules.line_penalty",
             "pass": true,
             "details": "45s->0.0, 85s->20.0, 500s of 90s->36.0",
-            "time": 4.047801494598389
+            "time": 4.033738136291504
         },
         {
             "name": "title.shown",
             "pass": true,
             "details": "after 0.0s",
-            "time": 4.049093723297119
+            "time": 4.035011291503906
         },
         {
             "name": "title.nothing_started",
             "pass": true,
             "details": "tutorial=NotStarted; shift=False; customers=0; door closed=True",
-            "time": 4.052397727966309
+            "time": 4.038203716278076
         },
         {
             "name": "title.player_at_door",
             "pass": true,
             "details": "after 0.0s",
-            "time": 4.0527801513671879
+            "time": 4.038590908050537
         },
         {
             "name": "title.store_stocked_behind_door",
             "pass": true,
             "details": "display stock=16",
-            "time": 4.360101699829102
+            "time": 4.3415374755859379
         },
         {
             "name": "title.door_is_solid",
             "pass": true,
-            "details": "head x=-4.75",
-            "time": 6.215177536010742
+            "details": "head z=-1.83",
+            "time": 6.204505920410156
+        },
+        {
+            "name": "title.only_start_and_settings",
+            "pass": true,
+            "details": "more settings stay folded",
+            "time": 6.204695224761963
+        },
+        {
+            "name": "title.settings_open",
+            "pass": true,
+            "details": "more=True",
+            "time": 8.198647499084473
         },
         {
             "name": "title.recenter_returns",
             "pass": true,
-            "details": "head=(-5.55, 1.36, 2.40)",
-            "time": 8.310215950012207
+            "details": "head=(-3.60, 1.36, -2.65)",
+            "time": 9.597537994384766
         },
         {
             "name": "title.slow_walk",
             "pass": true,
             "details": "speed=1",
-            "time": 9.7904634475708
+            "time": 11.093564987182618
         },
         {
             "name": "title.speed_back",
             "pass": true,
             "details": "speed=1.5",
-            "time": 10.812413215637207
+            "time": 12.114542961120606
         },
         {
             "name": "title.strong_vignette",
             "pass": true,
             "details": "aperture=0.5",
-            "time": 11.9557466506958
+            "time": 13.234842300415039
         },
         {
             "name": "title.vignette_back",
             "pass": true,
             "details": "aperture=0.7",
-            "time": 12.977992057800293
+            "time": 14.253006935119629
+        },
+        {
+            "name": "title.settings_closed",
+            "pass": true,
+            "details": "more=False",
+            "time": 15.457060813903809
         },
         {
             "name": "title.start_pressed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 14.095731735229493
+            "time": 16.521163940429689
         },
         {
             "name": "title.day_one_chosen",
             "pass": true,
             "details": "chosen=1; day=1; panel=False",
-            "time": 14.101552963256836
+            "time": 16.52446174621582
         },
         {
             "name": "walkin.door_opened",
             "pass": true,
             "details": "after 0.8s",
-            "time": 14.901527404785157
+            "time": 17.325077056884767
         },
         {
             "name": "walkin.path_and_guide",
             "pass": true,
             "details": "path=True; guide=True; narration=voice_manager_welcome",
-            "time": 15.207714080810547
+            "time": 17.629047393798829
         },
         {
             "name": "walkin.arrived_at_counter",
             "pass": true,
             "details": "after 0.0s",
-            "time": 21.34052848815918
+            "time": 22.2584171295166
         },
         {
             "name": "walkin.no_rescue_needed",
             "pass": true,
             "details": "gave up=False",
-            "time": 21.344295501708986
+            "time": 22.261056900024415
         },
         {
             "name": "punch.facing_counter",
             "pass": true,
             "details": "forward=(0.00, 0.00, 1.00)",
-            "time": 23.209274291992189
+            "time": 22.310407638549806
         },
         {
             "name": "punch.card_on_plate",
             "pass": true,
             "details": "after 0.0s",
-            "time": 23.209619522094728
+            "time": 22.310741424560548
         },
         {
             "name": "punch.time_card",
             "pass": true,
             "details": "label=출근 카드; board=출근 카드를 집어\n단말기 노란 칸에 꽂으세요; narration=voice_manager_punch_in",
-            "time": 23.214675903320314
+            "time": 22.31479263305664
         },
         {
             "name": "punch_in.guide_hidden_before_grab",
             "pass": true,
             "details": "guide=False",
-            "time": 23.292400360107423
+            "time": 22.385730743408204
         },
         {
             "name": "punch_in.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 25.58832550048828
+            "time": 24.73915672302246
         },
         {
             "name": "punch_in.guide_shown_while_held",
             "pass": true,
             "details": "guide=True; held=True",
-            "time": 28.386157989501954
+            "time": 27.507455825805665
         },
         {
             "name": "punch_in.card_in_slot",
             "pass": true,
-            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.926, 0.408) socketHover=True",
-            "time": 28.556427001953126
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.927, 0.401) socketHover=True",
+            "time": 27.681554794311525
         },
         {
             "name": "punch_in.approved",
             "pass": true,
             "details": "after 0.4s",
-            "time": 28.996278762817384
+            "time": 28.12578010559082
         },
         {
             "name": "punch_in.guide_hidden_after_payment",
             "pass": true,
             "details": "guide=False; inside=False",
-            "time": 29.199047088623048
+            "time": 28.323890686035158
         },
         {
             "name": "punch.done_no_rescue",
             "pass": true,
             "details": "gave up=False",
-            "time": 29.199234008789064
+            "time": 28.324058532714845
         },
         {
             "name": "day.shift_starts",
             "pass": true,
             "details": "after 2.8s",
-            "time": 32.01826477050781
+            "time": 31.132061004638673
         },
         {
             "name": "day.tip_rule_on_board",
             "pass": true,
             "details": "board=1일차 근무 중\n시간 막대가 절반을 넘기 전에 끝내면 팁",
-            "time": 32.01842498779297
+            "time": 31.13221549987793
         },
         {
             "name": "day.customer1_at_counter",
             "pass": true,
-            "details": "after 12.3s",
-            "time": 44.27162170410156
+            "details": "after 14.8s",
+            "time": 45.932308197021487
         },
         {
             "name": "watch.shows_customer",
             "pass": true,
-            "details": "1일차 | 대기 1명 | 손님 1 | 2:30 |  | 0원; pulses=1",
-            "time": 44.86750793457031
+            "details": "1일차 | 대기 2명 | 손님 1 | 2:30 |  | 0원; pulses=1",
+            "time": 46.526004791259769
         },
         {
             "name": "customer.looks_at_clerk",
             "pass": true,
             "details": "off by 3.8°",
-            "time": 45.105743408203128
+            "time": 46.75094985961914
         },
         {
             "name": "day.customer1_paid",
             "pass": true,
-            "details": "after 0.0s",
-            "time": 45.1162109375
+            "details": "after 0.1s",
+            "time": 46.806724548339847
         },
         {
             "name": "day.customer1_rewarded",
             "pass": true,
             "details": "tip=100; satisfaction=1.00; share left=0.99; card=+0원  ·  팁 100원",
-            "time": 45.119956970214847
+            "time": 46.81092834472656
         },
         {
             "name": "day.customer1_nods_and_thanks",
             "pass": true,
             "details": "nods=1; talking=True; mood=Pleased",
-            "time": 45.12017059326172
+            "time": 46.811153411865237
         },
         {
             "name": "day.customer2_at_counter",
             "pass": true,
-            "details": "after 12.8s",
-            "time": 58.006805419921878
+            "details": "after 11.2s",
+            "time": 58.207210540771487
         },
         {
             "name": "day.customer2_paid",
             "pass": true,
             "details": "after 0.0s",
-            "time": 58.61402893066406
+            "time": 58.813236236572269
         },
         {
             "name": "day.customer2_rewarded",
             "pass": true,
             "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
-            "time": 58.61790466308594
+            "time": 58.81670379638672
         },
         {
             "name": "day.customer2_nods_and_thanks",
             "pass": true,
             "details": "nods=1; talking=True; mood=Pleased",
-            "time": 58.618080139160159
+            "time": 58.81686782836914
         },
         {
             "name": "day.customer3_at_counter",
             "pass": true,
             "details": "after 11.4s",
-            "time": 70.0252685546875
+            "time": 70.21390533447266
         },
         {
             "name": "day.customer3_paid",
             "pass": true,
             "details": "after 0.0s",
-            "time": 70.6229248046875
+            "time": 70.80442810058594
         },
         {
             "name": "day.customer3_rewarded",
             "pass": true,
             "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
-            "time": 70.62751007080078
+            "time": 70.80782318115235
         },
         {
             "name": "day.customer3_nods_and_thanks",
             "pass": true,
             "details": "nods=1; talking=True; mood=Pleased",
-            "time": 70.62771606445313
+            "time": 70.80799102783203
         },
         {
             "name": "day.customer4_at_counter",
             "pass": true,
             "details": "after 11.4s",
-            "time": 82.03395080566406
+            "time": 82.20355987548828
         },
         {
             "name": "day.customer4_paid",
             "pass": true,
             "details": "after 0.0s",
-            "time": 82.63343048095703
+            "time": 82.80306243896485
         },
         {
             "name": "day.customer4_rewarded",
             "pass": true,
             "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
-            "time": 82.63862609863281
+            "time": 82.80699920654297
         },
         {
             "name": "day.customer4_nods_and_thanks",
             "pass": true,
             "details": "nods=1; talking=True; mood=Pleased",
-            "time": 82.63880920410156
+            "time": 82.80717468261719
         },
         {
             "name": "day.customer5_at_counter",
             "pass": true,
-            "details": "after 11.4s",
-            "time": 94.04240417480469
+            "details": "after 12.5s",
+            "time": 95.31063079833985
         },
         {
             "name": "day.customer5_paid",
             "pass": true,
             "details": "after 0.0s",
-            "time": 94.65026092529297
+            "time": 95.91265869140625
         },
         {
             "name": "day.customer5_rewarded",
             "pass": true,
             "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
-            "time": 94.65833282470703
+            "time": 95.9200439453125
         },
         {
             "name": "day.customer5_nods_and_thanks",
             "pass": true,
             "details": "nods=1; talking=True; mood=Pleased",
-            "time": 94.65852355957031
+            "time": 95.92022705078125
         },
         {
             "name": "ending.reached_after_last_day",
             "pass": true,
             "details": "after 0.0s",
-            "time": 94.65921020507813
+            "time": 95.9208984375
         },
         {
             "name": "ending.card_on_plate",
             "pass": true,
             "details": "after 0.0s",
-            "time": 94.6644515991211
+            "time": 95.92373657226563
         },
         {
             "name": "ending.punch_out_asked",
             "pass": true,
             "details": "hud=퇴근 카드를 집어\n단말기 노란 칸에 꽂으세요; board=1일차 정산   C  ·  50점\n매출 0 / 13,500원 · 손님 5/5 · 이탈 0명 · 취소 0\n손님 만족 100% · 팁 500원\n\n1일 근무 리포트   C  ·  평균 50점\n1일차  C  50점  ·  매출 0 / 13,500원  ·  손님 5/5\n합계 매출 0 / 13,500원 · 손님 5/5 · 이탈 0명 · 취소 0 · 진열 0/0 · 폐기 0/0 · 팁 500원; narration=voice_manager_punch_out",
-            "time": 94.6700668334961
+            "time": 95.92762756347656
         },
         {
             "name": "punch_out.guide_hidden_before_grab",
             "pass": true,
             "details": "guide=False",
-            "time": 94.74935913085938
+            "time": 96.00621032714844
         },
         {
             "name": "punch_out.grab.selected",
             "pass": true,
             "details": "after 0.0s",
-            "time": 97.37492370605469
+            "time": 98.64437103271485
         },
         {
             "name": "punch_out.guide_shown_while_held",
             "pass": true,
             "details": "guide=True; held=True",
-            "time": 100.16931915283203
+            "time": 101.40069580078125
         },
         {
             "name": "punch_out.card_in_slot",
             "pass": true,
-            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.929, 0.404) socketHover=True",
-            "time": 100.32649993896485
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.931, 0.402) socketHover=True",
+            "time": 101.56741333007813
         },
         {
             "name": "punch_out.approved",
             "pass": true,
-            "details": "after 0.5s",
-            "time": 100.78750610351563
+            "details": "after 0.4s",
+            "time": 102.00391387939453
         },
         {
             "name": "punch_out.guide_hidden_after_payment",
             "pass": true,
             "details": "guide=False; inside=False",
-            "time": 100.98824310302735
+            "time": 102.25765991210938
         },
         {
             "name": "ending.matches_grade",
             "pass": true,
             "details": "grade=C; board=재교육 대상\n\"첫 알바는 원래 어려워요. 다시 한번 해 봐요.\"\n종합 C · 평균 50점 · 매출 0원 · 팁 500원; narration=voice_ending_c",
-            "time": 101.19188690185547
+            "time": 102.4587631225586
         },
         {
             "name": "restart.title_again",
             "pass": true,
             "details": "after 0.0s",
-            "time": 104.01709747314453
+            "time": 105.34272766113281
         },
         {
             "name": "restart.fresh",
             "pass": true,
             "details": "door=True; at door=True; results=0; day=1; tips=0; grade=",
-            "time": 105.02373504638672
+            "time": 106.3491439819336
         },
         {
             "name": "restart.day2_pressed",
             "pass": true,
             "details": "after 0.0s",
-            "time": 106.3991470336914
+            "time": 108.84367370605469
         },
         {
             "name": "restart.day2_store_ready",
             "pass": true,
             "details": "chosen=2; day=2; boxes=2; displays=0; expired=3",
-            "time": 106.40190124511719
+            "time": 108.84687805175781
         },
         {
             "name": "rescue.walk_given_up",
             "pass": true,
             "details": "after 75.8s",
-            "time": 182.20640563964845
+            "time": 184.6455078125
         },
         {
             "name": "rescue.placed_at_counter",
             "pass": true,
             "details": "gave up=True; head=(0.00, 1.36, 0.00)",
-            "time": 182.20660400390626
+            "time": 184.6457061767578
         },
         {
             "name": "rescue.punch_given_up",
             "pass": true,
             "details": "after 70.0s",
-            "time": 252.20628356933595
+            "time": 254.6453857421875
         },
         {
             "name": "rescue.punch_let_through",
             "pass": true,
             "details": "gave up=True; state=Intro",
-            "time": 252.20639038085938
+            "time": 254.64553833007813
         }
     ]
 }

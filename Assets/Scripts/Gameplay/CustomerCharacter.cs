@@ -145,7 +145,8 @@ public class CustomerCharacter : MonoBehaviour
     public void Settle()
     {
         if (!Agent.enabled) return;
-        Agent.ResetPath();
+        // Someone made standing where they are (the manager, the people already shopping) has not been placed on the mesh yet.
+        if (Agent.isOnNavMesh) Agent.ResetPath();
         Agent.enabled = false;
         Obstacle.enabled = true;
     }
