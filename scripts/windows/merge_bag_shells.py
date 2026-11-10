@@ -20,6 +20,8 @@ from scipy.spatial.transform import Rotation
 
 FLIP_ABOUT_Y = np.diag([-1.0, 1.0, -1.0])
 RIM_BAND = 0.92
+INNER_BAND = 0.7
+WALL_BAND = 0.97
 OUTLINE_MARGIN = 1.03
 SH_DIRECTION_SAMPLES = 4000
 
@@ -71,6 +73,21 @@ def rim_height(shell):
     return float(np.median(local[outer, 2]))
 
 
+def face_height(shell):
+    """Median height of a flat box's observed face. The inner part has no side walls to pull it down."""
+    local, half = shell['local'], shell['extents'] * 0.5
+    inner = np.maximum(np.abs(local[:, 0]) / half[0], np.abs(local[:, 1]) / half[1]) <= INNER_BAND
+    return float(np.median(local[inner, 2]))
+
+
+def wall_drop(shell, face):
+    """How far below its face a flat box's walls were filmed: the low end of the opaque Gaussians at the outline."""
+    local, half = shell['local'], shell['extents'] * 0.5
+    opacity = 1 / (1 + np.exp(-np.asarray(shell['vertex']['opacity'], dtype=np.float64)))
+    band = np.maximum(np.abs(local[:, 0]) / half[0], np.abs(local[:, 1]) / half[1])
+    return float(face - np.percentile(local[(opacity >= 0.5) & (band >= WALL_BAND) & (band <= OUTLINE_MARGIN), 2], 2))
+
+
 def keep_mask(shell, rim, margin):
     local, half = shell['local'], shell['extents'] * 0.5
     above_rim = local[:, 2] >= rim - margin
@@ -86,6 +103,9 @@ def main():
     p.add_argument('back_fit', type=Path)
     p.add_argument('output', type=Path)
     p.add_argument('--rim-margin', type=float, default=0.01, help='Keeps this fraction of the width below each rim.')
+    p.add_argument('--box-thickness', type=float,
+                   help='Flat box: its thickness as a fraction of the width. A box has no seam at the outline, so the rim '
+                        'there would be its face and cut off the walls; the sessions meet partway down the walls instead.')
     args = p.parse_args()
 
     hashes = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in (args.front_ply, args.back_ply)}
@@ -96,7 +116,15 @@ def main():
 
     width = front['extents'][0]
     scale = width / back['extents'][0]
-    front_rim, back_rim = rim_height(front), rim_height(back)
+    if args.box_thickness is None:
+        front_rim, back_rim = rim_height(front), rim_height(back)
+    else:
+        # A session filmed from above sees little of the walls. Sharing the thickness by what each one saw leaves no slit.
+        front_face, back_face = face_height(front), face_height(back)
+        front_wall, back_wall = wall_drop(front, front_face), wall_drop(back, back_face) * scale
+        thickness = width * args.box_thickness
+        front_part = thickness * front_wall / (front_wall + back_wall)
+        front_rim, back_rim = front_face - front_part, back_face - (thickness - front_part) / scale
     keep_front = keep_mask(front, front_rim, width * args.rim_margin)
     keep_back = keep_mask(back, back_rim, back['extents'][0] * args.rim_margin)
 

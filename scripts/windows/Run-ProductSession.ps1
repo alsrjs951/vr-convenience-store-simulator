@@ -71,9 +71,16 @@ Invoke-Step 'matching' $matched $matchCommand
 New-Item -ItemType Directory -Force -Path $sparse | Out-Null
 Invoke-Step 'mapping' (Join-Path $sparse '0\images.bin') "colmap mapper --database_path `"$database`" --image_path `"$frames`" --output_path `"$sparse`""
 Invoke-Step 'audit' (Join-Path $Session 'reconstruction_summary.json') "python scripts\windows\audit_product_reconstruction.py `"$Session`""
-Invoke-Step 'processing' (Join-Path $dataset 'transforms.json') "ns-process-data images --data `"$frames`" --output-dir `"$dataset`" --skip-colmap --colmap-model-path ..\sparse\0 --num-downscales 2"
+# The mapper can leave a stray two-image model in sparse\0 and the real one in sparse\1, so take the largest.
+$models = Get-Content -LiteralPath (Join-Path $Session 'reconstruction_summary.json') -Raw | ConvertFrom-Json
+$best = @($models | ForEach-Object { $_ }) | Sort-Object registered -Descending | Select-Object -First 1
+Write-Host ("model {0}: {1}/{2} frames registered" -f $best.model, $best.registered, $best.input_frames)
+if ($best.registration_fraction -lt 0.8) { throw "Only $($best.registered)/$($best.input_frames) frames registered in $Session" }
+Invoke-Step 'processing' (Join-Path $dataset 'transforms.json') "ns-process-data images --data `"$frames`" --output-dir `"$dataset`" --skip-colmap --colmap-model-path ..\sparse\$($best.model) --num-downscales 2"
 if ($PrepareOnly) { Write-Host "PASS prepared: $Session"; return }
-Invoke-Step "training-$timestamp" $config "ns-train splatfacto --data `"$dataset`" --output-dir `"$outputs`" --experiment-name $Experiment --timestamp $timestamp --max-num-iterations $Iterations --vis tensorboard $TrainArgs $dataparser"
+# ns-train writes config.yml at startup, so only the last checkpoint proves that training finished.
+$finalCheckpoint = Join-Path (Split-Path $config) ("nerfstudio_models\step-{0:D9}.ckpt" -f ($Iterations - 1))
+Invoke-Step "training-$timestamp" $finalCheckpoint "ns-train splatfacto --data `"$dataset`" --output-dir `"$outputs`" --experiment-name $Experiment --timestamp $timestamp --max-num-iterations $Iterations --vis tensorboard $TrainArgs $dataparser"
 $suffix = if ($DownscaleFactor -gt 0) { "-ds$DownscaleFactor" } else { '' }
 if ($Variant) { $suffix = "$suffix-$Variant" }
 $export = "$export$suffix"

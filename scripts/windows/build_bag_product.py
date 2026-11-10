@@ -11,6 +11,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from plyfile import PlyData, PlyElement
+
+from make_splat_lods import decimate_cluster
+
 SCRIPTS = Path(__file__).parent
 PRODUCTS = Path('Assets/GaussianSplats/Products')
 PROVISIONAL = Path('Assets/Data/Provisional')
@@ -38,6 +42,7 @@ def main():
     p.add_argument('--back-top', choices=AXES, required=True)
     p.add_argument('--width-m', type=float, default=0.2)
     p.add_argument('--mass-kg', type=float, default=0.1)
+    p.add_argument('--box-thickness', type=float, help='Flat box only: see merge_bag_shells.py.')
     args = p.parse_args()
 
     front_fit, back_fit = args.front / 'box_fit.json', args.back / 'box_fit.json'
@@ -45,10 +50,17 @@ def main():
     fit(args.back / 'isolated.ply', back_fit, '--flat', '--front=+up', f'--top={args.back_top}')
 
     merged = Path('capture/products') / args.capture / 'merged'
-    run('merge_bag_shells.py', args.front / 'isolated.ply', front_fit, args.back / 'isolated.ply', back_fit, merged)
+    box = [f'--box-thickness={args.box_thickness}'] if args.box_thickness else []
+    run('merge_bag_shells.py', args.front / 'isolated.ply', front_fit, args.back / 'isolated.ply', back_fit, merged, *box)
     report = json.loads((merged / 'merge.json').read_text())
-    if report['merged'] > MAX_GATE_SPLATS:
-        raise SystemExit(f"{args.id}: {report['merged']} Gaussians exceed the {MAX_GATE_SPLATS} gate.")
+    count = report['merged']
+    if count > MAX_GATE_SPLATS:
+        # 30,000-iteration sessions overshoot the gate a little. Merging near neighbors of similar color keeps the covered
+        # area and the print's edges, where a plain cut leaves holes. The untouched result stays beside it.
+        shutil.copy2(merged / 'merged.ply', merged / 'merged_full.ply')
+        light = decimate_cluster(PlyData.read(str(merged / 'merged.ply'))['vertex'].data, MAX_GATE_SPLATS)
+        PlyData([PlyElement.describe(light, 'vertex')], byte_order='<').write(str(merged / 'merged.ply'))
+        count = len(light)
 
     box_fit = PROVISIONAL / f'{args.id}.box_fit.json'
     fit(merged / 'merged.ply', box_fit, f'--axes-from={front_fit}')
@@ -77,7 +89,7 @@ def main():
     extents = json.loads(box_fit.read_text())['extents_ply_units_xyz']
     size_cm = [round(v / extents[0] * args.width_m * 100, 2) for v in extents]
     front_h, back_h = report['front_extents'][1], report['back_extents_after_scale'][1]
-    print(f"{args.id}: merged={report['merged']} front_kept={report['front_kept']} back_kept={report['back_kept']} "
+    print(f"{args.id}: gaussians={count} merged={report['merged']} front_kept={report['front_kept']} back_kept={report['back_kept']} "
           f"size_cm={size_cm} height_mismatch={abs(front_h - back_h) / front_h * 100:.1f}%")
 
 

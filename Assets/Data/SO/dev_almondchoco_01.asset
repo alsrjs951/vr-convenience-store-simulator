@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad13ab4d240a8aa49b24456cbb01bf9c, type: 3}
+  m_Name: dev_almondchoco_01
+  m_EditorClassIdentifier: Assembly-CSharp::ProductData
+  Id: dev_almondchoco_01
+  Name: "\uC544\uBAAC\uB4DC \uCD08\uCF5C\uB9BF (\uAC1C\uBC1C\uC6A9)"
+  Price: 1500
+  SizeCm: {x: 15.000001, y: 7.700374, z: 2.1980834}
+  BarcodeFace: 1
+  SplatAsset: {fileID: 11400000, guid: 23cbbfdeb0959914fa233f04f68f426c, type: 2}
+  LightSplat: {fileID: 11400000, guid: bf2116958ad439b49bd58e6bfeee7830, type: 2}
+  OrderCatalogFlags: 0
+  SizeIsMeasured: 0
+  BarcodeLocalNormal: {x: 0, y: 0, z: -1}

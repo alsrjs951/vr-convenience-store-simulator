@@ -1232,7 +1232,7 @@ public partial class P2DayVerification : MonoBehaviour
                     broken.Add(product.Data.Id);
                     break;
                 }
-        Check("setup.product_names_readable", broken.Count == 0 && Game.Catalog.Products.Count == 12, $"products={Game.Catalog.Products.Count}; broken={string.Join(",", broken)}");
+        Check("setup.product_names_readable", broken.Count == 0 && Game.Catalog.Products.Count == 21, $"products={Game.Catalog.Products.Count}; broken={string.Join(",", broken)}");
     }
 
     /// <summary>

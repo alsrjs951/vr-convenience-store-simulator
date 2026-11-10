@@ -49,6 +49,7 @@ public partial class P2DayVerification
         public bool endedEarly;
         public int splatRenderersAtPeak;
         public long gaussiansAtPeak;
+        public string peakBreakdown;
         public List<string> expiredSlots = new List<string>();
         public List<string> customers = new List<string>();
         public List<string> boxes = new List<string>();
@@ -950,6 +951,10 @@ public partial class P2DayVerification
         {
             details.gaussiansAtPeak = gaussians;
             details.splatRenderersAtPeak = renderers;
+            var parts = new List<string>();
+            foreach (var splat in FindObjectsByType<GaussianSplatting.Runtime.GaussianSplatRenderer>(FindObjectsSortMode.None))
+                if (splat.isActiveAndEnabled && splat.m_Asset != null) parts.Add($"{splat.m_Asset.name}={splat.m_Asset.splatCount}");
+            details.peakBreakdown = $"state={Game.State}; camera={Camera.main.transform.position.ToString("F2")}; " + string.Join(", ", parts);
         }
     }
 

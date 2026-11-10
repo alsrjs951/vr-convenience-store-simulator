@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad13ab4d240a8aa49b24456cbb01bf9c, type: 3}
+  m_Name: dev_kkokkalcorn_02
+  m_EditorClassIdentifier: Assembly-CSharp::ProductData
+  Id: dev_kkokkalcorn_02
+  Name: "\uAF2C\uAE54\uCF58 \uAD70\uC625\uC218\uC218\uB9DB (\uAC1C\uBC1C\uC6A9)"
+  Price: 1700
+  SizeCm: {x: 19.999998, y: 33.15279, z: 4.070102}
+  BarcodeFace: 1
+  SplatAsset: {fileID: 11400000, guid: d64ade23c00027247b40997e6330d7ac, type: 2}
+  LightSplat: {fileID: 11400000, guid: 1b7ea102cc8a73f4f8ccb8efc7e2e5c1, type: 2}
+  OrderCatalogFlags: 0
+  SizeIsMeasured: 0
+  BarcodeLocalNormal: {x: 0, y: 0, z: -1}

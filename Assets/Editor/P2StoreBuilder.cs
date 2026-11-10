@@ -1053,8 +1053,9 @@ public static class P2StoreBuilder
 
     /// <summary>
     /// Real products on the shelves a player sees first (2026-11-09): row D's face toward the street, passed on the walk in,
-    /// and the eye-level boards of row A + B that were still cartons, seen across the counter. They are display stock only.
-    /// Row A + B's are far copies throughout, so standing at those shelves on Day 2 stays inside the gaussian budget.
+    /// and the eye-level boards of row A + B that were still cartons, seen across the counter. They are display stock only,
+    /// and hold the products filmed on 2026-11-08. Row A + B's are far copies throughout, so standing at those shelves on
+    /// Day 2 stays inside the gaussian budget.
     /// </summary>
     static ShelfSlotZone[] BuildDecorSlots(ProductCatalog catalog, Material yellow, Material green, Material red, GameAudio audio, Transform parent)
     {
@@ -1068,15 +1069,15 @@ public static class P2StoreBuilder
             slot.GetComponent<BoxCollider>().enabled = false;
             made.Add(slot);
         }
-        Add("D-1", "dev_potato_01", ShelfDX - half, ShelfBoardTops[2], ShelfDFront, false);
-        Add("D-2", "dev_sunchip_01", ShelfDX + half, ShelfBoardTops[2], ShelfDFront, false);
-        Add("D-3", "dev_kkobukchip_01", ShelfDX - half, ShelfBoardTops[1], ShelfDFront, false);
-        Add("D-4", "dev_cornchip_01", ShelfDX + half, ShelfBoardTops[1], ShelfDFront, false);
-        Add("D-5", "dev_ansungtangmyun_01", ShelfDX - half, ShelfBoardTops[0], ShelfDFront, false);
-        Add("D-6", "dev_kkokkalcorn_01", ShelfDX + half, ShelfBoardTops[0], ShelfDFront, false);
-        Add("E-1", "dev_ogamja_01", ShelfAX - half, ShelfBoardTops[2], ShelfFront, true);
-        Add("E-2", "dev_kkobukchip_01", ShelfBX - half, ShelfBoardTops[2], ShelfFront, true);
-        Add("E-3", "dev_cheetos_01", ShelfBX + half, ShelfBoardTops[2], ShelfFront, true);
+        Add("D-1", "dev_pocachip_01", ShelfDX - half, ShelfBoardTops[2], ShelfDFront, false);
+        Add("D-2", "dev_onionring_01", ShelfDX + half, ShelfBoardTops[2], ShelfDFront, false);
+        Add("D-3", "dev_gamjakkang_01", ShelfDX - half, ShelfBoardTops[1], ShelfDFront, false);
+        Add("D-4", "dev_indianbap_01", ShelfDX + half, ShelfBoardTops[1], ShelfDFront, false);
+        Add("D-5", "dev_caramelcorn_01", ShelfDX - half, ShelfBoardTops[0], ShelfDFront, false);
+        Add("D-6", "dev_kkokkalcorn_02", ShelfDX + half, ShelfBoardTops[0], ShelfDFront, false);
+        Add("E-1", "dev_shinjjang_01", ShelfAX - half, ShelfBoardTops[2], ShelfFront, true);
+        Add("E-2", "dev_jollypong_01", ShelfBX - half, ShelfBoardTops[2], ShelfFront, true);
+        Add("E-3", "dev_almondchoco_01", ShelfBX + half, ShelfBoardTops[2], ShelfFront, true);
         return made.ToArray();
     }
 

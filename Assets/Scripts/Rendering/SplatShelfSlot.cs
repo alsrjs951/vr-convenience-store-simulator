@@ -22,6 +22,9 @@ public class SplatShelfSlot : MonoBehaviour
     // The working shelves get the gaussian budget first (doc 7.2): while any of them is close, display stock stays on its far
     // copy. Otherwise row D's near copies come up behind someone stocking row A + B from the aisle between them.
     static readonly List<SplatShelfSlot> workingSlots = new List<SplatShelfSlot>();
+    // Display stock stands on one face of a gondola 0.5 m deep with a full-height spine down the middle. From behind the
+    // spine it cannot be seen, so it is not drawn: on Day 2 that is row D while stocking row A + B (doc 7.2 budget).
+    const float SpineBehindFace = 0.25f, BehindSpineMargin = 0.05f;
     // What a place holds: the product's box plus 9 mm at the sides, which is short of the next place (2 cm away), and more
     // above, where crumpled bag tops stick out. P4ShelfSplats drops whatever lies outside, so hiding this box leaves no crumbs.
     const float SideMargin = 0.009f, TopMargin = 0.06f, BottomMargin = 0.02f;
@@ -40,7 +43,10 @@ public class SplatShelfSlot : MonoBehaviour
     GaussianCutout[] cutouts = new GaussianCutout[0];
     Vector3 center;
     float nearEnter = NearEnterMeters, farLeave = FarLeaveMeters;
-    bool displayOnly;
+    bool displayOnly, behindSpine;
+    Vector3 shelfFace, intoShelf;
+    /// <summary>Hidden behind its own shelf: neither copy is drawn.</summary>
+    public bool BehindSpine => behindSpine;
 
     /// <summary>The volume one product may occupy in a merged splat, in the product root's frame.</summary>
     public static Bounds PlaceVolume(BoxCollider proxy)
@@ -81,6 +87,8 @@ public class SplatShelfSlot : MonoBehaviour
         if (slot.DisplayOnly)
         {
             view.displayOnly = true;
+            view.shelfFace = slot.transform.position;
+            view.intoShelf = slot.transform.forward;
             view.nearEnter = DisplayNearEnterMeters;
             view.farLeave = DisplayFarLeaveMeters;
         }
@@ -134,6 +142,18 @@ public class SplatShelfSlot : MonoBehaviour
     {
         var camera = Camera.main;
         if (camera == null || Time.frameCount == lastSwitchFrame) return;
+        if (displayOnly)
+        {
+            bool behind = Vector3.Dot(camera.transform.position - shelfFace, intoShelf) > SpineBehindFace + BehindSpineMargin;
+            if (behind != behindSpine)
+            {
+                lastSwitchFrame = Time.frameCount;
+                behindSpine = behind;
+                Active.gameObject.SetActive(!behind);
+                return;
+            }
+            if (behindSpine) return;
+        }
         float distance = Vector3.Distance(camera.transform.position, center);
         bool near = ShowingNear ? distance <= farLeave : distance < nearEnter;
         if (displayOnly && workingSlots.Exists(slot => slot.ShowingNear)) near = false;

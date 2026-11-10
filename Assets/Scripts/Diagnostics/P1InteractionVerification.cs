@@ -220,8 +220,10 @@ public class P1InteractionVerification : MonoBehaviour
         var towardBarcode = product.transform.TransformDirection(localNormal).normalized;
         float halfDepth = Mathf.Abs(Vector3.Dot(size * 0.5f, localNormal));
         // Go over the zone: a straight line from the view center can cross it, barcode first.
-        var approach = zone + towardBarcode * (halfDepth + 0.12f);
         float clearHeight = zone.y + size.magnitude * 0.5f + 0.1f;
+        // MoveHand settles the view plane before depth, so the descent first swings this far toward the zone.
+        float swing = (clearHeight - zone.y) * Mathf.Abs(view.transform.up.y * Vector3.Dot(view.transform.up, towardBarcode));
+        var approach = zone + towardBarcode * (halfDepth + 0.12f + swing);
         var overZone = new Vector3(product.transform.position.x, clearHeight, product.transform.position.z);
         yield return MoveProduct(overZone, "scanner_rise");
         yield return MoveProduct(new Vector3(approach.x, clearHeight, approach.z), "scanner_over");
@@ -236,7 +238,8 @@ public class P1InteractionVerification : MonoBehaviour
             $"body entries={scanner.IgnoredBodyEntries - ignoredBefore}; scans={scanner.ScanCount}");
         yield return Capture("10_scanner_body_in_no_scan");
 
-        yield return MoveProduct(zone - towardBarcode * (halfDepth - 0.01f), "scanner_barcode_in");
+        // Puts the middle of the plate in the zone. A thin product's plate is thinner (P1InteractionTrial.BarcodeThickness).
+        yield return MoveProduct(zone - towardBarcode * (halfDepth - Mathf.Min(0.01f, halfDepth * 0.25f)), "scanner_barcode_in");
         yield return new WaitForSeconds(0.3f);
         Check("barcode.face_entry_scans_once", scanner.ScanCount == 1 && scanner.LastScanned == product,
             $"scans={scanner.ScanCount}; last={(scanner.LastScanned ? scanner.LastScanned.Data.Id : "none")}");
