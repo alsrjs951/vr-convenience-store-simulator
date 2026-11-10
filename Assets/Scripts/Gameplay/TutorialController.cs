@@ -20,7 +20,6 @@ public class TutorialController : MonoBehaviour
     const int CashPrice = 1500;
     const int HintAfterErrors = 2;
     const int AutoCompleteAfterErrors = 3;
-    const float ItemClearance = 0.004f;
     const float LinePauseSeconds = 0.3f;
     const float AfterBarcodeMeters = 0.035f;
     // The arrow's tip stops this far short of the scanner's upright glass.
@@ -33,7 +32,6 @@ public class TutorialController : MonoBehaviour
     public ScannerZone Scanner;
     public BagZone Bag;
     public PaymentDesk Desk;
-    public Transform BasketAnchor;
     public Text Board;
     public CustomerDirector Director;
     public TargetPointer Pointer;
@@ -58,10 +56,8 @@ public class TutorialController : MonoBehaviour
 
         Guest = Director.CallGuest();
         yield return Director.BringGuest(Guest);
-        Director.GuestPutsBasketDown(Guest);
-        var prefab = Catalog.Find(ProductId);
-        var position = BasketAnchor.position + Vector3.up * (prefab.Proxy.size.y * 0.5f + ItemClearance);
-        Product = Instantiate(prefab, position, Quaternion.Euler(0f, 180f, 0f));
+        // The guest sets the one thing down on the counter, as every customer does.
+        Product = Director.PutOnCounter(Catalog.Find(ProductId));
         int price = Product.Data.Price;
         Scanner.Scanned += OnScanned;
 
@@ -73,9 +69,10 @@ public class TutorialController : MonoBehaviour
         Scanner.Scanned -= OnScanned;
         if (Manager) Manager.Nod();
         yield return RunBag();
-        Destroy(Product.gameObject);
         yield return RunCard();
-        Director.GuestLeaves(Guest, price);
+        // It stays in the bag until it is paid for, as an order's goods do, and goes when the guest does.
+        Destroy(Product.gameObject);
+        Director.GuestLeaves(Guest, price, true);
         if (Manager) Manager.Nod();
 
         Pointer.Aim = null;
@@ -256,14 +253,27 @@ public class TutorialController : MonoBehaviour
         return PointerAim.Along(center + normal * (halfDepth + AfterBarcodeMeters), -normal, "바코드");
     }
 
-    /// <summary>The customer's bill into the drawer, then change from the drawer onto the tray.</summary>
+    /// <summary>
+    /// The customer's note into the open drawer, then change out of it onto the tray: the arrow stands over the slot of the
+    /// next piece to take, the largest that still fits in what is owed.
+    /// </summary>
     PointerAim? AimForCash()
     {
         var bill = Desk.CustomerBill;
         if (bill != null)
             return bill.Grab.isSelected ? PointerAim.Down(Desk.Drawer.transform.position, "서랍에 넣기") : PointerAim.Down(bill.transform.position, "집기");
-        foreach (var item in Desk.StockItems.Values)
-            if (item != null && item.Grab.isSelected) return PointerAim.Down(Desk.Tray.transform.position, "접시에 놓기");
-        return PointerAim.Down(Desk.Drawer.transform.position, "거스름돈 집기");
+        if (Desk.ChangeInHand) return PointerAim.Down(Desk.Tray.transform.position, "접시에 놓기");
+        int owed = Desk.Tray.Target - Desk.Tray.Amount;
+        if (Desk.Tray.Target < 0 || owed == 0) return null;
+        if (owed < 0) return PointerAim.Down(Desk.Tray.transform.position, "덜어내기");
+        Transform next = null;
+        int value = 0;
+        foreach (var slot in Desk.Register.Slots)
+            if (slot.Value <= owed && slot.Value > value)
+            {
+                value = slot.Value;
+                next = slot.Anchor;
+            }
+        return next != null ? PointerAim.Down(next.position, $"{value:N0}원") : (PointerAim?)null;
     }
 }

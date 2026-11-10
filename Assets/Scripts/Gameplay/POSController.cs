@@ -183,7 +183,6 @@ public class POSController : MonoBehaviour
     {
         Received += amount;
         Notice = ChangeDue > 0 ? $"거스름돈 {ChangeDue:N0}원을 접시에 놓으세요." : "";
-        if (Audio) Audio.PlayDrawer();
         Changed?.Invoke();
     }
 

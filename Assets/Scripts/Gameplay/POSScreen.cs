@@ -4,28 +4,42 @@ using UnityEngine.UI;
 
 /// <summary>
 /// POS monitor (doc 5.3, 5.5), laid out like till software: a header bar, a ruled table of what was scanned with a cancel
-/// button per row, the total with what was received and the change, and a bar at the foot for notices.
+/// button per row, the total, and a bar at the foot for notices. During a cash sale a strip under the total shows the three
+/// amounts a clerk counts change by: what the customer gave, what is owed back, and what lies on the change tray so far.
 /// </summary>
 public class POSScreen : MonoBehaviour
 {
     const int MaxRows = 6;
-    const float RowHeight = 58f, RowsTop = 100f;
+    const float RowHeight = 50f, RowsTop = 100f;
     const float MetersPerPixel = 0.0007f;
+    const float CashTop = 478f, CashHeight = 118f, CashLeft = 30f, CashWidth = 800f;
     static readonly Vector2 Size = new Vector2(860f, 660f);
     static readonly Color NoticeBand = new Color(1f, 0.82f, 0.36f);
+    // The cell for what lies on the tray: plain while it is short, green when it is right, red when it is too much.
+    static readonly Color LaidExact = new Color(0.72f, 0.9f, 0.77f), LaidOver = new Color(0.97f, 0.78f, 0.75f);
+    static readonly Color LaidExactInk = new Color(0.05f, 0.36f, 0.16f), LaidOverInk = new Color(0.62f, 0.1f, 0.08f);
 
     public POSController Pos;
+    public PaymentDesk Desk;
 
     /// <summary>The cancel button of each row, exposed so tests can aim at the real control.</summary>
     public readonly List<Button> CancelButtons = new List<Button>();
+
+    /// <summary>What the cash strip shows, for the checks: empty while it is hidden.</summary>
+    public string ReceivedText => cash != null && cash.gameObject.activeSelf ? received.text : "";
+    public string ChangeText => cash != null && cash.gameObject.activeSelf ? change.text : "";
+    public string LaidText => cash != null && cash.gameObject.activeSelf ? laid.text : "";
+    public string TotalText => total != null ? total.text : "";
 
     readonly List<Text> rows = new List<Text>();
     readonly List<Text> quantities = new List<Text>();
     readonly List<Text> prices = new List<Text>();
     Text total;
-    Text change;
     Text notice;
     Image noticeBand;
+    RectTransform cash;
+    Text received, change, laid, laidLabel;
+    Image laidCell;
 
     void Start()
     {
@@ -59,7 +73,7 @@ public class POSScreen : MonoBehaviour
             price.color = WorldUi.Palette.Ink;
             prices.Add(price);
             WorldUi.Square(WorldUi.AddBox(panel, 30f, y + RowHeight - 1f, 800f, 1f, WorldUi.Palette.Rule));
-            var button = WorldUi.AddButton(panel, 756f, y + 8f, 74f, RowHeight - 16f, "−", 36);
+            var button = WorldUi.AddButton(panel, 756f, y + 6f, 74f, RowHeight - 12f, "−", 36);
             button.GetComponent<Image>().color = new Color(0.78f, 0.24f, 0.24f);
             int row = i;
             button.onClick.AddListener(() => CancelRow(row));
@@ -68,21 +82,47 @@ public class POSScreen : MonoBehaviour
 
         float foot = RowsTop + MaxRows * RowHeight;
         WorldUi.Square(WorldUi.AddBox(panel, 0f, foot, Size.x, 2f, WorldUi.Palette.Ink));
-        var totalLabel = WorldUi.AddText(panel, 30f, foot + 14f, 200f, 70f, 30, TextAnchor.MiddleLeft);
+        var totalLabel = WorldUi.AddText(panel, 30f, foot + 8f, 200f, 64f, 30, TextAnchor.MiddleLeft);
         totalLabel.text = "합계";
         totalLabel.color = WorldUi.Palette.InkDim;
-        total = WorldUi.AddText(panel, 230f, foot + 14f, 600f, 70f, 56, TextAnchor.MiddleRight);
+        total = WorldUi.AddText(panel, 230f, foot + 8f, 600f, 64f, 54, TextAnchor.MiddleRight);
         total.color = WorldUi.Palette.Ink;
         WorldUi.Bold(total);
-        change = WorldUi.AddText(panel, 30f, foot + 88f, 800f, 44f, 28, TextAnchor.MiddleRight);
-        change.color = WorldUi.Palette.InkDim;
+
+        BuildCashStrip(panel);
 
         noticeBand = WorldUi.Square(WorldUi.AddBox(panel, 0f, Size.y - 56f, Size.x, 56f, NoticeBand));
         notice = WorldUi.AddText(panel, 30f, Size.y - 56f, 800f, 56f, 28, TextAnchor.MiddleLeft);
         notice.color = WorldUi.Palette.Ink;
         WorldUi.Bold(notice);
         Pos.Changed += Refresh;
+        if (Desk) Desk.CashChanged += Refresh;
         Refresh();
+    }
+
+    /// <summary>Three cells side by side: received, change (the one to act on, in the store's navy), laid on the tray.</summary>
+    void BuildCashStrip(RectTransform panel)
+    {
+        cash = WorldUi.AddGroup(panel, CashLeft, CashTop, CashWidth, CashHeight);
+        float cell = CashWidth / 3f;
+        WorldUi.Square(WorldUi.AddBox(cash, 0f, 0f, cell, CashHeight, WorldUi.Palette.Band));
+        WorldUi.Square(WorldUi.AddBox(cash, cell, 0f, cell, CashHeight, WorldUi.Palette.Navy));
+        laidCell = WorldUi.Square(WorldUi.AddBox(cash, cell * 2f, 0f, cell, CashHeight, WorldUi.Palette.Band));
+        received = Cell(cash, 0f, cell, "받은 돈", WorldUi.Palette.InkDim, WorldUi.Palette.Ink, out _);
+        change = Cell(cash, cell, cell, "거스름돈", WorldUi.Palette.TextDim, WorldUi.Palette.Text, out _);
+        laid = Cell(cash, cell * 2f, cell, "접시에 놓은 돈", WorldUi.Palette.InkDim, WorldUi.Palette.Ink, out laidLabel);
+        cash.gameObject.SetActive(false);
+    }
+
+    static Text Cell(RectTransform strip, float x, float width, string label, Color labelColor, Color amountColor, out Text labelText)
+    {
+        labelText = WorldUi.AddText(strip, x + 18f, 10f, width - 36f, 34f, 24, TextAnchor.MiddleLeft);
+        labelText.text = label;
+        labelText.color = labelColor;
+        var amount = WorldUi.AddText(strip, x + 18f, 44f, width - 36f, 66f, 46, TextAnchor.MiddleRight);
+        amount.color = amountColor;
+        WorldUi.Bold(amount);
+        return amount;
     }
 
     static void Column(RectTransform panel, float x, float width, string label, TextAnchor anchor)
@@ -95,6 +135,7 @@ public class POSScreen : MonoBehaviour
     void OnDestroy()
     {
         if (Pos) Pos.Changed -= Refresh;
+        if (Desk) Desk.CashChanged -= Refresh;
     }
 
     void CancelRow(int row)
@@ -112,11 +153,29 @@ public class POSScreen : MonoBehaviour
             quantities[i].text = used ? $"{Pos.Lines[i].Scanned}" : "";
             prices[i].text = used ? $"{Pos.LinePrice(Pos.Lines[i]):N0}" : "";
         }
-        // With nobody at the counter the till still shows a total, as a till does.
-        total.text = $"{(Pos.Current == null ? 0 : Pos.Total):N0}원";
-        total.color = Pos.Current == null ? WorldUi.Palette.InkDim : WorldUi.Palette.Ink;
-        change.text = Pos.Current != null && Pos.Received > 0 ? $"받은 돈 {Pos.Received:N0}  ·  거스름 {Pos.ChangeDue:N0}" : "";
+        // With nobody at the counter the till still shows a total, as a till does. In the tutorial's cash sale the manager
+        // has rung the amount up, so it is on the screen without any rows.
+        bool cashSale = Desk != null && Desk.CashActive;
+        bool selling = Pos.Current != null || cashSale;
+        total.text = $"{(Pos.Current != null ? Pos.Total : cashSale ? Desk.CashDue : 0):N0}원";
+        total.color = selling ? WorldUi.Palette.Ink : WorldUi.Palette.InkDim;
+        RefreshCash(cashSale && Desk.Register != null && Desk.Register.IsOpen);
         notice.text = WorldUi.Clean(Pos.Notice);
         noticeBand.enabled = notice.text.Length > 0;
+    }
+
+    /// <summary>The strip is there from the moment the drawer opens. Its amounts fill in once the customer's money is in the drawer.</summary>
+    void RefreshCash(bool show)
+    {
+        if (cash.gameObject.activeSelf != show) cash.gameObject.SetActive(show);
+        if (!show) return;
+        bool taken = Desk.CashReceived > 0;
+        received.text = taken ? $"{Desk.CashReceived:N0}" : "–";
+        change.text = taken ? $"{Desk.ChangeDue:N0}" : "–";
+        laid.text = taken ? $"{Desk.ChangeLaid:N0}" : "–";
+        bool exact = taken && Desk.ChangeLaid == Desk.ChangeDue, over = taken && Desk.ChangeLaid > Desk.ChangeDue;
+        laidCell.color = exact ? LaidExact : over ? LaidOver : WorldUi.Palette.Band;
+        laid.color = exact ? LaidExactInk : over ? LaidOverInk : WorldUi.Palette.Ink;
+        laidLabel.color = exact ? LaidExactInk : over ? LaidOverInk : WorldUi.Palette.InkDim;
     }
 }

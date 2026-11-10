@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip }
+public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip, DrawerOpen, DrawerClose, Coin, Note, SetDown, Bag }
 
 /// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line, the four requests, and the two thanks.</summary>
 public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited }
@@ -55,7 +55,14 @@ public class GameAudio : MonoBehaviour
 
     [Header("Counter (doc 5.1)")]
     public AudioClip ErrorClip;
-    public AudioClip ApprovedClip, DrawerClip, CancelClip;
+    public AudioClip ApprovedClip, CancelClip;
+
+    [Header("Till (doc 5.5): the drawer let go and pushed shut, a coin, a note")]
+    public AudioClip DrawerOpenClip;
+    public AudioClip DrawerClip, CoinClip, NoteClip;
+
+    [Header("Bag (doc 5.4): the film as something goes in")]
+    public AudioClip BagClip;
 
     [Header("Store")]
     public AudioClip BellClip;
@@ -104,6 +111,10 @@ public class GameAudio : MonoBehaviour
         if (ErrorClip == null) ErrorClip = Tone("Error", 220f, 0.35f);
         if (ApprovedClip == null) ApprovedClip = Tone("Approved", 1320f, 0.25f);
         if (DrawerClip == null) DrawerClip = Tone("Drawer", 440f, 0.08f);
+        if (DrawerOpenClip == null) DrawerOpenClip = Chime("Drawer Open", 2350f, 2350f, 0.4f);
+        if (CoinClip == null) CoinClip = Tone("Coin", 4300f, 0.08f);
+        if (NoteClip == null) NoteClip = Noise("Note", 0.1f, 0.2f);
+        if (BagClip == null) BagClip = Noise("Bag", 0.25f, 0.25f);
         if (CancelClip == null) CancelClip = Tone("Cancel", 880f, 0.06f);
         if (BellClip == null) BellClip = Chime("Bell", 1046f, 784f, 0.6f);
         if (DoorClip == null) DoorClip = Chime("Door", 1319f, 1047f, 0.8f);
@@ -139,7 +150,6 @@ public class GameAudio : MonoBehaviour
 
     public void PlayError() { Count(StoreSound.Error); speaker.PlayOneShot(ErrorClip); }
     public void PlayApproved() => speaker.PlayOneShot(ApprovedClip);
-    public void PlayDrawer() => speaker.PlayOneShot(DrawerClip);
     public void PlayCancel() => speaker.PlayOneShot(CancelClip);
 
     /// <summary>A sound at the place it belongs to: the box, the shelf, the bin, the customer, the door.</summary>
@@ -161,6 +171,13 @@ public class GameAudio : MonoBehaviour
             case StoreSound.Delivery: clip = DeliveryClip; break;
             case StoreSound.Ding: clip = DingClip; break;
             case StoreSound.Tip: clip = TipClip; break;
+            case StoreSound.DrawerOpen: clip = DrawerOpenClip; break;
+            case StoreSound.DrawerClose: clip = DrawerClip; break;
+            case StoreSound.Coin: clip = CoinClip; break;
+            case StoreSound.Note: clip = NoteClip; break;
+            // A customer's goods put down on the counter: the same small sound as a product placed on a shelf.
+            case StoreSound.SetDown: clip = PlaceClip; break;
+            case StoreSound.Bag: clip = BagClip; break;
             default: clip = ErrorClip; break;
         }
         if (clip != null) AudioSource.PlayClipAtPoint(clip, position, EffectVolume);

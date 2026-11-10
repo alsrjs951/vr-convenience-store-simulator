@@ -12,8 +12,9 @@ using Random = UnityEngine.Random;
 /// early, look at one or two shelves and line up behind the counter (three at most with the one paying). The one at the
 /// front of the line is called to the counter spawn_after_prev_sec after the previous order ends, or a new customer walks
 /// in from the door if nobody is waiting. The time limit starts when the customer stands at the counter, and the 3DGS
-/// products are made then too: until that moment the customer only carries an empty basket. One or two browsing-only
-/// customers walk between the shelves and leave without ordering.
+/// products are made then too: the customer sets them straight down on the counter, as at any convenience store
+/// (2026-11-10; before that they came in a basket). One or two browsing-only customers walk between the shelves and leave
+/// without ordering.
 ///
 /// QueueAndBrowsers = false falls back to one customer at a time from the door (D12 ④), with the same characters and
 /// NavMesh. Scenario numbers (count, spacing, time limit) come from the CSV either way.
@@ -50,9 +51,13 @@ public class CustomerDirector : MonoBehaviour
     // Day 2 puts the clerk in front of the shelves. A spot the clerk stands at would leave a customer walking into them
     // until the stuck warp, so such spots are skipped (2026-11-08). Day 1 keeps the clerk behind the counter, far from all.
     const float ClerkClearance = 0.9f;
-    const float BasketWidth = 0.3f;
-    const float BasketWall = 0.012f;
-    const float BasketHeight = 0.14f;
+    // Goods set down by hand: each turned a little, the row slanting a little, one landing after the other. The slant runs
+    // toward the clerk at the end by the customer's tray and toward the customer at the end by the card terminal, so the
+    // widest product turned the most still clears both.
+    const float SetDownYawDegrees = 7f;
+    const float SetDownSlant = 0.02f, SetDownJitter = 0.008f;
+    const float SetDownReach = 0.09f, SetDownRise = 0.06f;
+    const float SetDownSeconds = 0.24f, SetDownLaterSeconds = 0.08f;
 
     // How the day rewards speed (game design 11, 2026-11-09, [제안] values for the 11/15 playtest). Finishing before the
     // customer's half-time hurry is what counts as fast: full satisfaction and a tip. Later the satisfaction slides down.
@@ -72,7 +77,11 @@ public class CustomerDirector : MonoBehaviour
     public POSController Pos;
     public PaymentDesk Desk;
     public GameAudio Audio;
-    public Transform Door, Counter, BasketAnchor;
+    /// <summary>The bag a customer walks out with: a pattern kept switched off in the scene, copied into the hand of whoever had goods bagged.</summary>
+    public CarriedBag BagToCarry;
+    public Transform Door, Counter;
+    /// <summary>On the counter top, where the first thing a customer buys is set down. The rest follow along +x.</summary>
+    public Transform GoodsAnchor;
     /// <summary>Where the "+3,300원 · 팁 300원" card appears when a customer is done.</summary>
     public Transform OutcomeAnchor;
     /// <summary>Front of the line first. Each marker's forward is the way the customer faces there.</summary>
@@ -80,7 +89,6 @@ public class CustomerDirector : MonoBehaviour
     /// <summary>Spots in front of shelves. Each marker's forward looks at the shelf.</summary>
     public Transform[] BrowseSpots = new Transform[0];
     public CustomerCharacter[] Characters = new CustomerCharacter[0];
-    public Material BasketMaterial;
     public Material BodyMaterial;
     public bool QueueAndBrowsers = true;
     public int BrowserTarget = 2;
@@ -132,7 +140,9 @@ public class CustomerDirector : MonoBehaviour
     public int MaxBrowsersSeen { get; private set; }
     public int MaxAtCounterSeen { get; private set; }
     public int BrowsersSpawned { get; private set; }
-    public Transform CounterBasket { get; private set; }
+    /// <summary>Everything the customer at the counter is buying stands on it and can be picked up.</summary>
+    public bool GoodsSetDown => settingDown == 0;
+    int settingDown;
 
     Text hud, hudTitle, hudIdle, hudPayText, hudBagText, hudSpecialText;
     Image hudPay, hudBag, hudTime, hudSpecial;
@@ -353,22 +363,92 @@ public class CustomerDirector : MonoBehaviour
         guest.Resting = CustomerCharacter.IdleState;
     }
 
-    /// <summary>The basket comes off the arm onto the counter. The tutorial makes the product that stands in it.</summary>
-    public void GuestPutsBasketDown(CustomerCharacter guest)
+    /// <summary>
+    /// One thing a customer is buying, set down on the bare counter. It stands with its front to the clerk, so the barcode
+    /// still has to be found by turning it, but not on a ruled line: things put down by hand are each turned a little and
+    /// stand a little nearer or farther. It comes down from the customer's side and can be picked up once it stands.
+    /// </summary>
+    /// <param name="index">Its place in the row.</param>
+    /// <param name="count">How many the customer puts down in all.</param>
+    public ProductPrefab PutOnCounter(ProductPrefab prefab, int index = 0, int count = 1)
     {
-        if (guest.Basket != null) Destroy(guest.Basket.gameObject);
-        guest.Basket = null;
-        CounterBasket = BuildBasket("Basket (on counter)", 0.26f, false);
-        CounterBasket.position = BasketAnchor.position + Vector3.up * BasketHeight;
-        CounterBasket.rotation = Quaternion.Euler(0f, 90f, 0f);
+        // The same every time for the same place in the same order, so a run can be repeated.
+        int place = (CustomerNumber * 16 + index) * 4;
+        float along = count > 1 ? index / (count - 1f) : 0.5f;
+        float depth = Mathf.Lerp(-SetDownSlant, SetDownSlant, along) + Spread(place, SetDownJitter);
+        var at = GoodsAnchor.position + Vector3.right * (index * ItemSpacing) + Vector3.forward * depth + Vector3.up * (prefab.Proxy.size.y * 0.5f + SpawnClearance);
+        // Front to the clerk.
+        var product = Instantiate(prefab, at, Quaternion.Euler(0f, 180f + Spread(place + 1, SetDownYawDegrees), 0f));
+        StartCoroutine(SetDown(product, index));
+        return product;
+    }
+
+    /// <summary>
+    /// A value between -range and range that looks unrelated to those of the numbers next to it. Seeded random numbers
+    /// would not do: neighbouring seeds start out alike, and two things side by side came out turned the same way.
+    /// </summary>
+    static float Spread(int n, float range)
+    {
+        unchecked
+        {
+            uint x = (uint)n + 0x9e3779b9u;
+            x ^= x >> 16;
+            x *= 0x7feb352du;
+            x ^= x >> 15;
+            x *= 0x846ca68bu;
+            x ^= x >> 16;
+            return ((x & 0xffffffu) / (float)0x1000000 * 2f - 1f) * range;
+        }
+    }
+
+    /// <summary>Lowers it from where the customer's hands are, over the counter's far side, onto its place. Until it stands it cannot be taken.</summary>
+    IEnumerator SetDown(ProductPrefab product, int index)
+    {
+        settingDown++;
+        var at = product.transform.position;
+        var turned = product.transform.rotation;
+        var reach = Counter.position - at;
+        reach.y = 0f;
+        var from = at + reach.normalized * SetDownReach + Vector3.up * SetDownRise;
+        product.Body.isKinematic = true;
+        product.Grab.enabled = false;
+        product.TeleportTo(from, turned);
+        // All on their way at once, each a little longer than the one before: they land one after another.
+        float seconds = SetDownSeconds + index * SetDownLaterSeconds;
+        for (float t = 0f; t < 1f && product != null; t += Time.deltaTime / seconds)
+        {
+            float eased = t * t * (3f - 2f * t);
+            product.TeleportTo(Vector3.Lerp(from, at, eased), turned);
+            yield return null;
+        }
+        settingDown--;
+        if (product == null) yield break;
+        product.TeleportTo(at, turned);
+        product.Body.isKinematic = false;
+        product.Grab.enabled = true;
+        if (Audio) Audio.PlayAt(StoreSound.SetDown, at);
     }
 
     /// <summary>The line and the mouth moving with it. Returns its length.</summary>
     public float GuestSays(CustomerCharacter guest, CustomerLine line, int variant = 0) => Audio ? Speak(guest, line, variant) : 0f;
 
-    /// <summary>The end of a served guest: the money on the card, thanks, a nod, a wave, and out.</summary>
-    public void GuestLeaves(CustomerCharacter guest, int amount)
+    /// <summary>
+    /// What went into the counter's bag leaves in the customer's hand. The goods in the counter's bag are removed in the
+    /// same moment, and the hand is below the counter's edge as the clerk sees it, so the bag is simply theirs when they turn to go.
+    /// </summary>
+    void HandOverBag(CustomerCharacter customer)
     {
+        if (BagToCarry == null || customer.Bag != null) return;
+        var bag = Instantiate(BagToCarry, customer.transform);
+        bag.name = "Bag (carried)";
+        bag.Hang(customer);
+        customer.Bag = bag;
+    }
+
+    /// <summary>The end of a served guest: the money on the card, thanks, a nod, a wave, and out, with the bag if something was bagged.</summary>
+    public void GuestLeaves(CustomerCharacter guest, int amount, bool withBag = false)
+    {
+        if (withBag) HandOverBag(guest);
         ShowOutcome($"+{amount:N0}원", WorldUi.Palette.Good);
         if (Audio) Speak(guest, CustomerLine.Thanks);
         if (guest.FaceRig != null)
@@ -376,8 +456,6 @@ public class CustomerDirector : MonoBehaviour
             guest.FaceRig.SetMood(CustomerMood.Pleased);
             guest.FaceRig.Nod();
         }
-        if (CounterBasket) Destroy(CounterBasket.gameObject);
-        CounterBasket = null;
         behaviours[guest] = StartCoroutine(LeaveStore(guest, true));
     }
 
@@ -401,7 +479,6 @@ public class CustomerDirector : MonoBehaviour
         guest.Agent.avoidancePriority = 60 + spawnedTotal % 10;
         guest.Record.Name = guest.name;
         guest.Record.Avatar = avatar;
-        guest.Basket = CreateBasket(guest);
         return guest;
     }
 
@@ -498,8 +575,7 @@ public class CustomerDirector : MonoBehaviour
         customer.State = CustomerState.AtCounter;
         customer.Resting = CustomerCharacter.IdleState;
 
-        // Arrived (doc 6.2): basket down, products made now, HUD, then the timer.
-        PlaceBasket(customer, order);
+        // Arrived (doc 6.2): the goods go down on the counter (made now), HUD, then the timer.
         SpawnProducts(order);
         Pos.BeginOrder(order);
         BeginPayment(order);
@@ -564,6 +640,7 @@ public class CustomerDirector : MonoBehaviour
         customer.Record.ShareLeft = shareLeft;
         if (orderPaid)
         {
+            if (order.NeedsBag) HandOverBag(customer);
             int total = Pos.Total;
             Paid++;
             Sales += total;
@@ -604,8 +681,6 @@ public class CustomerDirector : MonoBehaviour
         foreach (var product in OrderProducts)
             if (product) Destroy(product.gameObject);
         OrderProducts.Clear();
-        if (CounterBasket) Destroy(CounterBasket.gameObject);
-        CounterBasket = null;
         hud.text = "";
         SetHudVisible(false);
         AtCounter = null;
@@ -740,18 +815,10 @@ public class CustomerDirector : MonoBehaviour
 
     void SpawnProducts(Order order)
     {
-        int index = 0;
+        int index = 0, count = ItemCount(order);
         foreach (var line in order.Lines)
-        {
             for (int i = 0; i < line.Quantity; i++)
-            {
-                var height = line.Product.Proxy.size.y;
-                var position = BasketAnchor.position + Vector3.right * (index * ItemSpacing) + Vector3.up * (height * 0.5f + SpawnClearance);
-                // Standing with the front to the player, so the barcode has to be found by turning it.
-                OrderProducts.Add(Instantiate(line.Product, position, Quaternion.Euler(0f, 180f, 0f)));
-                index++;
-            }
-        }
+                OrderProducts.Add(PutOnCounter(line.Product, index++, count));
     }
 
     // ---------- Early entries, browsing and the line (D12) ----------
@@ -920,7 +987,7 @@ public class CustomerDirector : MonoBehaviour
         behaviours.Remove(customer);
     }
 
-    // ---------- Characters and baskets ----------
+    // ---------- Characters ----------
 
     // Door faces into the store, so its right is the right-hand side of someone coming in.
     Vector3 DoorEntry => Door.position + Door.right * DoorLane;
@@ -953,7 +1020,6 @@ public class CustomerDirector : MonoBehaviour
         customer.Record.SpawnedAt = Time.time;
         Records.Add(customer.Record);
         Present.Add(customer);
-        if (forOrder) customer.Basket = CreateBasket(customer);
         if (Audio) Audio.PlayAt(StoreSound.Door, Door.position + Vector3.up * DoorChimeHeight);
         return customer;
     }
@@ -980,76 +1046,6 @@ public class CustomerDirector : MonoBehaviour
             if (count == fewest) best.Add(candidate);
         }
         return best.Count > 0 ? best[Random.Range(0, best.Count)] : null;
-    }
-
-    /// <summary>An empty red basket in the right hand. No collider: it is only seen, and the products come at the counter.</summary>
-    Transform CreateBasket(CustomerCharacter customer)
-    {
-        var basket = BuildBasket("Basket (empty)", 0.36f, true);
-        // Fresh from Instantiate the skeleton is still in the model's A-pose; take the hand where the idle clip holds it.
-        if (customer.Animator != null) customer.Animator.Update(0f);
-        var hand = customer.RightHand;
-        if (hand != null)
-        {
-            // Upright and lengthwise along the body at this moment, then it swings with the hand.
-            basket.SetPositionAndRotation(hand.position + Vector3.down * 0.03f, customer.transform.rotation);
-            basket.SetParent(hand, true);
-        }
-        else
-        {
-            basket.SetParent(customer.transform, false);
-            basket.localPosition = new Vector3(0.28f, 0.8f, 0f);
-        }
-        return basket;
-    }
-
-    /// <summary>Doc 6.1: the basket comes off the arm onto the counter, with the order's products standing in it.</summary>
-    void PlaceBasket(CustomerCharacter customer, Order order)
-    {
-        if (customer.Basket != null) Destroy(customer.Basket.gameObject);
-        customer.Basket = null;
-        int items = ItemCount(order);
-        float length = (items - 1) * ItemSpacing + 0.26f;
-        CounterBasket = BuildBasket("Basket (on counter)", length, false);
-        // Same row as the products, which stand where they always did; the floor sits on the counter top.
-        CounterBasket.position = BasketAnchor.position + Vector3.right * ((items - 1) * ItemSpacing * 0.5f) + Vector3.up * BasketHeight;
-        CounterBasket.rotation = Quaternion.Euler(0f, 90f, 0f);
-    }
-
-    /// <summary>Long side along local z. With a handle the pivot is the top of the handle, for the hand; without, the top of the rim.</summary>
-    Transform BuildBasket(string name, float length, bool handle)
-    {
-        // A tote-style arch over the long side: posts on the end walls and a grip along the top.
-        const float handleRise = 0.11f;
-        float handleLength = length;
-        var root = new GameObject(name).transform;
-        float h = BasketHeight;
-        float rim = handle ? -handleRise : 0f;
-        Part(root, new Vector3(0f, rim - h + BasketWall * 0.5f, 0f), new Vector3(BasketWidth, BasketWall, length));
-        Part(root, new Vector3(-BasketWidth * 0.5f, rim - h * 0.5f, 0f), new Vector3(BasketWall, h, length));
-        Part(root, new Vector3(BasketWidth * 0.5f, rim - h * 0.5f, 0f), new Vector3(BasketWall, h, length));
-        Part(root, new Vector3(0f, rim - h * 0.5f, -length * 0.5f), new Vector3(BasketWidth, h, BasketWall));
-        Part(root, new Vector3(0f, rim - h * 0.5f, length * 0.5f), new Vector3(BasketWidth, h, BasketWall));
-        if (handle)
-        {
-            Part(root, new Vector3(0f, rim * 0.5f, -handleLength * 0.5f), new Vector3(BasketWall, handleRise, BasketWall));
-            Part(root, new Vector3(0f, rim * 0.5f, handleLength * 0.5f), new Vector3(BasketWall, handleRise, BasketWall));
-            Part(root, Vector3.zero, new Vector3(BasketWall * 1.5f, BasketWall * 1.5f, handleLength));
-        }
-        return root;
-    }
-
-    void Part(Transform parent, Vector3 position, Vector3 size)
-    {
-        var part = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Destroy(part.GetComponent<Collider>());
-        part.transform.SetParent(parent, false);
-        part.transform.localPosition = position;
-        part.transform.localScale = size;
-        part.layer = gameObject.layer;
-        var renderer = part.GetComponent<Renderer>();
-        if (BasketMaterial) renderer.sharedMaterial = BasketMaterial;
-        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     }
 
     /// <summary>Without the character prefabs the old primitive body still walks the same NavMesh routes.</summary>

@@ -103,6 +103,25 @@ public static class P2StoreBuilder
     const float ScanLightBehindGlass = 0.06f;
     static readonly Vector3 EyePosition = new Vector3(0f, 1.36f, 0f);
 
+    // The till (2026-11-10) at the counter's left end, under the POS monitor: a steel box whose drawer comes out toward the
+    // clerk by DrawerTravel. RegisterFront is the body's face on the clerk's side; the drawer's own origin is the point of
+    // the counter top under the middle of that face, and what follows is measured from it (z into the body).
+    public const float RegisterX = -0.78f, RegisterFront = 0.53f, RegisterWidth = 0.4f, RegisterDepth = 0.41f, RegisterHeight = 0.105f, DrawerTravel = 0.3f;
+    // The insert that holds the money: its floor and rim, four columns across, coin cups in front and note slots behind.
+    public const float TillFloor = 0.055f, TillRim = 0.088f, TillHalfWidth = 0.182f;
+    public const float CoinFront = 0.024f, CoinBack = 0.118f, NoteFront = 0.123f, NoteBack = 0.293f;
+    // How high the wad of notes and the heap of coins under the piece on top stand.
+    public const float NoteStack = 0.01f, CoinHeap = 0.012f;
+    // Largest on the left, as tills are filled; the ones change is mostly made of end up nearest the clerk's place.
+    public static readonly int[] NoteValues = { 50000, 10000, 5000, 1000 }, CoinValues = { 500, 100, 50, 10 };
+    // Real notes are all 68 mm tall and grow 6 mm longer with each step in value.
+    public const float NoteWidth = 0.068f, NoteThickness = 0.0012f, CoinThickness = 0.003f;
+    public static float NoteLength(int value) => value >= 50000 ? 0.154f : value >= 10000 ? 0.148f : value >= 5000 ? 0.142f : 0.136f;
+    // A quarter larger than real coins (26.5, 24, 21.6 and 18 mm), so the number on one can be read in a headset.
+    public static float CoinDiameter(int value) => 1.25f * (value >= 500 ? 0.0265f : value >= 100 ? 0.024f : value >= 50 ? 0.0216f : 0.018f);
+    public static float TillColumn(int index) => -TillHalfWidth + (index + 0.5f) * TillHalfWidth * 0.5f;
+    const string CashArt = "Assets/Art/Cash";
+
     [Serializable] class Manifest { public string id, display_name; public int price; }
 
     [MenuItem("Tools/P2/Build Store Scene")]
@@ -300,7 +319,6 @@ public static class P2StoreBuilder
         var dark = Material("P2_Device", new Color(0.13f, 0.14f, 0.16f));
         var shelf = Material("P2_Shelf", new Color(0.55f, 0.6f, 0.65f));
         var red = Material("P2_ScannerPad", new Color(0.8f, 0.08f, 0.08f));
-        var bag = Material("P2_Bag", new Color(0.9f, 0.9f, 0.86f));
 
         var environment = new GameObject("Environment").transform;
         float roomCenterX = (RoomFar + RoomNear) * 0.5f, roomWidth = RoomNear - RoomFar, roomCenterZ = (RoomBack + RoomFront) * 0.5f, roomDepth = RoomFront - RoomBack;
@@ -398,24 +416,45 @@ public static class P2StoreBuilder
         pos.Audio = gameAudio;
 
         // ---------- Bag ----------
+        // An open plastic bag standing on the counter. Its film is drawn by P3StoreDressing (P3Meshes.PlasticBag); here is
+        // what it does. Only its foot is solid: unseen walls keep what is dropped in from sliding out under the film,
+        // and above them the film gives way to a hand or a product, as film does.
         var bagCenter = new Vector3(-0.4f, CounterTop, 0.56f);
         var bagRoot = new GameObject("Bag").transform;
         bagRoot.position = bagCenter;
-        const float bagWidth = 0.32f, bagDepth = 0.26f, wallHeight = 0.08f, wall = 0.008f;
-        Box("Bag Wall L", bagCenter + new Vector3(-bagWidth * 0.5f, wallHeight * 0.5f, 0f), new Vector3(wall, wallHeight, bagDepth), bag, bagRoot, true);
-        Box("Bag Wall R", bagCenter + new Vector3(bagWidth * 0.5f, wallHeight * 0.5f, 0f), new Vector3(wall, wallHeight, bagDepth), bag, bagRoot, true);
-        Box("Bag Wall F", bagCenter + new Vector3(0f, wallHeight * 0.5f, -bagDepth * 0.5f), new Vector3(bagWidth, wallHeight, wall), bag, bagRoot, true);
-        Box("Bag Wall B", bagCenter + new Vector3(0f, wallHeight * 0.5f, bagDepth * 0.5f), new Vector3(bagWidth, wallHeight, wall), bag, bagRoot, true);
+        // As high as the film's rim at its lowest: what is let go lying across the mouth rests on the rim.
+        const float bagWidth = 0.29f, bagDepth = 0.155f, wallHeight = 0.17f, wall = 0.008f;
+        const float bagMouth = 0.22f, bagReach = 0.38f;
+        foreach (var (wallName, wallOffset, wallSize) in new[]
+        {
+            ("Bag Wall L", new Vector3(-bagWidth * 0.5f, 0f, 0f), new Vector3(wall, wallHeight, bagDepth)),
+            ("Bag Wall R", new Vector3(bagWidth * 0.5f, 0f, 0f), new Vector3(wall, wallHeight, bagDepth)),
+            ("Bag Wall F", new Vector3(0f, 0f, -bagDepth * 0.5f), new Vector3(bagWidth, wallHeight, wall)),
+            ("Bag Wall B", new Vector3(0f, 0f, bagDepth * 0.5f), new Vector3(bagWidth, wallHeight, wall)),
+        })
+        {
+            var bagWall = new GameObject(wallName);
+            bagWall.transform.SetParent(bagRoot, false);
+            bagWall.transform.position = bagCenter + wallOffset + Vector3.up * (wallHeight * 0.5f);
+            bagWall.AddComponent<BoxCollider>().size = wallSize;
+        }
         var bagZoneObject = new GameObject("BagZone") { layer = LayerMask.NameToLayer("Zone") };
         bagZoneObject.transform.SetParent(bagRoot, false);
-        bagZoneObject.transform.position = bagCenter + Vector3.up * 0.16f;
+        // At the bag's mouth, where the tutorial's arrow points.
+        bagZoneObject.transform.position = bagCenter + Vector3.up * bagMouth;
         var bagCollider = bagZoneObject.AddComponent<BoxCollider>();
         bagCollider.isTrigger = true;
-        bagCollider.size = new Vector3(bagWidth, 0.32f, bagDepth);
+        // From the counter to well above the rim: a product let go lying across the mouth is in the bag too.
+        bagCollider.size = new Vector3(0.32f, bagReach, 0.2f);
+        bagCollider.center = new Vector3(0f, bagReach * 0.5f - bagMouth, 0f);
         var bagZone = bagZoneObject.AddComponent<BagZone>();
         bagZone.Pos = pos;
         bagZone.Audio = gameAudio;
-        AddLabel(bagRoot, "비닐봉투");
+        // A few millimetres up: the film's floor lies on the counter.
+        bagZone.Floor = Marker("Bag Floor", bagCenter + Vector3.up * 0.004f, Quaternion.identity, bagRoot);
+        bagZone.Inside = new Vector2(0.26f, 0.13f);
+        // No name tag (the other stations have one in the tutorials): a bag that looks like a bag does not need one, and
+        // above the handles it sat right behind the tutorial arrow's own words.
 
         // ---------- Payment ----------
         // The card slot is a real opening in the face toward the clerk, so a card physically goes in. On Quest 2 a plain box
@@ -489,15 +528,7 @@ public static class P2StoreBuilder
         cardSlot.FrameLit = frameLit;
         AddLabel(terminalRoot, "카드 단말기");
 
-        var drawerCenter = new Vector3(-0.78f, CounterTop, 0.56f);
-        Box("Drawer Base", drawerCenter + Vector3.up * 0.002f, new Vector3(0.36f, 0.004f, 0.4f), dark, environment, false);
-        var drawerObject = new GameObject("CashDrawerZone") { layer = LayerMask.NameToLayer("Zone") };
-        drawerObject.transform.position = drawerCenter + Vector3.up * 0.1f;
-        var drawerCollider = drawerObject.AddComponent<BoxCollider>();
-        drawerCollider.isTrigger = true;
-        drawerCollider.size = new Vector3(0.36f, 0.2f, 0.4f);
-        var drawer = drawerObject.AddComponent<CashDrawerZone>();
-        AddLabel(drawerObject.transform, "현금 서랍");
+        var register = BuildCashRegister(environment, gameAudio, out var drawer);
 
         var trayCenter = new Vector3(-0.3f, CounterTop, 0.84f);
         Box("Change Tray", trayCenter + Vector3.up * 0.002f, new Vector3(0.3f, 0.004f, 0.2f), shelf, environment, false);
@@ -523,23 +554,22 @@ public static class P2StoreBuilder
         desk.Tray = tray;
         desk.Audio = gameAudio;
         desk.CustomerPlate = plateMark;
-        desk.Stock100 = Marker("Stock 100", drawerCenter + new Vector3(-0.1f, 0f, -0.12f));
-        desk.Stock500 = Marker("Stock 500", drawerCenter + new Vector3(0.1f, 0f, -0.12f));
-        desk.Stock1000 = Marker("Stock 1000", drawerCenter + new Vector3(-0.09f, 0f, 0.1f));
-        desk.Stock5000 = Marker("Stock 5000", drawerCenter + new Vector3(0.09f, 0f, 0.1f));
+        desk.Register = register;
         desk.CardMaterial = Material("P2_Card", new Color(0.25f, 0.45f, 0.85f));
-        desk.BillMaterial = Material("P2_Bill", new Color(0.65f, 0.82f, 0.62f));
-        desk.CoinMaterial = Material("P2_Coin", new Color(0.82f, 0.74f, 0.45f));
+        desk.NoteMesh = P3Meshes.Note();
+        desk.CoinMesh = P3Meshes.Coin();
+        desk.Cash = CashLooks();
 
         // ---------- Customers (doc 2.3 Customers/, 6.1, D12), tutorial, game ----------
-        var basket = Marker("Basket Anchor", new Vector3(0.3f, CounterTop, 0.68f));
+        // Where a customer sets the goods down, straight on the counter top: between the scanner and the card terminal.
+        var goods = Marker("Goods Anchor", new Vector3(0.3f, CounterTop, 0.68f));
         var directorPosition = new Vector3(0.62f, 1.32f, 0.98f);
         var director = new GameObject("CustomerDirector").AddComponent<CustomerDirector>();
         director.transform.SetPositionAndRotation(directorPosition, Facing(directorPosition));
         director.Pos = pos;
         director.Desk = desk;
         director.Audio = gameAudio;
-        director.BasketAnchor = basket;
+        director.GoodsAnchor = goods;
         // Marker forward is the way a customer faces there: toward the clerk at the counter and in line, toward the shelf when browsing.
         var customers = new GameObject("Customers").transform;
         var towardClerk = Quaternion.Euler(0f, 180f, 0f);
@@ -566,7 +596,6 @@ public static class P2StoreBuilder
         director.Characters = characters;
         var outcomePosition = new Vector3(0f, 1.28f, 0.98f);
         director.OutcomeAnchor = Marker("Outcome Anchor", outcomePosition, Facing(outcomePosition), customers);
-        director.BasketMaterial = Material("P2_Basket", new Color(0.78f, 0.12f, 0.1f));
         director.BodyMaterial = Material("P2_CustomerBody", new Color(0.35f, 0.5f, 0.65f));
         // Past the counter's far end, where the door and the clerk can both see her and customers still get by. Facing the
         // street front, halfway between the two places she looks at, so her head turns to each without going past its limit.
@@ -589,6 +618,7 @@ public static class P2StoreBuilder
         var screen = new GameObject("POSScreen").AddComponent<POSScreen>();
         screen.transform.SetPositionAndRotation(screenPosition, Facing(screenPosition));
         screen.Pos = pos;
+        screen.Desk = desk;
 
         var tutorial = new GameObject("TutorialController").AddComponent<TutorialController>();
         tutorial.transform.SetParent(systems, false);
@@ -596,7 +626,6 @@ public static class P2StoreBuilder
         tutorial.Scanner = scanner;
         tutorial.Bag = bagZone;
         tutorial.Desk = desk;
-        tutorial.BasketAnchor = basket;
         tutorial.Director = director;
 
         // What shows the player where and how (2026-11-09): an arrow over the next thing, and a line at the controllers.
@@ -792,6 +821,104 @@ public static class P2StoreBuilder
         watch.Director = director;
     }
 
+    // ---------- The till and its money (doc 5.5, 2026-11-10) ----------
+
+    /// <summary>
+    /// What the rules need of the till: the solid body, the part that slides, a place in the drawer for the piece on top of
+    /// each note slot and coin cup, and the space of the open drawer. P3StoreDressing.CashRegisterLooks draws it.
+    /// </summary>
+    static CashRegister BuildCashRegister(Transform environment, GameAudio audio, out CashDrawerZone zone)
+    {
+        var origin = new Vector3(RegisterX, CounterTop, RegisterFront);
+        var root = new GameObject("Cash Register");
+        root.transform.SetParent(environment, false);
+        root.transform.position = origin;
+        // Solid, so a card or a coin let go over it lies on top of it. It stands wholly on the counter, which customers
+        // cannot walk through anyway.
+        var solid = root.AddComponent<BoxCollider>();
+        solid.center = new Vector3(0f, RegisterHeight * 0.5f, RegisterDepth * 0.5f);
+        solid.size = new Vector3(RegisterWidth, RegisterHeight, RegisterDepth);
+
+        var drawer = new GameObject("Cash Drawer").transform;
+        drawer.SetParent(root.transform, false);
+        var register = root.AddComponent<CashRegister>();
+        register.Drawer = drawer;
+        register.Travel = DrawerTravel;
+        register.Audio = audio;
+
+        var slots = new List<CashRegister.Slot>();
+        // Notes lie with their long side running into the drawer, as in any till, and with the top of their print toward
+        // the far end of the counter: the clerk stands to the right of the till and reads them from there.
+        for (int i = 0; i < NoteValues.Length; i++)
+            slots.Add(new CashRegister.Slot
+            {
+                Value = NoteValues[i],
+                Anchor = Marker($"Slot {NoteValues[i]}", origin + new Vector3(TillColumn(i), TillFloor + NoteStack + PaymentDesk.NoteBody * 0.5f, (NoteFront + NoteBack) * 0.5f), Quaternion.Euler(0f, -90f, 0f), drawer),
+            });
+        for (int i = 0; i < CoinValues.Length; i++)
+            slots.Add(new CashRegister.Slot
+            {
+                Value = CoinValues[i],
+                Anchor = Marker($"Slot {CoinValues[i]}", origin + new Vector3(TillColumn(i), TillFloor + CoinHeap + PaymentDesk.CoinBody * 0.5f, (CoinFront + CoinBack) * 0.5f), Quaternion.identity, drawer),
+            });
+        register.Slots = slots.ToArray();
+
+        // Where the drawer is when it is out, from the counter top to a hand's height above the money. With the drawer
+        // shut, this is the strip of counter in front of the till: a note laid there too early is noticed and sent back.
+        var zoneObject = new GameObject("CashDrawerZone") { layer = LayerMask.NameToLayer("Zone") };
+        zoneObject.transform.position = origin + new Vector3(0f, 0.1f, -DrawerTravel * 0.5f);
+        var zoneCollider = zoneObject.AddComponent<BoxCollider>();
+        zoneCollider.isTrigger = true;
+        zoneCollider.size = new Vector3(RegisterWidth - 0.02f, 0.2f, DrawerTravel);
+        zone = zoneObject.AddComponent<CashDrawerZone>();
+        // The name tag stands on the till's front edge, clear of the arrow that points into the open drawer.
+        AddLabel(Marker("Till Label Anchor", origin + new Vector3(0.06f, 0.01f, -0.07f), Quaternion.identity, root.transform), "현금 서랍");
+        return register;
+    }
+
+    /// <summary>The printed faces of the notes and coins (scripts/windows/make_cash_assets.py), one material each.</summary>
+    static PaymentDesk.CashLook[] CashLooks()
+    {
+        foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { CashArt }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            if (!(AssetImporter.GetAtPath(path) is TextureImporter importer)) continue;
+            // Money lies flat and is looked at from a slant.
+            if (importer.anisoLevel == 8 && importer.wrapMode == TextureWrapMode.Clamp && importer.maxTextureSize == 1024) continue;
+            importer.anisoLevel = 8;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.maxTextureSize = 1024;
+            importer.SaveAndReimport();
+        }
+        var looks = new List<PaymentDesk.CashLook>();
+        foreach (int value in NoteValues)
+            looks.Add(new PaymentDesk.CashLook
+            {
+                Value = value,
+                Size = new Vector3(NoteLength(value), NoteThickness, NoteWidth),
+                Material = CashMaterial($"P2_Note{value}", $"{CashArt}/note_{value}.png", 0.18f, 0f),
+            });
+        foreach (int value in CoinValues)
+            looks.Add(new PaymentDesk.CashLook
+            {
+                Value = value,
+                Coin = true,
+                Size = new Vector3(CoinDiameter(value), CoinThickness, CoinDiameter(value)),
+                Material = CashMaterial($"P2_Coin{value}", $"{CashArt}/coin_{value}.png", 0.62f, 0.55f),
+            });
+        return looks.ToArray();
+    }
+
+    static Material CashMaterial(string name, string texturePath, float smoothness, float metallic)
+    {
+        var material = Material(name, Color.white);
+        material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath) ?? throw new Exception("Cash texture missing: " + texturePath));
+        material.SetFloat("_Smoothness", smoothness);
+        material.SetFloat("_Metallic", metallic);
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
     // P3-K3 sounds, made by scripts/windows/make_game_sounds.py (effects synthesized, voices from the Windows Korean TTS).
     const string SoundFolder = "Assets/Audio/Generated";
 
@@ -829,6 +956,10 @@ public static class P2StoreBuilder
         audio.ErrorClip = Sound("sfx_error");
         audio.ApprovedClip = Sound("sfx_card_approved");
         audio.DrawerClip = Sound("sfx_drawer");
+        audio.DrawerOpenClip = Sound("sfx_drawer_open");
+        audio.CoinClip = Sound("sfx_coin");
+        audio.NoteClip = Sound("sfx_note");
+        audio.BagClip = Sound("sfx_bag");
         audio.CancelClip = Sound("sfx_cancel");
         audio.BellClip = Sound("sfx_counter_bell");
         audio.DoorClip = Sound("sfx_door_chime");
