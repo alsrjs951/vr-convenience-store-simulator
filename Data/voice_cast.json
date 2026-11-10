@@ -1,0 +1,11 @@
+{
+  "about": "Who voices the lines in Data/voice_lines.json when they are made with ElevenLabs (scripts/windows/make_elevenlabs_voices.py). The ids are voices of the ElevenLabs voice library, all native Korean speakers; they are not secrets. The API key is not kept here: it is read from the ELEVENLABS_API_KEY environment variable. Library voices need a paid plan when used through the API (Starter since 2026-11-10).",
+  "model": "eleven_v4",
+  "decided": "2026-11-10, 시험 음성과 적용본을 보낸 뒤 사용자가 이 배역 그대로 쓰기로 했다.",
+  "voices": {
+    "manager": { "voice_id": "fAgkbajYljImBTPFR28u", "name": "Amytah - Friendly, Clear and Hollow", "why": "중년 여성, 서울말, 편하고 친근한 말투" },
+    "customer_f": { "voice_id": "8jHHF8rMqMlg8if2mOUe", "name": "Han - Conversational", "why": "젊은 여성, 대본 없이 말하는 듯한 일상 말투" },
+    "customer_m": { "voice_id": "pb3lVZVjdFWbkhPKlelB", "name": "Harry Kim - Conversational", "why": "성인 남성, 차분한 일상 말투" }
+  },
+  "others_tried": "capture/elevenlabs/audition_korean 에 시험 음성이 있다. 점장: Stella(1YzIw7PZ7iaD4alelyHY), Park Hyun-mi(JxIGrv4AVuvbo1Dxzryu), Seulki(ksaI0TCD9BstzEzlxj4q). 손님 여: Kanna(5I7B1di44aCL15NkP0jn), Hana Lee(QPFsEL6IBxlT15xfiD6C). 손님 남: Taehyung(m3gJBS8OofDJfycyA2Ip), Theo(CxErO97xpQgQXYmapDKX), Taemin(Ir7oQcBXWiq4oFGROCfj)."
+}

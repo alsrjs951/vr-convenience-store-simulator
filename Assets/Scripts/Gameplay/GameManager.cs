@@ -182,10 +182,11 @@ public class GameManager : MonoBehaviour
         RestoreBoard();
         var line = FinalGrade == "S" ? ManagerLine.EndingS : FinalGrade == "A" ? ManagerLine.EndingA : FinalGrade == "B" ? ManagerLine.EndingB : ManagerLine.EndingC;
         if (Pos.Audio) Pos.Audio.NarrateManager(line);
-        string ending = FinalGrade == "S" ? "정규직 제안\n\"다음 달부터 정식으로 같이 일해 볼래요?\""
-            : FinalGrade == "A" ? "다음 주 근무표 확정\n\"다음 주에도 이름 올려 둘게요.\""
-            : FinalGrade == "B" ? "수습 기간 연장\n\"조금만 더 손에 익히면 금방 좋아질 거예요.\""
-            : "재교육 대상\n\"첫 알바는 원래 어려워요. 다시 한번 해 봐요.\"";
+        // The words in quotes are the manager's, from her spoken ending (Data/voice_lines.json).
+        string ending = FinalGrade == "S" ? "정규직 제안\n\"다음 달부터 정식으로 같이 일해요, 우리.\""
+            : FinalGrade == "A" ? "다음 주 근무표 확정\n\"다음 주 근무표에도 이름 넣어 둘게요.\""
+            : FinalGrade == "B" ? "수습 기간 연장\n\"손에 좀 더 익으면 금방 늘 거예요.\""
+            : "재교육 대상\n\"첫 알바는 다들 그래요. 다음에 한 번 더 해 봐요.\"";
         int sales = 0, tips = 0;
         foreach (var result in Results)
         {
@@ -233,8 +234,8 @@ public class GameManager : MonoBehaviour
     void OnOrderArrived(Order order, bool firstOfItsKind)
     {
         if (!firstOfItsKind) return;
-        string guide = order.Special == Order.Microwave ? "특수 요청  전자레인지\n스캔 → 오른쪽 벽 전자레인지에 넣기 → '땡' 뒤 꺼내기"
-            : order.Special == Order.HotWater ? "특수 요청  온수\n스캔 → 오른쪽 벽 온수기 탭 아래에 2초"
+        string guide = order.Special == Order.Microwave ? "특수 요청  전자레인지\n스캔 → 왼쪽 냉장고 옆 전자레인지에 넣기 → '땡' 뒤 꺼내기"
+            : order.Special == Order.HotWater ? "특수 요청  온수\n스캔 → 전자레인지 옆 온수기 탭 아래에 2초"
             : "특수 요청  1+1 행사\n2개 모두 스캔하면 1개 값만 계산됩니다";
         ShowBriefly(guide, RequestGuideSeconds);
     }

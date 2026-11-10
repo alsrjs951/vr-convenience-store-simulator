@@ -761,7 +761,7 @@ public static class P2StoreBuilder
 
     static CustomerVoice Voice(string gender) => new CustomerVoice
     {
-        Greet = new[] { Sound($"voice_greet_1_{gender}"), Sound($"voice_greet_2_{gender}") },
+        Greet = new[] { Sound($"voice_greet_1_{gender}"), Sound($"voice_greet_2_{gender}"), Sound($"voice_greet_3_{gender}"), Sound($"voice_greet_4_{gender}") },
         Bag = Sound($"voice_bag_{gender}"),
         Thanks = Sound($"voice_thanks_{gender}"),
         ThanksFast = Sound($"voice_thanks_fast_{gender}"),
