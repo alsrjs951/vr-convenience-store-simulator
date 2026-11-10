@@ -841,7 +841,11 @@ public partial class P2DayVerification
         var home = product.transform.position;
         int errors = Game.Pos.Audio.CountOf(StoreSound.Error);
         yield return GrabProduct(product, "d2.rule.false_disposal");
-        yield return MoveProduct(product, product.transform.position + Vector3.up * 0.2f, "d2.rule.false_disposal.lift");
+        // Lifted over the scanner's sight: the walk to the bin carries it along the counter, past the upright glass, and a
+        // barcode going by in front of that at counter height is read, as it should be.
+        var held = product.transform.position;
+        float clear = CounterTop + AboveScannerSight + held.y - LowestProxyPoint(product);
+        yield return MoveProduct(product, new Vector3(held.x, Mathf.Max(held.y + 0.2f, clear), held.z), "d2.rule.false_disposal.lift");
         yield return Go("D");
         var bin = Disposal.transform.position;
         yield return MoveProduct(product, new Vector3(bin.x, 1.05f, bin.z), "d2.rule.false_disposal.over_bin");

@@ -23,6 +23,8 @@ public class TutorialController : MonoBehaviour
     const float ItemClearance = 0.004f;
     const float LinePauseSeconds = 0.3f;
     const float AfterBarcodeMeters = 0.035f;
+    // The arrow's tip stops this far short of the scanner's upright glass.
+    const float BeforeGlassMeters = 0.03f;
     const float DoneSeconds = 4f;
     const string GripWords = "가운뎃손가락 버튼을 꾹";
 
@@ -142,12 +144,14 @@ public class TutorialController : MonoBehaviour
         Pointer.Aim = AimAtBarcode;
         float begun = Time.time;
         float held = 0f;
-        // A quick player may turn and press it on the pad before this step has seen a full second.
+        // A quick player may turn and scan it before this step has seen a full second.
         while (held < FacingHoldSeconds && !productScanned)
         {
             var normal = Product.transform.TransformDirection(Product.Data.BarcodeLocalNormal);
-            var toScanner = Scanner.transform.position - Product.transform.position;
-            held = Product.Grab.isSelected && Vector3.Angle(normal, toScanner) <= FacingAngle ? held + Time.deltaTime : 0f;
+            // Toward either glass: the upright one the arrow shows next, or the flat one under it.
+            bool facing = Vector3.Angle(normal, Scanner.Shown.position - Product.transform.position) <= FacingAngle
+                || Vector3.Angle(normal, Scanner.transform.position - Product.transform.position) <= FacingAngle;
+            held = Product.Grab.isSelected && facing ? held + Time.deltaTime : 0f;
             if (Time.time - begun > HintAfterSeconds)
                 Board.text = "2/6  바코드 찾기\n화살표가 가리키는 면이 바코드입니다";
             yield return null;
@@ -158,13 +162,13 @@ public class TutorialController : MonoBehaviour
     {
         Step = TutorialStep.Scan;
         Narrate(3);
-        Board.text = "3/6  스캔\n바코드 면을 스캐너 유리에";
-        Pointer.Aim = () => PointerAim.Down(Scanner.transform.position, "여기에 대기");
+        Board.text = "3/6  스캔\n바코드 면을 붉은 빛이 나오는 유리 앞에";
+        Pointer.Aim = AimAtScanner;
         float begun = Time.time;
         while (!productScanned)
         {
             if (Time.time - begun > ScanHintAfterSeconds)
-                Board.text = "3/6  스캔\n바코드가 아래로, 내려놓듯이";
+                Board.text = "3/6  스캔\n닿지 않아도 됩니다. 바코드가 유리를 보게, 한 뼘 앞에서";
             yield return null;
         }
     }
@@ -227,6 +231,18 @@ public class TutorialController : MonoBehaviour
 
     static Vector3 TopOf(ProductPrefab product) =>
         product.transform.TransformPoint(product.Proxy.center) + Vector3.up * (product.Proxy.size.y * 0.5f);
+
+    /// <summary>
+    /// An arrow at the glass the scanner's light comes out of. At the upright one it comes down at a slant from the clerk's
+    /// side: pointing straight into the glass, it would be seen end-on as a dot.
+    /// </summary>
+    PointerAim? AimAtScanner()
+    {
+        var glass = Scanner.Shown;
+        return glass == Scanner.transform
+            ? PointerAim.Down(glass.position, "여기에 대기")
+            : PointerAim.Along(glass.position + glass.up * BeforeGlassMeters, Vector3.down - glass.up, "여기에 대기");
+    }
 
     /// <summary>An arrow at the barcode face of the product in the hand, pointing at it, whichever way the product is held.</summary>
     PointerAim? AimAtBarcode()

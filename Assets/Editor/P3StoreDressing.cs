@@ -510,27 +510,30 @@ public static class P3StoreDressing
     /// <summary>
     /// A fixed bioptic scanner, as at a supermarket checkout: the flat window on the counter (the builder's pad, whose
     /// collider and scan zone stay as they are) in a steel frame, joined by a base to an angular tower behind it, with a
-    /// tall smoked window facing the clerk, a green ready light and side vents. All added parts are looks only, with no
+    /// tall smoked window facing the clerk, a green lamp and side vents. The red light is in the upright window, where the
+    /// builder's ScanBeam sends it out from; the flat one is plain dark glass. All added parts are looks only, with no
     /// collider, so scanning and the hand's paths over the pad are unchanged. The tower stands a few centimetres behind the
-    /// window so a product lying on the pad does not reach into it.
+    /// flat window so a product lying on the pad does not reach into it.
     /// </summary>
     static void BiopticScanner(Transform environment, Transform parent)
     {
-        const float towerGap = 0.03f, towerDepth = 0.14f, towerTopDepth = 0.06f, towerHeight = 0.3f, towerLean = 0.05f;
+        const float towerGap = P2StoreBuilder.ScannerTowerGap, towerHeight = P2StoreBuilder.ScannerTowerHeight, towerLean = P2StoreBuilder.ScannerTowerLean;
+        const float towerDepth = 0.14f, towerTopDepth = 0.06f;
         var body = Plain("P3_ScannerBody", new Color(0.16f, 0.17f, 0.19f), 0.5f, 0.15f);
         var frame = Plain("P3_ScannerSteel", new Color(0.56f, 0.58f, 0.61f), 0.82f, 0.5f);
-        var smoked = Emissive("P3_ScannerTowerGlass", new Color(0.01f, 0.012f, 0.015f), new Color(0.018f, 0.002f, 0.0015f));
-        smoked.SetFloat("_Smoothness", 0.96f);
-        var ready = Emissive("P3_ScannerReady", new Color(0.1f, 0.65f, 0.2f), new Color(0.18f, 1.7f, 0.3f));
+        var flatGlass = Plain("P3_ScannerFlatGlass", new Color(0.02f, 0.022f, 0.026f), 0.95f);
+        // Dim while it waits. ScannerZone turns it bright for a moment on a read.
+        var ready = Emissive("P3_ScannerReady", new Color(0.05f, 0.2f, 0.08f), new Color(0.03f, 0.22f, 0.05f));
 
-        // The flat window: steel housing, the red-star glass (it flashes green on a scan), a thin steel rim.
+        // The flat window: steel housing, dark glass, a thin steel rim.
         var pad = Find(environment, "Scanner Pad");
         var size = pad.transform.localScale;
         P3Meshes.Round(pad, 0.008f);
         pad.GetComponent<Renderer>().sharedMaterial = frame;
-        var glass = Lit("P3_ScannerGlass", $"{Generated}/scanner_glass", Vector2.one, Color.white, 1.6f);
+        Find(environment, "Scanner Glass").GetComponent<Renderer>().sharedMaterial = flatGlass;
+        // The upright window: the same dark glass with the red laser star glowing behind it.
+        var glass = Lit("P3_ScannerGlass", $"{Generated}/scanner_glass", Vector2.one, Color.white, 2.2f);
         glass.SetFloat("_Smoothness", 0.95f);
-        Find(environment, "Scanner Red Mark").GetComponent<Renderer>().sharedMaterial = glass;
         var p = pad.transform.position;
         float top = p.y + size.y * 0.5f, bottom = p.y - size.y * 0.5f, back = p.z + size.z * 0.5f;
         foreach (var (offset, rim) in new[]
@@ -559,14 +562,18 @@ public static class P3StoreDressing
         tower.GetComponent<MeshFilter>().sharedMesh = P3Meshes.Prism(profile, size.x);
         tower.GetComponent<MeshRenderer>().sharedMaterial = body;
 
-        // On the front face (it leans back by atan(lean / height)): the smoked window and the ready light.
+        // On the front face (it leans back by atan(lean / height)): the window the red light comes out of, and the lamp.
         float slant = Mathf.Atan2(towerLean, towerHeight);
         var faceNormal = new Vector3(0f, Mathf.Sin(slant), -Mathf.Cos(slant));
         var faceRotation = Quaternion.Euler(slant * Mathf.Rad2Deg, 0f, 0f);
         var origin = tower.transform.position;
         Vector3 OnFront(float y, float outward) => origin + new Vector3(0f, y, towerLean * y / towerHeight) + faceNormal * outward;
-        Visual("Scanner Tower Window", parent, OnFront(0.165f, 0.002f), new Vector3(size.x - 0.03f, 0.19f, 0.004f), smoked, 0.003f).transform.rotation = faceRotation;
-        Visual("Scanner Ready Light", parent, OnFront(towerHeight - 0.017f, 0.003f) + new Vector3(size.x * 0.3f, 0f, 0f), new Vector3(0.028f, 0.008f, 0.004f), ready, 0.002f).transform.rotation = faceRotation;
+        Visual("Scanner Tower Window", parent, OnFront(P2StoreBuilder.ScannerWindowHeight, 0.002f), new Vector3(size.x - 0.03f, 0.19f, 0.004f), flatGlass, 0.003f).transform.rotation = faceRotation;
+        // A quad carries the star: the rounded box has no texture coordinates to speak of.
+        Quad("Scanner Tower Light", parent, OnFront(P2StoreBuilder.ScannerWindowHeight, 0.0046f), new Vector2(size.x - 0.04f, size.x - 0.04f), glass).transform.rotation = faceRotation;
+        var lamp = Visual("Scanner Ready Light", parent, OnFront(towerHeight - 0.017f, 0.003f) + new Vector3(size.x * 0.27f, 0f, 0f), new Vector3(0.04f, 0.01f, 0.004f), ready, 0.002f);
+        lamp.transform.rotation = faceRotation;
+        Find(null, "ScannerZone").GetComponent<ScannerZone>().Indicator = lamp.GetComponent<Renderer>();
 
         // Vent slots low on both sides, toward the back.
         foreach (float side in new[] { -1f, 1f })

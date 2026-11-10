@@ -90,8 +90,17 @@ public static class P2StoreBuilder
     // A card whose centre comes this close to its seat in the terminal slot is pulled in. The seat is half a card inside the
     // face, so this starts about 3 cm before the card's front edge reaches the opening.
     const float CardSnapMeters = 0.08f;
-    // Barcode roughly toward the pad. A product standing on the pad, with its barcode facing sideways, does not scan.
+    // Barcode roughly toward one of the scanner's two glasses. A product standing on the flat one, with its barcode facing
+    // the clerk or a side, does not scan.
     const float MaxBarcodeAngle = 50f;
+    // The scanner's upright part, which P3StoreDressing draws: it stands this far behind the flat glass and leans away from
+    // the clerk. The red light comes out of the glass in its face, whose middle is at ScannerWindowHeight above the counter.
+    public const float ScannerTowerGap = 0.03f, ScannerTowerHeight = 0.3f, ScannerTowerLean = 0.05f, ScannerWindowHeight = 0.165f;
+    // The space in front of the upright glass where a barcode is read in the air: as wide as the scanner, from just above
+    // the flat glass up to about the top of the upright one, and out to the scanner's front edge.
+    const float ScanReadWidth = 0.2f, ScanReadHeight = 0.22f, ScanReadDepth = 0.24f;
+    // The light starts this far behind the glass, so it is already a few centimetres wide where it comes out.
+    const float ScanLightBehindGlass = 0.06f;
     static readonly Vector3 EyePosition = new Vector3(0f, 1.36f, 0f);
 
     [Serializable] class Manifest { public string id, display_name; public int price; }
@@ -327,10 +336,13 @@ public static class P2StoreBuilder
         Box("Counter", new Vector3(0f, CounterTop * 0.5f, 0.65f), new Vector3(2f, CounterTop, 0.6f), wood, environment, true);
         Box("Counter Extension", new Vector3((1f + CounterExtensionEnd) * 0.5f, CounterTop * 0.5f, 0.65f), new Vector3(CounterExtensionEnd - 1f, CounterTop, 0.6f), wood, environment, true);
 
-        // ---------- Scanner: a solid pad with a thin zone on top, so only the face touching the pad can scan ----------
+        // ---------- Scanner: two glasses, as on a shop's fixed scanner ----------
+        // The flat one is a solid pad with a thin zone on top, so only the face lying on it can scan.
         var padTop = CounterTop + 0.05f;
-        Box("Scanner Pad", new Vector3(0f, CounterTop + 0.025f, 0.55f), new Vector3(0.2f, 0.05f, 0.2f), dark, environment, true);
-        var scannerMark = Box("Scanner Red Mark", new Vector3(0f, padTop + 0.001f, 0.55f), new Vector3(0.18f, 0.002f, 0.18f), red, environment, false);
+        var padCenter = new Vector3(0f, CounterTop + 0.025f, 0.55f);
+        var padSize = new Vector3(0.2f, 0.05f, 0.2f);
+        Box("Scanner Pad", padCenter, padSize, dark, environment, true);
+        var scannerMark = Box("Scanner Glass", new Vector3(0f, padTop + 0.001f, 0.55f), new Vector3(0.18f, 0.002f, 0.18f), red, environment, false);
         var scannerObject = new GameObject("ScannerZone") { layer = LayerMask.NameToLayer("Scanner") };
         scannerObject.transform.position = new Vector3(0f, padTop + 0.004f, 0.55f);
         var scannerCollider = scannerObject.AddComponent<BoxCollider>();
@@ -340,6 +352,37 @@ public static class P2StoreBuilder
         scanner.Indicator = scannerMark.GetComponent<Renderer>();
         scanner.MaxBarcodeAngle = MaxBarcodeAngle;
         AddLabel(scannerObject.transform, "스캐너");
+
+        // The upright one reads in the air in front of it, and the red light comes out of it. Its glass leans back with the
+        // tower; the space it reads is kept level, so it does not rise off the flat glass toward the clerk.
+        float towerSlant = Mathf.Atan2(ScannerTowerLean, ScannerTowerHeight);
+        var glassOut = new Vector3(0f, Mathf.Sin(towerSlant), -Mathf.Cos(towerSlant));
+        float towerFront = padCenter.z + padSize.z * 0.5f + ScannerTowerGap;
+        var glassCenter = new Vector3(padCenter.x, CounterTop + ScannerWindowHeight, towerFront + ScannerTowerLean * ScannerWindowHeight / ScannerTowerHeight) + glassOut * 0.004f;
+        var windowObject = new GameObject("Scan Window") { layer = scannerObject.layer };
+        windowObject.transform.SetParent(scannerObject.transform, false);
+        windowObject.transform.SetPositionAndRotation(
+            new Vector3(padCenter.x, padTop + 0.008f + ScanReadHeight * 0.5f, glassCenter.z - 0.01f - ScanReadDepth * 0.5f),
+            Quaternion.LookRotation(Vector3.up, Vector3.back));
+        var windowCollider = windowObject.AddComponent<BoxCollider>();
+        windowCollider.isTrigger = true;
+        windowCollider.size = new Vector3(ScanReadWidth, ScanReadDepth, ScanReadHeight);
+        windowObject.AddComponent<ScanWindow>().Zone = scanner;
+        scanner.Aim = Marker("Scan Aim", glassCenter, Quaternion.LookRotation(Vector3.Cross(Vector3.right, glassOut), glassOut), scannerObject.transform);
+
+        var beamObject = new GameObject("Scan Beam");
+        beamObject.transform.SetParent(scannerObject.transform, false);
+        var lightFrom = glassCenter - glassOut * ScanLightBehindGlass;
+        beamObject.transform.SetPositionAndRotation(lightFrom, Quaternion.LookRotation(Vector3.back, Vector3.up));
+        var beam = beamObject.AddComponent<ScanBeam>();
+        beam.Zone = scanner;
+        beam.Material = BeamMaterial();
+        beam.Reaches = LayerMask.GetMask("Default", "Interactable");
+        // One line that falls on the middle of the flat glass when nothing is there, and a cross above it that only shows on
+        // a product held up to the upright glass.
+        float toFlatGlass = Mathf.Atan2(lightFrom.y - padTop, lightFrom.z - (padCenter.z - 0.01f)) * Mathf.Rad2Deg;
+        beam.Lines = new[] { new Vector2(toFlatGlass, 0f), new Vector2(6f, 24f), new Vector2(6f, -24f) };
+        beam.HalfAngle = 20f;
 
         // ---------- Systems ----------
         var systems = new GameObject("Systems").transform;
@@ -1299,6 +1342,23 @@ public static class P2StoreBuilder
             AssetDatabase.CreateAsset(material, path);
         }
         material.SetColor("_BaseColor", color);
+        EditorUtility.SetDirty(material);
+        return material;
+    }
+
+    /// <summary>The scanner's red light where it lands: unlit and opaque, seen from both sides of the thin strip.</summary>
+    static Material BeamMaterial()
+    {
+        var path = $"{MaterialFolder}/P2_ScanBeam.mat";
+        var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (material == null)
+        {
+            var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? throw new Exception("URP Unlit missing.");
+            material = new Material(shader);
+            AssetDatabase.CreateAsset(material, path);
+        }
+        material.SetColor("_BaseColor", new Color(1f, 0.06f, 0.04f));
+        material.SetFloat("_Cull", (float)UnityEngine.Rendering.CullMode.Off);
         EditorUtility.SetDirty(material);
         return material;
     }
