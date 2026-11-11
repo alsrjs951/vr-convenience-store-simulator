@@ -79,7 +79,7 @@ public partial class P2DayVerification
         Check("intro.manager_goes_out", !manager.InStore, $"in store={manager.InStore}");
         Check("intro.shoppers_gone_or_served", director.Ambient.Count == 0, $"shopping={director.Ambient.Count}");
         yield return WaitUntil(() => manager.Body == null, 30f, "intro.manager_walked_out");
-        Check("intro.nothing_left_on_the_counter", director.CounterBasket == null && FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length <= 2, $"basket={director.CounterBasket != null}");
+        Check("intro.nothing_left_on_the_counter", FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length <= 2, $"products={FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length}");
         report.stuckWarps = CustomerCharacter.StuckWarps;
         Check("intro.no_warps", CustomerCharacter.StuckWarps == 0, $"warps={CustomerCharacter.StuckWarps}; stepped aside={CustomerCharacter.StepAsides}");
         Finish();

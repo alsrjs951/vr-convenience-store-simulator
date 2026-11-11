@@ -506,11 +506,11 @@ public class GameManager : MonoBehaviour
     /// <summary>A product just ordered stands on the counter, the real thing to pick up and turn over before it is on the shelf.</summary>
     void OnBought(UnlockItem item)
     {
-        if (item.Kind != UnlockKind.Product || item.Product == null || Director.BasketAnchor == null) return;
+        if (item.Kind != UnlockKind.Product || item.Product == null || Director.GoodsAnchor == null) return;
         // Two places side by side; a third order takes the place of the oldest sample.
         int spot = samplesPlaced++ % SampleSpots;
         if (Samples[spot] != null) Destroy(Samples[spot].gameObject);
-        var place = Director.BasketAnchor.position + Vector3.right * (spot * SampleSpacing) + Vector3.up * (item.Product.Proxy.size.y * 0.5f + 0.004f);
+        var place = Director.GoodsAnchor.position + Vector3.right * (spot * SampleSpacing) + Vector3.up * (item.Product.Proxy.size.y * 0.5f + 0.004f);
         Samples[spot] = Instantiate(item.Product, place, Quaternion.Euler(0f, 180f, 0f));
     }
 

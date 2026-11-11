@@ -85,8 +85,15 @@ public class CustomerCharacter : MonoBehaviour
     public string Resting { get; set; } = IdleState;
     public string Playing { get; private set; } = "";
     public float WalkClipSpeed { get; private set; } = 1.2f;
-    public Transform Basket { get; set; }
-    public Transform RightHand => Animator != null && Animator.isHuman ? Animator.GetBoneTransform(HumanBodyBones.RightHand) : null;
+    public Transform RightHand => Bone(HumanBodyBones.RightHand);
+    /// <summary>The hand that carries: the right one waves goodbye.</summary>
+    public Transform LeftHand => Bone(HumanBodyBones.LeftHand);
+    /// <summary>The root of the left middle finger, where a handle sits in the hand. Null when the body has no finger bones.</summary>
+    public Transform LeftKnuckles => Bone(HumanBodyBones.LeftMiddleProximal);
+    /// <summary>The bag its goods went into, once it has paid. It goes out of the store with it.</summary>
+    public CarriedBag Bag { get; set; }
+
+    Transform Bone(HumanBodyBones bone) => Animator != null && Animator.isHuman ? Animator.GetBoneTransform(bone) : null;
     /// <summary>Null on the placeholder body.</summary>
     public CustomerFace FaceRig { get; private set; }
 

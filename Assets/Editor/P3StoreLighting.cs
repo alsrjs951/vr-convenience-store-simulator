@@ -138,7 +138,7 @@ public static class P3StoreLighting
     static bool Moves(Transform t)
     {
         for (; t != null; t = t.parent)
-            if (t.name == "Microwave Door Hinge" || t.name.StartsWith("Title Door")) return true;
+            if (t.name == "Microwave Door Hinge" || t.name == "Cash Drawer" || t.name.StartsWith("Title Door")) return true;
         return false;
     }
 

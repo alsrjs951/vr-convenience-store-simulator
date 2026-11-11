@@ -791,7 +791,9 @@ public partial class P2DayVerification
         var director = Game.Director;
         var pos = Game.Pos;
         var order = pos.Current;
+        var buyer = director.AtCounter;
         CheckDay2Arrival(number, order);
+        yield return GoodsSetDown($"d2.order{number}", director.OrderProducts);
         yield return Capture($"d2_3{Mathf.Min(number, 9)}_order{number}");
         var products = new List<ProductPrefab>(director.OrderProducts);
         if (!falseDisposalDone && director.Left >= 1)
@@ -824,6 +826,7 @@ public partial class P2DayVerification
             yield return GiveChange(bill - total, 0, false, () => pos.Current == null, $"d2.order{number}.change");
         }
         yield return WaitUntil(() => pos.Current == null, 10f, $"d2.order{number}.completed");
+        yield return LeavesWithOrWithoutBag($"d2.order{number}", order, buyer);
         servedOrders++;
         SamplePeak();
     }

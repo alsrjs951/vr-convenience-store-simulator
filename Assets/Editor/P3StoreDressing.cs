@@ -22,6 +22,7 @@ public static class P3StoreDressing
     const string MaterialFolder = "Assets/Materials/P3";
     const string P2Materials = "Assets/Materials/P2";
     const string Signage = "Assets/Art/Signage";
+    const string CashArt = "Assets/Art/Cash";
     const float CeilingHeight = 3f;
 
     // Store inside faces (P2StoreBuilder: walls 0.1 m thick, the store runs along x from the near wall to the far wall).
@@ -59,7 +60,6 @@ public static class P3StoreDressing
         Paint(Load<Material>($"{P2Materials}/P2_Bin.mat"), null, new Color(0.38f, 0.4f, 0.42f), 0.45f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_RecycleBin.mat"), null, Navy, 0.4f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_WarehouseDoor.mat"), null, new Color(0.62f, 0.64f, 0.67f), 0.45f, Vector2.one, 0f);
-        Paint(Load<Material>($"{P2Materials}/P2_Bag.mat"), null, new Color(0.98f, 0.98f, 0.97f), 0.55f, Vector2.one, 0f);
         Paint(Load<Material>($"{P2Materials}/P2_Porch.mat"), null, new Color(0.46f, 0.46f, 0.44f), 0.2f, Vector2.one, 0f);
         ApplyPbr(Load<Material>($"{P2Materials}/P2_Cardboard.mat"), $"{Root}/PolyHaven/cardboard_box_01/cardboard_side", Vector2.one, Color.white);
 
@@ -656,18 +656,9 @@ public static class P3StoreDressing
             for (int col = 0; col < 3; col++)
                 Visual("Key", parent, new Vector3(topPart.x + (col - 1) * 0.034f, keysY, topPart.z - 0.078f + row * 0.02f), new Vector3(0.028f, 0.004f, 0.016f), key, 0.0015f);
 
-        // Cash drawer: a black tray with a cross divider, one compartment per denomination.
-        var drawer = Find(environment, "Drawer Base");
-        var d = drawer.transform.position;
-        var ds = drawer.transform.localScale;
-        drawer.GetComponent<Renderer>().sharedMaterial = graphite;
-        foreach (var (offset, s) in new[]
-        {
-            (new Vector3(0f, 0.012f, -ds.z * 0.5f), new Vector3(ds.x, 0.024f, 0.008f)), (new Vector3(0f, 0.012f, ds.z * 0.5f), new Vector3(ds.x, 0.024f, 0.008f)),
-            (new Vector3(-ds.x * 0.5f, 0.012f, 0f), new Vector3(0.008f, 0.024f, ds.z)), (new Vector3(ds.x * 0.5f, 0.012f, 0f), new Vector3(0.008f, 0.024f, ds.z)),
-            (new Vector3(0f, 0.008f, 0f), new Vector3(0.005f, 0.016f, ds.z - 0.01f)), (new Vector3(0f, 0.008f, 0f), new Vector3(ds.x - 0.01f, 0.016f, 0.005f)),
-        })
-            Visual("Drawer Rim", parent, d + offset, s, graphite, 0.002f);
+        // The till: a steel box with a drawer, the insert that holds the money, and the money in it.
+        CashRegisterLooks(environment);
+        float tillTop = 0.9f + P2StoreBuilder.RegisterHeight;
 
         // Trays: light grey with a low lip.
         foreach (var trayName in new[] { "Change Tray", "Customer Plate" })
@@ -694,9 +685,27 @@ public static class P3StoreDressing
         Visual("Coin Dispenser Display", coins, machine + new Vector3(0f, 0.095f, -0.066f), new Vector3(0.07f, 0.028f, 0.004f), screenGlow, 0.002f);
         Visual("Coin Dispenser Chute", coins, machine + new Vector3(0.075f, 0.035f, 0f), new Vector3(0.07f, 0.004f, 0.05f), steel, 0.001f).transform.rotation = Quaternion.Euler(0f, 0f, -28f);
 
-        // The bag: white plastic with the store name on the clerk's side.
-        var bagFront = Find(null, "Bag Wall F");
-        Sign(parent, "Bag Name", bagFront.transform.position + new Vector3(0f, 0.005f, -0.006f), Quaternion.identity, new Vector2(0.26f, 0.06f), "동아편의점", "", new Color(0, 0, 0, 0), Navy, false);
+        // The bag: thin white film with the store's mark printed on both sides, standing open where the builder put its foot.
+        var film = Lit("P3_BagFilm", $"{Generated}/bag_film", Vector2.one, Color.white);
+        film.SetFloat("_Smoothness", 0.56f);
+        var bag = new GameObject("Plastic Bag", typeof(MeshFilter), typeof(MeshRenderer));
+        bag.transform.SetParent(parent, false);
+        bag.transform.position = Find(null, "Bag").transform.position;
+        bag.GetComponent<MeshFilter>().sharedMesh = P3Meshes.PlasticBag();
+        var bagRenderer = bag.GetComponent<MeshRenderer>();
+        bagRenderer.sharedMaterial = film;
+        // A third of a metre across: at the room's texel size (P3StoreLighting) each of its folds would get less than one texel.
+        bagRenderer.scaleInLightmap = 5f;
+
+        // The same bag as a customer carries it out: the pattern the director copies, switched off, so it takes no part in
+        // the bake. A copy moves with a customer and is lit by the probes.
+        var carried = new GameObject("Carried Bag", typeof(MeshFilter), typeof(MeshRenderer), typeof(CarriedBag));
+        carried.transform.SetParent(Find(null, "Bag").transform, false);
+        carried.GetComponent<MeshFilter>().sharedMesh = P3Meshes.CarriedBag();
+        carried.GetComponent<MeshRenderer>().sharedMaterial = film;
+        carried.SetActive(false);
+        var director = UnityEngine.Object.FindFirstObjectByType<CustomerDirector>() ?? throw new Exception("Dressing: CustomerDirector missing.");
+        director.BagToCarry = carried.GetComponent<CarriedBag>();
 
         // Two screens on stands: the POS on the left, the order screen on the right. Plain backs.
         foreach (var (center, sizePx) in new[] { (posScreen, new Vector2(860f, 660f)), (orderScreen, new Vector2(620f, 470f)) })
@@ -706,16 +715,167 @@ public static class P3StoreDressing
             var housing = Visual("Screen Housing", parent, center + rotation * new Vector3(0f, 0f, 0.019f), new Vector3(panel.x + 0.04f, panel.y + 0.04f, 0.03f), graphite, 0.012f);
             housing.transform.rotation = rotation;
             var neckTop = center + rotation * new Vector3(0f, -panel.y * 0.5f + 0.04f, 0.04f);
-            var baseAt = new Vector3(center.x, 0.9f, Mathf.Min(center.z - 0.1f, far - 0.08f));
+            // The POS monitor stands on the till, as it does in a store; the order screen stands on the counter.
+            bool onTill = center.x < 0f;
+            var baseAt = onTill
+                ? new Vector3(P2StoreBuilder.RegisterX + 0.09f, tillTop, far - 0.09f)
+                : new Vector3(center.x, 0.9f, Mathf.Min(center.z - 0.1f, far - 0.08f));
             var neck = Visual("Screen Neck", parent, (neckTop + baseAt) * 0.5f, new Vector3(0.04f, Vector3.Distance(neckTop, baseAt), 0.025f), steel, 0.008f);
             neck.transform.rotation = Quaternion.FromToRotation(Vector3.up, (neckTop - baseAt).normalized);
-            Visual("Screen Foot", parent, baseAt + new Vector3(0f, 0.006f, 0f), new Vector3(0.2f, 0.012f, 0.13f), graphite, 0.005f);
+            Visual("Screen Foot", parent, baseAt + new Vector3(0f, 0.006f, 0f), onTill ? new Vector3(0.18f, 0.012f, 0.12f) : new Vector3(0.2f, 0.012f, 0.13f), graphite, 0.005f);
         }
 
-        // Receipt printer behind the drawer.
-        var printer = new Vector3(d.x - 0.12f, 0.9f + 0.055f, far - 0.1f);
-        Visual("Receipt Printer", parent, printer, new Vector3(0.13f, 0.11f, 0.15f), graphite, 0.014f);
-        Visual("Receipt Paper", parent, printer + new Vector3(0f, 0.06f, 0.04f), new Vector3(0.07f, 0.003f, 0.06f), white, 0.001f).transform.rotation = Quaternion.Euler(-25f, 0f, 0f);
+        // Receipt printer on the till, in front of the monitor's left end and below it.
+        var printer = new Vector3(P2StoreBuilder.RegisterX - 0.125f, tillTop + 0.05f, P2StoreBuilder.RegisterFront + 0.1f);
+        Visual("Receipt Printer", parent, printer, new Vector3(0.13f, 0.1f, 0.15f), graphite, 0.014f);
+        Visual("Receipt Paper", parent, printer + new Vector3(0f, 0.055f, 0.04f), new Vector3(0.07f, 0.003f, 0.06f), white, 0.001f).transform.rotation = Quaternion.Euler(-25f, 0f, 0f);
+    }
+
+    /// <summary>
+    /// The till P2StoreBuilder.BuildCashRegister laid out (2026-11-10): a dark steel body open toward the clerk, and in it the
+    /// drawer with its front and lock, the insert with four note slots and four coin cups, the wads and heaps of money in
+    /// them, the clips that hold the notes down, and a label on the lip in front of each coin cup, where a store sticks
+    /// one. Everything under "Cash Drawer" slides with the drawer, so none of it is lightmapped (P3StoreLighting).
+    /// </summary>
+    static void CashRegisterLooks(Transform environment)
+    {
+        var root = Find(environment, "Cash Register").transform;
+        var drawer = root.Find("Cash Drawer") ?? throw new Exception("Dressing: the till has no drawer.");
+        var o = root.position;
+        float w = P2StoreBuilder.RegisterWidth, d = P2StoreBuilder.RegisterDepth, h = P2StoreBuilder.RegisterHeight;
+        float floor = P2StoreBuilder.TillFloor, rim = P2StoreBuilder.TillRim, half = P2StoreBuilder.TillHalfWidth;
+        float coinFront = P2StoreBuilder.CoinFront, coinBack = P2StoreBuilder.CoinBack, noteFront = P2StoreBuilder.NoteFront, noteBack = P2StoreBuilder.NoteBack;
+        var shell = Plain("P3_TillShell", new Color(0.075f, 0.08f, 0.09f), 0.55f, 0.3f);
+        var insert = Plain("P3_TillInsert", new Color(0.12f, 0.125f, 0.14f), 0.35f);
+        var insertFloor = Plain("P3_TillInsertFloor", new Color(0.17f, 0.18f, 0.195f), 0.25f);
+
+        // Body: top, sides, bottom and back. The face toward the clerk is the drawer's.
+        const float plate = 0.01f, wall = 0.008f, frontThick = 0.014f;
+        // The top reaches out over the drawer's front, as a till's cover does: from above, nothing inside shows past it.
+        float brow = frontThick + 0.003f;
+        Visual("Till Top", root, o + new Vector3(0f, h - plate * 0.5f, (d - brow) * 0.5f), new Vector3(w, plate, d + brow), shell, 0.004f);
+        foreach (float side in new[] { -1f, 1f })
+            Visual("Till Side", root, o + new Vector3(side * (w - wall) * 0.5f, (h - plate) * 0.5f, d * 0.5f), new Vector3(wall, h - plate, d), shell, 0.003f);
+        Visual("Till Bottom", root, o + new Vector3(0f, 0.003f, d * 0.5f), new Vector3(w, 0.006f, d), shell, 0.002f);
+        Visual("Till Back", root, o + new Vector3(0f, h * 0.5f, d - wall * 0.5f), new Vector3(w, h, wall), shell, 0.003f);
+
+        // Drawer: the front with its lock, and the steel tray the insert sits in.
+        const float frontBottom = 0.01f, frontTop = 0.092f;
+        Visual("Drawer Front", drawer, o + new Vector3(0f, (frontBottom + frontTop) * 0.5f, -frontThick * 0.5f), new Vector3(w - 0.004f, frontTop - frontBottom, frontThick), shell, 0.004f);
+        var lockAt = o + new Vector3(0f, 0.064f, -frontThick - 0.001f);
+        Round("Drawer Lock", drawer, lockAt, 0.02f, 0.003f, Quaternion.Euler(90f, 0f, 0f), steel);
+        Visual("Drawer Keyhole", drawer, lockAt + new Vector3(0f, 0f, -0.0018f), new Vector3(0.003f, 0.009f, 0.001f), graphite, 0.0004f);
+        float trayLength = noteBack + 0.005f, trayWidth = half * 2f + 0.016f;
+        Visual("Drawer Tray Floor", drawer, o + new Vector3(0f, 0.014f, trayLength * 0.5f), new Vector3(trayWidth, 0.004f, trayLength), shell, 0.0015f);
+        foreach (float side in new[] { -1f, 1f })
+            Visual("Drawer Tray Side", drawer, o + new Vector3(side * (trayWidth - 0.004f) * 0.5f, 0.047f, trayLength * 0.5f), new Vector3(0.004f, 0.07f, trayLength), shell, 0.0015f);
+        Visual("Drawer Tray Back", drawer, o + new Vector3(0f, 0.047f, trayLength + 0.002f), new Vector3(trayWidth, 0.07f, 0.004f), shell, 0.0015f);
+
+        // The insert: a floor, a rim, a wide lip in front for the labels, a wall between coins and notes, three dividers.
+        float insertFront = 0.004f, insertBack = noteBack + 0.004f;
+        float insertLength = insertBack - insertFront, insertMiddle = (insertFront + insertBack) * 0.5f;
+        float wallHeight = rim - floor + 0.006f, wallY = (floor - 0.006f + rim) * 0.5f;
+        Visual("Till Insert Floor", drawer, o + new Vector3(0f, floor - 0.003f, insertMiddle), new Vector3(half * 2f, 0.006f, insertLength), insertFloor, 0.002f);
+        foreach (float side in new[] { -1f, 1f })
+            Visual("Till Insert Side", drawer, o + new Vector3(side * (half - 0.002f), wallY, insertMiddle), new Vector3(0.004f, wallHeight, insertLength), insert, 0.0015f);
+        Visual("Till Insert Back", drawer, o + new Vector3(0f, wallY, insertBack - 0.002f), new Vector3(half * 2f, wallHeight, 0.004f), insert, 0.0015f);
+        float lip = coinFront - insertFront;
+        Visual("Till Insert Lip", drawer, o + new Vector3(0f, wallY, insertFront + lip * 0.5f), new Vector3(half * 2f, wallHeight, lip), insert, 0.002f);
+        Visual("Till Insert Cross", drawer, o + new Vector3(0f, wallY - 0.003f, (coinBack + noteFront) * 0.5f), new Vector3(half * 2f, wallHeight - 0.006f, noteFront - coinBack), insert, 0.0015f);
+        for (int i = 1; i < 4; i++)
+            Visual("Till Insert Divider", drawer, o + new Vector3(-half + i * half * 0.5f, wallY - 0.003f, (coinFront + noteBack) * 0.5f), new Vector3(0.004f, wallHeight - 0.006f, noteBack - coinFront), insert, 0.0015f);
+
+        var noteMesh = P3Meshes.Note();
+        var coinMesh = P3Meshes.Coin();
+        var random = new System.Random(1110);
+        float Jitter(float range) => ((float)random.NextDouble() * 2f - 1f) * range;
+
+        // Notes: a wad in each slot under a sprung clip. The piece on top, which the clerk takes, is laid there while playing.
+        for (int i = 0; i < P2StoreBuilder.NoteValues.Length; i++)
+        {
+            int value = P2StoreBuilder.NoteValues[i];
+            float x = P2StoreBuilder.TillColumn(i), z = (noteFront + noteBack) * 0.5f, length = P2StoreBuilder.NoteLength(value);
+            var material = Load<Material>($"{P2Materials}/P2_Note{value}.mat");
+            // Two layers a little askew: a wad of used notes is never square.
+            float lower = P2StoreBuilder.NoteStack * 0.65f, upper = P2StoreBuilder.NoteStack - lower;
+            Money("Note Wad", drawer, noteMesh, material, o + new Vector3(x, floor + lower * 0.5f, z), Quaternion.Euler(0f, -90f + Jitter(1.2f), 0f), new Vector3(length, lower, P2StoreBuilder.NoteWidth));
+            Money("Note Wad", drawer, noteMesh, material, o + new Vector3(x + Jitter(0.0012f), floor + lower + upper * 0.5f, z + Jitter(0.002f)), Quaternion.Euler(0f, -90f + Jitter(1.5f), 0f), new Vector3(length, upper, P2StoreBuilder.NoteWidth));
+
+            float top = floor + P2StoreBuilder.NoteStack + P2StoreBuilder.NoteThickness;
+            var hinge = o + new Vector3(x, top + 0.014f, noteBack - 0.006f);
+            // Short, so it holds the notes by their end and the number in the middle stays in sight.
+            var pad = o + new Vector3(x, top + 0.0045f, noteBack - 0.03f);
+            Visual("Note Clip Hinge", drawer, hinge, new Vector3(0.026f, 0.012f, 0.012f), steel, 0.003f);
+            var arm = Visual("Note Clip Arm", drawer, (hinge + pad) * 0.5f, new Vector3(0.012f, 0.0025f, Vector3.Distance(hinge, pad)), steel, 0.001f);
+            arm.transform.rotation = Quaternion.LookRotation(pad - hinge);
+            Visual("Note Clip Pad", drawer, pad + new Vector3(0f, -0.001f, -0.004f), new Vector3(0.03f, 0.004f, 0.012f), steel, 0.0015f);
+        }
+
+        // Coins: a heap in each cup, lying flat in layers and thinning toward the top, and the cup's label on the lip.
+        for (int i = 0; i < P2StoreBuilder.CoinValues.Length; i++)
+        {
+            int value = P2StoreBuilder.CoinValues[i];
+            float x = P2StoreBuilder.TillColumn(i), z = (coinFront + coinBack) * 0.5f;
+            float diameter = P2StoreBuilder.CoinDiameter(value), thickness = P2StoreBuilder.CoinThickness;
+            var material = Load<Material>($"{P2Materials}/P2_Coin{value}.mat");
+            float cupX = half * 0.5f - 0.006f, cupZ = coinBack - coinFront - 0.004f;
+            int across = Mathf.Max(1, Mathf.FloorToInt(cupX / (diameter + 0.001f))), along = Mathf.Max(1, Mathf.FloorToInt(cupZ / (diameter + 0.001f)));
+            float cellX = cupX / across, cellZ = cupZ / along;
+            int layers = Mathf.RoundToInt(P2StoreBuilder.CoinHeap / thickness);
+            for (int layer = 0; layer < layers; layer++)
+                for (int ix = 0; ix < across; ix++)
+                    for (int iz = 0; iz < along; iz++)
+                    {
+                        // The middle is always there, for the coin on top to lie on.
+                        bool middle = Mathf.Abs(ix - (across - 1) * 0.5f) <= 0.5f && Mathf.Abs(iz - (along - 1) * 0.5f) <= 0.5f;
+                        if (!middle && random.NextDouble() < layer * 0.28) continue;
+                        var at = o + new Vector3(
+                            x + (ix - (across - 1) * 0.5f) * cellX + Jitter((cellX - diameter) * 0.5f),
+                            floor + thickness * (layer + 0.5f),
+                            z + (iz - (along - 1) * 0.5f) * cellZ + Jitter((cellZ - diameter) * 0.5f));
+                        Money("Coin", drawer, coinMesh, material, at, Quaternion.Euler(0f, Jitter(180f), 0f), new Vector3(diameter, thickness, diameter));
+                    }
+
+            var label = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            label.name = "Coin Cup Label";
+            UnityEngine.Object.DestroyImmediate(label.GetComponent<Collider>());
+            label.transform.SetParent(drawer, false);
+            // Read from the clerk's side, looking down at the lip.
+            label.transform.SetPositionAndRotation(o + new Vector3(x, rim + 0.0006f, insertFront + lip * 0.5f), Quaternion.LookRotation(Vector3.down, Vector3.forward));
+            label.transform.localScale = new Vector3(0.04f, 0.015f, 1f);
+            var printed = Asset($"P3_TillLabel{value}");
+            Paint(printed, null, Color.white, 0.2f, Vector2.one, 0f);
+            printed.SetTexture("_BaseMap", Load<Texture2D>($"{CashArt}/label_{value}.png"));
+            var labelRenderer = label.GetComponent<Renderer>();
+            labelRenderer.sharedMaterial = printed;
+            labelRenderer.shadowCastingMode = ShadowCastingMode.Off;
+        }
+    }
+
+    /// <summary>A note, a wad of notes or a coin: one of the two money meshes, scaled to size.</summary>
+    static void Money(string name, Transform parent, Mesh mesh, Material material, Vector3 at, Quaternion rotation, Vector3 size)
+    {
+        var go = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer));
+        go.transform.SetParent(parent, false);
+        go.transform.SetPositionAndRotation(at, rotation);
+        go.transform.localScale = size;
+        go.GetComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.GetComponent<MeshRenderer>();
+        renderer.sharedMaterial = material;
+        renderer.shadowCastingMode = ShadowCastingMode.Off;
+    }
+
+    /// <summary>A small round part, such as a lock: Unity's cylinder, whose axis is y before <paramref name="rotation"/>.</summary>
+    static void Round(string name, Transform parent, Vector3 center, float diameter, float thickness, Quaternion rotation, Material material)
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        go.name = name;
+        UnityEngine.Object.DestroyImmediate(go.GetComponent<Collider>());
+        go.transform.SetParent(parent, false);
+        go.transform.SetPositionAndRotation(center, rotation);
+        // The cylinder is 2 units tall.
+        go.transform.localScale = new Vector3(diameter, thickness * 0.5f, diameter);
+        go.GetComponent<Renderer>().sharedMaterial = material;
     }
 
     // ---------- Pieces ----------
@@ -1099,8 +1259,21 @@ public static class P3StoreDressing
         Find(null, "Dispenser Water").SetActive(true);
         Shot("14_running_and_pouring", new Vector3(-4.6f, 1.4f, 3.9f), new Vector3(-5.75f, 1.05f, 3.9f));
 
+        // The till shut, then with its drawer out as for a cash sale (not saved). The pieces the clerk takes are laid on the
+        // wads and heaps while playing, so these show the drawer as it is under them.
+        Shot("17_till_shut", new Vector3(-0.42f, 1.45f, 0f), new Vector3(-0.78f, 0.98f, 0.62f));
+        var till = Find(null, "Cash Drawer").transform;
+        till.localPosition += Vector3.back * P2StoreBuilder.DrawerTravel;
+        Shot("18_till_open", new Vector3(-0.42f, 1.45f, 0f), new Vector3(-0.78f, 0.96f, 0.5f));
+        Shot("19_till_open_from_above", new Vector3(-0.78f, 1.42f, 0.16f), new Vector3(-0.78f, 0.95f, 0.4f));
+        Shot("20_till_open_from_the_start", new Vector3(0f, 1.6f, -0.05f), new Vector3(-0.72f, 0.95f, 0.5f));
+        // The bag: from where the clerk stands, close from the scanner's side, and from the customer's side.
+        Shot("21_bag_from_the_clerk", new Vector3(-0.2f, 1.5f, -0.1f), new Vector3(-0.4f, 1.0f, 0.56f));
+        Shot("22_bag_close", new Vector3(-0.08f, 1.22f, 0.22f), new Vector3(-0.4f, 1.0f, 0.56f));
+        Shot("23_bag_from_the_customer", new Vector3(-0.15f, 1.5f, 1.55f), new Vector3(-0.4f, 1.0f, 0.56f));
+
         RenderTexture.active = null;
         UnityEngine.Object.DestroyImmediate(go);
-        Debug.Log($"[P3] Rendered {views.Count + 2} views to {dir}");
+        Debug.Log($"[P3] Rendered {views.Count + 6} views to {dir}");
     }
 }

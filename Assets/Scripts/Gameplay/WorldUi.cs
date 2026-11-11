@@ -164,6 +164,16 @@ public static class WorldUi
         return image;
     }
 
+    /// <summary>An empty rectangle that holds other pieces, so they can be shown and hidden together. Its children are placed from its own top-left corner.</summary>
+    public static RectTransform AddGroup(RectTransform panel, float x, float y, float width, float height)
+    {
+        var go = new GameObject("Group", typeof(RectTransform));
+        go.transform.SetParent(panel, false);
+        var rect = (RectTransform)go.transform;
+        Place(rect, x, y, width, height);
+        return rect;
+    }
+
     /// <summary>Product names without the development suffix the catalog still carries.</summary>
     public static string Clean(string name) => string.IsNullOrEmpty(name) ? "" : name.Replace(" (개발용)", "").Replace("(개발용)", "").Trim();
 
