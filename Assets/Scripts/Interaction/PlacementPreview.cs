@@ -77,7 +77,7 @@ public class PlacementPreview : MonoBehaviour
     {
         var center = held.transform.TransformPoint(held.Proxy.center);
         var candidates = new List<ShelfSlotZone>();
-        foreach (var slot in Intake.Slots)
+        foreach (var slot in Intake.AllSlots)
             if (slot != null && slot.IsTarget && Vector3.Distance(slot.Zone.ClosestPoint(center), center) <= CandidateRadius)
                 candidates.Add(slot);
         if (candidates.Count == 0)

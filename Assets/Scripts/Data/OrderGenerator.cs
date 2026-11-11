@@ -8,7 +8,13 @@ public class ShiftPlan
     public int Day;
     /// <summary>Everything a customer can bring to the counter today.</summary>
     public readonly List<ProductPrefab> Assortment = new List<ProductPrefab>();
-    /// <summary>Products the player ordered in, beyond what the store opened with.</summary>
+    /// <summary>
+    /// Products that come in a box this morning and are on sale once the player has put them on their shelf. Not part of
+    /// <see cref="Assortment"/>: only customers from <see cref="OrderGenerator.NewFromCustomer"/> on ask for them, never as
+    /// the first thing in the basket, so a line for one that is not on the shelf yet can simply be left out.
+    /// </summary>
+    public readonly List<ProductPrefab> NewToday = new List<ProductPrefab>();
+    /// <summary>Products the player ordered in, beyond what the store opened with: those on the shelves and today's boxes.</summary>
     public int OrderedProducts;
     /// <summary>What gets heated or filled, when the store has the microwave or the dispenser. Null without it.</summary>
     public ProductPrefab MicrowaveItem, HotWaterItem;
@@ -31,6 +37,8 @@ public static class OrderGenerator
     /// <summary>Above this a customer pays by card: change is laid down by hand, a few pieces at most.</summary>
     public const int CashCeiling = 5000;
     const int WideAssortment = 10;
+    /// <summary>The first customer (counted from 0) who may ask for a product that came in a box this morning: the two before leave time to shelve it.</summary>
+    public const int NewFromCustomer = 2;
 
     public static int CustomersFor(int orderedProducts, int services) =>
         Mathf.Min(MaxCustomers, BaseCustomers + orderedProducts / ProductsPerCustomer + services);
@@ -59,7 +67,7 @@ public static class OrderGenerator
         if (plan.HotWaterItem != null) Assign(Order.HotWater);
         if (plan.OnePlus) Assign(Order.OnePlus);
 
-        int mostLines = plan.Assortment.Count >= WideAssortment ? 3 : 2;
+        int mostLines = plan.Assortment.Count + plan.NewToday.Count >= WideAssortment ? 3 : 2;
         for (int i = 0; i < count; i++)
         {
             bool rush = count >= RushFrom && i >= count - RushCustomers;
@@ -86,12 +94,28 @@ public static class OrderGenerator
                 order.Lines.Add(new OrderLine { Product = Take(left, random), Quantity = 2 });
                 lines--;
             }
+            // The first thing in the basket is always something the store had yesterday.
+            if (order.Lines.Count == 0)
+            {
+                order.Lines.Add(new OrderLine { Product = Take(left, random), Quantity = 1 });
+                lines--;
+            }
+            if (i >= NewFromCustomer) left.AddRange(plan.NewToday);
             for (; lines > 0 && left.Count > 0; lines--)
                 order.Lines.Add(new OrderLine { Product = Take(left, random), Quantity = 1 });
-
-            if (order.Payment == PaymentMethod.Cash && order.TotalPrice > CashCeiling) order.Payment = PaymentMethod.Card;
             orders.Add(order);
         }
+
+        // Somebody asks for each new product on its first day: the order is felt the day the box is opened.
+        for (int n = 0; n < plan.NewToday.Count && count > NewFromCustomer; n++)
+        {
+            var product = plan.NewToday[n];
+            if (orders.Exists(order => order.Lines.Exists(line => line.Product == product))) continue;
+            int at = NewFromCustomer + random.Next(count - NewFromCustomer);
+            orders[at].Lines.Add(new OrderLine { Product = product, Quantity = 1 });
+        }
+        foreach (var order in orders)
+            if (order.Payment == PaymentMethod.Cash && order.TotalPrice > CashCeiling) order.Payment = PaymentMethod.Card;
         Debug.Log($"[Orders] Day {plan.Day}: {orders.Count} generated from {plan.Assortment.Count} products ({plan.OrderedProducts} ordered in), services={plan.Services}");
         return orders;
     }

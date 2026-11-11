@@ -119,7 +119,9 @@ public class StockBox : MonoBehaviour
         flapMaterial = look.Cardboard;
         hintMaterial = look.Hint;
         var size = Delivery.Product.Proxy.size;
-        int columns = 2, rows = Delivery.CaseQuantity / 2;
+        // Two across, as the deliveries file has them (4, 6, 8). An odd case, the three of a product newly ordered in
+        // (docs/p2/해금_성장_기획_2026-11-10.md), stands in a single file.
+        int columns = Delivery.CaseQuantity % 2 == 0 ? 2 : 1, rows = Delivery.CaseQuantity / columns;
         Inner = new Vector3(columns * size.x + 0.01f, size.y + 0.01f, rows * size.z + 0.01f);
         float ox = Inner.x * 0.5f + Wall, oz = Inner.z * 0.5f + Wall;
 
@@ -212,12 +214,16 @@ public class StockBox : MonoBehaviour
 
     void AddLabel(Vector3 local, Quaternion turn)
     {
-        float height = Mathf.Min(0.09f, Inner.y * 0.6f);
-        var panel = WorldUi.CreatePanel(transform, "Box Label", transform.TransformPoint(local), transform.rotation * turn, new Vector2(620f, height / 0.0006f), 0.0006f, new Color(1f, 1f, 1f, 0.92f));
-        var text = WorldUi.AddText(panel, 0f, 0f, 620f, height / 0.0006f, 38, TextAnchor.MiddleCenter);
+        // The single-file box of a new product is narrower than the label of the usual boxes: the same words at nearly the
+        // same size, on two lines and as wide as its face.
+        bool narrow = Delivery.CaseQuantity % 2 != 0;
+        float width = narrow ? Mathf.Min(620f, (Inner.x + 2f * Wall) / 0.0006f) : 620f;
+        float height = narrow ? Mathf.Min(0.066f, Inner.y * 0.6f) : Mathf.Min(0.09f, Inner.y * 0.6f);
+        var panel = WorldUi.CreatePanel(transform, "Box Label", transform.TransformPoint(local), transform.rotation * turn, new Vector2(width, height / 0.0006f), 0.0006f, new Color(1f, 1f, 1f, 0.92f));
+        var text = WorldUi.AddText(panel, 0f, 0f, width, height / 0.0006f, narrow ? 32 : 38, TextAnchor.MiddleCenter);
         text.color = WorldUi.Palette.Navy;
         WorldUi.Bold(text);
-        text.text = WorldUi.Clean(Label);
+        text.text = narrow ? $"{WorldUi.Clean(Delivery.Product.Data.Name)}\n×{Delivery.CaseQuantity} → {Delivery.TargetSlot}" : WorldUi.Clean(Label);
     }
 
     Transform MinorFlap(string name, float x, float inward, Material material)
@@ -414,6 +420,13 @@ public class StockBox : MonoBehaviour
     public void AutoCut()
     {
         if (Stage == BoxStage.Sealed) FinishCut();
+    }
+
+    /// <summary>Cut and opened at once, wherever it stands: for checks that do not use hands (P2GrowthVerification).</summary>
+    public void ForceOpen()
+    {
+        if (Stage == BoxStage.Sealed) FinishCut();
+        if (Stage == BoxStage.TapeCut) Open();
     }
 
     public void ShowBeads(bool show) => forceBeads = show;

@@ -74,6 +74,8 @@ public partial class P2DayVerification
         // SA/SB: between a box stand (the row's ends) and the delivery slot (A-2, B-1). SA1/SB2: in front of the other slots.
         { "PL", new Vector2(-1.6f, 1.5f) }, { "SA", new Vector2(-3.25f, 2.6f) }, { "SA1", new Vector2(-2.35f, 2.6f) },
         { "SB", new Vector2(-0.55f, 2.6f) }, { "SB2", new Vector2(-1.25f, 2.6f) },
+        // SD: in front of row D's top-left display shelf (D-1), inside the door. Only the hands' check of a kept store goes there.
+        { "SD", new Vector2(-3.66f, -0.1f) },
     };
 
     static readonly string[][] Edges =
@@ -82,6 +84,7 @@ public partial class P2DayVerification
         new[] { "KC1", "CART1" }, new[] { "KC1", "KC2" }, new[] { "KC2", "CART2" }, new[] { "KD", "PR" },
         new[] { "C", "PL0" }, new[] { "PL0", "PL" },
         new[] { "PL", "SA" }, new[] { "SA", "SA1" }, new[] { "PL", "PR" }, new[] { "PR", "SB" }, new[] { "SB", "SB2" }, new[] { "SA", "SB" },
+        new[] { "PL0", "SD" },
     };
 
     string at = "C";

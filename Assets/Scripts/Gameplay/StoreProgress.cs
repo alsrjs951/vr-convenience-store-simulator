@@ -12,7 +12,10 @@ public class StoreProgress
 {
     public const string FileName = "store_progress.json";
 
-    public int version = 1;
+    /// <summary>2: products come in a box and are on sale once shelved (<see cref="shelved"/>). 1: on sale as soon as they were in the store.</summary>
+    public const int CurrentVersion = 2;
+
+    public int version = CurrentVersion;
     /// <summary>The next day to work, counted from 1. The first days are the training.</summary>
     public int day = 1;
     /// <summary>The training is done: the ordering tablet is the player's.</summary>
@@ -24,6 +27,8 @@ public class StoreProgress
     public List<string> owned = new List<string>();
     /// <summary>Ordered today; in the store from the next morning.</summary>
     public List<string> arriving = new List<string>();
+    /// <summary>Products of <see cref="owned"/> that the player has put on their shelf: only these are on sale.</summary>
+    public List<string> shelved = new List<string>();
     /// <summary>Everything there is to order is in the store, and the morning that said so has been.</summary>
     public bool completed;
 
@@ -35,6 +40,7 @@ public class StoreProgress
 
     public bool Has(string id) => owned.Contains(id);
     public bool Ordered(string id) => owned.Contains(id) || arriving.Contains(id);
+    public bool Shelved(string id) => shelved.Contains(id);
     public bool CanBuy(UnlockItem item) => !Ordered(item.Id) && budget >= item.Price;
 
     public bool Buy(UnlockItem item)
@@ -63,6 +69,8 @@ public class StoreProgress
         completed = false;
         owned.Clear();
         arriving.Clear();
+        shelved.Clear();
+        version = CurrentVersion;
     }
 
     public static StoreProgress Load(string path)
@@ -82,6 +90,7 @@ public class StoreProgress
         if (progress == null) progress = new StoreProgress();
         if (progress.owned == null) progress.owned = new List<string>();
         if (progress.arriving == null) progress.arriving = new List<string>();
+        if (progress.shelved == null) progress.shelved = new List<string>();
         progress.day = Mathf.Max(1, progress.day);
         progress.Path = path;
         Debug.Log($"[Progress] Loaded day={progress.day} graduated={progress.graduated} budget={progress.budget} owned={progress.owned.Count} arriving={progress.arriving.Count} from {(string.IsNullOrEmpty(path) ? "(memory)" : path)}");

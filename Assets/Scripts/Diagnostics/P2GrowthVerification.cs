@@ -114,7 +114,7 @@ public class P2GrowthVerification : MonoBehaviour
         if (finished) yield break;
         yield return HomeAndBack();
         if (finished) yield break;
-        yield return CompleteStoreDay();
+        yield return BoxesComeAgain();
         if (finished) yield break;
         yield return StartOver();
         Finish();
@@ -303,8 +303,8 @@ public class P2GrowthVerification : MonoBehaviour
         tablet.BuyButtons[1].onClick.Invoke();
         yield return null;
         var firstProduct = Game.UnlockItems[0];
-        Check("terminal.products_ordered", progress.budget == before - 6000 && progress.arriving.Count == 2 && progress.owned.Count == 0 && tablet.RowText(0).Contains("내일 도착")
-                && !tablet.BuyButtons[0].gameObject.activeSelf && tablet.NoticeText.Contains("내일 아침") && StoreProgress.Load(progress.Path).arriving.Count == 2,
+        Check("terminal.products_ordered", progress.budget == before - 6000 && progress.arriving.Count == 2 && progress.owned.Count == 0 && tablet.RowText(0).Contains("입고 예정")
+                && !tablet.BuyButtons[0].gameObject.activeSelf && tablet.NoticeText.Contains("박스로") && StoreProgress.Load(progress.Path).arriving.Count == 2,
             $"budget {before} -> {progress.budget}; arriving={string.Join(",", progress.arriving)}; row0={tablet.RowText(0)}; notice={tablet.NoticeText}");
         Check("terminal.sample_on_the_counter", Game.Samples[0] != null && Game.Samples[1] != null && Game.Samples[0].Data.Id == firstProduct.Id && DecorShown() == 0,
             $"samples={(Game.Samples[0] != null ? Game.Samples[0].Data.Id : "none")},{(Game.Samples[1] != null ? Game.Samples[1].Data.Id : "none")}; shelves still empty={DecorShown() == 0}");
@@ -339,10 +339,46 @@ public class P2GrowthVerification : MonoBehaviour
         if (finished) yield break;
         yield return null;
         var progress = Game.Progress;
-        Check("day5.orders_arrived", progress.owned.Count == 9 && progress.arriving.Count == 0 && Game.Samples[0] == null && Game.Samples[1] == null && Game.BoardText.Contains("새로 들어옴"),
+        Check("day5.orders_arrived", progress.owned.Count == 9 && progress.arriving.Count == 0 && Game.Samples[0] == null && Game.Samples[1] == null
+                && Game.BoardText.Contains("새 상품 입고") && Game.BoardText.Contains("진열해야"),
             $"owned={progress.owned.Count}; arriving={progress.arriving.Count}; board={Game.BoardText.Replace("\n", " / ")}");
-        Check("day5.shelves_filled", DecorShown() == 2 && SlotShown(Game.UnlockItems[0].Slot) && SlotShown(Game.UnlockItems[1].Slot),
-            $"display shelves stocked={DecorShown()}; {Game.UnlockItems[0].Slot}={SlotShown(Game.UnlockItems[0].Slot)}; {Game.UnlockItems[1].Slot}={SlotShown(Game.UnlockItems[1].Slot)}");
+        // The two products ordered yesterday are boxes on the cart, and their shelves stand bare and marked until stocked.
+        var first = Game.UnlockItems[0];
+        var second = Game.UnlockItems[1];
+        var firstSlot = Intake.SlotFor(first.Slot);
+        var secondSlot = Intake.SlotFor(second.Slot);
+        var firstBox = Intake.Boxes.Find(box => box.Delivery.Product == first.Product);
+        var secondBox = Intake.Boxes.Find(box => box.Delivery.Product == second.Product);
+        Check("day5.new_products_come_in_boxes", Game.BoxesToday.Count == 2 && Intake.Boxes.Count == 2 && firstBox != null && secondBox != null && firstBox.Delivery.CaseQuantity == 3 && firstBox.Units.Length == 3
+                && Intake.Today.Count == 4 && Intake.Today[2].ArriveAfterOrder == 2 && Intake.Today[3].ArriveAfterOrder == 4,
+            $"boxes for new products={Game.BoxesToday.Count}; on the cart={Intake.Boxes.Count}; units={(firstBox != null ? firstBox.Units.Length : 0)}; the day's boxes={Intake.Today.Count}; the usual two come after customers {(Intake.Today.Count == 4 ? $"{Intake.Today[2].ArriveAfterOrder} and {Intake.Today[3].ArriveAfterOrder}" : "?")}");
+        Check("day5.shelves_wait_for_them", DecorShown() == 0 && SlotShown(first.Slot) && SlotShown(second.Slot) && firstSlot.IsTarget && secondSlot.IsTarget && firstSlot.Filled == 0 && firstSlot.Zone.enabled
+                && firstSlot.HighlightShown && !progress.Shelved(first.Id) && !progress.Shelved(second.Id),
+            $"display shelves stocked={DecorShown()}; {first.Slot} shown={SlotShown(first.Slot)}, target={firstSlot.IsTarget}, filled={firstSlot.Filled}, zone={firstSlot.Zone.enabled}, highlight={firstSlot.HighlightShown}; on sale yet={progress.Shelved(first.Id)}");
+        var plan = Game.PlanFor(day);
+        var generated = OrderGenerator.Build(plan);
+        int askedForFirst = 0, askedForSecond = 0;
+        bool newOnlyLater = true;
+        for (int i = 0; i < generated.Count; i++)
+            for (int line = 0; line < generated[i].Lines.Count; line++)
+            {
+                var product = generated[i].Lines[line].Product;
+                if (product != first.Product && product != second.Product) continue;
+                if (product == first.Product) askedForFirst++; else askedForSecond++;
+                newOnlyLater &= i >= OrderGenerator.NewFromCustomer && line > 0;
+            }
+        Check("day5.customers_ask_for_them_later", plan.NewToday.Count == 2 && !plan.Assortment.Contains(first.Product) && askedForFirst >= 1 && askedForSecond >= 1 && newOnlyLater,
+            $"new today={plan.NewToday.Count}; orders with {first.Id}={askedForFirst}, with {second.Id}={askedForSecond}; only from customer {OrderGenerator.NewFromCustomer + 1} on and never first in the basket={newOnlyLater}");
+
+        // The first is put on its shelf (the box opened and its three placed without hands); the second stays in its box.
+        firstBox.ForceOpen();
+        yield return null;
+        for (int unit = 0; unit < firstBox.Units.Length; unit++) Intake.Shelve(firstBox.Units[unit].Product, firstSlot, unit);
+        yield return new WaitForSeconds(0.6f);
+        var kept = StoreProgress.Load(progress.Path);
+        Check("day5.shelved_is_on_sale", firstSlot.Filled == 3 && firstSlot.Merged != null && firstSlot.Merged.ShownUnits == 3 && !firstSlot.HighlightShown && firstBox.Stage == BoxStage.Empty
+                && progress.Shelved(first.Id) && !progress.Shelved(second.Id) && kept.Shelved(first.Id) && Intake.Shelved == 3 && DecorShown() == 1,
+            $"{first.Slot} filled={firstSlot.Filled}, drawn={(firstSlot.Merged != null ? firstSlot.Merged.ShownUnits : 0)}; box={firstBox.Stage}; on sale={progress.Shelved(first.Id)} (saved={kept.Shelved(first.Id)}); {second.Id} on sale={progress.Shelved(second.Id)}; shelved today={Intake.Shelved}");
         Check("day5.equipment_in_place", PartShown("Microwave Top") && PartShown("MicrowaveZone") && PartShown("Dispenser Body") && PartShown("WaterDispenserZone") && !PartShown("Microwave Lit") && !PartShown("Dispenser Water")
                 && Mathf.Approximately(scanner.MaxBarcodeAngle, GameManager.NewScannerAngle) && desk.AutoCoins && Mathf.Approximately(CustomerDirector.LineGraceSeconds, GameManager.MusicLineGrace)
                 && Game.Pos.Audio.MusicOn,
@@ -378,26 +414,35 @@ public class P2GrowthVerification : MonoBehaviour
         var seen = new List<Order>();
         yield return Serve(expected, "day5", seen);
         if (finished) yield break;
-        var assortment = Game.PlanFor(day).Assortment;
-        bool fromStore = seen.Count == expected, soldNew = false;
-        int requests = 0, rush = 0;
+        var assortment = plan.Assortment;
+        bool fromStore = seen.Count == expected, boughtSecond = false;
+        int requests = 0, rush = 0, boughtFirst = 0;
         foreach (var order in seen)
         {
             if (order.Special != Order.None) requests++;
             if (Mathf.Approximately(order.TimeLimitSeconds, OrderGenerator.RushLimit)) rush++;
             foreach (var line in order.Lines)
             {
-                fromStore &= assortment.Contains(line.Product);
-                soldNew |= line.Product.Data.Id == Game.UnlockItems[0].Id || line.Product.Data.Id == Game.UnlockItems[1].Id;
+                fromStore &= assortment.Contains(line.Product) || line.Product == first.Product;
+                if (line.Product == first.Product) boughtFirst += line.Quantity;
+                boughtSecond |= line.Product == second.Product;
             }
         }
-        Check("day5.customers_follow_the_store", fromStore && assortment.Count == 9 && requests >= 3 && rush == OrderGenerator.RushCustomers,
-            $"assortment={assortment.Count}; orders seen={seen.Count}; requests={requests}; rush customers={rush}; a product ordered in was bought today={soldNew}");
+        Check("day5.customers_follow_the_store", fromStore && assortment.Count == 7 && requests >= 3 && rush == OrderGenerator.RushCustomers,
+            $"assortment={assortment.Count}; orders seen={seen.Count}; requests={requests}; rush customers={rush}");
+        // What was shelved sold the same day; what stayed in its box was left out of the baskets that wanted it.
+        Check("day5.shelved_sold_boxed_missed", boughtFirst == askedForFirst && Game.NewSoldToday == askedForFirst && !boughtSecond && Game.MissedNewToday == askedForSecond
+                && Game.Director.Sales < Game.PossibleSales && secondSlot.Filled == 0 && !progress.Shelved(second.Id),
+            $"{first.Id}: asked {askedForFirst}, sold {Game.NewSoldToday}; {second.Id}: asked {askedForSecond}, left out {Game.MissedNewToday}, in a basket={boughtSecond}; sales {Game.Director.Sales} of {Game.PossibleSales}");
 
         yield return Wait(() => Game.State == DayState.DayEnd && Game.LeaveButton.gameObject.activeInHierarchy, 60f, "day5.settled");
         if (finished) yield break;
-        Check("day5.terminal_remembers", Game.Tablet.Shown && Game.Tablet.SummaryText == "구색 7/14  ·  설비 7/7" && Game.Tablet.RowText(0).Contains("들어옴") && !Game.Tablet.BuyButtons[0].gameObject.activeSelf && Game.Tablet.BuyButtons[2].gameObject.activeSelf,
-            $"summary={Game.Tablet.SummaryText}; row0={Game.Tablet.RowText(0)}; row2 can be ordered={Game.Tablet.BuyButtons[2].gameObject.activeSelf}");
+        Check("day5.settlement_says_what_the_order_did", Game.BoardText.Contains($"새 상품 {first.Name} · {second.Name}") && Game.BoardText.Contains($"{Game.NewSoldToday}개 판매") && Game.BoardText.Contains($"놓친 주문 {Game.MissedNewToday}건"),
+            $"board={Game.BoardText.Replace("\n", " / ")}");
+        yield return Capture("g07e_day5_settlement_new_products");
+        Check("day5.terminal_remembers", Game.Tablet.Shown && Game.Tablet.SummaryText == "구색 7/14  ·  설비 7/7" && Game.Tablet.RowText(0).Contains("판매 중") && Game.Tablet.RowText(1).Contains("진열 대기")
+                && !Game.Tablet.BuyButtons[0].gameObject.activeSelf && Game.Tablet.BuyButtons[2].gameObject.activeSelf,
+            $"summary={Game.Tablet.SummaryText}; row0={Game.Tablet.RowText(0)}; row1={Game.Tablet.RowText(1)}; row2 can be ordered={Game.Tablet.BuyButtons[2].gameObject.activeSelf}");
     }
 
     /// <summary>The rest of the catalogue, ordered at the end of the second day; the budget is topped up for it.</summary>
@@ -412,19 +457,24 @@ public class P2GrowthVerification : MonoBehaviour
         yield return null;
         bool nothingLeft = true;
         foreach (var button in tablet.BuyButtons) nothingLeft &= !button.gameObject.activeSelf;
-        Check("terminal.store_filled", progress.arriving.Count == 7 && progress.owned.Count == 9 && tablet.SummaryText == "구색 14/14  ·  설비 7/7" && tablet.NoticeText.Contains("다 채웠습니다") && nothingLeft && !progress.completed,
+        Check("terminal.store_filled", progress.arriving.Count == 7 && progress.owned.Count == 9 && tablet.SummaryText == "구색 14/14  ·  설비 7/7" && tablet.NoticeText.Contains("더 들일 것이 없습니다") && nothingLeft && !progress.completed,
             $"arriving={progress.arriving.Count}; owned={progress.owned.Count}; summary={tablet.SummaryText}; notice={tablet.NoticeText}; nothing left to order={nothingLeft}; completed yet={progress.completed}");
     }
 
-    /// <summary>The first morning with everything in: the board says so once, and the day is as busy as the store gets.</summary>
-    IEnumerator CompleteStoreDay()
+    /// <summary>
+    /// The third day: the box left over comes again with the next one, both are shelved this time, and the day's customers
+    /// buy from them. The six products still waiting for their boxes are then put on their shelves by the check itself,
+    /// in place of three more days of shelving, so that the next morning is the one with everything in.
+    /// </summary>
+    IEnumerator BoxesComeAgain()
     {
         var title = Game.Title;
+        var progress = Game.Progress;
         int day = GameManager.TrainingDays + 3;
         title.StartButton.onClick.Invoke();
         yield return Wait(() => Game.State == DayState.Commute, 5f, "continue.chosen");
         if (finished) yield break;
-        Check("continue.same_store", title.Choice == TitleChoice.Continue && Game.Day == day && Game.Progress.owned.Count == 16, $"choice={title.Choice}; day={Game.Day}; owned={Game.Progress.owned.Count}");
+        Check("continue.same_store", title.Choice == TitleChoice.Continue && Game.Day == day && progress.owned.Count == 16, $"choice={title.Choice}; day={Game.Day}; owned={progress.owned.Count}");
         yield return new WaitForSeconds(1.6f);
         title.PlacePlayer(title.CounterSpot);
         yield return Wait(() => Game.State == DayState.PunchIn, 10f, "continue.at_the_counter");
@@ -433,23 +483,41 @@ public class P2GrowthVerification : MonoBehaviour
         if (finished) yield break;
         yield return Wait(() => Game.Day == day && Game.BoardText.Contains($"{day}일차 출근"), 15f, "day6.begins");
         if (finished) yield break;
-        Check("day6.store_complete", Game.BoardText.Contains("매장 완성") && Game.Progress.completed && DecorShown() == 9 && LooksShown() == 4,
-            $"board={Game.BoardText.Replace("\n", " / ")}; completed={Game.Progress.completed}; shelves={DecorShown()}; equipment looks={LooksShown()}/4");
-        yield return Capture("g09_day6_store_complete");
+
+        var again = Game.UnlockItems[1];
+        var next = Game.UnlockItems[2];
+        Check("day6.left_over_box_is_back", Game.BoardText.Contains($"새 상품 입고  {again.Name} · {next.Name}") && Intake.Boxes.Count == 2 && Intake.SlotFor(again.Slot).IsTarget && Intake.SlotFor(next.Slot).IsTarget
+                && DecorShown() == 1 && !progress.completed,
+            $"board={Game.BoardText.Replace("\n", " / ")}; boxes={Intake.Boxes.Count}; shelves stocked={DecorShown()}");
+        foreach (var item in new[] { again, next })
+        {
+            var box = Intake.Boxes.Find(candidate => candidate.Delivery.Product == item.Product);
+            var slot = Intake.SlotFor(item.Slot);
+            if (box == null || slot == null) continue;
+            box.ForceOpen();
+            yield return null;
+            for (int unit = 0; unit < box.Units.Length; unit++) Intake.Shelve(box.Units[unit].Product, slot, unit);
+        }
+        yield return new WaitForSeconds(0.6f);
+        yield return CaptureFrom("g09_day6_both_shelved", ShelfView(1), ShelfTarget(1), 60f);
 
         yield return Wait(() => Game.State == DayState.Shift, 30f, "day6.shift");
         if (finished) yield break;
-        int expected = OrderGenerator.CustomersFor(9, 3);
-        int assortment = Game.PlanFor(day).Assortment.Count;
-        Check("day6.as_busy_as_it_gets", Game.OrderCount == expected && expected == 13 && assortment == 16, $"orders={Game.OrderCount} (expected {expected}); assortment={assortment}");
+        int expected = OrderGenerator.CustomersFor(3, 3);
+        Check("day6.both_on_sale", progress.Shelved(again.Id) && progress.Shelved(next.Id) && DecorShown() == 3 && Game.OrderCount == expected && expected == 10,
+            $"on sale: {again.Id}={progress.Shelved(again.Id)}, {next.Id}={progress.Shelved(next.Id)}; shelves stocked={DecorShown()}; orders={Game.OrderCount} (expected {expected})");
         var seen = new List<Order>();
         yield return Serve(expected, "day6", seen);
         if (finished) yield break;
         yield return Wait(() => Game.State == DayState.DayEnd && Game.LeaveButton.gameObject.activeInHierarchy, 60f, "day6.settled");
         if (finished) yield break;
-        var saved = StoreProgress.Load(Game.Progress.Path);
-        Check("day6.said_once", saved.completed && saved.owned.Count == 16 && saved.arriving.Count == 0 && Game.Tablet.Shown && Game.Tablet.NoticeText.Contains("다 채웠습니다") && !Game.BoardText.Contains("매장 완성"),
-            $"file completed={saved.completed}; owned={saved.owned.Count}; terminal notice={Game.Tablet.NoticeText}; board={Game.BoardText.Replace("\n", " / ")}");
+        Check("day6.nothing_missed", Game.NewSoldToday >= 2 && Game.MissedNewToday == 0 && Game.Director.Sales == Game.PossibleSales && Game.BoardText.Contains($"{Game.NewSoldToday}개 판매") && !Game.BoardText.Contains("놓친"),
+            $"new products sold={Game.NewSoldToday}; left out={Game.MissedNewToday}; sales {Game.Director.Sales} of {Game.PossibleSales}; board={Game.BoardText.Replace("\n", " / ")}");
+
+        // In place of three more days: the six products whose boxes have not come yet are put on their shelves.
+        foreach (var item in Game.UnlockItems)
+            if (item.Kind == UnlockKind.Product && !progress.Shelved(item.Id)) progress.shelved.Add(item.Id);
+        progress.Save();
     }
 
     IEnumerator HomeAndBack()
@@ -468,10 +536,14 @@ public class P2GrowthVerification : MonoBehaviour
         yield return new WaitForSeconds(1f);
         Check("title.store_to_go_back_to", title.StartLabel == "이어서 출근" && title.FreshButton.gameObject.activeInHierarchy && title.FreshLabel == "새로 시작" && Game.Progress.day == next && StoreProgress.Load(Game.Progress.Path).day == next,
             $"start={title.StartLabel}; fresh={title.FreshLabel}; day={Game.Progress.day}; file day={StoreProgress.Load(Game.Progress.Path).day}");
-        // Behind the door the store is as it will be tomorrow morning: what was ordered tonight is already on the shelves.
+        // Behind the door the store is as it will be tomorrow morning. One product is on its shelf. The one left in its box
+        // comes again, with the first of the seven ordered tonight: two boxes a day. The other six wait, their shelves unseen.
         var left = StoreProgress.Load(Game.Progress.Path);
-        Check("title.store_as_it_will_open", DecorShown() == 9 && PartShown("Microwave Top") && left.owned.Count == 9 && left.arriving.Count == 7,
-            $"shelves={DecorShown()}; microwave={PartShown("Microwave Top")}; file owned={left.owned.Count}, arriving={left.arriving.Count}");
+        var items = Game.UnlockItems;
+        bool nextTwo = Game.BoxesToday.Count == 2 && Game.BoxesToday[0] == items[1] && Game.BoxesToday[1] == items[2];
+        Check("title.store_as_it_will_open", DecorShown() == 1 && PartShown("Microwave Top") && left.owned.Count == 9 && left.arriving.Count == 7 && left.shelved.Count == 1
+                && nextTwo && SlotShown(items[1].Slot) && SlotShown(items[2].Slot) && !SlotShown(items[3].Slot) && Game.Progress.owned.Count == 16 && !Game.Progress.completed,
+            $"shelves stocked={DecorShown()}; microwave={PartShown("Microwave Top")}; file owned={left.owned.Count}, arriving={left.arriving.Count}, shelved={left.shelved.Count}; tomorrow's boxes are the one left over and the next={nextTwo}; a waiting product's shelf shown={SlotShown(items[3].Slot)}");
         yield return Capture("g08_title_store_to_go_back_to");
     }
 
@@ -487,6 +559,13 @@ public class P2GrowthVerification : MonoBehaviour
         yield return Wait(() => Game.State == DayState.Title && title.PanelShown, 30f, "leave_again.back_at_the_title");
         if (finished) yield break;
         yield return new WaitForSeconds(1f);
+        // Everything is in and on its shelf: tomorrow is the morning that says so, and nothing more comes in a box.
+        var filled = StoreProgress.Load(Game.Progress.Path);
+        var tomorrow = Game.PlanFor(Game.Progress.day);
+        Check("title.store_complete", Game.Progress.completed && DecorShown() == 9 && Game.BoxesToday.Count == 0 && LooksShown() == 4 && Intake.Boxes.Count == 2 && filled.shelved.Count == 9
+                && tomorrow.Assortment.Count == 16 && tomorrow.NewToday.Count == 0 && OrderGenerator.CustomersFor(tomorrow.OrderedProducts, tomorrow.Services) == 13,
+            $"completed={Game.Progress.completed}; shelves stocked={DecorShown()}; boxes of new products={Game.BoxesToday.Count}; the usual boxes={Intake.Boxes.Count}; equipment looks={LooksShown()}/4; file shelved={filled.shelved.Count}; tomorrow's assortment={tomorrow.Assortment.Count}, customers={OrderGenerator.CustomersFor(tomorrow.OrderedProducts, tomorrow.Services)}");
+        yield return Capture("g10_title_store_complete");
 
         title.FreshButton.onClick.Invoke();
         yield return null;
@@ -496,7 +575,7 @@ public class P2GrowthVerification : MonoBehaviour
         if (finished) yield break;
         Check("fresh.new_store", title.Choice == TitleChoice.Fresh && Game.Day == 1 && Game.Progress.day == 1 && !Game.Progress.graduated && Game.Progress.budget == 0 && Game.Progress.owned.Count == 0
                 && DecorShown() == 0 && !PartShown("Microwave Top") && Mathf.Approximately(scanner.MaxBarcodeAngle, 50f) && !StoreProgress.Load(Game.Progress.Path).Started
-                && LooksShown() == 0 && !Game.Progress.completed,
+                && LooksShown() == 0 && !Game.Progress.completed && Game.Progress.shelved.Count == 0 && Game.BoxesToday.Count == 0,
             $"day={Game.Day}; budget={Game.Progress.budget}; owned={Game.Progress.owned.Count}; shelves={DecorShown()}; microwave={PartShown("Microwave Top")}; scan angle={scanner.MaxBarcodeAngle}; equipment looks={LooksShown()}; completed={Game.Progress.completed}");
     }
 
@@ -594,8 +673,25 @@ public class P2GrowthVerification : MonoBehaviour
         yield return Wait(() => Game.Day == 4 && Game.State == DayState.Shift, 30f, "day4.shift_after_training");
         if (finished) yield break;
         Check("day4.the_store_is_the_players", !Game.Director.Lenient && !Game.IsTraining(4) && Game.OrderCount == OrderGenerator.BaseCustomers && Intake.Boxes.Count == 2 && Intake.ExpiredTotal == 3
-                && DecorShown() == 1 && SlotShown(Game.UnlockItems[0].Slot) && !Game.Manager.InStore,
-            $"lenient={Game.Director.Lenient}; orders={Game.OrderCount}; boxes={Intake.Boxes.Count}; expired={Intake.ExpiredTotal}; shelves={DecorShown()}; manager gone={!Game.Manager.InStore}");
+                && !Game.Manager.InStore,
+            $"lenient={Game.Director.Lenient}; orders={Game.OrderCount}; boxes={Intake.Boxes.Count}; expired={Intake.ExpiredTotal}; manager gone={!Game.Manager.InStore}");
+        // What was ordered at the graduation is the first box of the morning; its shelf is bare and marked until it is stocked.
+        var ordered = Game.UnlockItems[0];
+        var itsBox = Intake.Boxes.Find(box => box.Delivery.Product == ordered.Product);
+        var itsSlot = Intake.SlotFor(ordered.Slot);
+        Check("day4.first_order_is_a_box_to_shelve", Game.BoxesToday.Count == 1 && itsBox != null && itsBox.Units.Length == 3 && DecorShown() == 0 && SlotShown(ordered.Slot) && itsSlot.IsTarget && itsSlot.Filled == 0
+                && !progress.Shelved(ordered.Id) && Intake.Today.Count == 3 && Intake.Today[2].ArriveAfterOrder == 2,
+            $"boxes of new products={Game.BoxesToday.Count}; box of {ordered.Id}={(itsBox != null ? itsBox.Units.Length : 0)} units; its shelf {ordered.Slot}: shown={SlotShown(ordered.Slot)}, target={itsSlot.IsTarget}, filled={itsSlot.Filled}; the day's boxes={Intake.Today.Count}");
+        if (itsBox != null)
+        {
+            // The box of three beside one of the usual boxes, then opened, as the player finds them at the warehouse door.
+            var cart = itsBox.transform.position;
+            yield return CaptureFrom("g13_day4_box_of_a_new_product", cart + new Vector3(0.25f, 0.75f, 1.0f), cart + new Vector3(0.25f, 0.1f, 0f), 50f);
+            itsBox.ForceOpen();
+            yield return new WaitForSeconds(0.3f);
+            yield return CaptureFrom("g14_day4_box_of_a_new_product_open", cart + new Vector3(0f, 0.7f, 0.55f), cart + new Vector3(0f, 0.15f, 0f), 50f);
+            yield return CaptureFrom("g15_day4_shelf_waiting", ShelfView(0), ShelfTarget(0), 60f);
+        }
     }
 
     // ---------- Helpers ----------

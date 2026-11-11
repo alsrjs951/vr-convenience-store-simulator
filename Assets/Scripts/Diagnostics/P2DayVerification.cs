@@ -118,7 +118,8 @@ public partial class P2DayVerification : MonoBehaviour
         titleMode = Array.IndexOf(args, "-p2-title-verify") >= 0;
         faceMode = Array.IndexOf(args, "-p2-face-verify") >= 0;
         introMode = Array.IndexOf(args, "-p2-intro-verify") >= 0;
-        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode) return;
+        growthHandsMode = Array.IndexOf(args, "-p2-growth-hands") >= 0;
+        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode && !growthHandsMode) return;
         if (faceMode) Game.RunTutorial = false;
         walking = Array.IndexOf(args, "-p2-walk") >= 0;
         nextDayCheck = Array.IndexOf(args, "-p2-next-day") >= 0;
@@ -127,7 +128,7 @@ public partial class P2DayVerification : MonoBehaviour
 #if UNITY_EDITOR
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 #endif
-        output = Path.Combine(Application.dataPath, introMode ? "../docs/p2/evidence/first_minute" : faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
+        output = Path.Combine(Application.dataPath, growthHandsMode ? "../docs/p2/evidence/growth/hands" : introMode ? "../docs/p2/evidence/first_minute" : faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
         int index = Array.IndexOf(args, "-p2-evidence");
         if (index >= 0 && index + 1 < args.Length) output = args[index + 1];
         Directory.CreateDirectory(output);
@@ -137,7 +138,7 @@ public partial class P2DayVerification : MonoBehaviour
         Scanner.Scanned += _ => scansSeen++;
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
-        StartCoroutine(introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
+        StartCoroutine(growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
     }
 
     void Update()
@@ -849,7 +850,9 @@ public partial class P2DayVerification : MonoBehaviour
         yield return ResetHandRotation();
 
         int row = Game.Pos.Lines.IndexOf(line);
-        var button = Screen.CancelButtons[row].transform.position;
+        // The middle, not the transform: a WorldUi rectangle's pivot is its top-left corner, and a ray aimed at the corner
+        // lands on the button or just off it (one run of 2026-11-11 failed here, the same build passed again).
+        var button = Middle(Screen.CancelButtons[row]);
         yield return MoveHand(new Vector3(-0.3f, 1.2f, 0.4f), "cancel.hand");
         var direction = (button - rightHand.position).normalized;
         float yaw = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
@@ -1120,6 +1123,13 @@ public partial class P2DayVerification : MonoBehaviour
         Check(label + ".no_false_errors", Desk.Tray.ErrorCount == expectedErrors, $"errors={Desk.Tray.ErrorCount}; expected={expectedErrors}; pieces={offset}");
     }
 
+    /// <summary>The middle of a UI element in the world. Its transform is its pivot, which WorldUi puts at the top-left corner.</summary>
+    static Vector3 Middle(Component ui)
+    {
+        var rect = (RectTransform)ui.transform;
+        return rect.TransformPoint(rect.rect.center);
+    }
+
     IEnumerator MoveProduct(ProductPrefab product, Vector3 target, string label)
     {
         yield return MoveHand(target - (product.transform.position - rightHand.position), label);
@@ -1307,8 +1317,8 @@ public partial class P2DayVerification : MonoBehaviour
         report.meanDesktopFps = frames / Mathf.Max(0.01f, Time.realtimeSinceStartup - started);
         foreach (var state in statFrames)
             Debug.Log($"[P2 Day] fps in {state.Key}: {state.Value / Mathf.Max(0.01f, statSeconds[state.Key]):0.0} over {statSeconds[state.Key]:0.0}s");
-        report.scope = (day2Mode ? "Day 2 (intake, disposal, leaving customers). " : "") + "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.";
-        File.WriteAllText(Path.Combine(output, introMode ? "intro_report.json" : faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
+        report.scope = (growthHandsMode ? "A store that is kept: two boxes of new products shelved by hand on display shelves; the title, the time card and the customers by code. " : day2Mode ? "Day 2 (intake, disposal, leaving customers). " : "") + "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.";
+        File.WriteAllText(Path.Combine(output, growthHandsMode ? "growth_hands_report.json" : introMode ? "intro_report.json" : faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
         WriteDay2Details();
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P2 Day] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} grade={report.grade} sales={report.sales}/{report.possibleSales} mouse={report.externalMouseMotion:0} fps={report.meanDesktopFps:0}");

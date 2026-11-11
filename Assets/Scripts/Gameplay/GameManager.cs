@@ -44,6 +44,11 @@ public class GameManager : MonoBehaviour
     public const int GraduationGrant = 4000;
     public const float NewScannerAngle = 65f, MusicLineGrace = 65f;
     /// <summary>
+    /// Products ordered in come as boxes to shelve, two a day at most: the cart holds two, and more would be more shelving
+    /// than a shift with customers has room for. What is left waits for the next morning. [제안]
+    /// </summary>
+    public const int NewBoxesPerDay = 2;
+    /// <summary>
     /// The looks of the equipment that only changes a number: groups under "Equipment Looks" (and a child of each cutter)
     /// that the scene builder makes switched off and OpenStore switches on.
     /// </summary>
@@ -122,6 +127,15 @@ public class GameManager : MonoBehaviour
     Transform cookingCorner, equipmentLooks;
     string arrivedToday = "";
     bool completedToday;
+    readonly Dictionary<int, ShiftPlan> plans = new Dictionary<int, ShiftPlan>();
+    readonly List<UnlockItem> boxesToday = new List<UnlockItem>();
+
+    /// <summary>The products whose boxes are on the cart this morning, each for its display shelf.</summary>
+    public IReadOnlyList<UnlockItem> BoxesToday => boxesToday;
+    /// <summary>How many units of today's new products were paid for.</summary>
+    public int NewSoldToday { get; private set; }
+    /// <summary>Order lines left out today because their product was still in its box when the customer came.</summary>
+    public int MissedNewToday { get; private set; }
     int samplesPlaced;
     TextAsset storeDeliveries;
     int storeExpiredPerDay;
@@ -183,6 +197,16 @@ public class GameManager : MonoBehaviour
         equipmentLooks = looks != null ? looks.transform : null;
         storeDeliveries = Intake.Deliveries;
         storeExpiredPerDay = Intake.ExpiredPerDay;
+        // A store saved before products came in boxes: what it had was on sale, so it is on the shelves.
+        if (Progress.version < StoreProgress.CurrentVersion)
+        {
+            foreach (var item in UnlockItems)
+                if (item.Kind == UnlockKind.Product && Progress.Has(item.Id) && !Progress.Shelved(item.Id)) Progress.shelved.Add(item.Id);
+            Progress.version = StoreProgress.CurrentVersion;
+        }
+        foreach (var slot in Intake.DecorSlots)
+            if (slot != null) slot.Shelved += OnDisplayShelved;
+        Director.OrderReachedCounter += OnOrderReachedCounter;
         if (IntakeTutorial != null) IntakeTutorial.TeachDisposal = true;
         // The tutorial's product is one the store sells from the start.
         var opening = OpeningAssortment();
@@ -206,6 +230,7 @@ public class GameManager : MonoBehaviour
         if (Director == null) return;
         Director.OrderArrived -= OnOrderArrived;
         Director.OrderEnded -= OnOrderEnded;
+        Director.OrderReachedCounter -= OnOrderReachedCounter;
     }
 
     IEnumerator Start()
@@ -263,8 +288,10 @@ public class GameManager : MonoBehaviour
                 if (Pos.Audio) Pos.Audio.NarrateManager(ManagerLine.Graduated);
             }
             board.text += graduatedNow ? $"\n발주 예산 {Progress.budget:N0}원  (수료 지원금 {GraduationGrant:N0}원 포함)" : $"\n발주 예산 +{LastEarned:N0}원  ·  잔액 {Progress.budget:N0}원";
-            boardPanel.sizeDelta = new Vector2(BoardWidth, BoardHeight + 50f);
-            board.rectTransform.sizeDelta = new Vector2(board.rectTransform.sizeDelta.x, BoardHeight + 20f);
+            // The settlement is four lines; the budget, and on a day with new products what they sold, come under it.
+            int moreLines = Mathf.Max(1, board.text.Split('\n').Length - 4);
+            boardPanel.sizeDelta = new Vector2(BoardWidth, BoardHeight + 50f * moreLines);
+            board.rectTransform.sizeDelta = new Vector2(board.rectTransform.sizeDelta.x, BoardHeight - 30f + 50f * moreLines);
             if (Intake.Active) Intake.SetGuide(board.text);
             Debug.Log($"[Game] Store day={Day} earned={LastEarned} budget={Progress.budget} graduated={Progress.graduated} owned={Progress.owned.Count}");
 
@@ -324,17 +351,36 @@ public class GameManager : MonoBehaviour
     /// <summary>The store as the day's customers find it: the opening assortment, what was ordered in, and what the equipment brought.</summary>
     public ShiftPlan PlanFor(int day)
     {
+        // Made once a morning: what is shelved during the day must not change the day's customers after the fact.
+        if (plans.TryGetValue(day, out var made)) return made;
         var plan = new ShiftPlan { Day = day };
         plan.Assortment.AddRange(OpeningAssortment());
         foreach (var item in UnlockItems)
         {
             if (!Progress.Has(item.Id)) continue;
-            if (item.Kind == UnlockKind.Product) plan.OrderedProducts++;
+            if (item.Kind == UnlockKind.Product)
+            {
+                // On sale once it stands on its shelf. In a box this morning: for the customers who come after it does.
+                // Still waiting for its box: not yet.
+                if (item.Product == null) continue;
+                if (Progress.Shelved(item.Id))
+                {
+                    plan.OrderedProducts++;
+                    if (!plan.Assortment.Contains(item.Product)) plan.Assortment.Add(item.Product);
+                }
+                else if (boxesToday.Contains(item))
+                {
+                    plan.OrderedProducts++;
+                    plan.NewToday.Add(item.Product);
+                }
+                continue;
+            }
             if (item.Product != null && !plan.Assortment.Contains(item.Product)) plan.Assortment.Add(item.Product);
             if (item.Id == UnlockCatalog.Microwave) plan.MicrowaveItem = item.Product;
             else if (item.Id == UnlockCatalog.HotWater) plan.HotWaterItem = item.Product;
             else if (item.Id == UnlockCatalog.OnePlus) plan.OnePlus = true;
         }
+        plans[day] = plan;
         return plan;
     }
 
@@ -350,6 +396,14 @@ public class GameManager : MonoBehaviour
         Progress.ReceiveArrivals();
         arrivedToday = string.Join(" · ", arrived);
         ClearSamples();
+
+        // The boxes of the morning: products in the store that have not been put on their shelf, first ordered first.
+        plans.Clear();
+        boxesToday.Clear();
+        foreach (var item in UnlockItems)
+            if (boxesToday.Count < NewBoxesPerDay && item.Kind == UnlockKind.Product && item.Product != null
+                && Progress.Has(item.Id) && !Progress.Shelved(item.Id) && Intake.SlotFor(item.Slot) != null)
+                boxesToday.Add(item);
 
         if (scanner != null) scanner.MaxBarcodeAngle = Progress.Has(UnlockCatalog.Scanner) ? NewScannerAngle : builtScanAngle;
         StockBox.CheckpointsPerBox = Progress.Has(UnlockCatalog.Cutter) ? NewCutterCheckpoints : StockBox.DefaultCheckpoints;
@@ -368,7 +422,7 @@ public class GameManager : MonoBehaviour
         }
 
         // The first morning with everything in: said once, on the board of that day.
-        bool everything = UnlockItems.Count > 0 && UnlockItems.TrueForAll(item => Progress.Has(item.Id));
+        bool everything = UnlockItems.Count > 0 && UnlockItems.TrueForAll(item => Progress.Has(item.Id) && (item.Kind != UnlockKind.Product || Progress.Shelved(item.Id)));
         completedToday |= everything && !Progress.completed;
         Progress.completed = everything;
     }
@@ -404,13 +458,49 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    /// <summary>The display shelves that hold their product: one for each product ordered in.</summary>
+    /// <summary>The display shelves in use: those holding a product that was shelved, and the bare ones today's boxes are for.</summary>
     HashSet<string> StockedDecor()
     {
         var slots = new HashSet<string>();
         foreach (var item in UnlockItems)
-            if (item.Kind == UnlockKind.Product && Progress.Has(item.Id)) slots.Add(item.Slot);
+            if (item.Kind == UnlockKind.Product && (Progress.Shelved(item.Id) || boxesToday.Contains(item))) slots.Add(item.Slot);
         return slots;
+    }
+
+    string BoxNames()
+    {
+        var names = new List<string>();
+        foreach (var item in boxesToday) names.Add(item.Name);
+        return string.Join(" · ", names);
+    }
+
+    /// <summary>The first unit of a product ordered in stands on its shelf: from now on it is on sale, today and for good.</summary>
+    void OnDisplayShelved(ShelfSlotZone slot, ProductPrefab product)
+    {
+        var item = UnlockItems.Find(candidate => candidate.Kind == UnlockKind.Product && candidate.Slot == slot.SlotId);
+        if (item == null || Progress.Shelved(item.Id)) return;
+        Progress.shelved.Add(item.Id);
+        Progress.Save();
+        Debug.Log($"[Game] {item.Id} is on its shelf {slot.SlotId}: on sale from now on");
+        if (State == DayState.Shift) ShowBriefly($"{item.Name} 진열\n이제 손님이 찾습니다", BriefSeconds);
+    }
+
+    /// <summary>
+    /// A customer who came for a product still in its box goes without it and pays for the rest. The day's possible sales
+    /// were counted with it, so the sale shows as lost in the settlement.
+    /// </summary>
+    void OnOrderReachedCounter(Order order)
+    {
+        if (!Growth) return;
+        // Never the first line: the generator keeps new products out of it.
+        for (int i = order.Lines.Count - 1; i >= 1; i--)
+        {
+            string id = order.Lines[i].Product.Data.Id;
+            if (Progress.Shelved(id) || !boxesToday.Exists(item => item.Id == id)) continue;
+            order.Lines.RemoveAt(i);
+            MissedNewToday++;
+            Debug.Log($"[Game] Order {order.Id}: {id} was not on its shelf yet, left out");
+        }
     }
 
     /// <summary>A product just ordered stands on the counter, the real thing to pick up and turn over before it is on the shelf.</summary>
@@ -552,8 +642,21 @@ public class GameManager : MonoBehaviour
             Intake.Deliveries = training ? TrainingDeliveries : storeDeliveries;
             Intake.ExpiredPerDay = training ? TrainingExpiredPerDay : storeExpiredPerDay;
         }
+        // A store that is kept hands over the morning's boxes of new products, each for its display shelf (none on most days).
+        List<Delivery> newProducts = null;
+        if (Growth)
+        {
+            newProducts = new List<Delivery>();
+            if (day > TrainingDays)
+                foreach (var item in boxesToday)
+                    newProducts.Add(new Delivery
+                    {
+                        Id = "new_" + item.Id, Day = day, BoxSequence = 11 + newProducts.Count, Product = item.Product,
+                        CaseQuantity = Intake.SlotFor(item.Slot).Capacity, TargetSlot = item.Slot,
+                    });
+        }
         // The days after the training have no delivery rows of their own: they get the boxes of the first intake day.
-        Intake.BeginDay(day, ParseOrders(day).Count, Growth && day > TrainingDays ? IntakeTutorialDay : 0);
+        Intake.BeginDay(day, ParseOrders(day).Count, Growth && day > TrainingDays ? IntakeTutorialDay : 0, newProducts);
         if (Growth) Intake.ShowDecor(StockedDecor());
         preparedDay = day;
     }
@@ -573,6 +676,9 @@ public class GameManager : MonoBehaviour
     /// <summary>Doc 5.7.2: a mid-day box arrives right after its customer. The last moment before the peak gets a warning too.</summary>
     void OnOrderEnded(Order order, bool paid)
     {
+        if (paid && Growth)
+            foreach (var line in order.Lines)
+                if (boxesToday.Exists(item => item.Product == line.Product)) NewSoldToday += line.Quantity;
         if (Intake != null && Intake.ReceiveMidDayBoxes(order.Sequence))
         {
             ShowBriefly("입고 도착 (창고 입구)\n손님이 없을 때 진열", BriefSeconds);
@@ -636,6 +742,7 @@ public class GameManager : MonoBehaviour
         Grade = "";
         ShiftStartedAt = -1f;
         RestoreBoard();
+        NewSoldToday = MissedNewToday = 0;
         // Before the orders are made: what came in this morning is part of what today's customers buy.
         if (Growth) PrepareStore(day);
         var orders = ParseOrders(day);
@@ -661,6 +768,7 @@ public class GameManager : MonoBehaviour
         board.text = !intake ? $"{day}일차 출근\n계산대에서 손님을 맞습니다"
             : training && day > IntakeTutorialDay ? $"{day}일차 출근\n오늘은 혼자 근무합니다"
             : Growth && day > TrainingDays && completedToday ? $"{day}일차 출근  ·  매장 완성\n들일 수 있는 상품과 설비를 모두 들였습니다"
+            : Growth && day > TrainingDays && boxesToday.Count > 0 ? $"{day}일차 출근\n새 상품 입고  {BoxNames()}  ·  진열해야 팔립니다"
             : Growth && day > TrainingDays ? $"{day}일차 출근\n" + (arrivedToday.Length > 0 ? $"새로 들어옴  {arrivedToday}" : $"손님 {orders.Count}명 · 입고 {Intake.Boxes.Count}상자")
             : day > IntakeTutorialDay ? $"{day}일차 출근\n피크 타임 · 특수 요청 · 중간 입고"
             : $"{day}일차 출근\n입고 · 진열 · 폐기가 더해집니다";
@@ -723,6 +831,9 @@ public class GameManager : MonoBehaviour
                          $"매출 {Director.Sales:N0} / {PossibleSales:N0}원 · 손님 {Director.Paid}/{OrderCount} · 이탈 {Director.Left}명 · 취소 {Pos.CancelCount}\n" +
                          $"손님 만족 {Satisfaction * 100f:0}% · 팁 {Director.Tips:N0}원\n" +
                          $"진열 {Intake.Shelved}/{Intake.DeliveredTotal} · 폐기 {Intake.Disposed}/{Intake.ExpiredTotal} · 오진열 {Intake.Misplaced} · 폐기 오탐 {Intake.FalseDisposals} · 빈 박스 {Intake.UnrecycledEmptyBoxes}";
+            // What yesterday's order did today: the reason to order again.
+            if (Growth && boxesToday.Count > 0)
+                board.text += $"\n새 상품 {BoxNames()}  ·  {NewSoldToday}개 판매" + (MissedNewToday > 0 ? $"  ·  진열 전이라 놓친 주문 {MissedNewToday}건" : "");
             Intake.SetGuide(board.text);
             Debug.Log($"[Game] Settlement day={day} grade={Grade} score={Score:0.0} sales={Director.Sales}/{PossibleSales} paid={Director.Paid}/{OrderCount} left={Director.Left} cancels={Pos.CancelCount} shelved={Intake.Shelved}/{Intake.DeliveredTotal} disposed={Intake.Disposed}/{Intake.ExpiredTotal} misplaced={Intake.Misplaced} falseDisposals={Intake.FalseDisposals} unrecycled={Intake.UnrecycledEmptyBoxes} endedEarly={Director.EndedEarly}");
         }

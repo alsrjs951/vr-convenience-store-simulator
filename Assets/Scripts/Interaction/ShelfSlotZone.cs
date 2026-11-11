@@ -31,7 +31,10 @@ public class ShelfSlotZone : MonoBehaviour
     public GameAudio Audio;
     /// <summary>Doc 7.3: one merged splat for all places. Without them, or with -individual-shelves, every product draws itself.</summary>
     public GaussianSplatAsset MergedNear, MergedFar;
-    /// <summary>Store stock that is only seen (2026-11-09): no deliveries, no preview, no zone, never cleared. See IntakeDirector.StockDecor.</summary>
+    /// <summary>
+    /// Store stock that is only seen (2026-11-09): no deliveries, no preview, no zone, never cleared. See IntakeDirector.StockDecor.
+    /// In a store that is kept it is a target for one day, the day its product comes in a box (IntakeDirector.BeginDay).
+    /// </summary>
     public bool DisplayOnly;
     /// <summary>For display stock only seen from afar: the lighter copy is all there is.</summary>
     public bool FarOnly;
@@ -111,6 +114,8 @@ public class ShelfSlotZone : MonoBehaviour
     public void SetTarget(bool target)
     {
         IsTarget = target;
+        // A display shelf has no zone on other days, so nothing held near it is offered a place there.
+        if (DisplayOnly && Zone != null) Zone.enabled = target;
         highlightFrame.SetActive(target && Filled < Capacity);
         countText.transform.parent.gameObject.SetActive(target);
         RefreshCount();

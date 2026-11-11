@@ -101,10 +101,36 @@ public class IntakeDirector : MonoBehaviour
         return Stands.Length > 0 ? Stands[0] : null;
     }
 
+    /// <summary>Work slots first, then the display shelves: every place a product can be put on.</summary>
+    public IEnumerable<ShelfSlotZone> AllSlots
+    {
+        get
+        {
+            foreach (var slot in Slots) yield return slot;
+            foreach (var slot in DecorSlots) yield return slot;
+        }
+    }
+
+    public ShelfSlotZone SlotFor(string slotId)
+    {
+        foreach (var slot in AllSlots)
+            if (slot != null && slot.SlotId == slotId) return slot;
+        return null;
+    }
+
+    /// <summary>
+    /// When the boxes of a day with new products come: the cart holds two, so the first two are there in the morning and
+    /// each one after that follows two customers later (doc 5.7.2's mid-day delivery).
+    /// </summary>
+    public static int ArrivalFor(int boxIndex) => boxIndex < 2 ? 0 : 2 * (boxIndex - 1);
+
     /// <summary>Sets up a day. Day 1 has no intake: every slot is full of display stock and plain (no highlight or count).</summary>
     /// <param name="deliveriesOfDay">Which day's rows of the deliveries file to use: a day with no rows of its own (the
     /// days after the training) takes another day's boxes. 0: the day's own.</param>
-    public void BeginDay(int day, int orderCount, int deliveriesOfDay = 0)
+    /// <param name="newProducts">A store that is kept (docs/p2/해금_성장_기획_2026-11-10.md): boxes of products ordered in,
+    /// each for a display shelf, which is empty and a target for the day. They take the cart first and the file's boxes
+    /// come after them. Null: the fixed days, whose display shelves are never touched.</param>
+    public void BeginDay(int day, int orderCount, int deliveriesOfDay = 0, List<Delivery> newProducts = null)
     {
         StockDecor();
         Clear();
@@ -118,7 +144,10 @@ public class IntakeDirector : MonoBehaviour
             return;
         }
 
+        if (newProducts != null) Today.AddRange(newProducts);
         Today.AddRange(DeliveryLoader.Parse(Deliveries.text, deliveriesOfDay > 0 ? deliveriesOfDay : day, Catalog, SlotsById, orderCount, SkippedDeliveries));
+        if (newProducts != null && newProducts.Count > 0)
+            for (int i = 0; i < Today.Count; i++) Today[i].ArriveAfterOrder = Mathf.Min(ArrivalFor(i), Mathf.Max(0, orderCount - 1));
         var emptied = new Dictionary<string, int>();
         var targetsNow = new HashSet<string>();
         foreach (var delivery in Today)
@@ -151,6 +180,26 @@ public class IntakeDirector : MonoBehaviour
                 if (!empty.Contains(unit)) ShelfStock.Add(slot.Stock(prefab, unit));
         }
 
+        // A store that is kept: a display shelf whose product comes today is bare until it is stocked by hand; the others
+        // show their product as on any day.
+        if (newProducts != null)
+            foreach (var slot in DecorSlots)
+            {
+                if (slot == null) continue;
+                slot.Clear();
+                var prefab = Catalog.Find(slot.ProductId);
+                if (prefab == null) continue;
+                if (emptied.ContainsKey(slot.SlotId))
+                {
+                    slot.PrepareMerged(prefab);
+                    slot.SetTarget(targetsNow.Contains(slot.SlotId));
+                }
+                else if (!ShelfSlotZone.IndividualOnly && slot.MergedNear != null && slot.MergedFar != null)
+                {
+                    for (int unit = 0; unit < slot.Capacity; unit++) slot.Display(prefab, unit);
+                }
+            }
+
         // Doc 6.4: three products on the shelves expire, never in a slot that takes a delivery today. A fixed seed per day
         // keeps runs comparable.
         var pool = ShelfStock.FindAll(p => p != null && !emptied.ContainsKey(SlotOf(p)));
@@ -178,13 +227,13 @@ public class IntakeDirector : MonoBehaviour
     {
         if (!Active) return false;
         bool arrived = false;
-        var slots = SlotsById;
         foreach (var delivery in Today)
         {
             if (delivery.ArriveAfterOrder != finishedOrder) continue;
             arrived = true;
             DeliveredTotal += delivery.CaseQuantity;
-            if (slots.TryGetValue(delivery.TargetSlot, out var slot)) slot.SetTarget(true);
+            var slot = SlotFor(delivery.TargetSlot);
+            if (slot != null) slot.SetTarget(true);
             var box = PutOnCart(delivery);
             if (Audio) Audio.PlayAt(StoreSound.Delivery, box.transform.position + Vector3.up * 0.5f);
             Debug.Log($"[Intake] Day {Day}: box {delivery.Id} arrived after customer {finishedOrder}; delivered={DeliveredTotal}");
@@ -356,7 +405,7 @@ public class IntakeDirector : MonoBehaviour
 
     void RefreshTargets()
     {
-        foreach (var slot in Slots)
+        foreach (var slot in AllSlots)
             if (slot != null && slot.IsTarget) slot.SetTarget(true);
     }
 

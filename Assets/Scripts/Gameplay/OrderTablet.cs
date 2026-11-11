@@ -142,7 +142,9 @@ public class OrderTablet : MonoBehaviour
             return;
         }
         progress.Save();
-        message = items.TrueForAll(other => progress.Ordered(other.Id)) ? "매장을 다 채웠습니다  ·  내일 아침에 모두 들어옵니다" : $"{item.Name}  ·  내일 아침에 들어옵니다";
+        message = items.TrueForAll(other => progress.Ordered(other.Id)) ? "더 들일 것이 없습니다  ·  들어오는 대로 진열하세요"
+            : item.Kind == UnlockKind.Product ? $"{item.Name}  ·  박스로 들어옵니다. 진열하면 팔립니다"
+            : $"{item.Name}  ·  내일 아침에 들어옵니다";
         Debug.Log($"[Tablet] Ordered {item.Id} for {item.Price}; budget={progress.budget}");
         Refresh();
         Bought?.Invoke(item);
@@ -176,13 +178,16 @@ public class OrderTablet : MonoBehaviour
             names[i].text = used ? item.Name : "";
             notes[i].text = used ? item.Note : "";
             prices[i].text = used ? $"{item.Price:N0}" : "";
-            states[i].text = have ? "들어옴" : coming ? "내일 도착" : "";
+            // A product is in the store when its box has come, and on sale when it stands on its shelf. Boxes come two a day.
+            bool isProduct = used && item.Kind == UnlockKind.Product;
+            states[i].text = !isProduct ? (have ? "들어옴" : coming ? "내일 도착" : "")
+                : have ? (progress.Shelved(item.Id) ? "판매 중" : "진열 대기") : coming ? "입고 예정" : "";
             var faded = have || coming ? WorldUi.Palette.InkDim : WorldUi.Palette.Ink;
             names[i].color = prices[i].color = faded;
             BuyButtons[i].gameObject.SetActive(used && !have && !coming);
             BuyButtons[i].interactable = used && progress.budget >= item.Price;
         }
-        if (message.Length == 0 && products + equipment > 0 && productsIn + equipmentIn == products + equipment) message = "매장을 다 채웠습니다";
+        if (message.Length == 0 && progress.completed) message = "매장을 다 채웠습니다";
         notice.text = message;
         noticeBand.enabled = message.Length > 0;
     }

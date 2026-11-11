@@ -1,0 +1,642 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "A store that is kept: two boxes of new products shelved by hand on display shelves; the title, the time card and the customers by code. XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 322.73345947265627,
+    "maxHeldSpeedOnArrival": 0.8875030279159546,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "",
+    "score": 0.0,
+    "sales": 0,
+    "possibleSales": 0,
+    "paid": 0,
+    "orders": 0,
+    "left": 0,
+    "cancels": 0,
+    "queueAndBrowsers": false,
+    "maxCustomersPresent": 0,
+    "maxForOrdersInStore": 0,
+    "maxWaiting": 0,
+    "maxLine": 0,
+    "maxBrowsers": 0,
+    "browsersSpawned": 0,
+    "stuckWarps": 0,
+    "shortArrivals": 0,
+    "customerFrames": 153247,
+    "settledFrames": 65231,
+    "offNavMeshFrames": 0,
+    "overlapFrames": 0,
+    "clerkSideFrames": 0,
+    "movingFrames": 83584,
+    "walkAnimatedFrames": 83584,
+    "standingFrames": 66537,
+    "standingAnimatedFrames": 66535,
+    "customers": [],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.005916595458984
+        },
+        {
+            "name": "gh.title_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.007567882537842
+        },
+        {
+            "name": "gh.setup.store_with_two_boxes",
+            "pass": true,
+            "details": "day=5; graduated=True; owned=dev_pocachip_01,dev_almondchoco_01; boxes this morning=2; on the cart=2; save=C:\\Users\\LeeMinGeon\\AppData\\Local\\Temp\\claude\\82fd05eb5e375374\\3bcf428f-fe93-47ad-9eae-32775af96719\\scratchpad\\hands_save\\store_progress.json",
+            "time": 4.012461185455322
+        },
+        {
+            "name": "gh.continue_chosen",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.023742198944092
+        },
+        {
+            "name": "gh.at_the_counter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 5.635060787200928
+        },
+        {
+            "name": "gh.punched_in",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 6.184541702270508
+        },
+        {
+            "name": "gh.shift",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 9.176470756530762
+        },
+        {
+            "name": "input.ready",
+            "pass": true,
+            "details": "mode=Translate",
+            "time": 9.751633644104004
+        },
+        {
+            "name": "gh.setup.shelves_wait",
+            "pass": true,
+            "details": "D-1: target=True, D-1  0/3; E-3: target=True, E-3  0/3; boxes of 3 and 3; customers=7; lines asking for the two new products=2; box sizes (0.210, 0.263, 0.274) and (0.160, 0.087, 0.076)",
+            "time": 9.752053260803223
+        },
+        {
+            "name": "gh.near.face_forward",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 10.316064834594727
+        },
+        {
+            "name": "gh.near.grab_handle",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 19.98044204711914
+        },
+        {
+            "name": "gh.near.grab_handle.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 20.17727279663086
+        },
+        {
+            "name": "gh.near.carried",
+            "pass": true,
+            "details": "state=Carried",
+            "time": 20.177581787109376
+        },
+        {
+            "name": "gh.near.docked",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 32.20257568359375
+        },
+        {
+            "name": "gh.near.narrow_box_sits_on_the_stand",
+            "pass": true,
+            "details": "state=Docked; off the seat 0.000 m, 0.0°; inner (0.160, 0.087, 0.076)",
+            "time": 32.50156784057617
+        },
+        {
+            "name": "gh.near.cut.grab_cutter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 33.41176223754883
+        },
+        {
+            "name": "gh.near.cut.grab_cutter.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 33.610877990722659
+        },
+        {
+            "name": "gh.near.cut.tape_cut",
+            "pass": true,
+            "details": "stage=TapeCut; ticks=6; progress=6",
+            "time": 34.88042449951172
+        },
+        {
+            "name": "gh.near.cut.cutter_back_in_holder",
+            "pass": true,
+            "details": "after 1.0s",
+            "time": 36.205810546875
+        },
+        {
+            "name": "gh.near.short_tape_cut_in_one_stroke",
+            "pass": true,
+            "details": "tape 12.0 cm between its end checkpoints, 6 checkpoints; resets=0",
+            "time": 36.206024169921878
+        },
+        {
+            "name": "gh.near.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 36.72885513305664
+        },
+        {
+            "name": "gh.near.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 36.9302864074707
+        },
+        {
+            "name": "gh.near.flap_folds_open",
+            "pass": true,
+            "details": "let go at 170°, now 210°",
+            "time": 37.718746185302737
+        },
+        {
+            "name": "gh.near.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 38.62149429321289
+        },
+        {
+            "name": "gh.near.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 38.82267761230469
+        },
+        {
+            "name": "gh.near.flap_folds_open",
+            "pass": true,
+            "details": "let go at 167°, now 210°",
+            "time": 39.6489372253418
+        },
+        {
+            "name": "gh.near.open_products_inside",
+            "pass": true,
+            "details": "stage=Open; products in box=3/3; flap sounds=3",
+            "time": 40.11515426635742
+        },
+        {
+            "name": "gh.near.unit1.look_at_the_place",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 41.048763275146487
+        },
+        {
+            "name": "gh.near.unit1.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 42.71849822998047
+        },
+        {
+            "name": "gh.near.unit1.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 42.915523529052737
+        },
+        {
+            "name": "gh.near.unit1.green_place_on_the_display_shelf",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 45.592647552490237
+        },
+        {
+            "name": "gh.near.unit1.preview",
+            "pass": true,
+            "details": "unit=0 (looked at 0); by the head's ray=True; green outline=0; red=False",
+            "time": 45.595802307128909
+        },
+        {
+            "name": "gh.near.unit1.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 46.053619384765628
+        },
+        {
+            "name": "gh.near.unit1.snapped_and_drawn_on_the_shelf",
+            "pass": true,
+            "details": "off its place 0.0000 m; E-3  1/3; drawn by the shelf's splat=True (1 shown, near copy=False); own splat=False",
+            "time": 46.35624694824219
+        },
+        {
+            "name": "gh.near.unit1.first_one_puts_it_on_sale",
+            "pass": true,
+            "details": "on sale before=False, now=True, saved=True; state=Shift; board=아몬드 초콜릿 진열 / 이제 손님이 찾습니다",
+            "time": 46.35761642456055
+        },
+        {
+            "name": "gh.near.unit2.look_at_the_place",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 46.880645751953128
+        },
+        {
+            "name": "gh.near.unit2.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 48.83514404296875
+        },
+        {
+            "name": "gh.near.unit2.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 49.033016204833987
+        },
+        {
+            "name": "gh.near.unit2.green_place_on_the_display_shelf",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 51.48563003540039
+        },
+        {
+            "name": "gh.near.unit2.preview",
+            "pass": true,
+            "details": "unit=1 (looked at 1); by the head's ray=True; green outline=1; red=False",
+            "time": 51.48873519897461
+        },
+        {
+            "name": "gh.near.unit2.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 51.84637451171875
+        },
+        {
+            "name": "gh.near.unit2.snapped_and_drawn_on_the_shelf",
+            "pass": true,
+            "details": "off its place 0.0000 m; E-3  2/3; drawn by the shelf's splat=True (2 shown, near copy=False); own splat=False",
+            "time": 52.14643478393555
+        },
+        {
+            "name": "gh.near.unit3.look_at_the_place",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 52.71635437011719
+        },
+        {
+            "name": "gh.near.unit3.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 54.26456832885742
+        },
+        {
+            "name": "gh.near.unit3.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 54.46540069580078
+        },
+        {
+            "name": "gh.near.unit3.green_place_on_the_display_shelf",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 56.57968521118164
+        },
+        {
+            "name": "gh.near.unit3.preview",
+            "pass": true,
+            "details": "unit=2 (looked at 2); by the head's ray=True; green outline=2; red=False",
+            "time": 56.582698822021487
+        },
+        {
+            "name": "gh.near.unit3.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 56.940773010253909
+        },
+        {
+            "name": "gh.near.unit3.snapped_and_drawn_on_the_shelf",
+            "pass": true,
+            "details": "off its place 0.0000 m; E-3  3/3; drawn by the shelf's splat=True (3 shown, near copy=False); own splat=False",
+            "time": 57.24229049682617
+        },
+        {
+            "name": "gh.near.box_empty_and_shelf_full",
+            "pass": true,
+            "details": "box=Empty; E-3  3/3; lit=False; misplaced=0; 아몬드 초콜릿: cart to full shelf in 47 s of simulated hands; gaussians at the peak so far=719744",
+            "time": 57.31277847290039
+        },
+        {
+            "name": "gh.far.face_forward",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 58.084354400634769
+        },
+        {
+            "name": "gh.far.grab_handle",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 68.98645782470703
+        },
+        {
+            "name": "gh.far.grab_handle.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 69.18830108642578
+        },
+        {
+            "name": "gh.far.carried",
+            "pass": true,
+            "details": "state=Carried",
+            "time": 69.18848419189453
+        },
+        {
+            "name": "gh.far.docked",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 82.4832534790039
+        },
+        {
+            "name": "gh.far.narrow_box_sits_on_the_stand",
+            "pass": true,
+            "details": "state=Docked; off the seat 0.000 m, 0.0°; inner (0.210, 0.263, 0.274)",
+            "time": 82.78470611572266
+        },
+        {
+            "name": "gh.far.cut.grab_cutter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 83.66004943847656
+        },
+        {
+            "name": "gh.far.cut.grab_cutter.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 83.86213684082031
+        },
+        {
+            "name": "gh.far.cut.tape_cut",
+            "pass": true,
+            "details": "stage=TapeCut; ticks=6; progress=6",
+            "time": 85.2652587890625
+        },
+        {
+            "name": "gh.far.cut.cutter_back_in_holder",
+            "pass": true,
+            "details": "after 1.0s",
+            "time": 86.60576629638672
+        },
+        {
+            "name": "gh.far.short_tape_cut_in_one_stroke",
+            "pass": true,
+            "details": "tape 17.0 cm between its end checkpoints, 6 checkpoints; resets=0",
+            "time": 86.60596466064453
+        },
+        {
+            "name": "gh.far.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 87.18511199951172
+        },
+        {
+            "name": "gh.far.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 87.38677978515625
+        },
+        {
+            "name": "gh.far.flap_folds_open",
+            "pass": true,
+            "details": "let go at 167°, now 210°",
+            "time": 88.19255828857422
+        },
+        {
+            "name": "gh.far.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 89.33566284179688
+        },
+        {
+            "name": "gh.far.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 89.53638458251953
+        },
+        {
+            "name": "gh.far.flap_folds_open",
+            "pass": true,
+            "details": "let go at 166°, now 210°",
+            "time": 90.32870483398438
+        },
+        {
+            "name": "gh.far.open_products_inside",
+            "pass": true,
+            "details": "stage=Open; products in box=3/3; flap sounds=3",
+            "time": 90.79593658447266
+        },
+        {
+            "name": "gh.far.unit1.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 91.90840911865235
+        },
+        {
+            "name": "gh.far.unit1.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 92.10661315917969
+        },
+        {
+            "name": "gh.far.unit1.out_of_the_box_to_the_body",
+            "pass": true,
+            "details": "behind the hand by 0.018 m after the hand came to rest",
+            "time": 94.2080307006836
+        },
+        {
+            "name": "gh.far.unit1.carried_across_the_store",
+            "pass": true,
+            "details": "still in the hand=True; 5.5 m in 4.7 s; behind the hand by 0.000 m",
+            "time": 98.90906524658203
+        },
+        {
+            "name": "gh.far.unit1.green_place_on_the_display_shelf",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 99.7278823852539
+        },
+        {
+            "name": "gh.far.unit1.preview",
+            "pass": true,
+            "details": "unit=0 (looked at 0); by the head's ray=False; green outline=0; red=False",
+            "time": 99.73152160644531
+        },
+        {
+            "name": "gh.far.unit1.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 100.18734741210938
+        },
+        {
+            "name": "gh.far.unit1.snapped_and_drawn_on_the_shelf",
+            "pass": true,
+            "details": "off its place 0.0000 m; D-1  1/3; drawn by the shelf's splat=True (1 shown, near copy=True); own splat=False",
+            "time": 100.48896026611328
+        },
+        {
+            "name": "gh.far.unit1.first_one_puts_it_on_sale",
+            "pass": true,
+            "details": "on sale before=False, now=True, saved=True; state=Shift; board=포카칩 오리지널 진열 / 이제 손님이 찾습니다",
+            "time": 100.49037170410156
+        },
+        {
+            "name": "gh.far.unit2.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 106.79949951171875
+        },
+        {
+            "name": "gh.far.unit2.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 106.9952392578125
+        },
+        {
+            "name": "gh.far.unit2.out_of_the_box_to_the_body",
+            "pass": true,
+            "details": "behind the hand by 0.018 m after the hand came to rest",
+            "time": 109.25125885009766
+        },
+        {
+            "name": "gh.far.unit2.carried_across_the_store",
+            "pass": true,
+            "details": "still in the hand=True; 5.5 m in 4.7 s; behind the hand by 0.000 m",
+            "time": 113.9558334350586
+        },
+        {
+            "name": "gh.far.unit2.green_place_on_the_display_shelf",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 114.63597106933594
+        },
+        {
+            "name": "gh.far.unit2.preview",
+            "pass": true,
+            "details": "unit=1 (looked at 1); by the head's ray=False; green outline=1; red=False",
+            "time": 114.6397705078125
+        },
+        {
+            "name": "gh.far.unit2.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 114.99870300292969
+        },
+        {
+            "name": "gh.far.unit2.snapped_and_drawn_on_the_shelf",
+            "pass": true,
+            "details": "off its place 0.0000 m; D-1  2/3; drawn by the shelf's splat=True (2 shown, near copy=True); own splat=False",
+            "time": 115.29883575439453
+        },
+        {
+            "name": "gh.far.unit3.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 121.81954956054688
+        },
+        {
+            "name": "gh.far.unit3.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 122.01876831054688
+        },
+        {
+            "name": "gh.far.unit3.out_of_the_box_to_the_body",
+            "pass": true,
+            "details": "behind the hand by 0.017 m after the hand came to rest",
+            "time": 124.41649627685547
+        },
+        {
+            "name": "gh.far.unit3.carried_across_the_store",
+            "pass": true,
+            "details": "still in the hand=True; 5.5 m in 4.7 s; behind the hand by 0.000 m",
+            "time": 129.1179962158203
+        },
+        {
+            "name": "gh.far.unit3.green_place_on_the_display_shelf",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 129.75326538085938
+        },
+        {
+            "name": "gh.far.unit3.preview",
+            "pass": true,
+            "details": "unit=2 (looked at 2); by the head's ray=False; green outline=2; red=False",
+            "time": 129.7572021484375
+        },
+        {
+            "name": "gh.far.unit3.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 130.1167449951172
+        },
+        {
+            "name": "gh.far.unit3.snapped_and_drawn_on_the_shelf",
+            "pass": true,
+            "details": "off its place 0.0000 m; D-1  3/3; drawn by the shelf's splat=True (3 shown, near copy=True); own splat=False",
+            "time": 130.42050170898438
+        },
+        {
+            "name": "gh.far.box_empty_and_shelf_full",
+            "pass": true,
+            "details": "box=Empty; D-1  3/3; lit=False; misplaced=0; 포카칩 오리지널: cart to full shelf in 73 s of simulated hands; gaussians at the peak so far=719744",
+            "time": 130.5073699951172
+        },
+        {
+            "name": "gh.far.walk_measured",
+            "pass": true,
+            "details": "along the lanes the check walks, row D is 5.5 m from stand A and 10.7 m from stand B, one way (this run used stand A); three products are 28 m of walking, the last way back not counted",
+            "time": 130.61610412597657
+        },
+        {
+            "name": "gh.day_ended",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 130.61643981933595
+        },
+        {
+            "name": "gh.day.new_products_in_the_settlement",
+            "pass": true,
+            "details": "asked for 2: sold 1, left out before they were shelved 1; customers served by code=7/7; shelved by hand today=6; board=5일차 정산   A  ·  80점 / 매출 18,200 / 20,000원 · 손님 7/7 · 이탈 0명 · 취소 0 / 손님 만족 100% · 팁 1,900원 / 진열 6/16 · 폐기 0/3 · 오진열 0 · 폐기 오탐 0 · 빈 박스 2 / 새 상품 포카칩 오리지널 · 아몬드 초콜릿  ·  1개 판매  ·  진열 전이라 놓친 주문 1건 / 발주 예산 +6,540원  ·  잔액 6,540원",
+            "time": 131.12118530273438
+        },
+        {
+            "name": "gh.order.something_to_afford",
+            "pass": true,
+            "details": "budget=6540; tab=Product; 구색 7/14  ·  설비 0/7",
+            "time": 134.1947479248047
+        },
+        {
+            "name": "gh.order.ray_on_the_button",
+            "pass": true,
+            "details": "ray off the button by 0.4°; on Box under Order Tablet Panel, 0.6 cm from the button's middle; ray from (0.80, 1.20, 0.30), hand at (0.80, 1.20, 0.30), button at (1.42, 1.38, 0.55)",
+            "time": 136.71983337402345
+        },
+        {
+            "name": "gh.order.button_pressed_by_ray",
+            "pass": true,
+            "details": "row 1: 양파링|3,000| -> 양파링|3,000|입고 예정; budget 6540 -> 3540; arriving 0 -> 1; notice=양파링  ·  박스로 들어옵니다. 진열하면 팔립니다",
+            "time": 137.4139862060547
+        }
+    ]
+}

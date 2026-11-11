@@ -113,6 +113,11 @@ public class CustomerDirector : MonoBehaviour
     public bool HudFlashing => Time.time < flashUntil;
     public string HudText => hud != null ? hud.text : "";
     public event Action<Order, bool> OrderEnded;
+    /// <summary>
+    /// A customer has reached the counter and the basket is about to be laid out: the last moment the order can still
+    /// change (GameManager leaves out what was not on the shelf yet).
+    /// </summary>
+    public event Action<Order> OrderReachedCounter;
     /// <summary>A customer stands at the counter with an order. The bool: its special request has not come up before.</summary>
     public event Action<Order, bool> OrderArrived;
     public float Remaining => remaining;
@@ -506,6 +511,7 @@ public class CustomerDirector : MonoBehaviour
         customer.Resting = CustomerCharacter.IdleState;
 
         // Arrived (doc 6.2): basket down, products made now, HUD, then the timer.
+        OrderReachedCounter?.Invoke(order);
         PlaceBasket(customer, order);
         SpawnProducts(order);
         Pos.BeginOrder(order);
