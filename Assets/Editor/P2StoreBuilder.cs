@@ -142,6 +142,7 @@ public static class P2StoreBuilder
         EnsurePlayerLayer();
         var catalog = BuildCatalog();
         var characters = P2CustomerSetup.Setup();
+        PlayerHandSetup.Setup();
         BuildScene(catalog, characters);
         AssetDatabase.SaveAssets();
         Debug.Log($"[P2] Store scene built with {catalog.Products.Count} products.");
@@ -312,6 +313,7 @@ public static class P2StoreBuilder
                 UnityEngine.Object.DestroyImmediate(root);
         P1InteractionTrial.EnableNearGrabOnProductLayer();
         ConfigureLocomotion();
+        PlayerHandSetup.Install((UnityEngine.Object.FindFirstObjectByType<XROrigin>() ?? throw new Exception("XR Origin missing.")).transform);
 
         new GameObject("EventSystem", typeof(EventSystem), typeof(XRUIInputModule));
         var light = new GameObject("Directional Light").AddComponent<Light>();

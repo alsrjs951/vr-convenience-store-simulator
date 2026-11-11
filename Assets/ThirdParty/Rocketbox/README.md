@@ -20,3 +20,4 @@
 - Animation files renamed from `*.max.fbx` to `*.fbx`. Contents unchanged.
 - Textures converted from 2048x2048 TGA to 1024x1024 PNG (Lanczos). Only color, normal and the hair (opacity) maps were taken; specular maps and the `_facial.fbx` blendshape models were not.
 - Import settings, URP materials, animator controllers and prefabs are made by `Assets/Editor/P2CustomerSetup.cs` (menu `Tools > P2 > Setup Customer Characters`), which `P2StoreBuilder.Build` also runs.
+- The player's hands (2026-11-11) are cut out of `Female_Adult_01`: the skin from 11 cm behind the wrist to the fingertips with its finger joints, scaled 1.06, using the same body color and normal maps. `Assets/Editor/PlayerHandSetup.cs` makes them (`Assets/Prefabs/Hands`, `Assets/Art/Generated/Hands`); the sleeve cuff over the cut is generated, not Rocketbox's. Notes in Korean: `docs/p2/손모델_2026-11-11.md`.

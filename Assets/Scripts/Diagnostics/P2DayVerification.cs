@@ -135,7 +135,14 @@ public partial class P2DayVerification : MonoBehaviour
         keyboard = InputSystem.AddDevice<Keyboard>("P2 Verify Keyboard");
         mouse = InputSystem.AddDevice<Mouse>("P2 Verify Mouse");
         started = Time.realtimeSinceStartup;
-        Scanner.Scanned += _ => scansSeen++;
+        Scanner.Scanned += scanned =>
+        {
+            scansSeen++;
+            // Where each read happened: the walk to the upright glass passes the near corner of its reading space, and a
+            // read there instead of at the glass has to be told apart from one caused by anything else.
+            var face = scanned.transform.TransformDirection(scanned.Data.BarcodeLocalNormal);
+            Debug.Log($"[P2 Day] scan {scansSeen}: {scanned.Data.Id} at {scanned.transform.position.ToString("F3")}, barcode face z={BarcodeFaceZ(scanned):0.000}, {Vector3.Angle(face, Vector3.down):0} deg from down, {Vector3.Angle(face, Vector3.forward):0} deg from the upright glass's way; hand {rightHand.position.ToString("F3")}; t={Time.time:0.00}");
+        };
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
         StartCoroutine(growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
@@ -419,7 +426,21 @@ public partial class P2DayVerification : MonoBehaviour
         Check("tutorial.arrow_on_the_product_at_once", pointer.Shown && pointer.Label == "집기", $"shown={pointer.Shown}; label={pointer.Label}");
         Check("tutorial.grip_said_in_plain_words", tutorial.Hands.RightText.Contains("가운뎃손가락") && Game.BoardText.Contains("가운뎃손가락") && !Game.BoardText.Contains("그립"), $"hand={tutorial.Hands.RightText}; board={Game.BoardText}");
         yield return Capture("02_tutorial_grab");
+        // The player's hands (2026-11-11): drawn in place of the controllers, open before the grip and closed on it.
+        var playerHand = rightHand.GetComponentInChildren<PlayerHand>();
+        var controllerModel = rightHand.Find("Right Controller Visual");
+        Check("hands.drawn_instead_of_the_controllers", playerHand != null && playerHand.GetComponentInChildren<SkinnedMeshRenderer>().enabled
+                                                        && controllerModel != null && !controllerModel.gameObject.activeInHierarchy
+                                                        && FindObjectsByType<PlayerHand>(FindObjectsSortMode.None).Length == 2,
+            $"hand={(playerHand != null)}; controller model shown={(controllerModel != null && controllerModel.gameObject.activeInHierarchy)}; hands={FindObjectsByType<PlayerHand>(FindObjectsSortMode.None).Length}");
+        float openSpan = playerHand == null ? 0f : Vector3.Distance(playerHand.Tips[PlayerHand.Middle].position, playerHand.transform.position);
+        Check("hands.open_before_the_grip", playerHand != null && playerHand.Grip < 0.1f && !playerHand.Holding, playerHand == null ? "no hand" : $"grip={playerHand.Grip:0.00}; holding={playerHand.Holding}");
         yield return GrabProduct(product, "tutorial");
+        yield return new WaitForSeconds(0.3f);
+        float closedSpan = playerHand == null ? 0f : Vector3.Distance(playerHand.Tips[PlayerHand.Middle].position, playerHand.transform.position);
+        Check("hands.closes_on_what_it_holds", playerHand != null && playerHand.Holding && playerHand.Grip > 0.9f && closedSpan < openSpan - 0.02f,
+            playerHand == null ? "no hand" : $"grip={playerHand.Grip:0.00}; holding={playerHand.Holding}; middle fingertip from the wrist {openSpan * 100f:0.0} cm open, {closedSpan * 100f:0.0} cm holding");
+        yield return CaptureFrom("02h_hand_holding", rightHand.position + new Vector3(0.22f, 0.2f, -0.3f), rightHand.position + new Vector3(0f, -0.02f, -0.06f), 40f);
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Rotate, StepTimeout, "tutorial.rotate_shown");
         yield return new WaitForSeconds(0.2f);
         Check("tutorial.arrow_at_the_barcode", pointer.Shown && pointer.Label == "바코드" && tutorial.Hands.RightText == "", $"label={pointer.Label}; hand={tutorial.Hands.RightText}");

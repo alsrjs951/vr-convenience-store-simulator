@@ -1,0 +1,20 @@
+loose PlayerHand_Left: drawn skin from z -0.1146 to 0.1706 in the hand's space; fingertips to 0.1706
+loose PlayerHand_Right: drawn skin from z -0.1146 to 0.1706 in the hand's space; fingertips to 0.1706
+loose PlayerHand_Left: index tip in controller space (0.0000, 0.0000, 0.0075), palm (0.0115, -0.0364, -0.1694) euler (348.2, 343.7, 66.0)
+loose PlayerHand_Right: index tip in controller space (0.0000, 0.0000, 0.0075), palm (-0.0115, -0.0364, -0.1694) euler (348.2, 16.3, 294.0)
+point PlayerHand_Left: drawn skin from z -0.1146 to 0.1696 in the hand's space; fingertips to 0.1668
+point PlayerHand_Right: drawn skin from z -0.1146 to 0.1696 in the hand's space; fingertips to 0.1668
+point PlayerHand_Left: index tip in controller space (0.0000, 0.0000, 0.0075), palm (0.0115, -0.0364, -0.1694) euler (348.2, 343.7, 66.0)
+point PlayerHand_Right: index tip in controller space (0.0000, 0.0000, 0.0075), palm (-0.0115, -0.0364, -0.1694) euler (348.2, 16.3, 294.0)
+fist PlayerHand_Left: drawn skin from z -0.1146 to 0.1080 in the hand's space; fingertips to 0.0932
+fist PlayerHand_Right: drawn skin from z -0.1146 to 0.1080 in the hand's space; fingertips to 0.0932
+fist PlayerHand_Left: index tip in controller space (0.0221, -0.0103, -0.0917), palm (0.0115, -0.0364, -0.1694) euler (348.2, 343.7, 66.0)
+fist PlayerHand_Right: index tip in controller space (-0.0221, -0.0103, -0.0917), palm (-0.0115, -0.0364, -0.1694) euler (348.2, 16.3, 294.0)
+trigger PlayerHand_Left: drawn skin from z -0.1146 to 0.1706 in the hand's space; fingertips to 0.1706
+trigger PlayerHand_Right: drawn skin from z -0.1146 to 0.1706 in the hand's space; fingertips to 0.1706
+trigger PlayerHand_Left: index tip in controller space (0.0221, -0.0103, -0.0917), palm (0.0115, -0.0364, -0.1694) euler (348.2, 343.7, 66.0)
+trigger PlayerHand_Right: index tip in controller space (-0.0221, -0.0103, -0.0917), palm (-0.0115, -0.0364, -0.1694) euler (348.2, 16.3, 294.0)
+hold PlayerHand_Left: drawn skin from z -0.1146 to 0.1271 in the hand's space; fingertips to 0.1012
+hold PlayerHand_Right: drawn skin from z -0.1146 to 0.1271 in the hand's space; fingertips to 0.1012
+hold PlayerHand_Left: index tip in controller space (0.0526, -0.0245, -0.0481), palm (0.0115, -0.0364, -0.1694) euler (348.2, 343.7, 66.0)
+hold PlayerHand_Right: index tip in controller space (-0.0526, -0.0245, -0.0481), palm (-0.0115, -0.0364, -0.1694) euler (348.2, 16.3, 294.0)
