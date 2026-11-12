@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_jollypong_01
   Name: "\uC8E0\uB9AC\uD401 (\uAC1C\uBC1C\uC6A9)"
   Price: 1700
-  SizeCm: {x: 20, y: 28.063492, z: 7.8067355}
+  SizeCm: {x: 20, y: 28.298157, z: 7.700964}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: b567c084ab6594b42873f1e0cb323eef, type: 2}
   LightSplat: {fileID: 11400000, guid: f9b43a7a9268ab04bab81c790c9f9845, type: 2}

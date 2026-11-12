@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_kkokkalcorn_02
   Name: "\uAF2C\uAE54\uCF58 \uAD70\uC625\uC218\uC218\uB9DB (\uAC1C\uBC1C\uC6A9)"
   Price: 1700
-  SizeCm: {x: 19.999998, y: 33.15279, z: 4.070102}
+  SizeCm: {x: 20, y: 32.21984, z: 4.3840714}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: d64ade23c00027247b40997e6330d7ac, type: 2}
   LightSplat: {fileID: 11400000, guid: 1b7ea102cc8a73f4f8ccb8efc7e2e5c1, type: 2}

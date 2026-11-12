@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_indianbap_01
   Name: "\uC778\uB514\uC548\uBC25 (\uAC1C\uBC1C\uC6A9)"
   Price: 1700
-  SizeCm: {x: 20, y: 29.444635, z: 9.255929}
+  SizeCm: {x: 20, y: 28.929571, z: 8.11887}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: 54a5a509578fe64449cba98db017ea1f, type: 2}
   LightSplat: {fileID: 11400000, guid: d7632d9411ae42d4a8db8106fbadd0a9, type: 2}

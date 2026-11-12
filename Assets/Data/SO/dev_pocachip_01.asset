@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_pocachip_01
   Name: "\uD3EC\uCE74\uCE69 \uC624\uB9AC\uC9C0\uB110 (\uAC1C\uBC1C\uC6A9)"
   Price: 1800
-  SizeCm: {x: 20, y: 25.293177, z: 8.803916}
+  SizeCm: {x: 20, y: 25.128645, z: 8.01912}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: d7e55fc89b50cc048aa532c5bce34748, type: 2}
   LightSplat: {fileID: 11400000, guid: d54f9197d66c23b4480c6e3ee99d2877, type: 2}

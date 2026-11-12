@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_gamjakkang_01
   Name: "\uAC10\uC790\uAE61 (\uAC1C\uBC1C\uC6A9)"
   Price: 1700
-  SizeCm: {x: 20.000002, y: 29.554548, z: 9.801518}
+  SizeCm: {x: 20, y: 29.630873, z: 8.538881}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: 0f2bc5e9c47135b4da374f6845e56c8c, type: 2}
   LightSplat: {fileID: 11400000, guid: d27eb57a8090074449c46dca8eb34b01, type: 2}

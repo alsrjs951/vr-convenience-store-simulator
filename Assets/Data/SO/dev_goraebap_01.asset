@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_goraebap_01
   Name: "\uACE0\uB798\uBC25 (\uAC1C\uBC1C\uC6A9)"
   Price: 2500
-  SizeCm: {x: 20, y: 11.923959, z: 5.6675787}
+  SizeCm: {x: 20, y: 11.982313, z: 5.6503677}
   BarcodeFace: 2
   SplatAsset: {fileID: 11400000, guid: c048c03a55dd7aa4388b03c310d51d86, type: 2}
   LightSplat: {fileID: 11400000, guid: 926b08898f9577649a25c978ba55f2d6, type: 2}

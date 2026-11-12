@@ -15,9 +15,9 @@ MonoBehaviour:
   Id: dev_dakdari_01
   Name: "\uB2ED\uB2E4\uB9AC (\uAC1C\uBC1C\uC6A9)"
   Price: 1500
-  SizeCm: {x: 19.999998, y: 12.045028, z: 7.78605}
+  SizeCm: {x: 20, y: 12.5064745, z: 7.797552}
   BarcodeFace: 2
-  SplatAsset: {fileID: 11400000, guid: ff795ab829606744480eeea77082fc27, type: 2}
+  SplatAsset: {fileID: 11400000, guid: ff5cfe9397798ed4397472dd9fb362d2, type: 2}
   LightSplat: {fileID: 0}
   OrderCatalogFlags: 0
   SizeIsMeasured: 0

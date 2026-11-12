@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_onionring_01
   Name: "\uC591\uD30C\uB9C1 (\uAC1C\uBC1C\uC6A9)"
   Price: 1700
-  SizeCm: {x: 20, y: 35.63685, z: 7.8549676}
+  SizeCm: {x: 20, y: 35.812103, z: 8.02848}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: 2ad7f4562e2312d42ae0d1090941d934, type: 2}
   LightSplat: {fileID: 11400000, guid: 66c2eff5c25930f4f8f4e52bd904d217, type: 2}
