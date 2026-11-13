@@ -200,6 +200,13 @@ public class CustomerDirector : MonoBehaviour
     /// <summary>The day's tips and satisfaction added over customers (each 0 to 1; one who left counts 0).</summary>
     public int Tips { get; private set; }
     public float SatisfactionTotal { get; private set; }
+    /// <summary>What the day's customers were given back more than they were owed: the till is short by it at the end (2026-11-13).</summary>
+    public int TillShort { get; private set; }
+    /// <summary>Customers who took more change than was due, and times a customer had to ask for the rest of theirs.</summary>
+    public int OverChanges { get; private set; }
+    public int ChangeAsks { get; private set; }
+    /// <summary>What each asking for the rest of the change takes off that customer's satisfaction (it also costs the tip). [제안]</summary>
+    public const float ShortChangeCost = 0.2f;
     /// <summary>The last outcome card's words, for the checks.</summary>
     public string LastOutcome { get; private set; } = "";
     public event Action Hurried;
@@ -404,6 +411,7 @@ public class CustomerDirector : MonoBehaviour
         hudColor = hudBackground.color;
         Pos.Changed += RefreshHud;
         Pos.PaymentCompleted += OnPaid;
+        Desk.ChangeShort += OnChangeShort;
         CustomerCharacter.StuckWarps = 0;
         CustomerCharacter.ShortArrivals = 0;
         CustomerCharacter.Nudges = 0;
@@ -415,6 +423,7 @@ public class CustomerDirector : MonoBehaviour
 
     void OnDestroy()
     {
+        if (Desk) Desk.ChangeShort -= OnChangeShort;
         if (!Pos) return;
         Pos.Changed -= RefreshHud;
         Pos.PaymentCompleted -= OnPaid;
@@ -445,6 +454,7 @@ public class CustomerDirector : MonoBehaviour
         Hurries = Bells = 0;
         Tips = 0;
         SatisfactionTotal = 0f;
+        TillShort = OverChanges = ChangeAsks = 0;
         LastOutcome = "";
         Records.Clear();
         MaxPresent = MaxWaitingSeen = MaxLineSeen = MaxForOrdersInStore = MaxBrowsersSeen = MaxAtCounterSeen = 0;
@@ -1809,14 +1819,26 @@ public class CustomerDirector : MonoBehaviour
             int total = Pos.Total;
             Paid++;
             Sales += total;
-            bool fast = shareLeft >= FastShare;
+            // Change that was wrong (2026-11-13). Having to ask for the rest costs the tip and some good will; taking
+            // more than was owed leaves the till short by it, which the day's settlement shows.
+            int asked = customer.Record.ChangeAsked;
+            int over = order.Payment == PaymentMethod.Cash ? Desk.ChangeOver : 0;
+            if (over > 0)
+            {
+                TillShort += over;
+                OverChanges++;
+                customer.Record.ChangeOver = over;
+            }
+            bool fast = shareLeft >= FastShare && asked == 0;
             int tip = fast ? TipFor(total) : 0;
-            float satisfaction = SatisfactionFor(shareLeft);
+            float satisfaction = Mathf.Max(LowestPaidSatisfaction, SatisfactionFor(shareLeft) - ShortChangeCost * asked);
             Tips += tip;
             SatisfactionTotal += satisfaction;
             customer.Record.Tip = tip;
             customer.Record.Satisfaction = satisfaction;
-            ShowOutcome(fast ? $"+{total:N0}원  ·  팁 {tip:N0}원" : $"+{total:N0}원", fast ? WorldUi.Palette.Good : WorldUi.Palette.Text);
+            string earned = fast ? $"+{total:N0}원  ·  팁 {tip:N0}원" : $"+{total:N0}원";
+            if (over > 0) ShowOutcome($"{earned}\n거스름돈 {over:N0}원 더 나감", WorldUi.Palette.Bad);
+            else ShowOutcome(earned, fast ? WorldUi.Palette.Good : WorldUi.Palette.Text);
             if (Audio)
             {
                 // Just thanks, however fast it went: people at a counter do not remark on the speed (2026-11-13, from
@@ -1826,7 +1848,8 @@ public class CustomerDirector : MonoBehaviour
             }
             if (customer.FaceRig != null)
             {
-                customer.FaceRig.SetMood(fast ? CustomerMood.Pleased : CustomerMood.Neutral);
+                // Whoever got more back than they were owed goes off pleased, and says nothing about it.
+                customer.FaceRig.SetMood(fast || over > 0 ? CustomerMood.Pleased : CustomerMood.Neutral);
                 customer.FaceRig.Nod();
             }
         }
@@ -1843,6 +1866,9 @@ public class CustomerDirector : MonoBehaviour
             }
         }
         customer.Record.DoneAt = Time.time;
+        // In the log for whoever sets the time limits and the tip afterwards from a session on the headset: the first
+        // one (2026-11-13) left no word of how long each customer took.
+        Debug.Log($"[Customers] order {order.Id} (day {order.Day} #{order.Sequence}; {ItemCount(order)} items; {(order.Payment == PaymentMethod.Card ? "card" : "cash")}{(order.NeedsBag ? "; bag" : "")}{(order.Special != Order.None ? "; " + order.Special : "")}) {(orderPaid ? "paid" : "left")} after {customer.Record.DoneAt - customer.Record.ArrivedAt:0.0} s at the counter; limit {order.TimeLimitSeconds:0} s less {linePenalty:0.0} s for the line; share left {shareLeft:0.00}; tip {customer.Record.Tip}; satisfaction {customer.Record.Satisfaction:0.00}; asked for change {customer.Record.ChangeAsked}; change over {customer.Record.ChangeOver}");
         if (orderPaid)
         {
             LeaveChangeFor(customer);
@@ -1990,6 +2016,21 @@ public class CustomerDirector : MonoBehaviour
     }
 
     void OnPaid() => orderPaid = true;
+
+    /// <summary>
+    /// The change on the tray is less than is owed and no more is on its way: the customer says so and waits for the
+    /// rest (2026-11-13). It costs the tip and some of their good will (ShortChangeCost), not the sale.
+    /// </summary>
+    void OnChangeShort(int missing)
+    {
+        var customer = AtCounter;
+        if (customer == null) return;
+        ChangeAsks++;
+        customer.Record.ChangeAsked++;
+        Debug.Log($"[Customers] {customer.name} asks for the rest of the change: {missing} won short on the tray.");
+        if (Audio) Speak(customer, CustomerLine.ChangeShort);
+        if (customer.FaceRig != null) customer.FaceRig.SetMood(CustomerMood.Impatient);
+    }
 
     int ItemCount(Order order)
     {

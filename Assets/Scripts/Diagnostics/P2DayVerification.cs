@@ -256,7 +256,11 @@ public partial class P2DayVerification : MonoBehaviour
         Check("day.all_paid", report.paid == report.orders && report.orders == 5 && report.left == 0, $"paid={report.paid}/{report.orders} left={report.left}");
         Check("day.sales_match", report.sales == report.possibleSales && report.sales > 0, $"sales={report.sales}/{report.possibleSales}");
         Check("day.cancel_counted", report.cancels == 1, $"cancels={report.cancels}");
-        Check("day.grade", report.grade == "S" && Mathf.Approximately(report.score, 98f), $"grade={report.grade} score={report.score:0.0} (one cancel costs 2 points)");
+        Check("day.grade", report.grade == "S" && Mathf.Approximately(report.score, 96f), $"grade={report.grade} score={report.score:0.0} (one cancel and one customer given too much change cost 2 points each)");
+        // The change can be wrong (2026-11-13): the fourth customer took too much, the second had to ask for the rest.
+        Check("day.till_counted_at_the_settlement",
+            Game.Director.TillShort > 0 && Game.Director.OverChanges == 1 && Game.Director.ChangeAsks == 1 && Game.BoardText.Contains($"시재 −{Game.Director.TillShort:N0}원"),
+            $"till short by {Game.Director.TillShort}; customers given too much {Game.Director.OverChanges}; times asked for the rest {Game.Director.ChangeAsks}; board={Game.BoardText.Replace("\n", " / ")}");
         Check("day.counter_cleared",
             ProductsAbout() == 0 && Game.Director.GoodsWaitingOnCounter == 0 && FindObjectsByType<PaymentProp>(FindObjectsSortMode.None).Length == 0,
             $"no product or payment prop left in the scene (products other than in a customer's hand on the way out {ProductsAbout()}; paid for and still on the counter {Game.Director.GoodsWaitingOnCounter})");
@@ -693,15 +697,10 @@ public partial class P2DayVerification : MonoBehaviour
                 int total = pos.Total;
                 int bill = PaymentDesk.BillFor(total);
                 yield return GiveBill($"order{number}.bill");
-                int expectedErrors = 0;
-                if (number == 4)
-                {
-                    yield return GiveTooMuchChange();
-                    expectedErrors = 1;
-                }
-                bool pauseOnce = number == 2;
-                if (pauseOnce) expectedErrors = 1;
-                yield return GiveChange(bill - total, expectedErrors, pauseOnce, () => pos.Current == null, $"order{number}.change");
+                // With a customer the change can be wrong (2026-11-13): the fourth is given too much and takes it, the
+                // second is left waiting with too little and asks for the rest.
+                if (number == 4) yield return GiveTooMuchChange(bill - total);
+                else yield return GiveChange(bill - total, 0, number == 2, () => pos.Current == null, $"order{number}.change");
             }
             yield return WaitUntil(() => pos.Current == null, 10f, $"order{number}.completed");
             yield return LeavesWithOrWithoutBag($"order{number}", order, buyer);
@@ -1184,26 +1183,37 @@ public partial class P2DayVerification : MonoBehaviour
         }
     }
 
-    IEnumerator GiveTooMuchChange()
+    /// <summary>
+    /// Too much change to a customer (2026-11-13; until then an error on the POS, to be taken back). Held over the tray it
+    /// is not given yet. Let go, it lies there for a moment, in which it could still be snatched back, and then the
+    /// customer takes it: the sale is done, the till is short by the difference and the outcome card says so.
+    /// </summary>
+    IEnumerator GiveTooMuchChange(int due)
     {
-        int errors = Desk.Tray.ErrorCount;
+        var director = Game.Director;
+        int shortBefore = director.TillShort, oversBefore = director.OverChanges, takenBefore = director.ChangeTakenByHand;
         yield return new WaitForSeconds(0.2f);
         var bill = Desk.StockItems[5000];
+        int over = bill.Value - due;
         yield return GrabProp(bill, "rule.too_much.grab");
         yield return CarryProp(bill, Desk.Tray.transform.position, "rule.too_much");
+        yield return new WaitForSeconds(ChangeTrayZone.TakenAnywaySeconds + 0.5f);
+        Check("rule.too_much_in_the_hand_is_not_given", Game.Pos.Current != null && Desk.Tray.Amount == bill.Value && bill.Grab.isSelected,
+            $"on the tray {Desk.Tray.Amount} of {due} due; still in the hand={bill.Grab.isSelected}; sale going on={Game.Pos.Current != null}");
         yield return SetDown(bill.GetComponent<Rigidbody>());
-        yield return WaitUntil(() => Desk.Tray.ErrorCount > errors, 3f, "rule.too_much_change_is_error");
-        Check("rule.too_much_not_paid", Game.Pos.Current != null && Game.Pos.Notice.Contains("많습니다"), $"notice={Game.Pos.Notice}");
-        yield return Capture("14y_too_much_change");
-        yield return GrabProp(bill, "rule.too_much.take_back");
-        var drawer = Desk.Drawer.transform.position;
-        yield return CarryProp(bill, new Vector3(drawer.x, drawer.y, drawer.z), "rule.too_much.back");
-        yield return SetDown(bill.GetComponent<Rigidbody>());
-        yield return WaitUntil(() => Desk.Tray.Amount == 0, 3f, "rule.tray_empty_after_taking_back");
-        // Let go over the open drawer, the note slides back into its slot instead of lying about.
-        yield return WaitUntil(() => bill == null, 2f, "rule.piece_put_back_goes_into_the_till");
-        Check("rule.till_slot_full_after_putting_back", TillFilled() && Game.Pos.Current != null, $"pieces={Desk.StockItems.Count}");
-        yield return new WaitForSeconds(0.3f);
+        float letGo = Time.time;
+        while (Game.Pos.Current != null && Time.time - letGo < 5f) yield return null;
+        float lay = Time.time - letGo;
+        Check("rule.too_much_lies_a_moment_then_is_taken",
+            Game.Pos.Current == null && lay > ChangeTrayZone.TakenAnywaySeconds - 0.2f && lay < ChangeTrayZone.TakenAnywaySeconds + 1f && Desk.Tray.ErrorCount == 0,
+            $"lay {lay:0.00} s before the customer took it (rule {ChangeTrayZone.TakenAnywaySeconds:0.0} s); sale ended={Game.Pos.Current == null}; errors on the POS={Desk.Tray.ErrorCount}");
+        Check("rule.too_much_leaves_the_till_short",
+            director.TillShort == shortBefore + over && director.OverChanges == oversBefore + 1 && director.LastOutcome.Contains($"거스름돈 {over:N0}원 더 나감"),
+            $"due {due}, given {due + over}; till short {shortBefore}->{director.TillShort}; customers given too much {oversBefore}->{director.OverChanges}; outcome={director.LastOutcome.Replace("\n", " / ")}");
+        yield return LookRightAfterPaid();
+        yield return Capture("14y_too_much_change_taken");
+        yield return WaitUntil(() => Desk.Register.Shut, 3f, "rule.too_much.drawer_shut_after_the_sale");
+        yield return WaitUntil(() => director.ChangeTakenByHand > takenBefore && !director.ChangeInHand, 6f, "rule.too_much.taken_by_the_customer");
     }
 
     /// <summary>
@@ -1543,7 +1553,8 @@ public partial class P2DayVerification : MonoBehaviour
         // The order is ready, so the till has let its drawer go. It has to be all the way out before money goes in.
         yield return WaitUntil(() => Desk.Register.FullyOpen, 3f, label + ".drawer_open");
         yield return null;
-        Check(label + ".till_filled_and_pos_waiting", TillFilled() && Screen.ReceivedText == "–" && Screen.LaidText == "–",
+        // Only a lesson shows what lies on the tray (2026-11-13): with a customer that cell is not there.
+        Check(label + ".till_filled_and_pos_waiting", TillFilled() && Screen.ReceivedText == "–" && Screen.LaidText == (Desk.Guided ? "–" : ""),
             $"pieces={Desk.StockItems.Count}; received={Screen.ReceivedText}; laid={Screen.LaidText}");
         yield return GrabProp(bill, label + ".grab");
         if (bill == null) yield break;
@@ -1562,11 +1573,11 @@ public partial class P2DayVerification : MonoBehaviour
             yield return CaptureFrom("cash_2_pos_strip", new Vector3(-0.3f, 1.42f, 0.25f), new Vector3(-0.62f, 1.3f, 0.98f), 48f);
         }
         if (Desk.CashActive)
-            Check(label + ".pos_shows_received_and_change", Desk.CashReceived == value && Screen.ReceivedText == $"{value:N0}" && Screen.ChangeText == $"{Desk.ChangeDue:N0}" && Screen.LaidText == "0",
+            Check(label + ".pos_shows_received_and_change", Desk.CashReceived == value && Screen.ReceivedText == $"{value:N0}" && Screen.ChangeText == $"{Desk.ChangeDue:N0}" && Screen.LaidText == (Desk.Guided ? "0" : ""),
                 $"desk={Desk.CashReceived}; received={Screen.ReceivedText}; change={Screen.ChangeText}; laid={Screen.LaidText}");
     }
 
-    bool tillPictured, changePictured;
+    bool tillPictured, changePictured, plainStripPictured;
 
     /// <summary>Every slot and cup of the open drawer has its piece lying on top, not yet taken.</summary>
     bool TillFilled()
@@ -1584,6 +1595,8 @@ public partial class P2DayVerification : MonoBehaviour
     {
         var director = Game.Director;
         int takenBefore = director.ChangeTakenByHand, piecesBefore = director.PiecesTakenByHand;
+        int tipsBefore = director.Tips, shortBefore = director.TillShort, asksBefore = director.ChangeAsks;
+        bool lesson = Desk.Guided;
         int remaining = change;
         int offset = 0;
         var tray = Desk.Tray.transform.position;
@@ -1600,8 +1613,19 @@ public partial class P2DayVerification : MonoBehaviour
                 yield return GrabProp(item, $"{label}.take{value}");
                 var spot = tray + new Vector3(-0.08f + (offset % 3) * 0.08f, -0.03f + 0.02f * offset, -0.04f + (offset / 3) * 0.08f);
                 yield return CarryProp(item, spot, label);
-                if (offset == 0)
+                if (offset == 0 && lesson)
                     Check(label + ".pos_shows_what_is_on_the_tray", Desk.Tray.Amount == value && Screen.LaidText == $"{value:N0}", $"tray={Desk.Tray.Amount}; laid={Screen.LaidText}");
+                else if (offset == 0)
+                {
+                    Check(label + ".pos_leaves_the_counting_to_the_clerk", Desk.Tray.Amount == value && Screen.LaidText == "" && Screen.ChangeText == $"{change:N0}" && Game.Pos.Notice.StartsWith("거스름돈"),
+                        $"tray={Desk.Tray.Amount}; change shown={Screen.ChangeText}; laid shown='{Screen.LaidText}'; notice={Game.Pos.Notice}");
+                    if (!plainStripPictured)
+                    {
+                        // Once a run: the POS with a customer's cash sale on it, two amounts and no count of the tray.
+                        plainStripPictured = true;
+                        yield return CaptureFrom("cash_2b_pos_strip_with_a_customer", new Vector3(-0.3f, 1.42f, 0.25f), new Vector3(-0.62f, 1.3f, 0.98f), 48f);
+                    }
+                }
                 yield return SetDown(item.GetComponent<Rigidbody>());
                 yield return new WaitForSeconds(0.25f);
                 if (!changePictured && remaining > value)
@@ -1614,15 +1638,26 @@ public partial class P2DayVerification : MonoBehaviour
                 offset++;
                 if (pauseAfterFirstPiece && offset == 1 && remaining > 0)
                 {
-                    int errors = Desk.Tray.ErrorCount;
+                    // Too little, and no more coming: the customer asks for the rest (2026-11-13; until then the POS said so).
+                    int asks = director.ChangeAsks, said = Game.Pos.Audio.SpokenCount(CustomerLine.ChangeShort);
+                    var waiting = director.AtCounter;
                     yield return new WaitForSeconds(StoppedAddingWait);
-                    Check("rule.short_change_after_stopping", Desk.Tray.ErrorCount == errors + 1 && Game.Pos.Current != null && Game.Pos.Notice.Contains("적습니다"), $"errors {errors}->{Desk.Tray.ErrorCount}; notice={Game.Pos.Notice}");
-                    yield return Capture("12y_short_change");
+                    Check("rule.short_change_customer_asks",
+                        director.ChangeAsks == asks + 1 && Game.Pos.Audio.SpokenCount(CustomerLine.ChangeShort) == said + 1 && Game.Pos.Current != null && Desk.Tray.ErrorCount == 0
+                            && !Game.Pos.Notice.Contains("적습니다") && waiting != null && waiting.FaceRig != null && waiting.FaceRig.Mood == CustomerMood.Impatient,
+                        $"asked {asks}->{director.ChangeAsks}; line spoken {said}->{Game.Pos.Audio.SpokenCount(CustomerLine.ChangeShort)}; clip {(Game.Pos.Audio.Female.ChangeShort != null && Game.Pos.Audio.Male.ChangeShort != null ? "there" : "MISSING")}; mood={(waiting != null && waiting.FaceRig != null ? waiting.FaceRig.Mood.ToString() : "none")}; notice={Game.Pos.Notice}; errors on the POS={Desk.Tray.ErrorCount}");
+                    yield return Capture("12y_short_change_asked");
                 }
             }
         }
         yield return WaitUntil(done, 5f, label + ".matched");
         Check(label + ".no_false_errors", Desk.Tray.ErrorCount == expectedErrors, $"errors={Desk.Tray.ErrorCount}; expected={expectedErrors}; pieces={offset}");
+        if (pauseAfterFirstPiece)
+            Check("rule.short_change_costs_the_tip", director.Tips == tipsBefore && !director.LastOutcome.Contains("팁") && director.TillShort == 0,
+                $"tips {tipsBefore}->{director.Tips}; outcome={director.LastOutcome.Replace("\n", " / ")}; till short={director.TillShort}");
+        else if (!lesson)
+            Check(label + ".right_change_is_not_a_mistake", director.TillShort == shortBefore && director.ChangeAsks == asksBefore,
+                $"till short {shortBefore}->{director.TillShort}; times a customer asked for the rest {asksBefore}->{director.ChangeAsks}");
         yield return LookRightAfterPaid();
         // The customer takes the change off the tray with the right hand before going (2026-11-12). Before, it was
         // simply gone the moment the sale was done.

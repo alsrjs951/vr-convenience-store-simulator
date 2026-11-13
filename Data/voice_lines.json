@@ -18,6 +18,7 @@
     { "id": "voice_thanks", "speaker": "customer", "when": "계산이 끝나고", "text": "감사합니다, 수고하세요.", "direction": "돌아서며" },
     { "id": "voice_thanks_fast", "speaker": "customer", "when": "재촉 전에 계산이 끝나 팁을 줄 때", "text": "와, 빠르시네요. 감사합니다!", "direction": "기분 좋게 놀라서" },
     { "id": "voice_waited", "speaker": "customer", "when": "줄에서 오래 기다린 뒤 계산대에 와서", "text": "한참 기다렸네요. 이거 계산 좀 해 주세요.", "direction": "지쳤지만 예의는 지키며" },
+    { "id": "voice_change_short", "speaker": "customer", "when": "현금 결제에서 접시의 거스름돈이 모자란 채로 더 놓지 않을 때", "text": "저기요, 거스름돈이 좀 모자란 것 같은데요.", "direction": "접시를 내려다보고, 따지지 않고 조심스럽게" },
 
     { "id": "voice_manager_welcome", "speaker": "manager", "when": "타이틀에서 출근하기를 누르고 문이 열릴 때", "text": "어, 왔네요! 저 점장이에요. 노란 화살표 따라서 계산대 안쪽으로 들어와요.", "direction": "반갑게, 손을 흔들며" },
     { "id": "voice_manager_punch_in", "speaker": "manager", "when": "계산대 안쪽에 도착했을 때", "text": "출근부터 찍어야죠. 계산대 위 출근 카드를 집어서 단말기에 꽂아 봐요.", "direction": "차근차근" },

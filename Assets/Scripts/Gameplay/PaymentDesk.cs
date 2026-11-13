@@ -10,6 +10,10 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 /// Cash, as at a real till (2026-11-10): once the order is ready the drawer springs open. The customer's note goes into the
 /// drawer, the change comes out of its slots and cups onto the tray, and the POS shows what was received, what is owed back
 /// and what lies on the tray. A piece taken by mistake can be put back in the drawer. The drawer shuts when the sale is over.
+///
+/// With a customer the change can be wrong (2026-11-13): the POS says what is owed back and no more, and the customer
+/// takes what is given. Too much, and the till is short by it (ChangeOver); too little, and they ask for the rest
+/// (ChangeShort). Only a lesson (BeginCash with guided) still counts the tray for the clerk. See ChangeTrayZone.
 /// </summary>
 public class PaymentDesk : MonoBehaviour
 {
@@ -75,6 +79,12 @@ public class PaymentDesk : MonoBehaviour
     }
     /// <summary>Anything of the above changed. The POS screen draws from it.</summary>
     public event Action CashChanged;
+    /// <summary>A lesson's cash sale: the tray is counted on the POS and only the right change ends it.</summary>
+    public bool Guided { get; private set; }
+    /// <summary>How much more than was owed the customer of this sale was given back. The till is short by it.</summary>
+    public int ChangeOver { get; private set; }
+    /// <summary>The customer finds the change on the tray short by this much, and says so.</summary>
+    public event Action<int> ChangeShort;
 
     readonly List<PaymentProp> spawned = new List<PaymentProp>();
     Action done;
@@ -89,9 +99,11 @@ public class PaymentDesk : MonoBehaviour
         CardSlot.Rejected += OnPaymentNotReady;
         Drawer.BillReceived += OnBillReceived;
         Drawer.ChangeReturned += OnChangeReturned;
-        Tray.Matched += OnChangeMatched;
+        Tray.Matched += OnTrayMatched;
         Tray.WrongAmount += OnChangeWrong;
         Tray.AmountChanged += OnChangeAmount;
+        Tray.Short += OnChangeShort;
+        Tray.PieceOnItsWay = () => ChangeInHand;
     }
 
     void OnDisable()
@@ -100,9 +112,10 @@ public class PaymentDesk : MonoBehaviour
         CardSlot.Rejected -= OnPaymentNotReady;
         Drawer.BillReceived -= OnBillReceived;
         Drawer.ChangeReturned -= OnChangeReturned;
-        Tray.Matched -= OnChangeMatched;
+        Tray.Matched -= OnTrayMatched;
         Tray.WrongAmount -= OnChangeWrong;
         Tray.AmountChanged -= OnChangeAmount;
+        Tray.Short -= OnChangeShort;
     }
 
     /// <summary>The note a customer pays with: the smallest one that covers the amount.</summary>
@@ -119,12 +132,16 @@ public class PaymentDesk : MonoBehaviour
         ready = canPay;
         notify = onNotice;
         done = onDone;
+        ChangeOver = 0;
         CardSlot.CanApprove = canPay;
         CustomerCard = SpawnCard(label, CustomerPlate.position);
     }
 
-    public void BeginCash(int billValue, Func<bool> canPay, Func<int> due, Action<int> onReceived, Action<string> onNotice, Action onDone)
+    /// <param name="guided">A lesson: the POS counts the tray and only the right change ends the sale.</param>
+    public void BeginCash(int billValue, Func<bool> canPay, Func<int> due, Action<int> onReceived, Action<string> onNotice, Action onDone, bool guided = false)
     {
+        Guided = guided;
+        ChangeOver = 0;
         ready = canPay;
         amountDue = due;
         received = onReceived;
@@ -253,7 +270,7 @@ public class PaymentDesk : MonoBehaviour
             OnChangeMatched();
             return;
         }
-        Tray.Begin(change);
+        Tray.Begin(change, Guided);
         if (AutoCoins) DispenseCoins(change % 1000);
     }
 
@@ -289,6 +306,14 @@ public class PaymentDesk : MonoBehaviour
         else Destroy(piece.gameObject);
     }
 
+    void OnTrayMatched()
+    {
+        ChangeOver = Tray.Over;
+        OnChangeMatched();
+    }
+
+    void OnChangeShort(int missing) => ChangeShort?.Invoke(missing);
+
     void OnChangeMatched()
     {
         var finish = done;
@@ -304,7 +329,8 @@ public class PaymentDesk : MonoBehaviour
 
     void OnChangeAmount(int amount)
     {
-        notify?.Invoke($"접시 {amount:N0}원 / 거스름돈 {Tray.Target:N0}원");
+        // Only a lesson counts the tray for the clerk.
+        if (Guided) notify?.Invoke($"접시 {amount:N0}원 / 거스름돈 {Tray.Target:N0}원");
         CashChanged?.Invoke();
     }
 

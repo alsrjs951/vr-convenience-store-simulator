@@ -5,7 +5,7 @@ using UnityEngine;
 public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip, DrawerOpen, DrawerClose, Coin, Note, SetDown, Bag, Crinkle, Rustle, Carton, BagDown }
 
 /// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line, the four requests, and the two thanks.</summary>
-public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited }
+public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited, ChangeShort }
 
 /// <summary>What the store manager says on the way in and at the end (game design 10.0, 2026-11-09).</summary>
 /// <summary>New lines go at the end: the scene builder fills GameAudio.ManagerLines in this order, and a line without a clip is silent.</summary>
@@ -17,6 +17,8 @@ public class CustomerVoice
 {
     public AudioClip[] Greet = new AudioClip[0];
     public AudioClip Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited;
+    /// <summary>Asking for the rest of the change (2026-11-13). Silent in a scene saved before it.</summary>
+    public AudioClip ChangeShort;
 
     public AudioClip Get(CustomerLine line, int variant)
     {
@@ -31,6 +33,7 @@ public class CustomerVoice
             case CustomerLine.Thanks: return Thanks;
             case CustomerLine.ThanksFast: return ThanksFast;
             case CustomerLine.Waited: return Waited;
+            case CustomerLine.ChangeShort: return ChangeShort;
             default: return OnePlus;
         }
     }

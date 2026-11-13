@@ -968,7 +968,25 @@ public static class P2StoreBuilder
         Microwave = Sound($"voice_special_microwave_{gender}"),
         HotWater = Sound($"voice_special_hotwater_{gender}"),
         OnePlus = Sound($"voice_special_oneplus_{gender}"),
+        ChangeShort = Sound($"voice_change_short_{gender}"),
     };
+
+    /// <summary>
+    /// Gives the customers their line for change that is short (2026-11-13) in the store as it is, without building it
+    /// again (a build bakes the light anew).
+    /// Unity.exe -batchmode -executeMethod P2StoreBuilder.InstallChangeShortVoiceInStore -quit
+    /// </summary>
+    public static void InstallChangeShortVoiceInStore()
+    {
+        var scene = EditorSceneManager.OpenScene(StoreScene, OpenSceneMode.Single);
+        var audio = UnityEngine.Object.FindFirstObjectByType<GameAudio>() ?? throw new Exception("No GameAudio in " + StoreScene);
+        audio.Female.ChangeShort = Sound("voice_change_short_f");
+        audio.Male.ChangeShort = Sound("voice_change_short_m");
+        EditorUtility.SetDirty(audio);
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (!EditorSceneManager.SaveScene(scene)) throw new Exception("Scene save failed.");
+        Debug.Log($"[Store] change-short line installed: female {audio.Female.ChangeShort.length:0.0} s, male {audio.Male.ChangeShort.length:0.0} s");
+    }
 
     const string StoreMusicPath = "Assets/ThirdParty/StoreAssets/OpenGameArt/shop_theme/shop_theme.ogg";
 

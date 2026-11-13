@@ -21702,6 +21702,7 @@ MonoBehaviour:
     Thanks: {fileID: 8300000, guid: 64311603cf935f54a8be85fac30f9047, type: 3}
     ThanksFast: {fileID: 8300000, guid: f288064cb26d3c8459bb096a3e7e9b2f, type: 3}
     Waited: {fileID: 8300000, guid: 266416f8a3342254090ff9fdafc3a068, type: 3}
+    ChangeShort: {fileID: 8300000, guid: 3c868fb6a7574f341a6aa400b9fd9543, type: 3}
   Male:
     Greet:
     - {fileID: 8300000, guid: ea059284a93fff349b0ca2c10aef8c84, type: 3}
@@ -21717,6 +21718,7 @@ MonoBehaviour:
     Thanks: {fileID: 8300000, guid: ec8b5d27a086e954b9510982dfba63d0, type: 3}
     ThanksFast: {fileID: 8300000, guid: 9d47ac9352f53df45b4def00d6927cfa, type: 3}
     Waited: {fileID: 8300000, guid: aa18ee0397672e145bf429c345811a05, type: 3}
+    ChangeShort: {fileID: 8300000, guid: 35a05d12e3a17b14aa333fc38e76c6ce, type: 3}
   TutorialLines:
   - {fileID: 8300000, guid: 0705a9d96e33e4648b968f982d64be11, type: 3}
   - {fileID: 8300000, guid: 37103dcfb9bf60c4f9c6b9df8eceaee5, type: 3}

@@ -11,7 +11,7 @@ public enum DayState { Intro, Tutorial, Shift, Settlement, DayEnd, Title, Commut
 public class DayResult
 {
     public int Day, Sales, PossibleSales, Paid, Orders, Left, Cancels;
-    public int Shelved, Delivered, Disposed, Expired, Tips;
+    public int Shelved, Delivered, Disposed, Expired, Tips, TillShort;
     public float Score, Satisfaction;
     public string Grade;
 }
@@ -271,7 +271,8 @@ public class GameManager : MonoBehaviour
             yield return RunDay(Day);
             DaysFinished++;
             bool graduatedNow = !Progress.graduated && Day >= TrainingDays;
-            LastEarned = BudgetFor(Director.Sales, Director.Tips, Grade) + (graduatedNow ? GraduationGrant : 0);
+            // What went out of the till as too much change comes out of what the day earned (2026-11-13).
+            LastEarned = Mathf.Max(0, BudgetFor(Director.Sales, Director.Tips, Grade) - Director.TillShort) + (graduatedNow ? GraduationGrant : 0);
             Progress.budget += LastEarned;
             Progress.totalSales += Director.Sales;
             Progress.daysWorked++;
@@ -817,7 +818,7 @@ public class GameManager : MonoBehaviour
         if (training)
         {
             // Learning is not graded: what was done, and what it brought in.
-            board.text = $"{day}일차 끝\n손님 {Director.Paid}명 · 매출 {Director.Sales:N0}원 · 팁 {Director.Tips:N0}원";
+            board.text = $"{day}일차 끝\n손님 {Director.Paid}명 · 매출 {Director.Sales:N0}원 · 팁 {Director.Tips:N0}원{(Director.TillShort > 0 ? " · " + TillText : "")}";
             if (intake) Intake.SetGuide(board.text);
             Debug.Log($"[Game] Training day={day} done: paid={Director.Paid}/{OrderCount} sales={Director.Sales} tips={Director.Tips}");
             State = DayState.DayEnd;
@@ -830,23 +831,26 @@ public class GameManager : MonoBehaviour
             board.fontSize = 36;
             board.text = $"{day}일차 정산   {Grade}  ·  {Score:0}점{(Director.EndedEarly ? "   (이탈로 조기 마감)" : "")}\n" +
                          $"매출 {Director.Sales:N0} / {PossibleSales:N0}원 · 손님 {Director.Paid}/{OrderCount} · 이탈 {Director.Left}명 · 취소 {Pos.CancelCount}\n" +
-                         $"손님 만족 {Satisfaction * 100f:0}% · 팁 {Director.Tips:N0}원\n" +
+                         $"손님 만족 {Satisfaction * 100f:0}% · 팁 {Director.Tips:N0}원 · {TillText}\n" +
                          $"진열 {Intake.Shelved}/{Intake.DeliveredTotal} · 폐기 {Intake.Disposed}/{Intake.ExpiredTotal} · 오진열 {Intake.Misplaced} · 폐기 오탐 {Intake.FalseDisposals} · 빈 박스 {Intake.UnrecycledEmptyBoxes}";
             // What yesterday's order did today: the reason to order again.
             if (Growth && boxesToday.Count > 0)
                 board.text += $"\n새 상품 {BoxNames()}  ·  {NewSoldToday}개 판매" + (MissedNewToday > 0 ? $"  ·  진열 전이라 놓친 주문 {MissedNewToday}건" : "");
             Intake.SetGuide(board.text);
-            Debug.Log($"[Game] Settlement day={day} grade={Grade} score={Score:0.0} sales={Director.Sales}/{PossibleSales} paid={Director.Paid}/{OrderCount} left={Director.Left} cancels={Pos.CancelCount} shelved={Intake.Shelved}/{Intake.DeliveredTotal} disposed={Intake.Disposed}/{Intake.ExpiredTotal} misplaced={Intake.Misplaced} falseDisposals={Intake.FalseDisposals} unrecycled={Intake.UnrecycledEmptyBoxes} endedEarly={Director.EndedEarly}");
+            Debug.Log($"[Game] Settlement day={day} grade={Grade} score={Score:0.0} sales={Director.Sales}/{PossibleSales} paid={Director.Paid}/{OrderCount} left={Director.Left} cancels={Pos.CancelCount} tillShort={Director.TillShort} changeAsks={Director.ChangeAsks} tips={Director.Tips} shelved={Intake.Shelved}/{Intake.DeliveredTotal} disposed={Intake.Disposed}/{Intake.ExpiredTotal} misplaced={Intake.Misplaced} falseDisposals={Intake.FalseDisposals} unrecycled={Intake.UnrecycledEmptyBoxes} endedEarly={Director.EndedEarly}");
         }
         else
         {
             board.text = $"{day}일차 정산   {Grade}  ·  {Score:0}점\n" +
                          $"매출 {Director.Sales:N0} / {PossibleSales:N0}원 · 손님 {Director.Paid}/{OrderCount} · 이탈 {Director.Left}명 · 취소 {Pos.CancelCount}\n" +
-                         $"손님 만족 {Satisfaction * 100f:0}% · 팁 {Director.Tips:N0}원";
-            Debug.Log($"[Game] Settlement day={day} grade={Grade} score={Score:0.0} sales={Director.Sales}/{PossibleSales} paid={Director.Paid}/{OrderCount} left={Director.Left} cancels={Pos.CancelCount}");
+                         $"손님 만족 {Satisfaction * 100f:0}% · 팁 {Director.Tips:N0}원 · {TillText}";
+            Debug.Log($"[Game] Settlement day={day} grade={Grade} score={Score:0.0} sales={Director.Sales}/{PossibleSales} paid={Director.Paid}/{OrderCount} left={Director.Left} cancels={Pos.CancelCount} tillShort={Director.TillShort} changeAsks={Director.ChangeAsks} tips={Director.Tips}");
         }
         State = DayState.DayEnd;
     }
+
+    /// <summary>The till counted at the end of the day (2026-11-13): short by what customers were given back too much.</summary>
+    string TillText => Director.TillShort > 0 ? $"시재 −{Director.TillShort:N0}원" : "시재 맞음";
 
     void Say(string text)
     {
@@ -862,7 +866,7 @@ public class GameManager : MonoBehaviour
             Cancels = Pos.CancelCount, Score = Score, Grade = Grade,
             Shelved = intake ? Intake.Shelved : 0, Delivered = intake ? Intake.DeliveredTotal : 0,
             Disposed = intake ? Intake.Disposed : 0, Expired = intake ? Intake.ExpiredTotal : 0,
-            Tips = Director.Tips, Satisfaction = Satisfaction,
+            Tips = Director.Tips, Satisfaction = Satisfaction, TillShort = Director.TillShort,
         });
     }
 
@@ -885,6 +889,7 @@ public class GameManager : MonoBehaviour
             total.Disposed += result.Disposed;
             total.Expired += result.Expired;
             total.Tips += result.Tips;
+            total.TillShort += result.TillShort;
         }
         float average = Results.Count > 0 ? scores / Results.Count : 0f;
         FinalAverage = average;
@@ -894,7 +899,7 @@ public class GameManager : MonoBehaviour
         text.Append($"\n\n{Results.Count}일 근무 리포트   {GradeFor(average)}  ·  평균 {average:0}점\n");
         foreach (var result in Results)
             text.Append($"{result.Day}일차  {result.Grade}  {result.Score:0}점  ·  매출 {result.Sales:N0} / {result.PossibleSales:N0}원  ·  손님 {result.Paid}/{result.Orders}\n");
-        text.Append($"합계 매출 {total.Sales:N0} / {total.PossibleSales:N0}원 · 손님 {total.Paid}/{total.Orders} · 이탈 {total.Left}명 · 취소 {total.Cancels} · 진열 {total.Shelved}/{total.Delivered} · 폐기 {total.Disposed}/{total.Expired} · 팁 {total.Tips:N0}원");
+        text.Append($"합계 매출 {total.Sales:N0} / {total.PossibleSales:N0}원 · 손님 {total.Paid}/{total.Orders} · 이탈 {total.Left}명 · 취소 {total.Cancels} · 진열 {total.Shelved}/{total.Delivered} · 폐기 {total.Disposed}/{total.Expired} · 팁 {total.Tips:N0}원{(total.TillShort > 0 ? $" · 시재 −{total.TillShort:N0}원" : "")}");
 
         boardPanel.sizeDelta = new Vector2(BoardWidth, ReportBoardHeight);
         board.rectTransform.sizeDelta = new Vector2(board.rectTransform.sizeDelta.x, ReportBoardHeight - 36f);
@@ -917,13 +922,13 @@ public class GameManager : MonoBehaviour
         float service = OrderCount > 0 ? 1f - (float)Director.Left / OrderCount : 0f;
         if (!intake)
         {
-            Accuracy = Mathf.Max(0f, 1f - 0.1f * Pos.CancelCount);
+            Accuracy = Mathf.Max(0f, 1f - 0.1f * (Pos.CancelCount + Director.OverChanges));
             TaskRate = 1f;
             Score = 50f * SalesRate + 30f * service + 20f * Accuracy;
         }
         else
         {
-            int mistakes = Pos.CancelCount + Intake.FalseDisposals + Intake.Misplaced + Intake.UnrecycledEmptyBoxes;
+            int mistakes = Pos.CancelCount + Director.OverChanges + Intake.FalseDisposals + Intake.Misplaced + Intake.UnrecycledEmptyBoxes;
             Accuracy = Mathf.Max(0f, 1f - 0.1f * mistakes);
             TaskRate = Intake.TaskRate;
             Score = 40f * SalesRate + 25f * Satisfaction + 15f * Accuracy + 20f * TaskRate;

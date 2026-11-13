@@ -220,10 +220,11 @@ public class TutorialController : MonoBehaviour
         Board.text = $"6/6  현금 결제\n{CashBill:N0}원을 서랍에 (가격 {CashPrice:N0}원)";
         bool paid = false;
         int errorsShown = 0;
+        // A lesson: the POS counts the tray and only the right change will do (with customers it can be wrong).
         Desk.BeginCash(CashBill, () => true, () => CashPrice,
             _ => Board.text = $"6/6  현금 결제\n거스름 {change:N0}원을 접시에",
             notice => Board.text = "6/6  현금 결제\n" + notice,
-            () => paid = true);
+            () => paid = true, guided: true);
         Director.PutOnPlate(Desk.CustomerBill, Guest);
         Pointer.Aim = AimForCash;
         while (!paid)

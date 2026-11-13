@@ -4,8 +4,9 @@ using UnityEngine.UI;
 
 /// <summary>
 /// POS monitor (doc 5.3, 5.5), laid out like till software: a header bar, a ruled table of what was scanned with a cancel
-/// button per row, the total, and a bar at the foot for notices. During a cash sale a strip under the total shows the three
-/// amounts a clerk counts change by: what the customer gave, what is owed back, and what lies on the change tray so far.
+/// button per row, the total, and a bar at the foot for notices. During a cash sale a strip under the total shows what the
+/// customer gave and what is owed back, as a till does. Counting the change out is the clerk's (2026-11-13): only in a
+/// lesson (PaymentDesk.Guided) is there a third amount, what lies on the change tray so far.
 /// </summary>
 public class POSScreen : MonoBehaviour
 {
@@ -26,9 +27,11 @@ public class POSScreen : MonoBehaviour
     public readonly List<Button> CancelButtons = new List<Button>();
 
     /// <summary>What the cash strip shows, for the checks: empty while it is hidden.</summary>
-    public string ReceivedText => cash != null && cash.gameObject.activeSelf ? received.text : "";
-    public string ChangeText => cash != null && cash.gameObject.activeSelf ? change.text : "";
-    public string LaidText => cash != null && cash.gameObject.activeSelf ? laid.text : "";
+    public string ReceivedText => Shown(cash) ? received.text : Shown(plain) ? plainReceived.text : "";
+    public string ChangeText => Shown(cash) ? change.text : Shown(plain) ? plainChange.text : "";
+    /// <summary>Empty with a customer too: the tray is counted on the screen only in a lesson.</summary>
+    public string LaidText => Shown(cash) ? laid.text : "";
+    static bool Shown(RectTransform strip) => strip != null && strip.gameObject.activeSelf;
     public string TotalText => total != null ? total.text : "";
 
     readonly List<Text> rows = new List<Text>();
@@ -37,8 +40,8 @@ public class POSScreen : MonoBehaviour
     Text total;
     Text notice;
     Image noticeBand;
-    RectTransform cash;
-    Text received, change, laid, laidLabel;
+    RectTransform cash, plain;
+    Text received, change, laid, laidLabel, plainReceived, plainChange;
     Image laidCell;
 
     void Start()
@@ -112,6 +115,15 @@ public class POSScreen : MonoBehaviour
         change = Cell(cash, cell, cell, "거스름돈", WorldUi.Palette.TextDim, WorldUi.Palette.Text, out _);
         laid = Cell(cash, cell * 2f, cell, "접시에 놓은 돈", WorldUi.Palette.InkDim, WorldUi.Palette.Ink, out laidLabel);
         cash.gameObject.SetActive(false);
+
+        // With a customer: the two amounts a till shows. What lies on the tray is for the clerk to count.
+        plain = WorldUi.AddGroup(panel, CashLeft, CashTop, CashWidth, CashHeight);
+        float half = CashWidth / 2f;
+        WorldUi.Square(WorldUi.AddBox(plain, 0f, 0f, half, CashHeight, WorldUi.Palette.Band));
+        WorldUi.Square(WorldUi.AddBox(plain, half, 0f, half, CashHeight, WorldUi.Palette.Navy));
+        plainReceived = Cell(plain, 0f, half, "받은 돈", WorldUi.Palette.InkDim, WorldUi.Palette.Ink, out _);
+        plainChange = Cell(plain, half, half, "거스름돈", WorldUi.Palette.TextDim, WorldUi.Palette.Text, out _);
+        plain.gameObject.SetActive(false);
     }
 
     static Text Cell(RectTransform strip, float x, float width, string label, Color labelColor, Color amountColor, out Text labelText)
@@ -167,9 +179,17 @@ public class POSScreen : MonoBehaviour
     /// <summary>The strip is there from the moment the drawer opens. Its amounts fill in once the customer's money is in the drawer.</summary>
     void RefreshCash(bool show)
     {
-        if (cash.gameObject.activeSelf != show) cash.gameObject.SetActive(show);
+        bool lesson = show && Desk.Guided, customer = show && !Desk.Guided;
+        if (cash.gameObject.activeSelf != lesson) cash.gameObject.SetActive(lesson);
+        if (plain.gameObject.activeSelf != customer) plain.gameObject.SetActive(customer);
         if (!show) return;
         bool taken = Desk.CashReceived > 0;
+        if (customer)
+        {
+            plainReceived.text = taken ? $"{Desk.CashReceived:N0}" : "–";
+            plainChange.text = taken ? $"{Desk.ChangeDue:N0}" : "–";
+            return;
+        }
         received.text = taken ? $"{Desk.CashReceived:N0}" : "–";
         change.text = taken ? $"{Desk.ChangeDue:N0}" : "–";
         laid.text = taken ? $"{Desk.ChangeLaid:N0}" : "–";

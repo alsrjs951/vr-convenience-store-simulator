@@ -22,6 +22,8 @@ public class CustomerRecord
     /// <summary>Seconds off the time limit for waiting long in line; share of the limit left when paid; what that was worth.</summary>
     public float LinePenalty, ShareLeft = -1f, Satisfaction;
     public int Tip;
+    /// <summary>Cash (2026-11-13): times they had to ask for the rest of their change, and how much more than was owed they took.</summary>
+    public int ChangeAsked, ChangeOver;
 }
 
 /// <summary>
