@@ -9,6 +9,7 @@
   "evidence_dir": "docs/p1/evidence/almondchoco_interaction",
   "provisional_width_m": 0.15,
   "provisional_mass_kg": 0.05,
+  "package": "Carton",
   "barcode_face": "Back",
   "barcode_local_normal": {
     "x": 0,

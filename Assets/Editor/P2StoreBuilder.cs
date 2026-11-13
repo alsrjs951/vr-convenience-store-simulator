@@ -130,7 +130,7 @@ public static class P2StoreBuilder
     public static float TillColumn(int index) => -TillHalfWidth + (index + 0.5f) * TillHalfWidth * 0.5f;
     const string CashArt = "Assets/Art/Cash";
 
-    [Serializable] class Manifest { public string id, display_name; public int price; }
+    [Serializable] class Manifest { public string id, display_name, package; public int price; }
 
     [MenuItem("Tools/P2/Build Store Scene")]
     public static void Build()
@@ -297,6 +297,7 @@ public static class P2StoreBuilder
             var product = prefab.GetComponent<ProductPrefab>();
             product.Data.Name = manifest.display_name;
             product.Data.Price = manifest.price;
+            product.Data.Package = PlayerHandSetup.PackageOf(manifest.package);
             product.Data.LightSplat = AssetDatabase.LoadAssetAtPath<GaussianSplatting.Runtime.GaussianSplatAsset>($"Assets/GaussianSplats/Products/{manifest.id}_LOD1.asset");
             EditorUtility.SetDirty(product.Data);
             catalog.Products.Add(product);
@@ -541,7 +542,8 @@ public static class P2StoreBuilder
         var register = BuildCashRegister(environment, gameAudio, out var drawer);
 
         var trayCenter = new Vector3(-0.3f, CounterTop, 0.84f);
-        Box("Change Tray", trayCenter + Vector3.up * 0.002f, new Vector3(0.3f, 0.004f, 0.2f), shelf, environment, false);
+        // Solid (2026-11-13): without a collider a note lay on the counter under the tray's 4 mm, and was not seen.
+        Box("Change Tray", trayCenter + Vector3.up * 0.002f, new Vector3(0.3f, 0.004f, 0.2f), shelf, environment, true);
         var trayObject = new GameObject("ChangeTrayZone") { layer = LayerMask.NameToLayer("Zone") };
         trayObject.transform.position = trayCenter + Vector3.up * 0.07f;
         var trayCollider = trayObject.AddComponent<BoxCollider>();
@@ -551,8 +553,11 @@ public static class P2StoreBuilder
         tray.Audio = gameAudio;
         AddLabel(trayObject.transform, "거스름돈 접시");
 
-        var plate = new Vector3(0.14f, CounterTop, 0.84f);
-        Box("Customer Plate", plate + Vector3.up * 0.002f, new Vector3(0.24f, 0.004f, 0.18f), shelf, environment, false);
+        // To the right of the scanner as the clerk sees it, not behind it (2026-11-12): the scanner's upright part stands in
+        // the middle of the counter, 30 cm high, and from the clerk's place it hides the counter behind it about 12 cm to
+        // either side of the middle. The plate used to begin 2 cm from the middle, and the card on it was half hidden.
+        var plate = new Vector3(0.22f, CounterTop, 0.84f);
+        Box("Customer Plate", plate + Vector3.up * 0.002f, new Vector3(0.24f, 0.004f, 0.18f), shelf, environment, true);
         var plateMark = new GameObject("Customer Plate Anchor").transform;
         plateMark.position = plate;
         AddLabel(plateMark, "손님 접시");
@@ -572,7 +577,8 @@ public static class P2StoreBuilder
 
         // ---------- Customers (doc 2.3 Customers/, 6.1, D12), tutorial, game ----------
         // Where a customer sets the goods down, straight on the counter top: between the scanner and the card terminal.
-        var goods = Marker("Goods Anchor", new Vector3(0.3f, CounterTop, 0.68f));
+        // The row begins far enough to the right that the first thing, standing, does not hide the plate behind it.
+        var goods = Marker("Goods Anchor", new Vector3(0.42f, CounterTop, 0.68f));
         var directorPosition = new Vector3(0.62f, 1.32f, 0.98f);
         var director = new GameObject("CustomerDirector").AddComponent<CustomerDirector>();
         director.transform.SetPositionAndRotation(directorPosition, Facing(directorPosition));
@@ -586,7 +592,8 @@ public static class P2StoreBuilder
         var towardFront = Quaternion.identity;
         var towardFarWall = Quaternion.Euler(0f, -90f, 0f);
         director.Door = Marker("Door", new Vector3(DoorCenter.x, 0f, StorefrontZ - VestibuleDepth + 0.4f), towardFront, customers);
-        director.Counter = Marker("Counter Front", new Vector3(0f, 0f, 1.35f), towardClerk, customers);
+        // In front of the plate and the goods, beside the scanner: straight behind the scanner the customer was hidden too.
+        director.Counter = Marker("Counter Front", new Vector3(0.2f, 0f, 1.35f), towardClerk, customers);
         // The line stands along the counter on the side away from the door, so leaving customers do not cut through it. Not
         // straight back toward the gondolas: a line there walls the store in two (2026-11-08 layout, customers stuck).
         director.QueueSlots = new[]
@@ -1018,6 +1025,7 @@ public static class P2StoreBuilder
         audio.DisposeClip = Sound("sfx_dispose");
         audio.DingClip = Sound("sfx_microwave_ding");
         audio.TipClip = Sound("sfx_tip");
+        PlayerHandSetup.AssignTouchSounds(audio);
         audio.Female = Voice("f");
         audio.Male = Voice("m");
         audio.TutorialLines = Lines("voice_tutorial", 6);
@@ -1648,6 +1656,32 @@ public static class P2StoreBuilder
     {
         EditorSceneManager.OpenScene(StoreScene);
         EditorApplication.isPlaying = true;
+    }
+
+    /// <summary>
+    /// Makes the change tray and the customer's plate solid in the store as it is, without building it again (a build
+    /// bakes the light anew). Notes and coins lay on the counter inside the trays' 4 mm and were hidden by them: seen on
+    /// the headset, 2026-11-13. Also gives the director the counter's bag, which it otherwise finds by name.
+    /// Unity.exe -batchmode -executeMethod P2StoreBuilder.MakeTraysSolidInStore -quit
+    /// </summary>
+    public static void MakeTraysSolidInStore()
+    {
+        var scene = EditorSceneManager.OpenScene(StoreScene, OpenSceneMode.Single);
+        int made = 0;
+        foreach (var name in new[] { "Change Tray", "Customer Plate" })
+        {
+            var tray = GameObject.Find(name) ?? throw new Exception("No " + name + " in " + StoreScene);
+            if (tray.GetComponent<Collider>() != null) continue;
+            tray.AddComponent<BoxCollider>();
+            made++;
+        }
+        var director = UnityEngine.Object.FindFirstObjectByType<CustomerDirector>() ?? throw new Exception("No CustomerDirector in " + StoreScene);
+        var bag = GameObject.Find("Plastic Bag");
+        if (director.BagOnCounter == null && bag != null) director.BagOnCounter = bag.GetComponent<Renderer>();
+        EditorUtility.SetDirty(director);
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (!EditorSceneManager.SaveScene(scene)) throw new Exception("Scene save failed.");
+        Debug.Log($"[Store] trays made solid: {made}; the counter's bag given to the director: {director.BagOnCounter != null}");
     }
 
     public static void BuildPlayer()

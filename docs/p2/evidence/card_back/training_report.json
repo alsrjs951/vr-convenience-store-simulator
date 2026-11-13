@@ -1,0 +1,192 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "runtime": "Editor Play Mode",
+    "scope": "The growing store's rules and its flow from the title through two generated days, the ordering terminal and the save file. No hands: buttons through onClick, customers paid through the POS, the time card set in the slot. Nothing about reach, pressing, legibility in a headset, balance or fun. Prices and numbers are proposals.",
+    "savePath": "C:/Users/LEEMIN~1/AppData/Local/Temp/claude/f4a1f3938539e028/62fd7bca-2e34-468d-a8e6-f9d88bf62009/scratchpad/g_training/save.json",
+    "meanDesktopFps": 369.24151611328127,
+    "checks": 30,
+    "failed": 0,
+    "stages": [
+        {
+            "name": "setup.growing_store",
+            "pass": true,
+            "details": "growth=True; unlocks=16; tablet=True; cabinet=True",
+            "time": 5.003286838531494
+        },
+        {
+            "name": "setup.new_store",
+            "pass": true,
+            "details": "day=1; graduated=False; budget=0; path=C:/Users/LEEMIN~1/AppData/Local/Temp/claude/f4a1f3938539e028/62fd7bca-2e34-468d-a8e6-f9d88bf62009/scratchpad/g_training/save.json",
+            "time": 5.003579139709473
+        },
+        {
+            "name": "title.shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 5.006831645965576
+        },
+        {
+            "name": "training.start_chosen",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 5.02246618270874
+        },
+        {
+            "name": "training.new_store_day_1",
+            "pass": true,
+            "details": "choice=Fresh; day=1; tutorial product=dev_cheetos_01; disposal taught=True",
+            "time": 5.022663116455078
+        },
+        {
+            "name": "commute.at_the_counter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 6.633314609527588
+        },
+        {
+            "name": "punch_in.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 7.184182643890381
+        },
+        {
+            "name": "t1.shift",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 10.174737930297852
+        },
+        {
+            "name": "t1.two_practice_customers",
+            "pass": true,
+            "details": "orders=2; lenient=True; intake=False; shelves=0",
+            "time": 10.175048828125
+        },
+        {
+            "name": "t1.all_served",
+            "pass": true,
+            "details": "paid=2/2; left=0",
+            "time": 36.142578125
+        },
+        {
+            "name": "t1.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 36.14273452758789
+        },
+        {
+            "name": "t1.not_graded_but_earning",
+            "pass": true,
+            "details": "grade=''; board=1일차 끝 / 손님 2명 · 매출 5,200원 · 팁 500원 / 발주 예산 +1,540원  ·  잔액 1,540원; terminal=False; budget=1540 (rule 1540)",
+            "time": 36.14789581298828
+        },
+        {
+            "name": "t2.intake_guided",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 39.232032775878909
+        },
+        {
+            "name": "t2.one_box_two_expired",
+            "pass": true,
+            "details": "boxes=1; expired=2; orders=3; board=입고 1/4  박스 옮기기 / 카트의 신라면 박스 → 진열대 A 옆 거치대",
+            "time": 39.235923767089847
+        },
+        {
+            "name": "t2.shift",
+            "pass": true,
+            "details": "after 90.0s",
+            "time": 129.22723388671876
+        },
+        {
+            "name": "t2.all_served",
+            "pass": true,
+            "details": "paid=3/3; left=0",
+            "time": 183.1478729248047
+        },
+        {
+            "name": "t2.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 183.1480255126953
+        },
+        {
+            "name": "t2.not_graded_but_earning",
+            "pass": true,
+            "details": "board=2일차 끝 / 손님 3명 · 매출 7,300원 · 팁 800원 / 발주 예산 +2,260원  ·  잔액 3,800원; budget=3800 (rule 3800)",
+            "time": 183.15203857421876
+        },
+        {
+            "name": "t3.shift",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 186.16026306152345
+        },
+        {
+            "name": "t3.alone_with_the_tip_rule",
+            "pass": true,
+            "details": "orders=4; boxes=1; expired=2; board=3일차 근무 중 / 시간 막대가 절반을 넘기 전에 끝내면 팁",
+            "time": 186.1604461669922
+        },
+        {
+            "name": "t3.all_served",
+            "pass": true,
+            "details": "paid=4/4; left=0",
+            "time": 237.36721801757813
+        },
+        {
+            "name": "t3.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 237.36740112304688
+        },
+        {
+            "name": "t3.graduated",
+            "pass": true,
+            "details": "graduated=True; budget=11420 (rule 11420); board=수습 수료 / 손님 4명 · 매출 11,600원 · 팁 1,300원 / 계산대 오른쪽 끝 발주 단말기에서 내일 들일 것을 고르세요 / 발주 예산 11,420원  (수료 지원금 4,000원 포함); terminal=True; manager back=True",
+            "time": 237.6766815185547
+        },
+        {
+            "name": "t3.manager_hands_over_aloud",
+            "pass": true,
+            "details": "last narration=voice_manager_graduated",
+            "time": 237.67684936523438
+        },
+        {
+            "name": "t3.arrow_at_the_terminal",
+            "pass": true,
+            "details": "shown=True; label=발주",
+            "time": 237.67701721191407
+        },
+        {
+            "name": "training.customers_buy_what_the_store_sells",
+            "pass": true,
+            "details": "orders=9; assortment=5",
+            "time": 237.67709350585938
+        },
+        {
+            "name": "t3.first_order",
+            "pass": true,
+            "details": "arriving=1; budget=8420; arrow=False",
+            "time": 237.83480834960938
+        },
+        {
+            "name": "day4.shift_after_training",
+            "pass": true,
+            "details": "after 3.0s",
+            "time": 240.84547424316407
+        },
+        {
+            "name": "day4.the_store_is_the_players",
+            "pass": true,
+            "details": "lenient=False; orders=6; boxes=2; expired=3; manager gone=True",
+            "time": 240.84564208984376
+        },
+        {
+            "name": "day4.first_order_is_a_box_to_shelve",
+            "pass": true,
+            "details": "boxes of new products=1; box of dev_pocachip_01=3 units; its shelf D-1: shown=True, target=True, filled=0; the day's boxes=3",
+            "time": 240.8461456298828
+        }
+    ]
+}

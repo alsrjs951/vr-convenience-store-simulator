@@ -95,10 +95,13 @@ public class ShelfSlotZone : MonoBehaviour
     /// <summary>Where a product's root goes so its proxy box sits on the place.</summary>
     public Vector3 RootPosition(ProductPrefab product, int unit) => UnitPosition(unit) - UnitRotation * product.Proxy.center;
 
-    /// <summary>The next empty place in a column: the front one if it is free, otherwise the one behind it. -1 when full.</summary>
+    /// <summary>
+    /// The next empty place in a column: the deepest one that is free, so a column is filled from the back forward
+    /// (2026-11-13; it was front first, and the thing in front then stood in the way of the place behind it). -1 when full.
+    /// </summary>
     public int NextFreeInColumn(int column)
     {
-        for (int row = 0; row < Rows; row++)
+        for (int row = Rows - 1; row >= 0; row--)
         {
             int unit = column * Rows + row;
             if (!filled[unit]) return unit;

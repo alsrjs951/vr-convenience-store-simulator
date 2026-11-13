@@ -247,7 +247,8 @@ public static class P2CustomerSetup
             animator.runtimeAnimatorController = controller;
             animator.avatar = avatar;
             animator.applyRootMotion = false;
-            animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
+            // Always: CustomerArm and CustomerFeet add to the pose every frame (CustomerCharacter.Awake).
+            animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             foreach (var skinned in instance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {
                 skinned.updateWhenOffscreen = false;

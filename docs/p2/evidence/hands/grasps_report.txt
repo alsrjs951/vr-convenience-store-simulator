@@ -1,0 +1,11 @@
+snack bag standing: fitted; hand moved 11.9 cm and turned 23 deg from the controller; thumb 9 mm (-6/51/59); index 7 mm (18/50/33); middle 7 mm (24/50/32); ring 7 mm (20/38/34); little 19 mm (-3/-4/10); thumb down 64
+snack bag lying: fitted; hand moved 3.4 cm and turned 67 deg from the controller; thumb 8 mm (-6/15/63); index 7 mm (6/8/5); middle 7 mm (6/8/5); ring 7 mm (5/6/4); little 7 mm (-4/-5/5); thumb down 60
+snack bag turned: fitted; hand moved 12.7 cm and turned 62 deg from the controller; thumb 8 mm (-6/4/77); index 7 mm (6/8/5); middle 7 mm (6/8/5); ring 7 mm (5/6/4); little 7 mm (-4/-5/5); thumb down 60
+ramen pack standing: fitted; hand moved 11.1 cm and turned 23 deg from the controller; thumb 9 mm (-6/51/59); index 7 mm (46/61/39); middle 7 mm (46/59/38); ring 7 mm (43/54/35); little 7 mm (35/40/27); thumb down 64
+small box lying: fitted; hand moved 5.9 cm and turned 67 deg from the controller; thumb 9 mm (-6/7/18); index 7 mm (6/8/5); middle 7 mm (7/9/6); ring 7 mm (5/6/4); little 7 mm (-4/-5/5); thumb down 4
+card: fitted; hand moved 6.2 cm and turned 67 deg from the controller; thumb 8 mm (30/7/27); index 14 mm (8/10/7); middle 24 mm (9/12/8); ring 8 mm (8/10/6); little 9 mm (-2/-3/-2); thumb down -8
+note: fitted; hand moved 7.7 cm and turned 67 deg from the controller; thumb 9 mm (42/9/27); index 40 mm (19/25/16); middle 46 mm (26/33/21); ring 33 mm (20/25/16); little 20 mm (-3/-4/-3); thumb down -8
+coin: fitted; hand moved 8.6 cm and turned 67 deg from the controller; thumb 9 mm (30/-7/9); index 7 mm (29/38/25); middle 7 mm (29/37/24); ring 45 mm (50/62/40); little 68 mm (51/60/40); thumb down 8
+box handle: fitted; hand moved 7.1 cm and turned 67 deg from the controller; thumb 8 mm (18/9/18); index 7 mm (18/50/32); middle 7 mm (24/52/33); ring 7 mm (20/38/34); little 19 mm (-3/-4/10); thumb down 11
+large box: fitted; hand moved 5.9 cm and turned 67 deg from the controller; thumb 8 mm (-6/40/63); index 7 mm (6/8/5); middle 7 mm (6/8/5); ring 7 mm (5/6/4); little 7 mm (-4/-5/5); thumb down 64
+cutter in its holder: fitted; hand moved 6.3 cm and turned 43 deg from the controller; thumb 9 mm (9/15/23); index 11 mm (18/51/45); middle 17 mm (24/56/49); ring 7 mm (20/38/57); little 19 mm (-3/-4/10); thumb down 0

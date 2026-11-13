@@ -22,3 +22,4 @@ MonoBehaviour:
   OrderCatalogFlags: 0
   SizeIsMeasured: 0
   BarcodeLocalNormal: {x: 0, y: 0, z: -1}
+  Package: 1

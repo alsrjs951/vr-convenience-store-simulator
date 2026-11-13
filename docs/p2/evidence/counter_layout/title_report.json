@@ -1,0 +1,492 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 200.8306427001953,
+    "maxHeldSpeedOnArrival": 0.0,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "",
+    "score": 0.0,
+    "sales": 0,
+    "possibleSales": 0,
+    "paid": 0,
+    "orders": 0,
+    "left": 0,
+    "cancels": 0,
+    "queueAndBrowsers": false,
+    "maxCustomersPresent": 0,
+    "maxForOrdersInStore": 0,
+    "maxWaiting": 0,
+    "maxLine": 0,
+    "maxBrowsers": 0,
+    "browsersSpawned": 0,
+    "stuckWarps": 0,
+    "shortArrivals": 0,
+    "customerFrames": 51905,
+    "settledFrames": 19417,
+    "offNavMeshFrames": 0,
+    "overlapFrames": 0,
+    "clerkSideFrames": 0,
+    "movingFrames": 30634,
+    "walkAnimatedFrames": 30634,
+    "standingFrames": 20082,
+    "standingAnimatedFrames": 20082,
+    "customers": [],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.003547191619873
+        },
+        {
+            "name": "rules.satisfaction",
+            "pass": true,
+            "details": "0.8->1.00, 0.25->0.70, 0->0.40",
+            "time": 4.052297115325928
+        },
+        {
+            "name": "rules.tip",
+            "pass": true,
+            "details": "3300->300, 1000->100, 0->100",
+            "time": 4.05251407623291
+        },
+        {
+            "name": "rules.line_penalty",
+            "pass": true,
+            "details": "45s->0.0, 85s->20.0, 500s of 90s->36.0",
+            "time": 4.052635669708252
+        },
+        {
+            "name": "title.shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.05400276184082
+        },
+        {
+            "name": "title.nothing_started",
+            "pass": true,
+            "details": "tutorial=NotStarted; shift=False; customers=0; door closed=True",
+            "time": 4.058779716491699
+        },
+        {
+            "name": "title.player_at_door",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.059250354766846
+        },
+        {
+            "name": "title.store_stocked_behind_door",
+            "pass": true,
+            "details": "display stock=16",
+            "time": 4.369697570800781
+        },
+        {
+            "name": "title.door_is_solid",
+            "pass": true,
+            "details": "head z=-1.83",
+            "time": 6.269621849060059
+        },
+        {
+            "name": "title.only_start_and_settings",
+            "pass": true,
+            "details": "more settings stay folded",
+            "time": 6.269803524017334
+        },
+        {
+            "name": "title.settings_open",
+            "pass": true,
+            "details": "more=True",
+            "time": 8.286092758178711
+        },
+        {
+            "name": "title.recenter_returns",
+            "pass": true,
+            "details": "head=(-3.60, 1.36, -2.65)",
+            "time": 9.69312572479248
+        },
+        {
+            "name": "title.slow_walk",
+            "pass": true,
+            "details": "speed=1",
+            "time": 11.20134162902832
+        },
+        {
+            "name": "title.speed_back",
+            "pass": true,
+            "details": "speed=1.5",
+            "time": 12.229228973388672
+        },
+        {
+            "name": "title.strong_vignette",
+            "pass": true,
+            "details": "aperture=0.5",
+            "time": 13.355117797851563
+        },
+        {
+            "name": "title.vignette_back",
+            "pass": true,
+            "details": "aperture=0.7",
+            "time": 14.384140968322754
+        },
+        {
+            "name": "title.settings_closed",
+            "pass": true,
+            "details": "more=False",
+            "time": 15.605876922607422
+        },
+        {
+            "name": "title.start_pressed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 16.684940338134767
+        },
+        {
+            "name": "title.day_one_chosen",
+            "pass": true,
+            "details": "chosen=1; day=1; panel=False",
+            "time": 16.689456939697267
+        },
+        {
+            "name": "walkin.door_opened",
+            "pass": true,
+            "details": "after 0.8s",
+            "time": 17.48906898498535
+        },
+        {
+            "name": "walkin.path_and_guide",
+            "pass": true,
+            "details": "path=True; guide=True; narration=voice_manager_welcome",
+            "time": 17.791227340698243
+        },
+        {
+            "name": "walkin.arrived_at_counter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 22.426712036132814
+        },
+        {
+            "name": "walkin.no_rescue_needed",
+            "pass": true,
+            "details": "gave up=False",
+            "time": 22.431447982788087
+        },
+        {
+            "name": "punch.facing_counter",
+            "pass": true,
+            "details": "forward=(0.00, 0.00, 1.00)",
+            "time": 22.477052688598634
+        },
+        {
+            "name": "punch.card_on_plate",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 22.477380752563478
+        },
+        {
+            "name": "punch.time_card",
+            "pass": true,
+            "details": "label=출근 카드; board=출근 카드를 집어\n단말기 노란 칸에 꽂으세요; narration=voice_manager_punch_in",
+            "time": 22.484153747558595
+        },
+        {
+            "name": "punch_in.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 22.565370559692384
+        },
+        {
+            "name": "punch_in.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 25.006072998046876
+        },
+        {
+            "name": "punch_in.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 27.69056510925293
+        },
+        {
+            "name": "punch_in.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.931, 0.402) socketHover=True",
+            "time": 27.85342025756836
+        },
+        {
+            "name": "punch_in.approved",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 28.321741104125978
+        },
+        {
+            "name": "punch_in.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 28.510225296020509
+        },
+        {
+            "name": "punch.done_no_rescue",
+            "pass": true,
+            "details": "gave up=False",
+            "time": 28.51040267944336
+        },
+        {
+            "name": "day.shift_starts",
+            "pass": true,
+            "details": "after 2.8s",
+            "time": 31.323102951049806
+        },
+        {
+            "name": "day.tip_rule_on_board",
+            "pass": true,
+            "details": "board=1일차 근무 중\n시간 막대가 절반을 넘기 전에 끝내면 팁",
+            "time": 31.32329750061035
+        },
+        {
+            "name": "day.customer1_at_counter",
+            "pass": true,
+            "details": "after 13.5s",
+            "time": 44.87123107910156
+        },
+        {
+            "name": "watch.shows_customer",
+            "pass": true,
+            "details": "1일차 | 대기 1명 | 손님 1 | 2:30 |  | 0원; pulses=1",
+            "time": 45.469993591308597
+        },
+        {
+            "name": "customer.looks_at_clerk",
+            "pass": true,
+            "details": "off by 4.9°",
+            "time": 45.70379638671875
+        },
+        {
+            "name": "day.customer1_paid",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 45.71548080444336
+        },
+        {
+            "name": "day.customer1_rewarded",
+            "pass": true,
+            "details": "tip=100; satisfaction=1.00; share left=0.99; card=+0원  ·  팁 100원",
+            "time": 45.72068405151367
+        },
+        {
+            "name": "day.customer1_nods_and_thanks",
+            "pass": true,
+            "details": "nods=1; talking=True; mood=Pleased",
+            "time": 45.72093200683594
+        },
+        {
+            "name": "day.customer2_at_counter",
+            "pass": true,
+            "details": "after 11.1s",
+            "time": 56.933834075927737
+        },
+        {
+            "name": "day.customer2_paid",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 57.53519821166992
+        },
+        {
+            "name": "day.customer2_rewarded",
+            "pass": true,
+            "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
+            "time": 57.54025650024414
+        },
+        {
+            "name": "day.customer2_nods_and_thanks",
+            "pass": true,
+            "details": "nods=1; talking=True; mood=Pleased",
+            "time": 57.54053497314453
+        },
+        {
+            "name": "day.customer3_at_counter",
+            "pass": true,
+            "details": "after 11.1s",
+            "time": 68.68028259277344
+        },
+        {
+            "name": "day.customer3_paid",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 69.27010345458985
+        },
+        {
+            "name": "day.customer3_rewarded",
+            "pass": true,
+            "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
+            "time": 69.27687072753906
+        },
+        {
+            "name": "day.customer3_nods_and_thanks",
+            "pass": true,
+            "details": "nods=1; talking=True; mood=Pleased",
+            "time": 69.27716827392578
+        },
+        {
+            "name": "day.customer4_at_counter",
+            "pass": true,
+            "details": "after 11.4s",
+            "time": 80.65892791748047
+        },
+        {
+            "name": "day.customer4_paid",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 81.25530242919922
+        },
+        {
+            "name": "day.customer4_rewarded",
+            "pass": true,
+            "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
+            "time": 81.26133728027344
+        },
+        {
+            "name": "day.customer4_nods_and_thanks",
+            "pass": true,
+            "details": "nods=1; talking=True; mood=Pleased",
+            "time": 81.26155090332031
+        },
+        {
+            "name": "day.customer5_at_counter",
+            "pass": true,
+            "details": "after 11.2s",
+            "time": 92.49703979492188
+        },
+        {
+            "name": "day.customer5_paid",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 93.10604858398438
+        },
+        {
+            "name": "day.customer5_rewarded",
+            "pass": true,
+            "details": "tip=100; satisfaction=1.00; share left=1.00; card=+0원  ·  팁 100원",
+            "time": 93.11155700683594
+        },
+        {
+            "name": "day.customer5_nods_and_thanks",
+            "pass": true,
+            "details": "nods=1; talking=True; mood=Pleased",
+            "time": 93.11174774169922
+        },
+        {
+            "name": "ending.reached_after_last_day",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 93.11249542236328
+        },
+        {
+            "name": "ending.card_on_plate",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 93.11725616455078
+        },
+        {
+            "name": "ending.punch_out_asked",
+            "pass": true,
+            "details": "hud=퇴근 카드를 집어\n단말기 노란 칸에 꽂으세요; board=1일차 정산   C  ·  50점\n매출 0 / 13,400원 · 손님 5/5 · 이탈 0명 · 취소 0\n손님 만족 100% · 팁 500원\n\n1일 근무 리포트   C  ·  평균 50점\n1일차  C  50점  ·  매출 0 / 13,400원  ·  손님 5/5\n합계 매출 0 / 13,400원 · 손님 5/5 · 이탈 0명 · 취소 0 · 진열 0/0 · 폐기 0/0 · 팁 500원; narration=voice_manager_punch_out",
+            "time": 93.12245178222656
+        },
+        {
+            "name": "punch_out.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 93.2095718383789
+        },
+        {
+            "name": "punch_out.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 95.74284362792969
+        },
+        {
+            "name": "punch_out.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 98.44864654541016
+        },
+        {
+            "name": "punch_out.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.928, 0.401) socketHover=True",
+            "time": 98.60364532470703
+        },
+        {
+            "name": "punch_out.approved",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 99.07341766357422
+        },
+        {
+            "name": "punch_out.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 99.26818084716797
+        },
+        {
+            "name": "ending.matches_grade",
+            "pass": true,
+            "details": "grade=C; board=재교육 대상\n\"첫 알바는 다들 그래요. 다음에 한 번 더 해 봐요.\"\n종합 C · 평균 50점 · 매출 0원 · 팁 500원; narration=voice_ending_c",
+            "time": 99.46888732910156
+        },
+        {
+            "name": "restart.title_again",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 102.3656997680664
+        },
+        {
+            "name": "restart.fresh",
+            "pass": true,
+            "details": "door=True; at door=True; results=0; day=1; tips=0; grade=",
+            "time": 103.37291717529297
+        },
+        {
+            "name": "restart.day2_pressed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 105.91038513183594
+        },
+        {
+            "name": "restart.day2_store_ready",
+            "pass": true,
+            "details": "chosen=2; day=2; boxes=2; displays=0; expired=3",
+            "time": 105.91815948486328
+        },
+        {
+            "name": "rescue.walk_given_up",
+            "pass": true,
+            "details": "after 75.8s",
+            "time": 181.7238311767578
+        },
+        {
+            "name": "rescue.placed_at_counter",
+            "pass": true,
+            "details": "gave up=True; head=(0.00, 1.36, 0.00)",
+            "time": 181.72406005859376
+        },
+        {
+            "name": "rescue.punch_given_up",
+            "pass": true,
+            "details": "after 70.0s",
+            "time": 251.72698974609376
+        },
+        {
+            "name": "rescue.punch_let_through",
+            "pass": true,
+            "details": "gave up=True; state=Intro",
+            "time": 251.72718811035157
+        }
+    ]
+}

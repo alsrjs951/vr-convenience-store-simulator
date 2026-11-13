@@ -90,14 +90,29 @@ public class CustomerCharacter : MonoBehaviour
     public Transform LeftHand => Bone(HumanBodyBones.LeftHand);
     /// <summary>The root of the left middle finger, where a handle sits in the hand. Null when the body has no finger bones.</summary>
     public Transform LeftKnuckles => Bone(HumanBodyBones.LeftMiddleProximal);
+    /// <summary>The same of the right hand, which takes the bag off the counter before the left carries it.</summary>
+    public Transform RightKnuckles => Bone(HumanBodyBones.RightMiddleProximal);
     /// <summary>The bag its goods went into, once it has paid. It goes out of the store with it.</summary>
     public CarriedBag Bag { get; set; }
+    /// <summary>What it bought without a bag and has in the left hand on the way out. Null: nothing, or a bag.</summary>
+    public CarriedGoods Goods { get; set; }
 
     Transform Bone(HumanBodyBones bone) => Animator != null && Animator.isHuman ? Animator.GetBoneTransform(bone) : null;
     /// <summary>Null on the placeholder body.</summary>
     public CustomerFace FaceRig { get; private set; }
+    /// <summary>The arm that sets goods down on the counter. Null on the placeholder body.</summary>
+    public CustomerArm Arm { get; private set; }
+    /// <summary>The other arm: it takes the change off the tray. Null on the placeholder body.</summary>
+    public CustomerArm RightArm { get; private set; }
+    /// <summary>The feet stepping when the standing body is moved a little way. Null on the placeholder body.</summary>
+    public CustomerFeet Feet { get; private set; }
 
     bool playingOnce;
+    // How far it has stepped from the spot it walked to (StepTo), to be taken back before walking again. Zero: not at all.
+    Vector3 steppedBy;
+    // On its way back to the spot: a step still being taken gives way.
+    bool goingBack;
+    const float StepBackSeconds = 0.18f;
 
     void Awake()
     {
@@ -111,7 +126,15 @@ public class CustomerCharacter : MonoBehaviour
         Obstacle.carveOnlyStationary = false;
         Obstacle.enabled = false;
         if (Animator == null) Animator = GetComponentInChildren<Animator>();
+        // Posed every frame, seen or not. The arms and the feet add to the pose the animator leaves (CustomerArm,
+        // CustomerFeet); a body the animator skips because no camera sees it keeps last frame's lean and gets this
+        // frame's on top, and so folds over. On the headset the clerk often looks elsewhere while a customer sets
+        // their goods down: the shoulder was read 30 cm low and things were stood 25 cm short (2026-11-13).
+        if (Animator != null) Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
         FaceRig = CustomerFace.Attach(this);
+        Arm = CustomerArm.Attach(this);
+        RightArm = CustomerArm.Attach(this, true);
+        Feet = CustomerFeet.Attach(this);
     }
 
     void OnEnable() => everyone.Add(this);
@@ -165,6 +188,21 @@ public class CustomerCharacter : MonoBehaviour
     IEnumerator Unsettle()
     {
         if (Agent.enabled) yield break;
+        if (steppedBy != Vector3.zero)
+        {
+            // Back onto the spot it walked to, which is on the NavMesh for certain; the step up to the counter may not be.
+            var stood = transform.position;
+            var spot = stood - steppedBy;
+            steppedBy = Vector3.zero;
+            goingBack = true;
+            for (float t = 0f; t < 1f; t += Time.deltaTime / StepBackSeconds)
+            {
+                transform.position = Vector3.Lerp(stood, spot, Mathf.SmoothStep(0f, 1f, t));
+                yield return null;
+            }
+            transform.position = spot;
+            goingBack = false;
+        }
         Obstacle.enabled = false;
         var position = transform.position;
         for (int frame = 0; frame < 30; frame++)
@@ -366,6 +404,30 @@ public class CustomerCharacter : MonoBehaviour
         StuckWarps++;
         Agent.Warp(target);
         Agent.ResetPath();
+    }
+
+    /// <summary>The spot it walked to and settled on, whatever steps it has taken from it since.</summary>
+    public Vector3 Spot => transform.position - steppedBy;
+
+    /// <summary>
+    /// A step, settled, to this far from the spot it walked to: nearer what it is about to do with its hands (the counter
+    /// and the place a thing goes). It may step again, farther or back; it stays where it stepped until it next walks,
+    /// and goes back to its spot first.
+    /// </summary>
+    public IEnumerator StepTo(Vector3 fromSpot, float seconds)
+    {
+        if (!Settled || goingBack || (fromSpot - steppedBy).sqrMagnitude < 1e-6f) yield break;
+        var spot = Spot;
+        var was = steppedBy;
+        for (float t = 0f; t < 1f && Settled && !goingBack; t += Time.deltaTime / seconds)
+        {
+            steppedBy = Vector3.Lerp(was, fromSpot, Mathf.SmoothStep(0f, 1f, t));
+            transform.position = spot + steppedBy;
+            yield return null;
+        }
+        if (!Settled || goingBack) yield break;
+        steppedBy = fromSpot;
+        transform.position = spot + steppedBy;
     }
 
     /// <summary>Turns in place to a facing, then settles there: every caller stands for a while after it.</summary>

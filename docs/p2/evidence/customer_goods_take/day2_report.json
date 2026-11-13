@@ -1,0 +1,2562 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "Day 2 (intake, disposal, leaving customers). XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 242.99545288085938,
+    "maxHeldSpeedOnArrival": 0.9470919370651245,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "A",
+    "score": 88.95884704589844,
+    "sales": 18400,
+    "possibleSales": 19900,
+    "paid": 7,
+    "orders": 8,
+    "left": 1,
+    "cancels": 0,
+    "queueAndBrowsers": false,
+    "maxCustomersPresent": 0,
+    "maxForOrdersInStore": 0,
+    "maxWaiting": 0,
+    "maxLine": 0,
+    "maxBrowsers": 0,
+    "browsersSpawned": 0,
+    "stuckWarps": 0,
+    "shortArrivals": 0,
+    "customerFrames": 506195,
+    "settledFrames": 352560,
+    "offNavMeshFrames": 0,
+    "overlapFrames": 0,
+    "clerkSideFrames": 0,
+    "movingFrames": 144486,
+    "walkAnimatedFrames": 144486,
+    "standingFrames": 355960,
+    "standingAnimatedFrames": 355955,
+    "customers": [],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.004873275756836
+        },
+        {
+            "name": "setup.product_names_readable",
+            "pass": true,
+            "details": "products=21; broken=",
+            "time": 4.005759239196777
+        },
+        {
+            "name": "input.ready",
+            "pass": true,
+            "details": "mode=Translate",
+            "time": 4.601729869842529
+        },
+        {
+            "name": "d2.intake_tutorial_started",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.602325439453125
+        },
+        {
+            "name": "d2.setup.day_two",
+            "pass": true,
+            "details": "day=2; active=True; skipped=[]",
+            "time": 4.60624885559082
+        },
+        {
+            "name": "d2.setup.two_boxes_on_cart",
+            "pass": true,
+            "details": "boxes=[신라면 ×6 → A-2 Sealed y=0.800 inner=(0.410, 0.249, 0.159), 고래밥 ×4 → B-1 Sealed y=0.800 inner=(0.410, 0.129, 0.123)]",
+            "time": 4.606931686401367
+        },
+        {
+            "name": "d2.setup.target_slots_empty_and_yellow",
+            "pass": true,
+            "details": "A-2 A-2  0/6 lit=True; B-1 B-1  0/4 lit=True",
+            "time": 4.607186317443848
+        },
+        {
+            "name": "d2.setup.three_expired_not_in_targets",
+            "pass": true,
+            "details": "stock=6; expired in [B-2, B-2, A-1]",
+            "time": 4.607401371002197
+        },
+        {
+            "name": "p4.setup.merged_slots",
+            "pass": true,
+            "details": "A-1 shown 2/2 near=False; A-2 shown 0/6 near=False; A-3 shown 2/2 near=False; B-1 shown 0/4 near=False; B-2 shown 2/2 near=False",
+            "time": 4.607812404632568
+        },
+        {
+            "name": "d2.setup.guide_shows_step1",
+            "pass": true,
+            "details": "board=입고 1/4  박스 옮기기\n카트의 신라면 박스 → 진열대 A 옆 거치대",
+            "time": 4.607971668243408
+        },
+        {
+            "name": "d2.setup.no_customer_before_tutorial",
+            "pass": true,
+            "details": "shift=False; present=0; state=Tutorial",
+            "time": 4.608120918273926
+        },
+        {
+            "name": "d2.setup.cutters_in_holders",
+            "pass": true,
+            "details": "two cutters",
+            "time": 4.60828971862793
+        },
+        {
+            "name": "d2.i1.tutorial_box_is_first",
+            "pass": true,
+            "details": "신라면 ×6 → A-2",
+            "time": 4.8507981300354
+        },
+        {
+            "name": "d2.i1.face_forward",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 5.336861610412598
+        },
+        {
+            "name": "d2.i1.grab_handle",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 14.232162475585938
+        },
+        {
+            "name": "d2.i1.grab_handle.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 14.41789722442627
+        },
+        {
+            "name": "d2.i1.carried",
+            "pass": true,
+            "details": "state=Carried",
+            "time": 14.418103218078614
+        },
+        {
+            "name": "d2.i1.docked",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 27.740129470825197
+        },
+        {
+            "name": "d2.i1.step_two_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 28.029468536376954
+        },
+        {
+            "name": "d2.i1.docked_with_thud",
+            "pass": true,
+            "details": "state=Docked; off seat 0.000 m, 0.0°; board=입고 2/4  테이프 자르기\n커터로 끝에서 끝까지",
+            "time": 28.032194137573243
+        },
+        {
+            "name": "d2.i2.grab_cutter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 29.033113479614259
+        },
+        {
+            "name": "d2.i2.grab_cutter.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 29.232933044433595
+        },
+        {
+            "name": "d2.rule.cut_pause_resets",
+            "pass": true,
+            "details": "progress 3->0; resets=1; stage=Sealed",
+            "time": 33.071563720703128
+        },
+        {
+            "name": "d2.i2.tape_cut",
+            "pass": true,
+            "details": "stage=TapeCut; ticks=6; progress=6",
+            "time": 34.433868408203128
+        },
+        {
+            "name": "d2.i2.cutter_back_in_holder",
+            "pass": true,
+            "details": "after 1.0s",
+            "time": 35.73597717285156
+        },
+        {
+            "name": "d2.i2.step_three_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 35.73625183105469
+        },
+        {
+            "name": "d2.rule.flap_half.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 36.32695388793945
+        },
+        {
+            "name": "d2.rule.flap_half.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 36.52942657470703
+        },
+        {
+            "name": "d2.rule.flap_below_110_closes",
+            "pass": true,
+            "details": "reached 82°, now 0°; open=False",
+            "time": 37.2718620300293
+        },
+        {
+            "name": "d2.i3.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 37.932823181152347
+        },
+        {
+            "name": "d2.i3.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 38.13531494140625
+        },
+        {
+            "name": "d2.i3.flap_folds_open",
+            "pass": true,
+            "details": "let go at 168°, now 210°",
+            "time": 38.94899368286133
+        },
+        {
+            "name": "d2.i3.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 39.957115173339847
+        },
+        {
+            "name": "d2.i3.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 40.158302307128909
+        },
+        {
+            "name": "d2.i3.flap_folds_open",
+            "pass": true,
+            "details": "let go at 167°, now 210°",
+            "time": 40.969722747802737
+        },
+        {
+            "name": "d2.i3.open_products_inside",
+            "pass": true,
+            "details": "stage=Open; products in box=6/6; flap sounds=3",
+            "time": 41.43788146972656
+        },
+        {
+            "name": "d2.i3.step_four_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 41.507301330566409
+        },
+        {
+            "name": "d2.rule.drop.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 42.402687072753909
+        },
+        {
+            "name": "d2.rule.drop.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 42.60444641113281
+        },
+        {
+            "name": "d2.rule.drop.returns",
+            "pass": true,
+            "details": "after 3.5s",
+            "time": 49.09721374511719
+        },
+        {
+            "name": "d2.rule.dropped_back_in_box_no_penalty",
+            "pass": true,
+            "details": "parent=Stock Box 1 (dev_shinramen_01 x6); misplaced=0",
+            "time": 49.39655685424805
+        },
+        {
+            "name": "d2.i4.look_at_floor",
+            "pass": true,
+            "details": "gaze off by 1.9°; right hand=True; mode=Translate",
+            "time": 50.233673095703128
+        },
+        {
+            "name": "d2.i4.grab_unit",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 52.75013732910156
+        },
+        {
+            "name": "d2.i4.grab_unit.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 52.94921112060547
+        },
+        {
+            "name": "d2.i4.full_product_in_hand",
+            "pass": true,
+            "details": "order=10; kinematic=False",
+            "time": 52.94940185546875
+        },
+        {
+            "name": "p4.hand_full_copy",
+            "pass": true,
+            "details": "hand=112086; light=35000",
+            "time": 52.94947814941406
+        },
+        {
+            "name": "d2.i4.ghost_at_held_product",
+            "pass": true,
+            "details": "ghost=True; slot=A-2; unit=4 wanted=4; headRay=False; opacity=0.08; order=5",
+            "time": 55.7480354309082
+        },
+        {
+            "name": "p4.ghost_light_copy",
+            "pass": true,
+            "details": "ghost gaussians=35000",
+            "time": 55.74821090698242
+        },
+        {
+            "name": "d2.i4.ghost_follows_after_hold",
+            "pass": true,
+            "details": "unit=0 wanted=0; headRay=False; switches 2->4",
+            "time": 56.97405242919922
+        },
+        {
+            "name": "d2.i4.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 57.35403823852539
+        },
+        {
+            "name": "d2.i4.snapped_into_place",
+            "pass": true,
+            "details": "off 0.0000 m; count=A-2  1/6; shelved=1",
+            "time": 57.66287612915039
+        },
+        {
+            "name": "p4.shelved_drawn_by_merged",
+            "pass": true,
+            "details": "unit shown=True; own splat=False; shown units=1; near copy=True; switches=1",
+            "time": 57.66318130493164
+        },
+        {
+            "name": "d2.i4.tutorial_done_shift_starts",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 57.6633186340332
+        },
+        {
+            "name": "d2.i4.first_customer_after_tutorial",
+            "pass": true,
+            "details": "tutorial 53.1s; shift started 0.00s after it",
+            "time": 57.66657638549805
+        },
+        {
+            "name": "d2.i4.look_at_column",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 58.886226654052737
+        },
+        {
+            "name": "d2.head_ray.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 60.91361618041992
+        },
+        {
+            "name": "d2.head_ray.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 61.110626220703128
+        },
+        {
+            "name": "d2.head_ray.ghost_where_head_looks",
+            "pass": true,
+            "details": "ghost=True; headRay=True; unit=4 wanted=4",
+            "time": 64.27692413330078
+        },
+        {
+            "name": "d2.head_ray.accepted_where_looked",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 64.68883514404297
+        },
+        {
+            "name": "d2.rule.misplace.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 67.0684814453125
+        },
+        {
+            "name": "d2.rule.misplace.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 67.27322387695313
+        },
+        {
+            "name": "p4.stock_taken_hidden_on_shelf",
+            "pass": true,
+            "details": "unit 0 shown=False; own splat=True",
+            "time": 67.70220947265625
+        },
+        {
+            "name": "d2.rule.wrong_slot_red_outline",
+            "pass": true,
+            "details": "red=True; ghost=False; slot=A-2",
+            "time": 68.96538543701172
+        },
+        {
+            "name": "d2.rule.misplaced_counted_and_returned",
+            "pass": true,
+            "details": "misplaced=1; errors +1; off home 0.000 m; A-2 A-2  2/6",
+            "time": 69.89679718017578
+        },
+        {
+            "name": "p4.stock_returned_shown_on_shelf",
+            "pass": true,
+            "details": "unit 0 shown=True; own splat=False",
+            "time": 69.89698791503906
+        },
+        {
+            "name": "d2.box1.extra.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 72.0447769165039
+        },
+        {
+            "name": "d2.box1.extra.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 72.24220275878906
+        },
+        {
+            "name": "d2.box1.extra.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 74.70825958251953
+        },
+        {
+            "name": "d2.box1.extra.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 75.07096099853516
+        },
+        {
+            "name": "d2.look_at_counter",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 82.40363311767578
+        },
+        {
+            "name": "d2.order1.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 82.40480041503906
+        },
+        {
+            "name": "d2.order1.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=120.0; off for the line=0.0 (in line 0.1s); bells=1",
+            "time": 82.40496063232422
+        },
+        {
+            "name": "d2.order1.goods_set_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 82.40664672851563
+        },
+        {
+            "name": "d2.order1.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 2; stood by a customer's hand since the last look 2; pushed the last of the way so far 0; this customer's wrist off its point at most 1.0 cm",
+            "time": 82.41059112548828
+        },
+        {
+            "name": "d2.order1.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_kkokkalcorn_02 lowest=0.900 yaw=3.4; dev_cornchip_01 lowest=0.900 yaw=1.9; basket in scene=False",
+            "time": 82.6125717163086
+        },
+        {
+            "name": "d2.order1.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 82.61336517333985
+        },
+        {
+            "name": "d2.order1.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "card; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.4 cm above it; shown=True; can be taken=True",
+            "time": 82.83905792236328
+        },
+        {
+            "name": "d2.order1.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 41.1 cm standing; steps 9; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 0.8 cm at most; Customer 3 (Female_Adult_17)",
+            "time": 82.83931732177735
+        },
+        {
+            "name": "d2.order1.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 85.05563354492188
+        },
+        {
+            "name": "d2.order1.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 85.26309204101563
+        },
+        {
+            "name": "d2.order1.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_kkokkalcorn_02 is a Bag; Crinkle sounds 5->6; pulses 46->50; holding=Bag",
+            "time": 85.26334381103516
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_kkokkalcorn_02 angle from down=1.5",
+            "time": 86.45523071289063
+        },
+        {
+            "name": "d2.order1.item0.scan",
+            "pass": true,
+            "details": "dev_kkokkalcorn_02 scans 0->1 lowest=0.958",
+            "time": 88.69062805175781
+        },
+        {
+            "name": "d2.order1.item0.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 90.79729461669922
+        },
+        {
+            "name": "d2.order1.item0.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.000, 0.165, 0.014); lowest=-0.003; bag sounds=1",
+            "time": 91.21199798583985
+        },
+        {
+            "name": "d2.order1.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 93.95146942138672
+        },
+        {
+            "name": "d2.order1.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 94.15238189697266
+        },
+        {
+            "name": "d2.order1.item1.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_cornchip_01 is a Bag; Crinkle sounds 6->7; pulses 53->57; holding=Bag",
+            "time": 94.15255737304688
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_cornchip_01 angle from down=3.0",
+            "time": 95.33521270751953
+        },
+        {
+            "name": "d2.order1.item1.scan",
+            "pass": true,
+            "details": "dev_cornchip_01 scans 1->2 lowest=0.954",
+            "time": 97.99557495117188
+        },
+        {
+            "name": "d2.order1.item1.bag",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 100.07547760009766
+        },
+        {
+            "name": "d2.order1.item1.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.030, 0.163, -0.006); lowest=-0.005; bag sounds=2",
+            "time": 100.49691009521485
+        },
+        {
+            "name": "d2.order1.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=3500",
+            "time": 100.84489440917969
+        },
+        {
+            "name": "d2.order1.card.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 100.84545135498047
+        },
+        {
+            "name": "d2.order1.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 103.06253814697266
+        },
+        {
+            "name": "d2.order1.card.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 106.03927612304688
+        },
+        {
+            "name": "d2.order1.card.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.919, 0.432) socketHover=True",
+            "time": 106.31425476074219
+        },
+        {
+            "name": "d2.order1.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 106.72301483154297
+        },
+        {
+            "name": "d2.order1.card.card_taken_back",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 111.31367492675781
+        },
+        {
+            "name": "d2.order1.card.customer_takes_the_card_back",
+            "pass": true,
+            "details": "gone=True; taken back by the customer's hand 1; not given back 0; the hand at most 0.0 cm short of the card so far",
+            "time": 111.31832122802735
+        },
+        {
+            "name": "d2.order1.card.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 111.51925659179688
+        },
+        {
+            "name": "d2.order1.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 111.51951599121094
+        },
+        {
+            "name": "d2.order1.bag_lifted_off_the_counter",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 113.75822448730469
+        },
+        {
+            "name": "d2.order1.lifts_the_bag_by_hand",
+            "pass": true,
+            "details": "on the counter until lifted=True; lifted by a customer's hand 1 time(s), 2 thing(s) in bags so far; the hand at most 0.0 cm short of the handles so far; goods left in the counter's bag 0; a bag stands on the counter again=True; hanging free=True, drawn 1.00 of its length; the shortest over the counter so far 0.71",
+            "time": 113.76241302490235
+        },
+        {
+            "name": "d2.order1.leaves_with_the_bag",
+            "pass": true,
+            "details": "bag at (0.47, 0.85, 1.29); left hand (0.44, 0.96, 1.32); upright=0.99; state=Leaving",
+            "time": 113.76317596435547
+        },
+        {
+            "name": "d2.box2.face_forward",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 114.45918273925781
+        },
+        {
+            "name": "d2.box2.grab_handle",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 123.98540496826172
+        },
+        {
+            "name": "d2.box2.grab_handle.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 124.18619537353516
+        },
+        {
+            "name": "d2.box2.carried",
+            "pass": true,
+            "details": "state=Carried",
+            "time": 124.1863784790039
+        },
+        {
+            "name": "d2.box2.docked",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 136.25148010253907
+        },
+        {
+            "name": "d2.rule.cut_blocked.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 137.57363891601563
+        },
+        {
+            "name": "d2.rule.cut_blocked.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 137.79489135742188
+        },
+        {
+            "name": "d2.rule.only_one_open_box",
+            "pass": true,
+            "details": "stage=Sealed; progress=0; notice=열린 박스를 먼저 비우세요",
+            "time": 139.03652954101563
+        },
+        {
+            "name": "d2.rule.cut_blocked.cutter_back",
+            "pass": true,
+            "details": "after 1.0s",
+            "time": 140.35520935058595
+        },
+        {
+            "name": "d2.box1.rest.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 143.71507263183595
+        },
+        {
+            "name": "d2.box1.rest.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 143.9127655029297
+        },
+        {
+            "name": "d2.box1.rest.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 145.72259521484376
+        },
+        {
+            "name": "d2.box1.rest.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 146.08534240722657
+        },
+        {
+            "name": "d2.box1.rest.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 147.99102783203126
+        },
+        {
+            "name": "d2.box1.rest.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 148.18846130371095
+        },
+        {
+            "name": "d2.box1.rest.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 150.3726806640625
+        },
+        {
+            "name": "d2.box1.rest.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 150.73902893066407
+        },
+        {
+            "name": "d2.box1.rest.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 152.9912109375
+        },
+        {
+            "name": "d2.box1.rest.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 153.19268798828126
+        },
+        {
+            "name": "d2.box1.rest.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 155.67967224121095
+        },
+        {
+            "name": "d2.box1.rest.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 156.0401611328125
+        },
+        {
+            "name": "d2.box1.empty_and_slot_full",
+            "pass": true,
+            "details": "stage=Empty; A-2  6/6; lit=False",
+            "time": 156.3863983154297
+        },
+        {
+            "name": "d2.box1.recycle.face_forward",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 156.74876403808595
+        },
+        {
+            "name": "d2.box1.recycle.grab_handle",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 158.66677856445313
+        },
+        {
+            "name": "d2.box1.recycle.grab_handle.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 158.86524963378907
+        },
+        {
+            "name": "d2.box1.lifted_off_stand",
+            "pass": true,
+            "details": "place=Carried; stage=Empty",
+            "time": 158.86544799804688
+        },
+        {
+            "name": "d2.box1.recycled",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 171.28526306152345
+        },
+        {
+            "name": "d2.box1.gone",
+            "pass": true,
+            "details": "recycled=1",
+            "time": 171.5843963623047
+        },
+        {
+            "name": "d2.box2.cut.grab_cutter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 181.76536560058595
+        },
+        {
+            "name": "d2.box2.cut.grab_cutter.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 181.98550415039063
+        },
+        {
+            "name": "d2.box2.cut.tape_cut",
+            "pass": true,
+            "details": "stage=TapeCut; ticks=6; progress=6",
+            "time": 183.73020935058595
+        },
+        {
+            "name": "d2.box2.cut.cutter_back_in_holder",
+            "pass": true,
+            "details": "after 1.0s",
+            "time": 185.03463745117188
+        },
+        {
+            "name": "d2.box2.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 185.62692260742188
+        },
+        {
+            "name": "d2.box2.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 185.8280029296875
+        },
+        {
+            "name": "d2.box2.flap_folds_open",
+            "pass": true,
+            "details": "let go at 168°, now 210°",
+            "time": 186.63217163085938
+        },
+        {
+            "name": "d2.box2.grab_flap",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 187.6104736328125
+        },
+        {
+            "name": "d2.box2.grab_flap.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 187.8323974609375
+        },
+        {
+            "name": "d2.box2.flap_folds_open",
+            "pass": true,
+            "details": "let go at 167°, now 210°",
+            "time": 188.6519012451172
+        },
+        {
+            "name": "d2.box2.open_products_inside",
+            "pass": true,
+            "details": "stage=Open; products in box=4/4; flap sounds=3",
+            "time": 189.13589477539063
+        },
+        {
+            "name": "d2.box2.shelve.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 189.9923553466797
+        },
+        {
+            "name": "d2.box2.shelve.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 190.1932830810547
+        },
+        {
+            "name": "d2.box2.shelve.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 192.32533264160157
+        },
+        {
+            "name": "d2.box2.shelve.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 192.68707275390626
+        },
+        {
+            "name": "d2.box2.shelve.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 194.88870239257813
+        },
+        {
+            "name": "d2.box2.shelve.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 195.10227966308595
+        },
+        {
+            "name": "d2.box2.shelve.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 197.2982635498047
+        },
+        {
+            "name": "d2.box2.shelve.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 197.6588592529297
+        },
+        {
+            "name": "d2.box2.shelve.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 200.06021118164063
+        },
+        {
+            "name": "d2.box2.shelve.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 200.272705078125
+        },
+        {
+            "name": "d2.box2.shelve.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 202.34608459472657
+        },
+        {
+            "name": "d2.box2.shelve.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 202.70948791503907
+        },
+        {
+            "name": "d2.box2.shelve.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 204.88027954101563
+        },
+        {
+            "name": "d2.box2.shelve.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 205.08099365234376
+        },
+        {
+            "name": "d2.box2.shelve.green",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 207.27249145507813
+        },
+        {
+            "name": "d2.box2.shelve.accepted",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 207.636474609375
+        },
+        {
+            "name": "d2.box2.empty_and_slot_full",
+            "pass": true,
+            "details": "stage=Empty; B-1  4/4; lit=False",
+            "time": 207.96994018554688
+        },
+        {
+            "name": "d2.box2.recycle.face_forward",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 208.31756591796876
+        },
+        {
+            "name": "d2.box2.recycle.grab_handle",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 209.7190399169922
+        },
+        {
+            "name": "d2.box2.recycle.grab_handle.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 209.92323303222657
+        },
+        {
+            "name": "d2.box2.lifted_off_stand",
+            "pass": true,
+            "details": "place=Carried; stage=Empty",
+            "time": 209.92347717285157
+        },
+        {
+            "name": "d2.box2.recycled",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 220.0781707763672
+        },
+        {
+            "name": "d2.box2.gone",
+            "pass": true,
+            "details": "recycled=2",
+            "time": 220.3829803466797
+        },
+        {
+            "name": "d2.dispose.A0.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 235.48753356933595
+        },
+        {
+            "name": "d2.dispose.A0.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 235.68870544433595
+        },
+        {
+            "name": "d2.dispose.A0.disposed",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 245.35943603515626
+        },
+        {
+            "name": "d2.dispose.A0.removed",
+            "pass": true,
+            "details": "disposed=1",
+            "time": 245.56106567382813
+        },
+        {
+            "name": "d2.dispose.A1.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 255.19602966308595
+        },
+        {
+            "name": "d2.dispose.A1.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 255.3977813720703
+        },
+        {
+            "name": "d2.dispose.A1.disposed",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 264.7749938964844
+        },
+        {
+            "name": "d2.dispose.A1.removed",
+            "pass": true,
+            "details": "disposed=2",
+            "time": 264.976806640625
+        },
+        {
+            "name": "d2.look_at_counter",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 266.36273193359377
+        },
+        {
+            "name": "d2.order3.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 266.3628845214844
+        },
+        {
+            "name": "d2.order3.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=72.0; off for the line=48.0 (in line 165.8s); bells=3",
+            "time": 266.36297607421877
+        },
+        {
+            "name": "d2.order3.goods_set_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 266.363037109375
+        },
+        {
+            "name": "d2.order3.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 2; stood by a customer's hand since the last look 3; pushed the last of the way so far 1; this customer's wrist off its point at most 0.0 cm",
+            "time": 266.3681335449219
+        },
+        {
+            "name": "d2.order3.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_gamjakkang_01 lowest=0.900 yaw=-5.2; dev_indianbap_01 lowest=0.900 yaw=0.4; basket in scene=False",
+            "time": 266.57177734375
+        },
+        {
+            "name": "d2.order3.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 266.5719909667969
+        },
+        {
+            "name": "d2.order3.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "note 5000; laid by a customer's hand since the last look 2; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.2 cm above it; shown=True; can be taken=True",
+            "time": 266.77838134765627
+        },
+        {
+            "name": "d2.order3.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 36.7 cm standing; steps 12; a foot on the floor slid 0.0 cm in all; a held foot at most 0.1 cm off its place; the hips came down 10.5 cm at most; Customer 5 (Male_Adult_16)",
+            "time": 266.7785949707031
+        },
+        {
+            "name": "d2.rule.false_disposal.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 270.0635986328125
+        },
+        {
+            "name": "d2.rule.false_disposal.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 270.2669677734375
+        },
+        {
+            "name": "d2.rule.false_disposal.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_gamjakkang_01 is a Bag; Crinkle sounds 12->13; pulses 104->108; holding=Bag",
+            "time": 270.26715087890627
+        },
+        {
+            "name": "d2.rule.false_disposal.counted",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 274.5362854003906
+        },
+        {
+            "name": "d2.rule.false_disposal_returns_to_basket",
+            "pass": true,
+            "details": "off home 0.000 m; errors +1",
+            "time": 274.9380798339844
+        },
+        {
+            "name": "d2.look_at_counter",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 276.14483642578127
+        },
+        {
+            "name": "d2.order3.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 279.5679931640625
+        },
+        {
+            "name": "d2.order3.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 279.76995849609377
+        },
+        {
+            "name": "d2.order3.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_gamjakkang_01 is a Bag; Crinkle sounds 13->14; pulses 109->113; holding=Bag",
+            "time": 279.7701416015625
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_gamjakkang_01 angle from down=7.3",
+            "time": 282.0685729980469
+        },
+        {
+            "name": "d2.order3.item0.scan",
+            "pass": true,
+            "details": "dev_gamjakkang_01 scans 2->3 lowest=0.953",
+            "time": 284.3556213378906
+        },
+        {
+            "name": "d2.order3.item0.bag",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 286.3968811035156
+        },
+        {
+            "name": "d2.order3.item0.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.000, 0.147, 0.013); lowest=-0.005; bag sounds=4",
+            "time": 286.8162536621094
+        },
+        {
+            "name": "d2.order3.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 289.6249084472656
+        },
+        {
+            "name": "d2.order3.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 289.82708740234377
+        },
+        {
+            "name": "d2.order3.item1.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_indianbap_01 is a Bag; Crinkle sounds 14->15; pulses 116->120; holding=Bag",
+            "time": 289.8272705078125
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_indianbap_01 angle from down=1.8",
+            "time": 291.0148010253906
+        },
+        {
+            "name": "d2.order3.item1.scan",
+            "pass": true,
+            "details": "dev_indianbap_01 scans 3->4 lowest=0.957",
+            "time": 293.6199645996094
+        },
+        {
+            "name": "d2.order3.item1.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 295.67840576171877
+        },
+        {
+            "name": "d2.order3.item1.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.030, 0.147, -0.006); lowest=-0.005; bag sounds=5",
+            "time": 296.0953063964844
+        },
+        {
+            "name": "d2.order3.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=3400",
+            "time": 296.4427490234375
+        },
+        {
+            "name": "d2.order3.bill.drawer_open",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 296.443603515625
+        },
+        {
+            "name": "d2.order3.bill.till_filled_and_pos_waiting",
+            "pass": true,
+            "details": "pieces=8; received=–; laid=–",
+            "time": 296.4530944824219
+        },
+        {
+            "name": "d2.order3.bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 298.6720275878906
+        },
+        {
+            "name": "d2.order3.bill.received",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 302.4811096191406
+        },
+        {
+            "name": "d2.order3.bill.pos_shows_received_and_change",
+            "pass": true,
+            "details": "desk=5000; received=5,000; change=1,600; laid=0",
+            "time": 302.9535827636719
+        },
+        {
+            "name": "d2.order3.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 304.7383728027344
+        },
+        {
+            "name": "d2.order3.change.pos_shows_what_is_on_the_tray",
+            "pass": true,
+            "details": "tray=1000; laid=1,000",
+            "time": 306.9967956542969
+        },
+        {
+            "name": "d2.order3.change.take500.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 310.6415710449219
+        },
+        {
+            "name": "d2.order3.change.take100.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 316.97509765625
+        },
+        {
+            "name": "d2.order3.change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 320.61785888671877
+        },
+        {
+            "name": "d2.order3.change.no_false_errors",
+            "pass": true,
+            "details": "errors=0; expected=0; pieces=3",
+            "time": 320.6180114746094
+        },
+        {
+            "name": "d2.order3.change.drawer_shut_after_the_sale",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 321.5751647949219
+        },
+        {
+            "name": "d2.order3.change.taken_by_the_customer",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 321.8907470703125
+        },
+        {
+            "name": "d2.order3.change.customer_takes_the_change_by_hand",
+            "pass": true,
+            "details": "taken by a customer's hand 1 time(s), 3 of 3 pieces; still lying about 0; the hand at most 0.0 cm short of the change so far",
+            "time": 321.8969421386719
+        },
+        {
+            "name": "d2.order3.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 321.8970947265625
+        },
+        {
+            "name": "d2.order3.bag_lifted_off_the_counter",
+            "pass": true,
+            "details": "after 2.3s",
+            "time": 324.2052001953125
+        },
+        {
+            "name": "d2.order3.lifts_the_bag_by_hand",
+            "pass": true,
+            "details": "on the counter until lifted=True; lifted by a customer's hand 1 time(s), 4 thing(s) in bags so far; the hand at most 0.0 cm short of the handles so far; goods left in the counter's bag 0; a bag stands on the counter again=True; hanging free=True, drawn 1.00 of its length; the shortest over the counter so far 0.69",
+            "time": 324.208984375
+        },
+        {
+            "name": "d2.order3.leaves_with_the_bag",
+            "pass": true,
+            "details": "bag at (0.49, 0.85, 1.30); left hand (0.47, 0.97, 1.33); upright=0.99; state=Leaving",
+            "time": 324.2091979980469
+        },
+        {
+            "name": "d2.dispose.A2.grab",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 331.9197692871094
+        },
+        {
+            "name": "d2.dispose.A2.grab.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 332.117431640625
+        },
+        {
+            "name": "d2.dispose.A2.disposed",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 340.5182189941406
+        },
+        {
+            "name": "d2.dispose.A2.removed",
+            "pass": true,
+            "details": "disposed=3",
+            "time": 340.71954345703127
+        },
+        {
+            "name": "d2.look_at_counter",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 342.09051513671877
+        },
+        {
+            "name": "d2.order4.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 342.0906982421875
+        },
+        {
+            "name": "d2.order4.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=72.0; off for the line=48.0 (in line 186.7s); bells=4",
+            "time": 342.0907897949219
+        },
+        {
+            "name": "d2.order4.goods_set_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 342.0908508300781
+        },
+        {
+            "name": "d2.order4.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 1; stood by a customer's hand since the last look 1; pushed the last of the way so far 1; this customer's wrist off its point at most 1.2 cm",
+            "time": 342.0957946777344
+        },
+        {
+            "name": "d2.order4.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_caramelcorn_01 lowest=0.900 yaw=5.1; basket in scene=False",
+            "time": 342.2998352050781
+        },
+        {
+            "name": "d2.order4.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 342.300048828125
+        },
+        {
+            "name": "d2.order4.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "card; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.4 cm above it; shown=True; can be taken=True",
+            "time": 342.5054016113281
+        },
+        {
+            "name": "d2.order4.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 25.7 cm standing; steps 5; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 0.4 cm at most; Customer 9 (Female_Adult_17)",
+            "time": 342.5055847167969
+        },
+        {
+            "name": "d2.order4.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 345.8627624511719
+        },
+        {
+            "name": "d2.order4.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 346.0651550292969
+        },
+        {
+            "name": "d2.order4.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_caramelcorn_01 is a Bag; Crinkle sounds 16->17; pulses 132->136; holding=Bag",
+            "time": 346.0653381347656
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_caramelcorn_01 angle from down=3.1",
+            "time": 347.255126953125
+        },
+        {
+            "name": "d2.order4.item0.scan",
+            "pass": true,
+            "details": "dev_caramelcorn_01 scans 4->5 lowest=0.953",
+            "time": 349.6105651855469
+        },
+        {
+            "name": "aside.lands_with_a_sound",
+            "pass": true,
+            "details": "dev_caramelcorn_01 let go 3 cm over the counter: landing sounds 1",
+            "time": 352.4461669921875
+        },
+        {
+            "name": "d2.order4.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=1700",
+            "time": 352.7955627441406
+        },
+        {
+            "name": "d2.order4.card.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 352.7957458496094
+        },
+        {
+            "name": "d2.order4.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 355.1549377441406
+        },
+        {
+            "name": "d2.order4.card.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 358.1436462402344
+        },
+        {
+            "name": "d2.order4.card.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.920, 0.433) socketHover=True",
+            "time": 358.38897705078127
+        },
+        {
+            "name": "d2.order4.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 358.8253173828125
+        },
+        {
+            "name": "d2.order4.card.card_taken_back",
+            "pass": true,
+            "details": "after 1.5s",
+            "time": 363.67266845703127
+        },
+        {
+            "name": "d2.order4.card.customer_takes_the_card_back",
+            "pass": true,
+            "details": "gone=True; taken back by the customer's hand 1; not given back 0; the hand at most 0.0 cm short of the card so far",
+            "time": 363.6781311035156
+        },
+        {
+            "name": "d2.order4.card.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 363.8792724609375
+        },
+        {
+            "name": "d2.order4.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 363.87945556640627
+        },
+        {
+            "name": "d2.order4.goods_taken_off_the_counter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 363.88861083984377
+        },
+        {
+            "name": "d2.order4.takes_the_goods_by_hand",
+            "pass": true,
+            "details": "things bought 1; taken off the counter by the customer's hand 1, of which 1 came to the hand over the counter first (the farthest so far 2.8 cm); out of the hand's reach and gone with the sale 0; still on the counter 0; this customer's wrist off its point at most 1.2 cm; done 0.0 s after the check began to look",
+            "time": 363.8984680175781
+        },
+        {
+            "name": "d2.order4.leaves_with_the_last_thing_in_hand",
+            "pass": true,
+            "details": "dev_caramelcorn_01 at (0.44, 0.76, 1.25), 12 cm from the left wrist; hanging from the fingers=True; Gaussians 35000; fingers closed 0.50; state=Leaving",
+            "time": 363.89959716796877
+        },
+        {
+            "name": "d2.order4.leaves_without_a_bag",
+            "pass": true,
+            "details": "no bag",
+            "time": 363.89971923828127
+        },
+        {
+            "name": "d2.look_at_counter",
+            "pass": true,
+            "details": "gaze off by 0.0°; right hand=True; mode=Translate",
+            "time": 364.5672607421875
+        },
+        {
+            "name": "d2.order5.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 375.0726013183594
+        },
+        {
+            "name": "d2.order5.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=97.6; off for the line=22.4 (in line 89.8s); bells=5",
+            "time": 375.0728454589844
+        },
+        {
+            "name": "d2.order5.goods_set_down",
+            "pass": true,
+            "details": "after 2.6s",
+            "time": 377.64044189453127
+        },
+        {
+            "name": "d2.order5.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 2; stood by a customer's hand since the last look 2; pushed the last of the way so far 1; this customer's wrist off its point at most 0.0 cm",
+            "time": 377.640625
+        },
+        {
+            "name": "d2.order5.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 lowest=0.900 yaw=2.0; dev_ansungtangmyun_01 lowest=0.900 yaw=5.5; basket in scene=False",
+            "time": 377.84320068359377
+        },
+        {
+            "name": "d2.order5.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 377.8434143066406
+        },
+        {
+            "name": "d2.order5.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "card; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.4 cm above it; shown=True; can be taken=True",
+            "time": 378.0506591796875
+        },
+        {
+            "name": "d2.order5.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 36.7 cm standing; steps 9; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 1.1 cm at most; Customer 17 (Male_Adult_16)",
+            "time": 378.0509033203125
+        },
+        {
+            "name": "d2.order5.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 380.0020751953125
+        },
+        {
+            "name": "d2.order5.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 380.20208740234377
+        },
+        {
+            "name": "d2.order5.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 is a Bag; Crinkle sounds 18->19; pulses 140->144; holding=Bag",
+            "time": 380.2022705078125
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 angle from down=0.1",
+            "time": 381.3943176269531
+        },
+        {
+            "name": "d2.order5.item0.scan",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 scans 5->6 lowest=0.952",
+            "time": 383.86102294921877
+        },
+        {
+            "name": "d2.order5.item0.bag",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 385.9745788574219
+        },
+        {
+            "name": "d2.order5.item0.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.000, 0.084, 0.007); lowest=-0.002; bag sounds=7",
+            "time": 386.3963317871094
+        },
+        {
+            "name": "d2.order5.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 389.228515625
+        },
+        {
+            "name": "d2.order5.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 389.43304443359377
+        },
+        {
+            "name": "d2.order5.item1.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 is a Bag; Crinkle sounds 19->20; pulses 147->151; holding=Bag",
+            "time": 389.4332275390625
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 angle from down=3.5",
+            "time": 390.6215515136719
+        },
+        {
+            "name": "d2.order5.item1.scan",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 scans 6->7 lowest=0.953",
+            "time": 393.43658447265627
+        },
+        {
+            "name": "d2.order5.item1.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 395.53814697265627
+        },
+        {
+            "name": "d2.order5.item1.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.030, 0.084, -0.010); lowest=-0.002; bag sounds=8",
+            "time": 395.9537048339844
+        },
+        {
+            "name": "d2.order5.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=2000",
+            "time": 396.30224609375
+        },
+        {
+            "name": "d2.order5.card.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 396.30242919921877
+        },
+        {
+            "name": "d2.order5.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 398.5197448730469
+        },
+        {
+            "name": "d2.order5.card.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 401.52154541015627
+        },
+        {
+            "name": "d2.order5.card.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.821, 0.918, 0.434) socketHover=True",
+            "time": 401.7719421386719
+        },
+        {
+            "name": "d2.order5.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 402.1963195800781
+        },
+        {
+            "name": "d2.order5.card.card_taken_back",
+            "pass": true,
+            "details": "after 1.3s",
+            "time": 406.787841796875
+        },
+        {
+            "name": "d2.order5.card.customer_takes_the_card_back",
+            "pass": true,
+            "details": "gone=True; taken back by the customer's hand 1; not given back 0; the hand at most 0.0 cm short of the card so far",
+            "time": 406.7913513183594
+        },
+        {
+            "name": "d2.order5.card.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 406.99139404296877
+        },
+        {
+            "name": "d2.order5.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 406.99163818359377
+        },
+        {
+            "name": "d2.order5.bag_lifted_off_the_counter",
+            "pass": true,
+            "details": "after 2.2s",
+            "time": 409.2347412109375
+        },
+        {
+            "name": "d2.order5.lifts_the_bag_by_hand",
+            "pass": true,
+            "details": "on the counter until lifted=True; lifted by a customer's hand 1 time(s), 6 thing(s) in bags so far; the hand at most 0.0 cm short of the handles so far; goods left in the counter's bag 0; a bag stands on the counter again=True; hanging free=True, drawn 1.00 of its length; the shortest over the counter so far 0.69",
+            "time": 409.2386779785156
+        },
+        {
+            "name": "d2.order5.leaves_with_the_bag",
+            "pass": true,
+            "details": "bag at (0.49, 0.85, 1.30); left hand (0.46, 0.97, 1.33); upright=0.99; state=Leaving",
+            "time": 409.2388916015625
+        },
+        {
+            "name": "d2.order6.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 418.4333801269531
+        },
+        {
+            "name": "d2.order6.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=111.1; off for the line=8.9 (in line 62.8s); bells=6",
+            "time": 418.43359375
+        },
+        {
+            "name": "d2.order6.goods_set_down",
+            "pass": true,
+            "details": "after 1.7s",
+            "time": 420.18194580078127
+        },
+        {
+            "name": "d2.order6.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 1; stood by a customer's hand since the last look 1; pushed the last of the way so far 1; this customer's wrist off its point at most 0.0 cm",
+            "time": 420.1821594238281
+        },
+        {
+            "name": "d2.order6.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_goraebap_01 lowest=0.900 yaw=1.2; basket in scene=False",
+            "time": 420.3851013183594
+        },
+        {
+            "name": "d2.order6.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 420.3853454589844
+        },
+        {
+            "name": "d2.order6.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "note 5000; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.2 cm above it; shown=True; can be taken=True",
+            "time": 420.5929870605469
+        },
+        {
+            "name": "d2.order6.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 25.7 cm standing; steps 6; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 0.7 cm at most; Customer 23 (Male_Adult_08)",
+            "time": 420.5932312011719
+        },
+        {
+            "name": "d2.order6.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 422.5758361816406
+        },
+        {
+            "name": "d2.order6.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 422.77752685546877
+        },
+        {
+            "name": "d2.order6.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_goraebap_01 is a Carton; Carton sounds 6->7; pulses 155->156; holding=Carton",
+            "time": 422.7777099609375
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_goraebap_01 angle from down=0.9",
+            "time": 423.9723815917969
+        },
+        {
+            "name": "d2.order6.item0.scan",
+            "pass": true,
+            "details": "dev_goraebap_01 scans 7->8 lowest=0.952",
+            "time": 426.3601989746094
+        },
+        {
+            "name": "aside.lands_with_a_sound",
+            "pass": true,
+            "details": "dev_goraebap_01 let go 3 cm over the counter: landing sounds 1",
+            "time": 429.01470947265627
+        },
+        {
+            "name": "d2.order6.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=2500",
+            "time": 429.3719482421875
+        },
+        {
+            "name": "d2.order6.bill.drawer_open",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 429.37213134765627
+        },
+        {
+            "name": "d2.order6.bill.till_filled_and_pos_waiting",
+            "pass": true,
+            "details": "pieces=8; received=–; laid=–",
+            "time": 429.382568359375
+        },
+        {
+            "name": "d2.order6.bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 431.65679931640627
+        },
+        {
+            "name": "d2.order6.bill.received",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 435.46435546875
+        },
+        {
+            "name": "d2.order6.bill.pos_shows_received_and_change",
+            "pass": true,
+            "details": "desk=5000; received=5,000; change=2,500; laid=0",
+            "time": 435.7669982910156
+        },
+        {
+            "name": "d2.order6.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 437.5533447265625
+        },
+        {
+            "name": "d2.order6.change.pos_shows_what_is_on_the_tray",
+            "pass": true,
+            "details": "tray=1000; laid=1,000",
+            "time": 439.8031311035156
+        },
+        {
+            "name": "d2.order6.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 442.873779296875
+        },
+        {
+            "name": "d2.order6.change.take500.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 448.80889892578127
+        },
+        {
+            "name": "d2.order6.change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 452.55523681640627
+        },
+        {
+            "name": "d2.order6.change.no_false_errors",
+            "pass": true,
+            "details": "errors=0; expected=0; pieces=3",
+            "time": 452.55560302734377
+        },
+        {
+            "name": "d2.order6.change.drawer_shut_after_the_sale",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 452.9117126464844
+        },
+        {
+            "name": "d2.order6.change.taken_by_the_customer",
+            "pass": true,
+            "details": "after 0.9s",
+            "time": 453.8340759277344
+        },
+        {
+            "name": "d2.order6.change.customer_takes_the_change_by_hand",
+            "pass": true,
+            "details": "taken by a customer's hand 1 time(s), 3 of 3 pieces; still lying about 0; the hand at most 0.0 cm short of the change so far",
+            "time": 453.8379821777344
+        },
+        {
+            "name": "d2.order6.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 453.8381652832031
+        },
+        {
+            "name": "d2.order6.goods_taken_off_the_counter",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 455.3041076660156
+        },
+        {
+            "name": "d2.order6.takes_the_goods_by_hand",
+            "pass": true,
+            "details": "things bought 1; taken off the counter by the customer's hand 1, of which 0 came to the hand over the counter first (the farthest so far 2.8 cm); out of the hand's reach and gone with the sale 0; still on the counter 0; this customer's wrist off its point at most 0.0 cm; done 1.5 s after the check began to look",
+            "time": 455.30938720703127
+        },
+        {
+            "name": "d2.order6.leaves_with_the_last_thing_in_hand",
+            "pass": true,
+            "details": "dev_goraebap_01 at (0.50, 0.70, 1.34), 18 cm from the left wrist; hanging from the fingers=True; Gaussians 35000; fingers closed 0.50; state=Leaving",
+            "time": 455.3096008300781
+        },
+        {
+            "name": "d2.order6.leaves_without_a_bag",
+            "pass": true,
+            "details": "no bag",
+            "time": 455.4769592285156
+        },
+        {
+            "name": "d2.order7.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 468.8008728027344
+        },
+        {
+            "name": "d2.order7.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=111.9; off for the line=8.1 (in line 61.3s); bells=7",
+            "time": 468.80108642578127
+        },
+        {
+            "name": "d2.order7.goods_set_down",
+            "pass": true,
+            "details": "after 2.6s",
+            "time": 471.36871337890627
+        },
+        {
+            "name": "d2.order7.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 2; stood by a customer's hand since the last look 2; pushed the last of the way so far 1; this customer's wrist off its point at most 0.9 cm",
+            "time": 471.368896484375
+        },
+        {
+            "name": "d2.order7.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_shinjjang_01 lowest=0.900 yaw=-5.6; dev_ogamja_01 lowest=0.900 yaw=3.9; basket in scene=False",
+            "time": 471.5709533691406
+        },
+        {
+            "name": "d2.order7.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 471.5711364746094
+        },
+        {
+            "name": "d2.order7.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "card; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.4 cm above it; shown=True; can be taken=True",
+            "time": 471.7788391113281
+        },
+        {
+            "name": "d2.order7.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 36.9 cm standing; steps 11; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 0.6 cm at most; Customer 26 (Female_Adult_17)",
+            "time": 471.7790222167969
+        },
+        {
+            "name": "d2.order7.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 474.00982666015627
+        },
+        {
+            "name": "d2.order7.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 474.2138977050781
+        },
+        {
+            "name": "d2.order7.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_shinjjang_01 is a Bag; Crinkle sounds 20->21; pulses 160->164; holding=Bag",
+            "time": 474.214111328125
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_shinjjang_01 angle from down=7.7",
+            "time": 476.5142517089844
+        },
+        {
+            "name": "d2.order7.item0.scan",
+            "pass": true,
+            "details": "dev_shinjjang_01 scans 8->9 lowest=0.958",
+            "time": 478.77752685546877
+        },
+        {
+            "name": "d2.order7.item0.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 480.81512451171877
+        },
+        {
+            "name": "d2.order7.item0.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.000, 0.157, 0.014); lowest=-0.004; bag sounds=10",
+            "time": 481.2319030761719
+        },
+        {
+            "name": "d2.order7.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 484.06939697265627
+        },
+        {
+            "name": "d2.order7.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 484.2713317871094
+        },
+        {
+            "name": "d2.order7.item1.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_ogamja_01 is a Bag; Crinkle sounds 21->22; pulses 167->171; holding=Bag",
+            "time": 484.27154541015627
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_ogamja_01 angle from down=1.8",
+            "time": 485.46343994140627
+        },
+        {
+            "name": "d2.order7.item1.scan",
+            "pass": true,
+            "details": "dev_ogamja_01 scans 9->10 lowest=0.953",
+            "time": 488.1744689941406
+        },
+        {
+            "name": "d2.order7.item1.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 490.2561950683594
+        },
+        {
+            "name": "d2.order7.item1.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.030, 0.126, -0.014); lowest=-0.004; bag sounds=11",
+            "time": 490.67840576171877
+        },
+        {
+            "name": "d2.order7.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=3300",
+            "time": 491.0275573730469
+        },
+        {
+            "name": "d2.order7.card.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 491.0277404785156
+        },
+        {
+            "name": "d2.order7.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 493.2496643066406
+        },
+        {
+            "name": "d2.order7.card.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 496.2471008300781
+        },
+        {
+            "name": "d2.order7.card.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.919, 0.430) socketHover=True",
+            "time": 496.4978332519531
+        },
+        {
+            "name": "d2.order7.card.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 496.93927001953127
+        },
+        {
+            "name": "d2.order7.card.card_taken_back",
+            "pass": true,
+            "details": "after 1.3s",
+            "time": 501.5190124511719
+        },
+        {
+            "name": "d2.order7.card.customer_takes_the_card_back",
+            "pass": true,
+            "details": "gone=True; taken back by the customer's hand 1; not given back 0; the hand at most 0.0 cm short of the card so far",
+            "time": 501.5246887207031
+        },
+        {
+            "name": "d2.order7.card.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 501.72906494140627
+        },
+        {
+            "name": "d2.order7.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 501.7292785644531
+        },
+        {
+            "name": "d2.order7.bag_lifted_off_the_counter",
+            "pass": true,
+            "details": "after 2.2s",
+            "time": 503.9653625488281
+        },
+        {
+            "name": "d2.order7.lifts_the_bag_by_hand",
+            "pass": true,
+            "details": "on the counter until lifted=True; lifted by a customer's hand 1 time(s), 8 thing(s) in bags so far; the hand at most 0.0 cm short of the handles so far; goods left in the counter's bag 0; a bag stands on the counter again=True; hanging free=True, drawn 1.00 of its length; the shortest over the counter so far 0.69",
+            "time": 503.9688415527344
+        },
+        {
+            "name": "d2.order7.leaves_with_the_bag",
+            "pass": true,
+            "details": "bag at (0.49, 0.85, 1.30); left hand (0.46, 0.96, 1.32); upright=0.99; state=Leaving",
+            "time": 503.9691162109375
+        },
+        {
+            "name": "d2.order8.customer_record",
+            "pass": true,
+            "details": "record",
+            "time": 513.1979370117188
+        },
+        {
+            "name": "d2.order8.limit_120_from_counter_with_bell",
+            "pass": true,
+            "details": "limit at arrival=103.4; off for the line=16.6 (in line 78.2s); bells=8",
+            "time": 513.1981201171875
+        },
+        {
+            "name": "d2.order8.goods_set_down",
+            "pass": true,
+            "details": "after 2.6s",
+            "time": 515.7619018554688
+        },
+        {
+            "name": "d2.order8.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 2; stood by a customer's hand since the last look 2; pushed the last of the way so far 1; this customer's wrist off its point at most 0.0 cm",
+            "time": 515.7620849609375
+        },
+        {
+            "name": "d2.order8.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_shinramen_01 lowest=0.900 yaw=-3.2; dev_ansungtangmyun_01 lowest=0.900 yaw=2.6; basket in scene=False",
+            "time": 515.9637451171875
+        },
+        {
+            "name": "d2.order8.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 515.9639892578125
+        },
+        {
+            "name": "d2.order8.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "note 5000; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.2 cm above it; shown=True; can be taken=True",
+            "time": 516.1699829101563
+        },
+        {
+            "name": "d2.order8.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 36.8 cm standing; steps 8; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 1.1 cm at most; Customer 30 (Male_Adult_16)",
+            "time": 516.170166015625
+        },
+        {
+            "name": "d2.order8.item0.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 518.0623779296875
+        },
+        {
+            "name": "d2.order8.item0.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 518.2650146484375
+        },
+        {
+            "name": "d2.order8.item0.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_shinramen_01 is a Bag; Crinkle sounds 22->23; pulses 175->179; holding=Bag",
+            "time": 518.2651977539063
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_shinramen_01 angle from down=5.2",
+            "time": 519.4562377929688
+        },
+        {
+            "name": "d2.order8.item0.scan",
+            "pass": true,
+            "details": "dev_shinramen_01 scans 10->11 lowest=0.957",
+            "time": 521.7803955078125
+        },
+        {
+            "name": "d2.order8.item0.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 523.859375
+        },
+        {
+            "name": "d2.order8.item0.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.000, 0.119, 0.010); lowest=-0.003; bag sounds=13",
+            "time": 524.2771606445313
+        },
+        {
+            "name": "d2.order8.item1.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 527.1190185546875
+        },
+        {
+            "name": "d2.order8.item1.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 527.3212280273438
+        },
+        {
+            "name": "d2.order8.item1.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 is a Bag; Crinkle sounds 23->24; pulses 182->186; holding=Bag",
+            "time": 527.3214111328125
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 angle from down=0.5",
+            "time": 528.5147705078125
+        },
+        {
+            "name": "d2.order8.item1.scan",
+            "pass": true,
+            "details": "dev_ansungtangmyun_01 scans 11->12 lowest=0.951",
+            "time": 531.3478393554688
+        },
+        {
+            "name": "d2.order8.item1.bag",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 533.455810546875
+        },
+        {
+            "name": "d2.order8.item1.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.030, 0.084, -0.020); lowest=-0.002; bag sounds=14",
+            "time": 533.8742065429688
+        },
+        {
+            "name": "d2.order8.ready_for_payment",
+            "pass": true,
+            "details": "allScanned=True allBagged=True total=2000",
+            "time": 534.2232055664063
+        },
+        {
+            "name": "d2.order8.bill.drawer_open",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 534.223388671875
+        },
+        {
+            "name": "d2.order8.bill.till_filled_and_pos_waiting",
+            "pass": true,
+            "details": "pieces=8; received=–; laid=–",
+            "time": 534.2341918945313
+        },
+        {
+            "name": "d2.order8.bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 536.4501953125
+        },
+        {
+            "name": "d2.order8.bill.received",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 540.2817993164063
+        },
+        {
+            "name": "d2.order8.bill.pos_shows_received_and_change",
+            "pass": true,
+            "details": "desk=5000; received=5,000; change=3,000; laid=0",
+            "time": 540.5857543945313
+        },
+        {
+            "name": "d2.order8.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 542.3715209960938
+        },
+        {
+            "name": "d2.order8.change.pos_shows_what_is_on_the_tray",
+            "pass": true,
+            "details": "tray=1000; laid=1,000",
+            "time": 544.6329956054688
+        },
+        {
+            "name": "d2.order8.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 547.7047119140625
+        },
+        {
+            "name": "d2.order8.change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 553.134521484375
+        },
+        {
+            "name": "d2.order8.change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 556.3806762695313
+        },
+        {
+            "name": "d2.order8.change.no_false_errors",
+            "pass": true,
+            "details": "errors=0; expected=0; pieces=3",
+            "time": 556.3807983398438
+        },
+        {
+            "name": "d2.order8.change.drawer_shut_after_the_sale",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 556.7314453125
+        },
+        {
+            "name": "d2.order8.change.taken_by_the_customer",
+            "pass": true,
+            "details": "after 0.9s",
+            "time": 557.6485595703125
+        },
+        {
+            "name": "d2.order8.change.customer_takes_the_change_by_hand",
+            "pass": true,
+            "details": "taken by a customer's hand 1 time(s), 3 of 3 pieces; still lying about 0; the hand at most 0.0 cm short of the change so far",
+            "time": 557.652099609375
+        },
+        {
+            "name": "d2.order8.completed",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 557.6522827148438
+        },
+        {
+            "name": "d2.order8.bag_lifted_off_the_counter",
+            "pass": true,
+            "details": "after 2.3s",
+            "time": 559.9622802734375
+        },
+        {
+            "name": "d2.order8.lifts_the_bag_by_hand",
+            "pass": true,
+            "details": "on the counter until lifted=True; lifted by a customer's hand 1 time(s), 10 thing(s) in bags so far; the hand at most 0.0 cm short of the handles so far; goods left in the counter's bag 0; a bag stands on the counter again=True; hanging free=True, drawn 1.00 of its length; the shortest over the counter so far 0.69",
+            "time": 559.966064453125
+        },
+        {
+            "name": "d2.order8.leaves_with_the_bag",
+            "pass": true,
+            "details": "bag at (0.49, 0.85, 1.30); left hand (0.46, 0.97, 1.33); upright=0.99; state=Leaving",
+            "time": 559.96630859375
+        },
+        {
+            "name": "d2.day.eight_processed_one_left",
+            "pass": true,
+            "details": "paid=7; left=1; timed out=[2]",
+            "time": 560.9100952148438
+        },
+        {
+            "name": "d2.day.leaver_hurried_and_no_wave",
+            "pass": true,
+            "details": "hurried at 58.55s; left at 118.55s; wave=0",
+            "time": 560.9103393554688
+        },
+        {
+            "name": "d2.day.next_called_15s_after_leaver",
+            "pass": true,
+            "details": "called 15.00s after",
+            "time": 560.9104614257813
+        },
+        {
+            "name": "d2.day.intake_counts",
+            "pass": true,
+            "details": "shelved 10/10; disposed 3/3; misplaced 1; false 1; recycled 2; unrecycled 0; cancels 0",
+            "time": 560.9105834960938
+        },
+        {
+            "name": "p4.end_of_day_shelves",
+            "pass": true,
+            "details": "A-1 shown 1/2; A-2 shown 6/6; A-3 shown 2/2; B-1 shown 4/4; B-2 shown 0/2",
+            "time": 560.910888671875
+        },
+        {
+            "name": "p4.peak_gaussians_in_budget",
+            "pass": true,
+            "details": "peak=1025457; renderers=11",
+            "time": 560.9110107421875
+        },
+        {
+            "name": "d2.day.score_formula",
+            "pass": true,
+            "details": "score=88.96 expected=88.96 grade=A; sales 18400/19900",
+            "time": 560.9111328125
+        },
+        {
+            "name": "d2.day.board_shows_intake",
+            "pass": true,
+            "details": "board=2일차 정산   A  ·  89점\n매출 18,400 / 19,900원 · 손님 7/8 · 이탈 1명 · 취소 0\n손님 만족 80% · 팁 1,300원\n진열 10/10 · 폐기 3/3 · 오진열 1 · 폐기 오탐 1 · 빈 박스 0",
+            "time": 560.9112548828125
+        },
+        {
+            "name": "d2.day.next_day_button_for_day3",
+            "pass": true,
+            "details": "Day 3 follows Day 2",
+            "time": 560.9113159179688
+        },
+        {
+            "name": "d2.day.counter_cleared",
+            "pass": true,
+            "details": "no payment prop, no order product",
+            "time": 560.9115600585938
+        },
+        {
+            "name": "input.set_downs_were_still",
+            "pass": true,
+            "details": "max speed at release=0.000 m/s",
+            "time": 560.91162109375
+        },
+        {
+            "name": "d2.customers.all_left_by_the_door",
+            "pass": true,
+            "details": "after 7.4s",
+            "time": 568.275390625
+        },
+        {
+            "name": "d2.customers.one_per_order",
+            "pass": true,
+            "details": "customers for orders=8",
+            "time": 568.2764892578125
+        },
+        {
+            "name": "d2.customers.one_at_a_time_at_counter",
+            "pass": true,
+            "details": "max=1",
+            "time": 568.276611328125
+        },
+        {
+            "name": "d2.customers.paid_waved_left_did_not",
+            "pass": true,
+            "details": "waves only after paying",
+            "time": 568.27685546875
+        },
+        {
+            "name": "d2.customers.no_stuck_walks",
+            "pass": true,
+            "details": "warps=0; short=0; stepped aside when blocked=0; stopped short where the clerk stood=1; small hops off the clerk's hole=0; shelf spots skipped for the clerk=16",
+            "time": 568.2769165039063
+        },
+        {
+            "name": "d2.customers.on_navmesh_clear_of_solids",
+            "pass": true,
+            "details": "frames=506195; off=0; overlap=0; clerk side=0",
+            "time": 568.277099609375
+        },
+        {
+            "name": "d2.customers.line_rules",
+            "pass": true,
+            "details": "for orders max=3; waiting max=2",
+            "time": 568.2771606445313
+        }
+    ]
+}

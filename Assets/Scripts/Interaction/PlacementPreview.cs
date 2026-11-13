@@ -113,6 +113,16 @@ public class PlacementPreview : MonoBehaviour
             return;
         }
 
+        // How far a place is from what is meant: from the line the head looks along, or from the held product measured
+        // across the shelf only. Columns fill from the back (2026-11-13), and the back place is 8 cm deeper than where a
+        // look from the side meets the slot: measured from that point, a look at one column chose the one next to it.
+        bool byHead = UsedHeadRay;
+        float Off(ShelfSlotZone slot, int place)
+        {
+            var at = slot.UnitPosition(place);
+            return byHead ? Vector3.Cross(ray.direction, at - ray.origin).magnitude : Mathf.Abs(Vector3.Dot(at - gaze, slot.transform.right));
+        }
+
         int unit = -1;
         if (chosen.CanAccept(held.Data.Id))
         {
@@ -121,7 +131,7 @@ public class PlacementPreview : MonoBehaviour
             {
                 int candidate = chosen.NextFreeInColumn(column);
                 if (candidate < 0) continue;
-                float d = Vector3.Distance(chosen.UnitPosition(candidate), gaze);
+                float d = Off(chosen, candidate);
                 if (d < closest) { closest = d; unit = candidate; }
             }
         }
@@ -134,8 +144,8 @@ public class PlacementPreview : MonoBehaviour
             if (chosen != Slot || unit != Unit) Show(chosen, unit);
             return;
         }
-        float currentDistance = Unit >= 0 ? Vector3.Distance(Slot.UnitPosition(Unit), gaze) : Vector3.Distance(Slot.Zone.ClosestPoint(gaze), gaze);
-        float newDistance = unit >= 0 ? Vector3.Distance(chosen.UnitPosition(unit), gaze) : best;
+        float currentDistance = Unit >= 0 ? Off(Slot, Unit) : Vector3.Distance(Slot.Zone.ClosestPoint(gaze), gaze);
+        float newDistance = unit >= 0 ? Off(chosen, unit) : best;
         if (newDistance > currentDistance - SwitchCloser)
         {
             pendingSlot = null;

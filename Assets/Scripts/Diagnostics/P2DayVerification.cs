@@ -258,8 +258,8 @@ public partial class P2DayVerification : MonoBehaviour
         Check("day.cancel_counted", report.cancels == 1, $"cancels={report.cancels}");
         Check("day.grade", report.grade == "S" && Mathf.Approximately(report.score, 98f), $"grade={report.grade} score={report.score:0.0} (one cancel costs 2 points)");
         Check("day.counter_cleared",
-            FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length == 0 && FindObjectsByType<PaymentProp>(FindObjectsSortMode.None).Length == 0,
-            "no product or payment prop left in the scene");
+            ProductsAbout() == 0 && Game.Director.GoodsWaitingOnCounter == 0 && FindObjectsByType<PaymentProp>(FindObjectsSortMode.None).Length == 0,
+            $"no product or payment prop left in the scene (products other than in a customer's hand on the way out {ProductsAbout()}; paid for and still on the counter {Game.Director.GoodsWaitingOnCounter})");
         Check("input.set_downs_were_still", report.maxHeldSpeedAtRelease < SettledSpeed, $"max speed on arrival={report.maxHeldSpeedOnArrival:0.000} at release={report.maxHeldSpeedAtRelease:0.000} m/s");
         yield return WaitUntil(() => Game.Director.Present.Count == 0, EmptyStoreTimeout, "customers.all_left_by_the_door");
         CheckCustomers();
@@ -292,8 +292,9 @@ public partial class P2DayVerification : MonoBehaviour
         Check("customers.real_characters", director.Characters.Length == 4 && director.Records.TrueForAll(r => r.Avatar != "placeholder"),
             $"prefabs={director.Characters.Length}; avatars=[{string.Join(", ", director.Records.ConvertAll(r => r.Avatar))}]");
         Check("customers.one_at_a_time_at_counter", director.MaxAtCounterSeen == 1, $"max at counter={director.MaxAtCounterSeen}");
-        Check("customers.all_waved_and_left", forOrders.TrueForAll(r => r.LeaveAnimationSeconds > 0f && r.GoneAt > r.DoneAt && r.DoneAt > 0f),
-            $"waves=[{string.Join(", ", forOrders.ConvertAll(r => r.LeaveAnimationSeconds.ToString("0.0")))}]");
+        // Nobody waves any more (2026-11-13): thanks and a nod when the sale is done, and out with their things.
+        Check("customers.all_left_without_a_wave", forOrders.TrueForAll(r => r.LeaveAnimationSeconds == 0f && r.GoneAt > r.DoneAt && r.DoneAt > 0f),
+            $"waves=[{string.Join(", ", forOrders.ConvertAll(r => r.LeaveAnimationSeconds.ToString("0.0")))}]; out of the door after the sale=[{string.Join(", ", forOrders.ConvertAll(r => (r.GoneAt - r.DoneAt).ToString("0.0")))}] s");
         Check("customers.no_stuck_walks", CustomerCharacter.StuckWarps == 0, $"warps={CustomerCharacter.StuckWarps}; stepped aside when blocked={CustomerCharacter.StepAsides}");
         Check("customers.reached_exact_spots", CustomerCharacter.ShortArrivals == 0, $"walks ending over 0.2 m short of a shelf spot, line place or the counter={CustomerCharacter.ShortArrivals}");
         Check("customers.on_navmesh_every_frame", report.customerFrames > 1000 && report.offNavMeshFrames == 0 && report.settledFrames > 0,
@@ -334,7 +335,8 @@ public partial class P2DayVerification : MonoBehaviour
         if (!Check($"order{number}.customer_record", record != null, "record for this order")) return;
         int items = 0;
         foreach (var line in order.Lines) items += line.Quantity;
-        int inScene = FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length;
+        // Other than what the customer before is still taking off the counter or carrying to the door (2026-11-13).
+        int inScene = ProductsAbout();
         Check($"order{number}.products_made_at_counter", inScene == items && director.OrderProducts.Count == items,
             $"products in scene={inScene}; order items={items}; waiting={director.Waiting.Count}");
         float waited = record.ArrivedAt - record.SpawnedAt;
@@ -357,22 +359,101 @@ public partial class P2DayVerification : MonoBehaviour
     }
 
     /// <summary>Between orders no 3DGS product exists anywhere: the people in line have nothing on them yet.</summary>
+    // Looked at right after the order was paid. The check itself comes when the next order is waited for, and since
+    // 2026-11-12 the clerk first gives the card back (or the customer takes the change), which is long enough for the
+    // next customer to have walked up and set their own goods down.
+    int? productsRightAfterPaid;
+    bool goodsDownRightAfterPaid;
+
+    /// <summary>
+    /// Products anywhere, other than paid-for ones still standing in the counter's bag: those stay until their customer
+    /// lifts the bag off the counter (2026-11-12). Nor the ones bought without a bag that wait on the counter for
+    /// their customer's hand, or are in that hand on the way to the door (2026-11-13).
+    /// </summary>
+    int ProductsAbout() => FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length - Game.Director.PaidGoodsAbout;
+
+    /// <summary>Two frames after the sale: Destroy takes effect at the end of the frame the order ended in.</summary>
+    IEnumerator LookRightAfterPaid()
+    {
+        yield return null;
+        yield return null;
+        productsRightAfterPaid = ProductsAbout();
+        goodsDownRightAfterPaid = Game.Director.GoodsSetDown;
+    }
+
     void CheckBetweenOrders(int finishedOrder)
     {
         var director = Game.Director;
-        int inScene = FindObjectsByType<ProductPrefab>(FindObjectsSortMode.None).Length;
-        Check($"order{finishedOrder}.no_products_until_next_arrives", inScene == 0 && director.GoodsSetDown,
-            $"products={inScene}; waiting={director.Waiting.Count}; line={director.Line.Count}");
+        int inScene = productsRightAfterPaid ?? ProductsAbout();
+        bool down = productsRightAfterPaid.HasValue ? goodsDownRightAfterPaid : director.GoodsSetDown;
+        Check($"order{finishedOrder}.no_products_until_next_arrives", inScene == 0 && down,
+            $"products={inScene} ({(productsRightAfterPaid.HasValue ? "two frames after the sale" : "now")}); waiting={director.Waiting.Count}; line={director.Line.Count}");
+        productsRightAfterPaid = null;
     }
 
     /// <summary>
     /// The customer puts the goods straight down on the counter (2026-11-10: there is no basket). Once they are down each
     /// stands on the counter top itself, loose and able to be picked up, and nothing shaped like a basket is in the scene.
     /// </summary>
+    /// <summary>How many things customers had stood on the counter by hand the last time GoodsSetDown looked.</summary>
+    int setDownsSeen;
+    /// <summary>Likewise the cards and notes customers had laid on the plate by hand, the last time PaymentLaidDown looked.</summary>
+    int paymentsSeen;
+
+    /// <summary>
+    /// The customer's card or note lies on the plate, laid there by their own hand after their goods (2026-11-12), and
+    /// can be taken. Before that it is not in the scene to be seen.
+    /// </summary>
+    IEnumerator PaymentLaidDown(string label)
+    {
+        var director = Game.Director;
+        yield return WaitUntil(() => director.GoodsSetDown, 6f, label + ".payment_laid_down");
+        yield return new WaitForSeconds(0.2f);
+        var payment = Desk.CustomerCard != null ? Desk.CustomerCard : Desk.CustomerBill;
+        int byHand = director.PaymentsByHand - paymentsSeen;
+        paymentsSeen = director.PaymentsByHand;
+        var plate = Desk.CustomerPlate.position;
+        var from = payment != null ? payment.transform.position - plate : Vector3.zero;
+        float beside = new Vector2(from.x, from.z).magnitude;
+        var body = payment != null ? payment.GetComponent<Rigidbody>() : null;
+        Check(label + ".laid_on_the_plate_by_the_customers_hand",
+            payment != null && byHand >= 1 && payment.gameObject.activeInHierarchy && payment.Grab.enabled && !body.isKinematic && beside < 0.03f && from.y > -0.005f && from.y < 0.03f,
+            payment == null ? "nothing to pay with" : $"{(payment.IsCard ? "card" : "note " + payment.Value)}; laid by a customer's hand since the last look {byHand}; slid the last of the way so far {director.PaymentsSlid}; {beside * 100f:0.0} cm from the middle of the plate, {from.y * 100f:0.0} cm above it; shown={payment.gameObject.activeInHierarchy}; can be taken={payment.Grab.enabled && !body.isKinematic}");
+    }
+
     IEnumerator GoodsSetDown(string label, IList<ProductPrefab> goods)
     {
         var director = Game.Director;
-        yield return WaitUntil(() => director.GoodsSetDown, 3f, label + ".goods_set_down");
+        // The customer sets them down by hand, one after another (CustomerArm, 2026-11-11). The first order's are looked
+        // at from the side while that happens: the clerk's own view has the arm coming over the far edge of the counter.
+        if (label == "order1")
+        {
+            yield return new WaitForSeconds(0.62f);
+            yield return CaptureFrom("16b_customer_sets_down_the_first", new Vector3(1.25f, 1.5f, 2.05f), new Vector3(0.2f, 1.02f, 1.0f), 40f);
+            yield return new WaitForSeconds(0.42f);
+            yield return CaptureFrom("16e_customer_sets_down_the_next", new Vector3(1.25f, 1.5f, 2.05f), new Vector3(0.2f, 1.02f, 1.0f), 40f);
+            yield return Capture("16d_setting_down_from_the_clerk");
+        }
+        var settingArm = director.AtCounter != null ? director.AtCounter.Arm : Game.Tutorial != null && Game.Tutorial.Guest != null ? Game.Tutorial.Guest.Arm : null;
+        // After the goods the same hand lays the card or the note on the plate. The first two orders' are looked at on
+        // the way there, from the customer's left and from the clerk's place.
+        if (label == "order1" || label == "order2")
+        {
+            float asked = Time.time;
+            while (!director.PaymentInHand && !director.GoodsSetDown && Time.time - asked < 6f) yield return null;
+            yield return new WaitForSeconds(0.3f);
+            string kind = Desk.CustomerCard != null ? "card" : "note";
+            Check(label + ".fingers_closed_on_the_" + kind, settingArm != null && settingArm.FingerJoints >= 12 && settingArm.Closed > 0.1f,
+                settingArm == null ? "no arm" : $"finger and thumb joints {settingArm.FingerJoints}; fingers closed {settingArm.Closed:0.00}; in the hand={director.PaymentInHand}");
+            yield return CaptureFrom($"16i_{label}_{kind}_on_its_way_to_the_plate", new Vector3(0.95f, 1.3f, 1.45f), new Vector3(0.3f, 0.95f, 0.95f), 35f);
+            yield return Capture($"16j_{label}_{kind}_from_the_clerk");
+        }
+        yield return WaitUntil(() => director.GoodsSetDown, 6f, label + ".goods_set_down");
+        // Since the last time this looked: a customer the check did not wait on (Day 2, while the clerk was at the shelves) has set goods down too.
+        int byHand = director.SetDownsByHand - setDownsSeen;
+        setDownsSeen = director.SetDownsByHand;
+        Check(label + ".set_down_by_the_customers_hand", settingArm != null && byHand >= goods.Count && settingArm.WorstMiss < 0.05f,
+            settingArm == null ? "the customer has no arm to do it with" : $"things {goods.Count}; stood by a customer's hand since the last look {byHand}; pushed the last of the way so far {director.PushedIntoPlace}; this customer's wrist off its point at most {settingArm.WorstMiss * 100f:0.0} cm");
         yield return new WaitForSeconds(0.2f);
         bool standing = goods.Count > 0;
         var detail = new System.Text.StringBuilder();
@@ -391,6 +472,46 @@ public partial class P2DayVerification : MonoBehaviour
         foreach (var thing in FindObjectsByType<Transform>(FindObjectsSortMode.None))
             basket |= thing.name.StartsWith("Basket (", StringComparison.Ordinal);
         Check(label + ".goods_stand_on_the_bare_counter", standing && !basket, $"{detail}basket in scene={basket}");
+        // In the tutorial the card comes later, at its own step.
+        if (label != "tutorial") yield return PaymentLaidDown(label);
+        // Stepping up to the counter and along it, the customer's feet stay where they stand and take turns to lift
+        // (CustomerFeet, 2026-11-12). Before, they slid under the body the whole way.
+        var stepper = director.AtCounter != null ? director.AtCounter : Game.Tutorial != null ? Game.Tutorial.Guest : null;
+        var feet = stepper != null ? stepper.Feet : null;
+        Check(label + ".steps_instead_of_sliding", feet != null && feet.Carried > 0.1f && feet.Steps >= 2 && feet.Slid < 0.03f,
+            feet == null ? "no feet to step with" : $"the body moved {feet.Carried * 100f:0.0} cm standing; steps {feet.Steps}; a foot on the floor slid {feet.Slid * 100f:0.0} cm in all; a held foot at most {feet.WorstMiss * 100f:0.0} cm off its place; the hips came down {feet.DeepestDrop * 100f:0.0} cm at most; {stepper.name}");
+        // None of the fixed orders has three things, and the third place in the row is the farthest from where the customer
+        // stands. So the first order's customer sets one more thing down there: they move over toward it, and the hand
+        // stands it on its place or within a hand's breadth of it (then it is pushed the rest of the way).
+        if (label == "order1" && goods.Count == 2)
+        {
+            int pushedBefore = director.PushedIntoPlace, byHandBefore = director.SetDownsByHand;
+            var third = director.PutOnCounter(Game.Catalog.Products[0], 2, 3);
+            // The customer has laid the card down by now and steps back along the row first. The thing is not drawn until
+            // it is in the hand; a quarter of a second after that it is on its way over the counter's edge.
+            float putAt = Time.time;
+            var alongTheRow = director.AtCounter != null ? director.AtCounter.Feet : null;
+            while (alongTheRow != null && !alongTheRow.Swinging && Time.time - putAt < 2f) yield return null;
+            yield return new WaitForSeconds(0.07f);
+            yield return CaptureFrom("16k_steps_along_the_row", new Vector3(-0.55f, 0.45f, 2.25f), new Vector3(0.4f, 0.2f, 1.25f), 40f);
+            while (third != null && third.Splat != null && third.Splat.m_OpacityScale <= 0f && Time.time - putAt < 4f) yield return null;
+            float inHandAfter = Time.time - putAt;
+            yield return new WaitForSeconds(0.25f);
+            yield return Capture("16f_third_thing_from_the_clerk");
+            yield return CaptureFrom("16g_third_thing_from_behind", new Vector3(1.45f, 1.5f, 2.05f), new Vector3(0.55f, 1.02f, 1.0f), 40f);
+            yield return WaitUntil(() => director.GoodsSetDown, 6f, "order1.third_thing_set_down");
+            yield return new WaitForSeconds(0.3f);
+            float lowest = third != null ? LowestProxyPoint(third) : 0f;
+            float wantedX = director.GoodsAnchor.position.x + 0.5f;
+            Check("order1.third_thing_stands_in_its_place", third != null && director.SetDownsByHand == byHandBefore + 1 && Mathf.Abs(third.transform.position.x - wantedX) < 0.03f
+                                                          && lowest > CounterTop - 0.003f && lowest < CounterTop + 0.01f && third.Grab.enabled && !third.Body.isKinematic
+                                                          && director.LongestPushSoFar < 0.08f,
+                third == null ? "gone" : $"{third.Data.Id} at x={third.transform.position.x:0.000} (place {wantedX:0.000}), lowest={lowest:0.000}; stood by the hand {director.SetDownsByHand - byHandBefore}; pushed the last of the way {director.PushedIntoPlace - pushedBefore}, the longest push so far {director.LongestPushSoFar * 100f:0.0} cm; the customer {Vector3.Distance(director.AtCounter.transform.position, director.AtCounter.Spot) * 100f:0} cm from their spot; in the hand {inHandAfter:0.00} s after it was asked for");
+            yield return Capture("16h_third_thing_in_its_place");
+            if (third != null) Destroy(third.gameObject);
+            yield return null;
+            setDownsSeen = director.SetDownsByHand;
+        }
     }
 
     /// <summary>
@@ -433,19 +554,36 @@ public partial class P2DayVerification : MonoBehaviour
                                                         && controllerModel != null && !controllerModel.gameObject.activeInHierarchy
                                                         && FindObjectsByType<PlayerHand>(FindObjectsSortMode.None).Length == 2,
             $"hand={(playerHand != null)}; controller model shown={(controllerModel != null && controllerModel.gameObject.activeInHierarchy)}; hands={FindObjectsByType<PlayerHand>(FindObjectsSortMode.None).Length}");
-        float openSpan = playerHand == null ? 0f : Vector3.Distance(playerHand.Tips[PlayerHand.Middle].position, playerHand.transform.position);
-        Check("hands.open_before_the_grip", playerHand != null && playerHand.Grip < 0.1f && !playerHand.Holding, playerHand == null ? "no hand" : $"grip={playerHand.Grip:0.00}; holding={playerHand.Holding}");
+        Check("hands.open_before_the_grip", playerHand != null && playerHand.Grip < 0.1f && !playerHand.Holding && playerHand.OnController,
+            playerHand == null ? "no hand" : $"grip={playerHand.Grip:0.00}; holding={playerHand.Holding}; on the controller={playerHand.OnController}");
         yield return GrabProduct(product, "tutorial");
         yield return new WaitForSeconds(0.3f);
-        float closedSpan = playerHand == null ? 0f : Vector3.Distance(playerHand.Tips[PlayerHand.Middle].position, playerHand.transform.position);
-        Check("hands.closes_on_what_it_holds", playerHand != null && playerHand.Holding && playerHand.Grip > 0.9f && closedSpan < openSpan - 0.02f,
-            playerHand == null ? "no hand" : $"grip={playerHand.Grip:0.00}; holding={playerHand.Holding}; middle fingertip from the wrist {openSpan * 100f:0.0} cm open, {closedSpan * 100f:0.0} cm holding");
-        yield return CaptureFrom("02h_hand_holding", rightHand.position + new Vector3(0.22f, 0.2f, -0.3f), rightHand.position + new Vector3(0f, -0.02f, -0.06f), 40f);
+        // It holds the product by the product's own shape: the drawn hand has gone to an edge of its box, and the ends of
+        // the thumb and at least two fingers rest on the box (within a fingertip's thickness of it, none sunk into it).
+        int resting = 0;
+        float deepest = 0f;
+        var tipDistances = new System.Text.StringBuilder();
+        if (playerHand != null)
+            for (int finger = 0; finger < PlayerHand.Fingers; finger++)
+            {
+                float from = playerHand.TipFromHeld(finger);
+                tipDistances.Append($"{from * 1000f:0} ");
+                if (from <= 0.012f) resting++;
+                deepest = Mathf.Min(deepest, from);
+            }
+        Check("hands.holds_a_thing_by_its_shape", playerHand != null && playerHand.Holding && playerHand.Grip > 0.9f && playerHand.Fitted
+                                                  && playerHand.TipFromHeld(PlayerHand.Thumb) <= 0.012f && resting >= 3 && deepest > -0.004f,
+            playerHand == null ? "no hand" : $"grip={playerHand.Grip:0.00}; holding={playerHand.Holding}; fitted={playerHand.Fitted}; fingertips from the product's box, thumb first, mm: {tipDistances}; hand {Vector3.Distance(playerHand.transform.position, rightHand.position) * 100f:0.0} cm from the controller");
+        var besideHand = playerHand != null ? playerHand.transform.position : rightHand.position;
+        yield return CaptureFrom("02h_hand_holding", besideHand + new Vector3(0.22f, 0.2f, -0.3f), besideHand + new Vector3(0f, 0f, 0.04f), 40f);
+        yield return CaptureFrom("02i_hand_holding_from_the_customer", besideHand + new Vector3(-0.15f, 0.12f, 0.36f), besideHand + new Vector3(0f, 0f, 0.02f), 40f);
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Rotate, StepTimeout, "tutorial.rotate_shown");
         yield return new WaitForSeconds(0.2f);
         Check("tutorial.arrow_at_the_barcode", pointer.Shown && pointer.Label == "바코드" && tutorial.Hands.RightText == "", $"label={pointer.Label}; hand={tutorial.Hands.RightText}");
         yield return Capture("02b_tutorial_barcode_arrow");
+        int rustlesBefore = Game.Pos.Audio.CountOf(StoreSound.Rustle);
         yield return TurnBarcodeDown(product);
+        Check("hands.bag_rustles_as_it_is_turned", Game.Pos.Audio.CountOf(StoreSound.Rustle) > rustlesBefore, $"rustles {rustlesBefore}->{Game.Pos.Audio.CountOf(StoreSound.Rustle)}");
         yield return MoveHeldAbovePad(product);
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Scan, StepTimeout, "tutorial.scan_shown");
         yield return new WaitForSeconds(0.1f);
@@ -459,14 +597,19 @@ public partial class P2DayVerification : MonoBehaviour
         yield return PutInBag(product, "tutorial.bag");
         yield return ResetHandRotation();
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Card, StepTimeout, "tutorial.card_shown");
+        Check("hands.back_on_the_controller_after_letting_go", playerHand != null && playerHand.OnController && !playerHand.Holding,
+            playerHand == null ? "no hand" : $"on the controller={playerHand.OnController}; holding={playerHand.Holding}");
         yield return new WaitForSeconds(0.1f);
         Check("tutorial.arrow_on_the_card", pointer.Shown && pointer.Label == "집기", $"label={pointer.Label}");
+        yield return PaymentLaidDown("tutorial.card");
         int thanksBefore = Game.Pos.Audio.SpokenCount(CustomerLine.Thanks);
         // Paid is when the card goes away. The step itself stays until the next customer has walked up.
         yield return PayByCard(() => Desk.CustomerCard == null, "tutorial.card");
-        yield return new WaitForSeconds(0.3f);
+        // The guest takes the card, lifts the bag off the counter into the left hand, and only then waves.
+        yield return TakesTheBag("tutorial.first_customer", firstCustomer);
+        yield return WaitUntil(() => firstCustomer == null || firstCustomer.Playing == CustomerCharacter.WalkState, 4f, "tutorial.first_customer_walks_out");
         Check("tutorial.first_customer_thanks_and_leaves", Game.Pos.Audio.SpokenCount(CustomerLine.Thanks) == thanksBefore + 1 && Game.Director.LastOutcome.StartsWith("+", StringComparison.Ordinal)
-                && firstCustomer.FaceRig.Nods >= 1 && firstCustomer.FaceRig.Mood == CustomerMood.Pleased && firstCustomer.State == CustomerState.Leaving && firstCustomer.Playing == CustomerCharacter.LeaveState,
+                && firstCustomer.FaceRig.Nods >= 1 && firstCustomer.FaceRig.Mood == CustomerMood.Pleased && firstCustomer.State == CustomerState.Leaving && firstCustomer.Playing == CustomerCharacter.WalkState,
             $"thanks={Game.Pos.Audio.SpokenCount(CustomerLine.Thanks)}; card={Game.Director.LastOutcome}; nods={firstCustomer.FaceRig.Nods}; mood={firstCustomer.FaceRig.Mood}; state={firstCustomer.State}; playing={firstCustomer.Playing}");
         Check("tutorial.first_customer_takes_the_bag", HoldsBag(firstCustomer), BagDetail(firstCustomer));
         yield return Capture("03c_first_customer_thanks");
@@ -474,6 +617,7 @@ public partial class P2DayVerification : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         Check("tutorial.second_customer_for_the_cash", tutorial.Guest != null && tutorial.Guest != firstCustomer && tutorial.Guest.State == CustomerState.AtCounter && pointer.Shown && pointer.Label == "집기",
             tutorial.Guest == null ? "nobody" : $"state={tutorial.Guest.State}; label={pointer.Label}");
+        yield return PaymentLaidDown("tutorial.cash");
         yield return Capture("04_tutorial_cash");
         yield return GiveBill("tutorial.cash_bill");
         Check("tutorial.pos_shows_the_cash_sale", Screen.TotalText == "1,500원" && Screen.ReceivedText == "5,000" && Screen.ChangeText == "3,500",
@@ -561,7 +705,9 @@ public partial class P2DayVerification : MonoBehaviour
             }
             yield return WaitUntil(() => pos.Current == null, 10f, $"order{number}.completed");
             yield return LeavesWithOrWithoutBag($"order{number}", order, buyer);
-            if (number == 1) yield return SeeBagCarriedOut(buyer);
+            // After the last order: lifting the bag off the counter takes a few seconds (2026-11-12), and following the
+            // first customer out after that had the test still looking at them when the second one arrived.
+            if (number == 5) yield return SeeBagCarriedOut(buyer);
         }
     }
 
@@ -588,8 +734,130 @@ public partial class P2DayVerification : MonoBehaviour
     protected IEnumerator LeavesWithOrWithoutBag(string label, Order order, CustomerCharacter buyer)
     {
         yield return null;
-        if (order.NeedsBag) Check(label + ".leaves_with_the_bag", HoldsBag(buyer), BagDetail(buyer));
-        else Check(label + ".leaves_without_a_bag", buyer != null && buyer.Bag == null, BagDetail(buyer));
+        if (order.NeedsBag) yield return TakesTheBag(label, buyer);
+        else
+        {
+            yield return TakesTheGoods(label, order, buyer);
+            Check(label + ".leaves_without_a_bag", buyer != null && buyer.Bag == null, BagDetail(buyer));
+        }
+    }
+
+    // ---------- Goods bought without a bag going out in the customer's hand ----------
+
+    /// <summary>The customer's hand on a thing they bought has been pictured once this run.</summary>
+    bool goodsTakePictured;
+    int goodsTakenSeen, goodsNotTakenSeen, goodsCarriedSeen, goodsDrawnSeen;
+
+    /// <summary>In the left hand, on the customer's left side.</summary>
+    protected static bool HoldsGoods(CustomerCharacter customer)
+    {
+        if (customer == null || customer.Goods == null || customer.Goods.Product == null || customer.LeftHand == null) return false;
+        var middle = customer.Goods.Middle;
+        return Vector3.Distance(middle, customer.LeftHand.position) < 0.4f && Vector3.Dot(middle - customer.transform.position, customer.transform.right) < 0f;
+    }
+
+    protected static string GoodsDetail(CustomerCharacter customer)
+    {
+        if (customer == null) return "customer gone";
+        if (customer.Goods == null || customer.Goods.Product == null) return "nothing in the hand";
+        var goods = customer.Goods;
+        return $"{goods.Product.Data.Id} at {goods.Middle.ToString("F2")}, {Vector3.Distance(goods.Middle, customer.LeftHand.position) * 100f:0} cm from the left wrist; hanging from the fingers={goods.Hanging}; Gaussians {(goods.Product.Splat != null && goods.Product.Splat.m_Asset != null ? goods.Product.Splat.m_Asset.splatCount : 0)}; fingers closed {(customer.Arm != null ? customer.Arm.Closed : 0f):0.00}; state={customer.State}";
+    }
+
+    /// <summary>
+    /// What was bought without a bag stays on the counter when the sale is done, and the customer takes it with the
+    /// left hand, one thing after another; the last stays in the hand and goes out with them (2026-11-13). Before,
+    /// all of it was gone the moment the sale was done. What the hand cannot get at (behind the scanner, too far over
+    /// the counter, in the clerk's hand) still goes that way, and is counted.
+    /// </summary>
+    protected IEnumerator TakesTheGoods(string label, Order order, CustomerCharacter buyer)
+    {
+        var director = Game.Director;
+        int items = 0;
+        foreach (var line in order.Lines) items += line.Quantity;
+        float asked = Time.time;
+        if (!goodsTakePictured)
+        {
+            while (!director.GoodsInHand && (director.GoodsWaitingOnCounter > 0 || director.TakingGoods(buyer)) && Time.time - asked < 12f) yield return null;
+            if (director.GoodsInHand && buyer != null)
+            {
+                goodsTakePictured = true;
+                // The hand has just closed on the first thing; then on its way over the counter's edge.
+                var hand = buyer.LeftHand != null ? buyer.LeftHand.position : buyer.transform.position + Vector3.up;
+                yield return CaptureFrom("goods_take_1_hand_on_the_thing_from_the_clerk", new Vector3(0.15f, 1.5f, 0.05f), hand + Vector3.down * 0.05f, 60f);
+                // From the POS side across the counter, and from above: from the customer's side the order screen and
+                // the people in line are in the way.
+                yield return CaptureFrom("goods_take_2_across_the_counter", new Vector3(-0.35f, 1.45f, 0.45f), hand + Vector3.down * 0.08f, 55f);
+                yield return new WaitForSeconds(0.1f);
+                yield return CaptureFrom("goods_take_3_from_above", new Vector3(0.45f, 2.4f, 0.5f), new Vector3(0.45f, 0.9f, 0.85f), 50f);
+            }
+        }
+        yield return WaitUntil(() => director.GoodsWaitingOnCounter == 0 && !director.TakingGoods(buyer), 16f, label + ".goods_taken_off_the_counter");
+        float took = Time.time - asked;
+        yield return null;
+        int taken = director.GoodsTakenByHand - goodsTakenSeen, notTaken = director.GoodsNotTaken - goodsNotTakenSeen;
+        int carried = director.GoodsCarriedOut - goodsCarriedSeen, drawn = director.GoodsDrawnToHand - goodsDrawnSeen;
+        goodsTakenSeen = director.GoodsTakenByHand;
+        goodsNotTakenSeen = director.GoodsNotTaken;
+        goodsCarriedSeen = director.GoodsCarriedOut;
+        goodsDrawnSeen = director.GoodsDrawnToHand;
+        var arm = buyer != null ? buyer.Arm : null;
+        Check(label + ".takes_the_goods_by_hand",
+            arm != null && taken >= 1 && taken + notTaken == items && !director.GoodsInHand && director.GoodsWaitingOnCounter == 0 && director.LongestDrawSoFar < 0.251f && arm.WorstMiss < 0.05f,
+            $"things bought {items}; taken off the counter by the customer's hand {taken}, of which {drawn} came to the hand over the counter first (the farthest so far {director.LongestDrawSoFar * 100f:0.0} cm); out of the hand's reach and gone with the sale {notTaken}; still on the counter {director.GoodsWaitingOnCounter}; this customer's wrist off its point at most {(arm != null ? arm.WorstMiss * 100f : 0f):0.0} cm; done {took:0.0} s after the check began to look; {(buyer != null ? buyer.name : "customer gone")}");
+        Check(label + ".leaves_with_the_last_thing_in_hand", carried == 1 && HoldsGoods(buyer) && buyer.Bag == null, GoodsDetail(buyer));
+        if (goodsTakePictured && !goodsHeldPictured && HoldsGoods(buyer))
+        {
+            goodsHeldPictured = true;
+            var hand = buyer.LeftHand.position;
+            yield return CaptureFrom("goods_take_4_in_the_left_hand", new Vector3(1.25f, 1.3f, 2.05f), hand + Vector3.down * 0.1f, 35f);
+            yield return CaptureFrom("goods_take_5_in_the_hand_from_the_front", hand + new Vector3(0.75f, 0.35f, -0.9f), hand + Vector3.down * 0.1f, 45f);
+        }
+    }
+
+    bool goodsHeldPictured;
+
+    /// <summary>The customer's hand on the bag's handles has been pictured once this run.</summary>
+    bool bagLiftPictured;
+    int bagsLiftedSeen;
+
+    /// <summary>
+    /// The bagged goods stay in the counter's bag until the customer lifts it: the right hand on the handles, over the
+    /// counter and off its edge, and into the left hand (2026-11-12). Before, the bag was in the left hand the moment
+    /// the sale was done. Called once the customer has their change or card, when the lift is just beginning.
+    /// </summary>
+    protected IEnumerator TakesTheBag(string label, CustomerCharacter buyer)
+    {
+        var director = Game.Director;
+        bool waitedOnTheCounter = buyer != null && (buyer.Bag == null || director.BagInHand) || director.BagsLiftedByHand > bagsLiftedSeen;
+        if (!bagLiftPictured)
+        {
+            float asked = Time.time;
+            while (!director.BagInHand && director.BagsLiftedByHand == bagsLiftedSeen && Time.time - asked < 12f) yield return null;
+            if (director.BagInHand)
+            {
+                bagLiftPictured = true;
+                // The hand has just closed on the handles and the bag still stands on the counter; then on its way over
+                // the counter; then in the left hand.
+                yield return CaptureFrom("bag_lift_1_hand_on_the_handles_from_the_clerk", new Vector3(0f, 1.5f, 0.1f), new Vector3(-0.25f, 1.05f, 0.8f), 65f);
+                yield return CaptureFrom("bag_lift_2_from_the_side", new Vector3(0.8f, 1.75f, 0.25f), new Vector3(-0.25f, 1.05f, 0.85f), 55f);
+                yield return new WaitForSeconds(0.22f);
+                yield return CaptureFrom("bag_lift_3_over_the_counter", new Vector3(0.8f, 1.75f, 0.25f), new Vector3(-0.1f, 1.05f, 0.95f), 55f);
+                float began = Time.time;
+                while (director.BagInHand && Time.time - began < 4f) yield return null;
+                yield return CaptureFrom("bag_lift_4_into_the_left_hand", new Vector3(1.3f, 2.1f, 0.75f), new Vector3(0.42f, 0.75f, 1.3f), 50f);
+            }
+        }
+        yield return WaitUntil(() => director.BagsLiftedByHand > bagsLiftedSeen, 14f, label + ".bag_lifted_off_the_counter");
+        yield return null;
+        var bag = buyer != null ? buyer.Bag : null;
+        Check(label + ".lifts_the_bag_by_hand",
+            waitedOnTheCounter && director.BagsLiftedByHand == bagsLiftedSeen + 1 && !director.BagInHand && director.FarthestFromBag < 0.06f && director.GoodsWaitingInBag == 0
+                && director.BagOnCounterShown && bag != null && !bag.Standing && bag.Stretch > 0.99f && director.ShortestBagSoFar > 0.56f,
+            $"on the counter until lifted={waitedOnTheCounter}; lifted by a customer's hand {director.BagsLiftedByHand - bagsLiftedSeen} time(s), {director.GoodsLiftedInBags} thing(s) in bags so far; the hand at most {director.FarthestFromBag * 100f:0.0} cm short of the handles so far; goods left in the counter's bag {director.GoodsWaitingInBag}; a bag stands on the counter again={director.BagOnCounterShown}; "
+            + (bag == null ? "no bag on the customer" : $"hanging free={!bag.Standing}, drawn {bag.Stretch:0.00} of its length; the shortest over the counter so far {director.ShortestBagSoFar:0.00}"));
+        bagsLiftedSeen = director.BagsLiftedByHand;
+        Check(label + ".leaves_with_the_bag", HoldsBag(buyer), BagDetail(buyer));
     }
 
     /// <summary>
@@ -605,7 +873,7 @@ public partial class P2DayVerification : MonoBehaviour
                && !(buyer.Playing == CustomerCharacter.WalkState && Vector3.Distance(buyer.transform.position, from) > 2.4f))
             yield return null;
         if (buyer == null) yield break;
-        Check("order1.still_holds_the_bag_walking", HoldsBag(buyer) && buyer.Playing == CustomerCharacter.WalkState, BagDetail(buyer) + $"; playing={buyer.Playing}");
+        Check("order5.still_holds_the_bag_walking", HoldsBag(buyer) && buyer.Playing == CustomerCharacter.WalkState, BagDetail(buyer) + $"; playing={buyer.Playing}");
         var body = buyer.transform;
         yield return CaptureFrom("bag_4_carried_out_from_the_clerk", new Vector3(0f, 1.6f, -0.2f), body.position + Vector3.up * 0.8f, 40f);
         if (buyer == null) yield break;
@@ -984,10 +1252,17 @@ public partial class P2DayVerification : MonoBehaviour
         yield return MoveHand(new Vector3(target.x, TravelHeight, target.z), label + ".over");
         yield return MoveHand(target, label + ".reach");
         yield return new WaitForSeconds(0.2f);
+        // What the hand hears and feels as it takes the thing (TouchFeel, 2026-11-11): a film bag crackles, a carton knocks.
+        var touch = rightHand.GetComponentInChildren<TouchFeel>();
+        var itsSound = product.Data.Package == ProductPackage.Carton ? StoreSound.Carton : StoreSound.Crinkle;
+        int soundsBefore = Game.Pos.Audio.CountOf(itsSound), pulsesBefore = touch != null ? touch.Pulses : 0;
         heldKeys.Add(Key.G);
         yield return WaitUntil(() => product.Grab.isSelected, 2f, label + ".selected");
         yield return new WaitForSeconds(0.2f);
         Check(label + ".near_grab", rightInteractor.selectionRegion.Value == NearFarInteractor.Region.Near, $"region={rightInteractor.selectionRegion.Value}");
+        Check(label + ".sounds_and_feels_like_its_package", touch != null && Game.Pos.Audio.CountOf(itsSound) == soundsBefore + 1 && touch.Pulses > pulsesBefore
+                                                         && touch.Holding == (itsSound == StoreSound.Carton ? TouchKind.Carton : TouchKind.Bag),
+            touch == null ? "no touch feel on the hand" : $"{product.Data.Id} is a {product.Data.Package}; {itsSound} sounds {soundsBefore}->{Game.Pos.Audio.CountOf(itsSound)}; pulses {pulsesBefore}->{touch.Pulses}; holding={touch.Holding}");
     }
 
     IEnumerator GrabProp(PaymentProp prop, string label)
@@ -1155,8 +1430,11 @@ public partial class P2DayVerification : MonoBehaviour
         yield return MoveProduct(product, new Vector3(center.x, travel, center.z), "aside.rise");
         yield return MoveProduct(product, spot, "aside.over");
         yield return MoveProduct(product, new Vector3(spot.x, CounterTop + aboveLowest + 0.03f, spot.z), "aside.lower");
+        int landingsBefore = Game.Pos.Audio.CountOf(StoreSound.BagDown) + Game.Pos.Audio.CountOf(StoreSound.Carton);
         yield return SetDown(product.GetComponent<Rigidbody>());
         yield return new WaitForSeconds(0.6f);
+        int landings = Game.Pos.Audio.CountOf(StoreSound.BagDown) + Game.Pos.Audio.CountOf(StoreSound.Carton) - landingsBefore;
+        Check("aside.lands_with_a_sound", landings >= 1, $"{product.Data.Id} let go 3 cm over the counter: landing sounds {landings}");
     }
 
     IEnumerator PayByCard(Func<bool> paid, string label)
@@ -1168,9 +1446,62 @@ public partial class P2DayVerification : MonoBehaviour
         if (card == null) yield break;
         yield return InsertCard(card, label, label == "tutorial.card" ? "03c_tutorial_card_guide" : null);
         yield return WaitUntil(paid, 5f, label + ".approved");
-        heldKeys.Remove(Key.G);
+        // A customer's card is not gone the moment it is approved (2026-11-12): the clerk lays it back on their plate
+        // and they take it. The clerk's own time cards still go at once.
+        if (Game.Director != null && Game.Director.IsOut(card))
+        {
+            yield return LookRightAfterPaid();
+            yield return GiveCardBack(card, label);
+        }
+        else
+        {
+            heldKeys.Remove(Key.G);
+        }
         yield return new WaitForSeconds(0.2f);
         Check(label + ".guide_hidden_after_payment", !slot.Guide.activeSelf && !slot.CardInside, $"guide={slot.Guide.activeSelf}; inside={slot.CardInside}");
+    }
+
+    /// <summary>The customer's hand on the card has been pictured once this run.</summary>
+    bool cardBackPictured;
+
+    IEnumerator GiveCardBack(PaymentProp card, string label)
+    {
+        var director = Game.Director;
+        int taken = director.CardsTakenBack, kept = director.CardsNotReturned;
+        if (label == "order5.card")
+        {
+            // Once a run the clerk forgets: the card is left sitting in the terminal, and the customer goes after a while.
+            heldKeys.Remove(Key.G);
+            float left = Time.time;
+            yield return WaitUntil(() => director.CardsNotReturned > kept, 9f, label + ".customer_stops_waiting");
+            float waited = Time.time - left;
+            yield return null;
+            Check(label + ".card_not_given_back_is_gone", card == null && director.CardsTakenBack == taken && waited > 4f && waited < 7f,
+                $"gone={card == null}; the customer waited {waited:0.0} s; taken back {director.CardsTakenBack - taken}; not given back {director.CardsNotReturned - kept}");
+            yield break;
+        }
+        var plate = Desk.CustomerPlate.position;
+        // Out the way it went in, and down on the plate it came from.
+        yield return MoveProp(card, CardSlotFront(), label + ".out");
+        yield return CarryProp(card, plate + Vector3.up * 0.04f, label + ".back");
+        if (card == null) yield break;
+        yield return SetDown(card.GetComponent<Rigidbody>());
+        if (!cardBackPictured)
+        {
+            float asked = Time.time;
+            while (!director.CardInHand && director.CardsTakenBack == taken && Time.time - asked < 5f) yield return null;
+            if (director.CardInHand)
+            {
+                cardBackPictured = true;
+                yield return new WaitForSeconds(0.06f);
+                yield return CaptureFrom("card_back_1_customer_takes_the_card", new Vector3(0.2f, 2.3f, 1.55f), new Vector3(0.2f, 0.92f, 0.92f), 45f);
+                yield return Capture("card_back_2_from_the_clerk");
+            }
+        }
+        yield return WaitUntil(() => director.CardsTakenBack > taken, 8f, label + ".card_taken_back");
+        yield return null;
+        Check(label + ".customer_takes_the_card_back", card == null && director.CardsTakenBack == taken + 1 && director.CardsNotReturned == kept && director.FarthestFromCard < 0.06f,
+            $"gone={card == null}; taken back by the customer's hand {director.CardsTakenBack - taken}; not given back {director.CardsNotReturned - kept}; the hand at most {director.FarthestFromCard * 100f:0.0} cm short of the card so far");
     }
 
     /// <summary>
@@ -1246,8 +1577,13 @@ public partial class P2DayVerification : MonoBehaviour
     }
 
     /// <summary>Lays the change down one piece at a time, as a person would, which must not raise false errors.</summary>
+    /// <summary>The customer's hand on the change has been pictured once this run.</summary>
+    bool takingPictured;
+
     IEnumerator GiveChange(int change, int expectedErrors, bool pauseAfterFirstPiece, Func<bool> done, string label)
     {
+        var director = Game.Director;
+        int takenBefore = director.ChangeTakenByHand, piecesBefore = director.PiecesTakenByHand;
         int remaining = change;
         int offset = 0;
         var tray = Desk.Tray.transform.position;
@@ -1287,7 +1623,31 @@ public partial class P2DayVerification : MonoBehaviour
         }
         yield return WaitUntil(done, 5f, label + ".matched");
         Check(label + ".no_false_errors", Desk.Tray.ErrorCount == expectedErrors, $"errors={Desk.Tray.ErrorCount}; expected={expectedErrors}; pieces={offset}");
+        yield return LookRightAfterPaid();
+        // The customer takes the change off the tray with the right hand before going (2026-11-12). Before, it was
+        // simply gone the moment the sale was done.
+        if (!takingPictured)
+        {
+            float asked = Time.time;
+            while (!director.ChangeInHand && director.ChangeTakenByHand == takenBefore && Time.time - asked < 5f) yield return null;
+            if (director.ChangeInHand)
+            {
+                takingPictured = true;
+                yield return new WaitForSeconds(0.08f);
+                // From above and behind the customer: the screens on the counter stand between the tray and anywhere lower.
+                yield return CaptureFrom("cash_4_customer_takes_the_change", new Vector3(-0.3f, 2.3f, 1.5f), new Vector3(-0.2f, 0.92f, 0.92f), 45f);
+                yield return Capture("cash_5_taking_the_change_from_the_clerk");
+            }
+        }
         yield return WaitUntil(() => Desk.Register.Shut, 3f, label + ".drawer_shut_after_the_sale");
+        yield return WaitUntil(() => director.ChangeTakenByHand > takenBefore && !director.ChangeInHand, 6f, label + ".taken_by_the_customer");
+        yield return null;
+        int lying = 0;
+        foreach (var prop in FindObjectsByType<PaymentProp>(FindObjectsSortMode.None))
+            if (prop.Kind == PaymentKind.Change && !prop.Docked) lying++;
+        Check(label + ".customer_takes_the_change_by_hand",
+            director.ChangeTakenByHand == takenBefore + 1 && director.PiecesTakenByHand - piecesBefore == offset && lying == 0 && director.FarthestFromChange < 0.06f,
+            $"taken by a customer's hand {director.ChangeTakenByHand - takenBefore} time(s), {director.PiecesTakenByHand - piecesBefore} of {offset} pieces; still lying about {lying}; the hand at most {director.FarthestFromChange * 100f:0.0} cm short of the change so far");
     }
 
     /// <summary>The middle of a UI element in the world. Its transform is its pivot, which WorldUi puts at the top-left corner.</summary>

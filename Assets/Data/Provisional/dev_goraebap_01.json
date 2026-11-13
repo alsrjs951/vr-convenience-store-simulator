@@ -9,6 +9,7 @@
   "evidence_dir": "docs/p1/evidence/goraebap_interaction",
   "provisional_width_m": 0.2,
   "provisional_mass_kg": 0.2,
+  "package": "Carton",
   "barcode_face": "Side",
   "barcode_local_normal": {
     "x": -1,

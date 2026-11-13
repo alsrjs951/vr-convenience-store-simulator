@@ -43,6 +43,19 @@ public class ChangeTrayZone : MonoBehaviour
         Amount = 0;
     }
 
+    /// <summary>
+    /// What lies on the tray, no longer the tray's to count or to clear away: the customer takes it (2026-11-12).
+    /// What a hand still holds stays.
+    /// </summary>
+    public List<PaymentProp> Release()
+    {
+        var lying = new List<PaymentProp>();
+        foreach (var prop in inside)
+            if (prop && !prop.Grab.isSelected && !prop.Leaving) lying.Add(prop);
+        foreach (var prop in lying) inside.Remove(prop);
+        return lying;
+    }
+
     void OnTriggerEnter(Collider other)
     {
         var prop = other.GetComponentInParent<PaymentProp>();

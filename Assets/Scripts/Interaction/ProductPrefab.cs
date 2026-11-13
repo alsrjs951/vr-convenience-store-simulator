@@ -13,6 +13,8 @@ public class ProductPrefab : MonoBehaviour
     const int HeldRenderOrder = 10;
     const float RespawnDelaySeconds = 3f;
     const float FellOutOfWorldY = -5f;
+    // A product makes no landing sound in its first moments (it is being stood on the counter or the shelf) nor twice in a row.
+    const float QuietAfterAppearing = 0.5f, LandingSoundGap = 0.2f;
 
     public ProductData Data;
     public GaussianSplatRenderer Splat;
@@ -41,6 +43,7 @@ public class ProductPrefab : MonoBehaviour
     Quaternion homeRotation;
     int restRenderOrder;
     float floorContactTime = -1f;
+    float appearedAt, lastLanding = float.NegativeInfinity;
     GaussianSplatAsset fullSplat;
     ShelfSlotZone shelfHome;
     int shelfUnit = -1;
@@ -67,6 +70,7 @@ public class ProductPrefab : MonoBehaviour
         Grab.selectEntered.AddListener(OnGrabbed);
         Grab.selectExited.AddListener(OnReleased);
         Enabled.Add(this);
+        appearedAt = Time.time;
     }
 
     void OnDisable()
@@ -198,6 +202,12 @@ public class ProductPrefab : MonoBehaviour
     {
         if (!Grab.isSelected && collision.collider.GetComponent<ProductRespawnSurface>())
             floorContactTime = Time.time;
+        // Set down or dropped: the weight of a bag or the knock of a carton (TouchFeel, 2026-11-11).
+        if (Grab.isSelected || IsBagged || IsShelved || Time.time - appearedAt < QuietAfterAppearing || Time.time - lastLanding < LandingSoundGap) return;
+        float speed = collision.relativeVelocity.magnitude;
+        if (speed < 0.3f) return;
+        lastLanding = Time.time;
+        TouchFeel.SetDown(this, speed);
     }
 
     void FixedUpdate()

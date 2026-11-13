@@ -773,6 +773,14 @@ public partial class P2DayVerification
     IEnumerator ServeIfWaiting(bool waitAtCounter = false)
     {
         var director = Game.Director;
+        // Someone called to the counter and still walking there is waited for (2026-11-12). Going off to the next task at
+        // that moment brings the test back to the counter up to 18 s after the customer got there, which is all the spare
+        // time the third order has (72 s after its line penalty, about 54 s of work); whether the call came just before
+        // or just after this look then decided the run, and twice the third customer left as the change was being laid out.
+        float called = Time.time;
+        while (!finished && director.AtCounter != null && Game.Pos.Current == null && director.CustomerNumber != TimeoutOrder
+               && director.AtCounter.State == CustomerState.ToCounter && Time.time - called < 8f)
+            yield return null;
         while (!finished && director.AtCounter != null && Game.Pos.Current != null && director.CustomerNumber != TimeoutOrder)
         {
             if (at != "C")
@@ -883,14 +891,17 @@ public partial class P2DayVerification
             $"endedEarly={director.EndedEarly}; left={director.Left}; paid={director.Paid}; called={records.Count}; hurried=[{string.Join(", ", records.ConvertAll(r => (r.HurriedAt - r.ArrivedAt).ToString("0.0")))}]");
         bool timing = true;
         foreach (var r in records)
-            timing &= Mathf.Abs(r.DoneAt - r.ArrivedAt - (120f - r.LinePenalty)) < 0.3f && Mathf.Abs(r.HurriedAt - r.ArrivedAt - (60f - r.LinePenalty)) < 0.3f;
-        Check("d2.idle.timeout_120_hurry_60", timing, string.Join("; ", records.ConvertAll(r => $"#{r.Sequence} waited {r.DoneAt - r.ArrivedAt:0.00}s, hurried at {r.HurriedAt - r.ArrivedAt:0.00}s, line penalty {r.LinePenalty:0.0}s")));
+            timing &= Mathf.Abs(r.DoneAt - r.ArrivedAt - (120f - r.LinePenalty)) < 0.3f && Mathf.Abs(r.HurriedAt - r.ArrivedAt - HurryAfter(120f, r.LinePenalty)) < 0.3f;
+        Check("d2.idle.timeout_120_hurry_84", timing, string.Join("; ", records.ConvertAll(r => $"#{r.Sequence} waited {r.DoneAt - r.ArrivedAt:0.00}s, hurried at {r.HurriedAt - r.ArrivedAt:0.00}s, line penalty {r.LinePenalty:0.0}s")));
         Check("d2.idle.grade_c_with_reason", Game.Grade == "C" && Game.BoardText.Contains("이탈 3명") && director.HudText.Contains("마감"),
             $"grade={Game.Grade} score={Game.Score:0.0}; board={Game.BoardText}");
         yield return WaitUntil(() => director.Present.Count == 0, EmptyStoreTimeout, "d2.idle.store_empties");
         Check("d2.idle.no_more_customers_called", director.Records.FindAll(r => r.ForOrder && r.CalledAt >= 0f).Count == 3 && !director.ShiftRunning, $"called={director.Records.FindAll(r => r.ForOrder && r.CalledAt >= 0f).Count}");
         FillDetails();
     }
+
+    /// <summary>How long after arriving a customer hurries the clerk: when CustomerDirector.HurryShare of the limit is left, and not before HurryNotBefore.</summary>
+    static float HurryAfter(float limit, float linePenalty) => Mathf.Max(limit * (1f - CustomerDirector.HurryShare) - linePenalty, CustomerDirector.HurryNotBefore);
 
     void CheckSettlement()
     {
@@ -899,7 +910,7 @@ public partial class P2DayVerification
         Check("d2.day.eight_processed_one_left", director.Paid + director.Left == 8 && director.Left == 1 && timedOut.Count == 1 && timedOut[0].Sequence == TimeoutOrder && !director.EndedEarly,
             $"paid={director.Paid}; left={director.Left}; timed out=[{string.Join(", ", timedOut.ConvertAll(r => r.Sequence.ToString()))}]");
         var leaver = timedOut.Count > 0 ? timedOut[0] : null;
-        Check("d2.day.leaver_hurried_and_no_wave", leaver != null && leaver.HurriedAt > 0f && Mathf.Abs(leaver.HurriedAt - leaver.ArrivedAt - (60f - leaver.LinePenalty)) < 0.3f && Mathf.Abs(leaver.DoneAt - leaver.ArrivedAt - (120f - leaver.LinePenalty)) < 0.3f && leaver.LeaveAnimationSeconds == 0f,
+        Check("d2.day.leaver_hurried_and_no_wave", leaver != null && leaver.HurriedAt > 0f && Mathf.Abs(leaver.HurriedAt - leaver.ArrivedAt - HurryAfter(120f, leaver.LinePenalty)) < 0.3f && Mathf.Abs(leaver.DoneAt - leaver.ArrivedAt - (120f - leaver.LinePenalty)) < 0.3f && leaver.LeaveAnimationSeconds == 0f,
             leaver == null ? "none" : $"hurried at {leaver.HurriedAt - leaver.ArrivedAt:0.00}s; left at {leaver.DoneAt - leaver.ArrivedAt:0.00}s; wave={leaver.LeaveAnimationSeconds}");
         var next = director.Records.Find(r => r.ForOrder && r.Sequence == TimeoutOrder + 1);
         Check("d2.day.next_called_15s_after_leaver", leaver != null && next != null && Mathf.Abs(next.CalledAt - leaver.DoneAt - 15f) < SpawnGapTolerance,
@@ -935,7 +946,7 @@ public partial class P2DayVerification
             details.customers.Add($"{r.Name}: order={(r.ForOrder ? r.Sequence.ToString() : "-")} spawned={r.SpawnedAt:0.0} called={r.CalledAt:0.0} from={r.CalledFrom} arrived={r.ArrivedAt:0.0} limitLeft={r.RemainingAtArrival:0.0} hurried={r.HurriedAt:0.0} done={r.DoneAt:0.0} timedOut={r.TimedOut} wave={r.LeaveAnimationSeconds:0.0} gone={r.GoneAt:0.0}");
         Check("d2.customers.one_per_order", forOrders.Count == 8, $"customers for orders={forOrders.Count}");
         Check("d2.customers.one_at_a_time_at_counter", director.MaxAtCounterSeen == 1, $"max={director.MaxAtCounterSeen}");
-        Check("d2.customers.paid_waved_left_did_not", forOrders.TrueForAll(r => r.TimedOut ? r.LeaveAnimationSeconds == 0f : r.LeaveAnimationSeconds > 0f), "waves only after paying");
+        Check("d2.customers.nobody_waves", forOrders.TrueForAll(r => r.LeaveAnimationSeconds == 0f), "no customer waves on the way out, paid or not (2026-11-13)");
         Check("d2.customers.no_stuck_walks", CustomerCharacter.StuckWarps == 0 && CustomerCharacter.ShortArrivals == 0,
             $"warps={CustomerCharacter.StuckWarps}; short={CustomerCharacter.ShortArrivals}; stepped aside when blocked={CustomerCharacter.StepAsides}; stopped short where the clerk stood={CustomerCharacter.ShortArrivalsAtClerk}; small hops off the clerk's hole={CustomerCharacter.Nudges}; shelf spots skipped for the clerk={director.SpotsSkippedForClerk}");
         Check("d2.customers.on_navmesh_clear_of_solids", report.offNavMeshFrames == 0 && report.overlapFrames == 0 && report.clerkSideFrames == 0 && report.customerFrames > 1000,

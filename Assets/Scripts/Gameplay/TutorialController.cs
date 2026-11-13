@@ -20,6 +20,8 @@ public class TutorialController : MonoBehaviour
     const int CashPrice = 1500;
     const int HintAfterErrors = 2;
     const int AutoCompleteAfterErrors = 3;
+    // How long the lesson waits for the card to be laid back on the guest's plate before going on without it.
+    const float CardBackSeconds = 30f;
     const float LinePauseSeconds = 0.3f;
     const float AfterBarcodeMeters = 0.035f;
     // The arrow's tip stops this far short of the scanner's upright glass.
@@ -57,7 +59,7 @@ public class TutorialController : MonoBehaviour
         Guest = Director.CallGuest();
         yield return Director.BringGuest(Guest);
         // The guest sets the one thing down on the counter, as every customer does.
-        Product = Director.PutOnCounter(Catalog.Find(ProductId));
+        Product = Director.PutOnCounter(Catalog.Find(ProductId), 0, 1, Guest);
         int price = Product.Data.Price;
         Scanner.Scanned += OnScanned;
 
@@ -70,9 +72,8 @@ public class TutorialController : MonoBehaviour
         if (Manager) Manager.Nod();
         yield return RunBag();
         yield return RunCard();
-        // It stays in the bag until it is paid for, as an order's goods do, and goes when the guest does.
-        Destroy(Product.gameObject);
-        Director.GuestLeaves(Guest, price, true);
+        // It stays in the bag until the guest lifts the bag off the counter, as an order's goods do.
+        Director.GuestLeaves(Guest, price, true, Product);
         if (Manager) Manager.Nod();
 
         Pointer.Aim = null;
@@ -193,10 +194,22 @@ public class TutorialController : MonoBehaviour
         Board.text = "5/6  카드 결제\n손님 카드를 단말기 노란 칸에";
         bool paid = false;
         Desk.BeginCard(() => true, notice => Board.text = "5/6  카드 결제\n" + notice, () => paid = true);
+        Director.PutOnPlate(Desk.CustomerCard, Guest);
         Pointer.Aim = () => TargetPointer.AimAtCard(Desk);
         while (!paid) yield return null;
         if (Desk.Audio) Desk.Audio.PlayApproved();
+        // The card goes back to the guest: on their plate, where it came from. They take it on the way out (GuestLeaves).
+        var card = Director.LeaveCardFor(Guest);
         Desk.EndPayment();
+        if (card == null) yield break;
+        Board.text = "5/6  카드 결제\n카드를 손님 접시에 돌려놓기";
+        Pointer.Aim = () => card == null ? (PointerAim?)null
+            : card.Grab.isSelected && Desk.CardSlot.CardInside ? PointerAim.Down(card.transform.position, "꺼내기")
+            : card.Grab.isSelected ? PointerAim.Down(Desk.CustomerPlate.position, "여기에 돌려놓기")
+            : PointerAim.Down(card.transform.position, "집기");
+        for (float waited = 0f; card != null && !Director.CardLiesOnPlate(card) && waited < CardBackSeconds; waited += Time.deltaTime)
+            yield return null;
+        Pointer.Aim = null;
     }
 
     IEnumerator RunCash()
@@ -211,6 +224,7 @@ public class TutorialController : MonoBehaviour
             _ => Board.text = $"6/6  현금 결제\n거스름 {change:N0}원을 접시에",
             notice => Board.text = "6/6  현금 결제\n" + notice,
             () => paid = true);
+        Director.PutOnPlate(Desk.CustomerBill, Guest);
         Pointer.Aim = AimForCash;
         while (!paid)
         {
@@ -223,6 +237,8 @@ public class TutorialController : MonoBehaviour
             }
             yield return null;
         }
+        // The guest takes the change off the tray on the way out (GuestLeaves).
+        Director.LeaveChangeFor(Guest);
         Desk.EndPayment();
     }
 

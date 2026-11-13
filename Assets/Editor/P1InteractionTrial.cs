@@ -41,7 +41,7 @@ public static class P1InteractionTrial
 
     [Serializable] class Manifest
     {
-        public string id, capture_id, display_name, splat_asset, box_fit, barcode_face, scene, evidence_dir, note;
+        public string id, capture_id, display_name, splat_asset, box_fit, barcode_face, scene, evidence_dir, note, package;
         public int price;
         public float provisional_width_m, provisional_mass_kg;
         public Vector3 barcode_local_normal;
@@ -139,6 +139,7 @@ public static class P1InteractionTrial
         data.SizeIsMeasured = false;
         data.BarcodeFace = (BarcodeFace)Enum.Parse(typeof(BarcodeFace), manifest.barcode_face);
         data.BarcodeLocalNormal = manifest.barcode_local_normal;
+        data.Package = PlayerHandSetup.PackageOf(manifest.package);
         data.SplatAsset = asset;
         EditorUtility.SetDirty(data);
         return data;

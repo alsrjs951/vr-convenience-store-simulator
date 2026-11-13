@@ -177,7 +177,8 @@ public class GameManager : MonoBehaviour
         var args = Environment.GetCommandLineArgs();
         int index = Array.IndexOf(args, "-start-day");
         if (index >= 0 && index + 1 < args.Length && int.TryParse(args[index + 1], out int start) && start >= 1) Day = start;
-        UsesTitle = Title != null && !Array.Exists(args, argument => Array.IndexOf(NoTitleArguments, argument) >= 0);
+        // -with-title: through the title all the same, for the store that is kept with the headset recorder on (-hmd-perf).
+        UsesTitle = Title != null && (Array.IndexOf(args, "-with-title") >= 0 || !Array.Exists(args, argument => Array.IndexOf(NoTitleArguments, argument) >= 0));
         Director.OrderArrived += OnOrderArrived;
         Director.OrderEnded += OnOrderEnded;
 

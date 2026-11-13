@@ -84,6 +84,67 @@ public static class PlayerHandSetup
         return hand;
     }
 
+    // ---------- What things sound like in the hand (TouchFeel) ----------
+
+    const string SoundFolder = "Assets/Audio/Generated";
+    const string ManifestFolder = "Assets/Data/Provisional";
+    const string StoreScene = "Assets/Scenes/StoreScene.unity";
+
+    [Serializable] class PackageManifest { public string id, package; }
+
+    /// <summary>A manifest's "package": "Carton", or a film bag when it says nothing.</summary>
+    public static ProductPackage PackageOf(string package) =>
+        string.IsNullOrEmpty(package) ? ProductPackage.Bag : (ProductPackage)Enum.Parse(typeof(ProductPackage), package, true);
+
+    /// <summary>The takes made by scripts/windows/make_hand_sounds.py. P2StoreBuilder calls this with its other sounds.</summary>
+    public static void AssignTouchSounds(GameAudio audio)
+    {
+        AudioClip[] Takes(string stem, int count)
+        {
+            var clips = new AudioClip[count];
+            for (int i = 0; i < count; i++) clips[i] = Load<AudioClip>($"{SoundFolder}/{stem}_{i + 1}.wav");
+            return clips;
+        }
+        audio.CrinkleClips = Takes("sfx_crinkle", 3);
+        audio.RustleClips = Takes("sfx_rustle", 4);
+        audio.CartonClips = Takes("sfx_carton", 2);
+        audio.BagDownClips = Takes("sfx_bag_down", 2);
+        EditorUtility.SetDirty(audio);
+    }
+
+    /// <summary>
+    /// Puts the hands' sounds and the products' packages into the store as it is, without building it again (a build
+    /// bakes the light anew, two minutes and a dozen megabytes of lightmaps that did not change). A build does the same
+    /// through P2StoreBuilder.
+    /// Unity.exe -batchmode -executeMethod PlayerHandSetup.InstallTouchFeelInStore -quit
+    /// </summary>
+    [MenuItem("Tools/Hands/Install Touch Feel In The Store Scene")]
+    public static void InstallTouchFeelInStore()
+    {
+        AssetDatabase.Refresh();
+        int cartons = 0, products = 0;
+        foreach (var path in Directory.GetFiles(ManifestFolder, "dev_*.json"))
+        {
+            if (path.EndsWith(".box_fit.json")) continue;
+            var manifest = JsonUtility.FromJson<PackageManifest>(File.ReadAllText(path));
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Products/P_{manifest.id}.prefab");
+            var product = prefab != null ? prefab.GetComponent<ProductPrefab>() : null;
+            if (product == null || product.Data == null) throw new Exception("No product data for " + manifest.id);
+            product.Data.Package = PackageOf(manifest.package);
+            EditorUtility.SetDirty(product.Data);
+            products++;
+            if (product.Data.Package == ProductPackage.Carton) cartons++;
+        }
+        Setup();
+        var scene = EditorSceneManager.OpenScene(StoreScene, OpenSceneMode.Single);
+        var audio = UnityEngine.Object.FindFirstObjectByType<GameAudio>() ?? throw new Exception("No GameAudio in " + StoreScene);
+        AssignTouchSounds(audio);
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (!EditorSceneManager.SaveScene(scene)) throw new Exception("Scene save failed.");
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[Hands] touch feel installed: {products} products, {cartons} cartons; crinkle {audio.CrinkleClips.Length}, rustle {audio.RustleClips.Length}, carton {audio.CartonClips.Length}, bag down {audio.BagDownClips.Length} takes; hands in the scene with TouchFeel: {UnityEngine.Object.FindObjectsByType<TouchFeel>(FindObjectsInactive.Include, FindObjectsSortMode.None).Length}");
+    }
+
     /// <summary>The rig's controller models go and the hands come in their place.</summary>
     public static void Install(Transform rig)
     {
@@ -140,6 +201,7 @@ public static class PlayerHandSetup
             string[] names = { "Thumb", "Index", "Middle", "Ring", "Little" };
             var hand = root.AddComponent<PlayerHand>();
             hand.Left = left;
+            root.AddComponent<TouchFeel>();
             for (int f = 0; f < PlayerHand.Fingers; f++)
             {
                 var parent = palmBone;
@@ -268,6 +330,35 @@ public static class PlayerHandSetup
                     hand.Rest[i] = hand.Joints[i].localRotation;
                 }
             }
+
+            // The thumb's first joint also swings the thumb down, away from the palm, which is how it gets under the
+            // edge of a held thing.
+            var thumbAlong = (hand.Tips[PlayerHand.Thumb].position - hand.Joints[0].position).normalized;
+            var thumbDown = Vector3.Cross(thumbAlong, Vector3.down).normalized;
+            if (Vector3.Dot(Quaternion.AngleAxis(10f, thumbDown) * thumbAlong, Vector3.down) < Vector3.Dot(thumbAlong, Vector3.down)) thumbDown = -thumbDown;
+            hand.ThumbDownAxis = hand.Joints[0].parent.InverseTransformDirection(thumbDown);
+
+            // What the four fingers lie on when the hand holds something flat: the plane along them from the knuckles to
+            // the tips, moved toward the palm side as far as their skin goes. And the web of the thumb, where the edge
+            // of the held thing sits.
+            var knuckles = Vector3.zero;
+            var ends = Vector3.zero;
+            for (int f = PlayerHand.Index; f < PlayerHand.Fingers; f++)
+            {
+                knuckles += hand.Joints[f * PlayerHand.JointsPerFinger].position * 0.25f;
+                ends += hand.Tips[f].position * 0.25f;
+            }
+            var across = (hand.Joints[PlayerHand.Index * PlayerHand.JointsPerFinger].position - hand.Joints[PlayerHand.Little * PlayerHand.JointsPerFinger].position).normalized;
+            var backOfHand = Vector3.Cross((ends - knuckles).normalized, across).normalized;
+            if (backOfHand.y < 0f) backOfHand = -backOfHand;
+            float lowest = 0f;
+            int firstFingerBone = 1 + PlayerHand.Index * PlayerHand.JointsPerFinger;
+            for (int v = 0; v < outPositions.Count; v++)
+                if (dominant[v] >= firstFingerBone) lowest = Mathf.Min(lowest, Vector3.Dot(outPositions[v] - knuckles, backOfHand));
+            hand.PadNormal = backOfHand;
+            hand.PadForward = Vector3.ProjectOnPlane(ends - knuckles, backOfHand).normalized;
+            hand.PadPoint = knuckles + backOfHand * lowest;
+            hand.Web = Vector3.Lerp((hand.Joints[1].position + hand.Joints[PlayerHand.Index * PlayerHand.JointsPerFinger].position) * 0.5f, hand.Joints[0].position, 0.3f);
 
             // The cuff over the cut.
             var cuffObject = new GameObject("Cuff");
@@ -616,6 +707,90 @@ public static class PlayerHandSetup
         // useScale: the corners come out as the skin's own transform, scale and all, places them. (Without it they come
         // out already scaled, and under the scaled hand the copy was 6 % too large.)
         skinned.BakeMesh(holder.GetComponent<MeshFilter>().sharedMesh, true);
+    }
+
+    /// <summary>
+    /// Draws the right hand holding boxes the sizes of the things in the store, each started the way the day's check
+    /// starts a grab (the controller's origin at or near the middle of the thing), from the player's eyes, the side and
+    /// below, four to a sheet.
+    /// Unity.exe -batchmode -executeMethod PlayerHandSetup.PreviewGrasps -hands-evidence folder -quit
+    /// </summary>
+    [MenuItem("Tools/Hands/Preview Grasps")]
+    public static void PreviewGrasps()
+    {
+        var folder = CommandLineValue("-hands-evidence") ?? "Temp/hands";
+        Directory.CreateDirectory(folder);
+        Setup();
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        RenderSettings.ambientMode = AmbientMode.Flat;
+        RenderSettings.ambientLight = new Color(0.5f, 0.5f, 0.52f);
+        var sun = new GameObject("Light").AddComponent<Light>();
+        sun.type = LightType.Directional;
+        sun.intensity = 1f;
+        sun.transform.rotation = Quaternion.Euler(48f, -35f, 0f);
+        var camera = new GameObject("Camera").AddComponent<Camera>();
+        camera.clearFlags = CameraClearFlags.SolidColor;
+        camera.backgroundColor = new Color(0.55f, 0.57f, 0.6f);
+        camera.nearClipPlane = 0.02f;
+        camera.farClipPlane = 10f;
+        camera.fieldOfView = 32f;
+        var paint = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+        paint.SetColor("_BaseColor", new Color(0.93f, 0.55f, 0.18f));
+        paint.SetFloat("_Smoothness", 0.25f);
+
+        // Size along the box's own x, y, z; how it is turned; where its middle is from the controller's origin.
+        var cases = new (string name, Vector3 size, Vector3 euler, Vector3 middle)[]
+        {
+            ("snack bag standing", new Vector3(0.18f, 0.26f, 0.07f), Vector3.zero, Vector3.zero),
+            ("snack bag lying", new Vector3(0.18f, 0.07f, 0.26f), Vector3.zero, new Vector3(0f, -0.03f, 0.02f)),
+            ("snack bag turned", new Vector3(0.18f, 0.26f, 0.07f), new Vector3(20f, 50f, 10f), Vector3.zero),
+            ("ramen pack standing", new Vector3(0.12f, 0.14f, 0.035f), Vector3.zero, Vector3.zero),
+            ("small box lying", new Vector3(0.085f, 0.03f, 0.12f), Vector3.zero, new Vector3(0f, -0.01f, 0f)),
+            ("card", new Vector3(0.065f, 0.008f, 0.1f), Vector3.zero, new Vector3(0f, -0.01f, 0f)),
+            ("note", new Vector3(0.142f, 0.0012f, 0.068f), Vector3.zero, new Vector3(0f, -0.005f, 0f)),
+            ("coin", new Vector3(0.033f, 0.003f, 0.033f), Vector3.zero, new Vector3(0f, -0.005f, 0f)),
+            ("box handle", new Vector3(0.03f, 0.035f, 0.1f), new Vector3(0f, 90f, 0f), Vector3.zero),
+            ("large box", new Vector3(0.36f, 0.3f, 0.3f), Vector3.zero, new Vector3(0f, -0.12f, 0.05f)),
+            ("cutter in its holder", new Vector3(0.12f, 0.02f, 0.03f), new Vector3(0f, 0f, 70f), new Vector3(0.02f, 0f, 0f)),
+        };
+        var controller = new GameObject("Right Controller").transform;
+        var hand = Attach(controller, Load<PlayerHand>(PrefabPath(false)));
+        var homePosition = hand.transform.position;
+        var homeRotation = hand.transform.rotation;
+        const int cell = 520, perSheet = 4;
+        Texture2D sheet = null;
+        int rows = 0;
+        var report = new StringBuilder();
+        for (int c = 0; c < cases.Length; c++)
+        {
+            if (c % perSheet == 0)
+            {
+                rows = Mathf.Min(perSheet, cases.Length - c);
+                sheet = new Texture2D(cell * 3, cell * rows, TextureFormat.RGB24, false);
+            }
+            int row = (rows - 1 - c % perSheet) * cell;
+            var thing = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            thing.transform.SetPositionAndRotation(cases[c].middle, Quaternion.Euler(cases[c].euler));
+            thing.transform.localScale = cases[c].size;
+            thing.GetComponent<Renderer>().sharedMaterial = paint;
+            hand.transform.SetPositionAndRotation(homePosition, homeRotation);
+            bool fits = hand.FitTo(thing.GetComponent<BoxCollider>(), homePosition, homeRotation);
+            if (fits) hand.PoseFitNow();
+            else hand.PoseNow(1f, 0f, true);
+            ShowPosed(hand);
+            var moved = hand.transform.position - homePosition;
+            report.AppendLine($"{cases[c].name}: {(fits ? "fitted" : "plain hold")}; hand moved {moved.magnitude * 100f:0.0} cm and turned {Quaternion.Angle(homeRotation, hand.transform.rotation):0} deg from the controller; {hand.DescribeFit()}");
+            var look = (hand.transform.TransformPoint(hand.PadPoint) + thing.transform.position) * 0.5f;
+            Draw(camera, look + new Vector3(0.1f, 0.34f, -0.42f), look, Vector3.up, sheet, 0, row, cell);
+            Draw(camera, look + new Vector3(-0.52f, 0.1f, 0.05f), look, Vector3.up, sheet, cell, row, cell);
+            Draw(camera, look + new Vector3(0.12f, -0.42f, -0.3f), look, Vector3.up, sheet, cell * 2, row, cell);
+            UnityEngine.Object.DestroyImmediate(thing);
+            if (c % perSheet == perSheet - 1 || c == cases.Length - 1)
+                File.WriteAllBytes($"{folder}/grasps_right_{c / perSheet + 1}.png", sheet.EncodeToPNG());
+        }
+        File.WriteAllText($"{folder}/grasps_report.txt", report.ToString());
+        Debug.Log("[Hands] grasps written to " + folder);
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
     }
 
     static void Draw(Camera camera, Vector3 eye, Vector3 target, Vector3 up, Texture2D sheet, int x, int y, int size)

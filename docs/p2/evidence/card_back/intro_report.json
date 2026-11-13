@@ -1,0 +1,636 @@
+{
+    "pass": true,
+    "unity": "6000.3.26f1",
+    "gpu": "NVIDIA GeForce RTX 4070",
+    "api": "Direct3D12",
+    "runtime": "Editor Play Mode",
+    "scope": "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.",
+    "hmdRuntimeActive": false,
+    "externalMouseMotion": 0.0,
+    "meanDesktopFps": 289.0365295410156,
+    "maxHeldSpeedOnArrival": 0.7981569766998291,
+    "maxHeldSpeedAtRelease": 0.0,
+    "grade": "",
+    "score": 0.0,
+    "sales": 0,
+    "possibleSales": 0,
+    "paid": 0,
+    "orders": 0,
+    "left": 0,
+    "cancels": 0,
+    "queueAndBrowsers": false,
+    "maxCustomersPresent": 0,
+    "maxForOrdersInStore": 0,
+    "maxWaiting": 0,
+    "maxLine": 0,
+    "maxBrowsers": 0,
+    "browsersSpawned": 0,
+    "stuckWarps": 0,
+    "shortArrivals": 0,
+    "customerFrames": 1513,
+    "settledFrames": 0,
+    "offNavMeshFrames": 0,
+    "overlapFrames": 0,
+    "clerkSideFrames": 0,
+    "movingFrames": 1493,
+    "walkAnimatedFrames": 1493,
+    "standingFrames": 1,
+    "standingAnimatedFrames": 1,
+    "customers": [],
+    "stages": [
+        {
+            "name": "setup.rig_found",
+            "pass": true,
+            "details": "camera=True; simulator=True; rightNearFar=True",
+            "time": 4.003312110900879
+        },
+        {
+            "name": "intro.title_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.037697792053223
+        },
+        {
+            "name": "intro.player_at_door",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 4.04202938079834
+        },
+        {
+            "name": "intro.manager_in_the_store",
+            "pass": true,
+            "details": "face=True",
+            "time": 6.048353672027588
+        },
+        {
+            "name": "intro.people_already_shopping",
+            "pass": true,
+            "details": "shopping=2; present=0; records=0",
+            "time": 6.048518180847168
+        },
+        {
+            "name": "intro.nobody_is_a_twin",
+            "pass": true,
+            "details": "same avatar as another in the store: 0",
+            "time": 6.04871129989624
+        },
+        {
+            "name": "intro.one_thing_to_press",
+            "pass": true,
+            "details": "only 출근하기 and 설정 are shown",
+            "time": 6.04878568649292
+        },
+        {
+            "name": "intro.store_stocked_on_the_shelves_in_view",
+            "pass": true,
+            "details": "display-only places shown=27",
+            "time": 6.048913955688477
+        },
+        {
+            "name": "intro.commute",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 7.493589401245117
+        },
+        {
+            "name": "intro.manager_waves_and_speaks",
+            "pass": true,
+            "details": "waves=1; talking=True; playing=Leave",
+            "time": 7.999201774597168
+        },
+        {
+            "name": "intro.manager_looks_at_player",
+            "pass": true,
+            "details": "off by 5.2°",
+            "time": 7.999378204345703
+        },
+        {
+            "name": "intro.guide_shown",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 8.294371604919434
+        },
+        {
+            "name": "intro.how_to_walk_said_at_once",
+            "pass": true,
+            "details": "guide=왼손 스틱을 앞으로 밀어\n노란 화살표를 따라가세요; left=이 스틱을 앞으로 밀기",
+            "time": 8.298053741455079
+        },
+        {
+            "name": "walkin.door_opened",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 8.299026489257813
+        },
+        {
+            "name": "walkin.path_and_guide",
+            "pass": true,
+            "details": "path=True; guide=True; narration=voice_manager_welcome",
+            "time": 8.603318214416504
+        },
+        {
+            "name": "walkin.arrived_at_counter",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 13.218717575073243
+        },
+        {
+            "name": "walkin.no_rescue_needed",
+            "pass": true,
+            "details": "gave up=False",
+            "time": 13.221345901489258
+        },
+        {
+            "name": "punch.facing_counter",
+            "pass": true,
+            "details": "forward=(0.00, 0.00, 1.00)",
+            "time": 13.264053344726563
+        },
+        {
+            "name": "punch.card_on_plate",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 13.264314651489258
+        },
+        {
+            "name": "punch.time_card",
+            "pass": true,
+            "details": "label=출근 카드; board=출근 카드를 집어\n단말기 노란 칸에 꽂으세요; narration=voice_manager_punch_in",
+            "time": 13.267961502075196
+        },
+        {
+            "name": "punch_in.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 13.365531921386719
+        },
+        {
+            "name": "punch_in.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 15.810803413391114
+        },
+        {
+            "name": "punch_in.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 18.47867202758789
+        },
+        {
+            "name": "punch_in.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.930, 0.402) socketHover=True",
+            "time": 18.660282135009767
+        },
+        {
+            "name": "punch_in.approved",
+            "pass": true,
+            "details": "after 0.4s",
+            "time": 19.103515625
+        },
+        {
+            "name": "punch_in.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 19.29263687133789
+        },
+        {
+            "name": "punch.done_no_rescue",
+            "pass": true,
+            "details": "gave up=False",
+            "time": 19.292804718017579
+        },
+        {
+            "name": "intro.manager_nods_at_the_punch",
+            "pass": true,
+            "details": "nods=1",
+            "time": 19.292869567871095
+        },
+        {
+            "name": "intro.tutorial_begins",
+            "pass": true,
+            "details": "after 2.8s",
+            "time": 22.100379943847658
+        },
+        {
+            "name": "tutorial.grab_shown",
+            "pass": true,
+            "details": "after 3.1s",
+            "time": 26.755199432373048
+        },
+        {
+            "name": "tutorial.first_customer_at_counter",
+            "pass": true,
+            "details": "state=AtCounter",
+            "time": 26.955196380615236
+        },
+        {
+            "name": "tutorial.goods_set_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 26.957416534423829
+        },
+        {
+            "name": "tutorial.set_down_by_the_customers_hand",
+            "pass": true,
+            "details": "things 1; stood by a customer's hand since the last look 1; pushed the last of the way so far 0; this customer's wrist off its point at most 0.0 cm",
+            "time": 26.960994720458986
+        },
+        {
+            "name": "tutorial.goods_stand_on_the_bare_counter",
+            "pass": true,
+            "details": "dev_potato_01 lowest=0.900 yaw=-2.6; basket in scene=False",
+            "time": 27.164867401123048
+        },
+        {
+            "name": "tutorial.steps_instead_of_sliding",
+            "pass": true,
+            "details": "the body moved 17.7 cm standing; steps 2; a foot on the floor slid 0.0 cm in all; a held foot at most 0.0 cm off its place; the hips came down 1.6 cm at most; Guest 1 (Male_Adult_16)",
+            "time": 27.165111541748048
+        },
+        {
+            "name": "tutorial.greeted",
+            "pass": true,
+            "details": "greetings=1",
+            "time": 27.16533660888672
+        },
+        {
+            "name": "tutorial.arrow_on_the_product_at_once",
+            "pass": true,
+            "details": "shown=True; label=집기",
+            "time": 27.165508270263673
+        },
+        {
+            "name": "tutorial.grip_said_in_plain_words",
+            "pass": true,
+            "details": "hand=가운뎃손가락 버튼을 꾹; board=1/6  상품 잡기\n손을 대고 가운뎃손가락 버튼을 꾹",
+            "time": 27.165618896484376
+        },
+        {
+            "name": "hands.drawn_instead_of_the_controllers",
+            "pass": true,
+            "details": "hand=True; controller model shown=False; hands=2",
+            "time": 27.257465362548829
+        },
+        {
+            "name": "hands.open_before_the_grip",
+            "pass": true,
+            "details": "grip=0.00; holding=False; on the controller=True",
+            "time": 27.257709503173829
+        },
+        {
+            "name": "tutorial.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 29.166412353515626
+        },
+        {
+            "name": "tutorial.near_grab",
+            "pass": true,
+            "details": "region=Near",
+            "time": 29.377544403076173
+        },
+        {
+            "name": "tutorial.sounds_and_feels_like_its_package",
+            "pass": true,
+            "details": "dev_potato_01 is a Bag; Crinkle sounds 0->1; pulses 1->5; holding=Bag",
+            "time": 29.377925872802736
+        },
+        {
+            "name": "hands.holds_a_thing_by_its_shape",
+            "pass": true,
+            "details": "grip=1.00; holding=True; fitted=True; fingertips from the product's box, thumb first, mm: 9 7 7 7 7 ; hand 14.0 cm from the controller",
+            "time": 29.677448272705079
+        },
+        {
+            "name": "tutorial.rotate_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 29.929611206054689
+        },
+        {
+            "name": "tutorial.arrow_at_the_barcode",
+            "pass": true,
+            "details": "label=바코드; hand=",
+            "time": 30.134376525878908
+        },
+        {
+            "name": "turn.barcode_faces_down",
+            "pass": true,
+            "details": "dev_potato_01 angle from down=2.6",
+            "time": 31.309837341308595
+        },
+        {
+            "name": "hands.bag_rustles_as_it_is_turned",
+            "pass": true,
+            "details": "rustles 0->3",
+            "time": 31.31000518798828
+        },
+        {
+            "name": "tutorial.scan_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 32.49336624145508
+        },
+        {
+            "name": "tutorial.arrow_at_the_scanner",
+            "pass": true,
+            "details": "label=여기에 대기",
+            "time": 32.598350524902347
+        },
+        {
+            "name": "tutorial.scan",
+            "pass": true,
+            "details": "dev_potato_01 scans 0->1 lowest=0.952",
+            "time": 33.53985595703125
+        },
+        {
+            "name": "tutorial.bag_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 33.685115814208987
+        },
+        {
+            "name": "tutorial.customer_asks_for_a_bag",
+            "pass": true,
+            "details": "bag lines=1; label=여기에 넣기",
+            "time": 33.78959274291992
+        },
+        {
+            "name": "tutorial.bag",
+            "pass": true,
+            "details": "after 0.5s",
+            "time": 35.6604118347168
+        },
+        {
+            "name": "tutorial.bag.stands_in_the_bag",
+            "pass": true,
+            "details": "settled=True; upright=0.996; middle=(0.000, 0.132, 0.012); lowest=-0.004; bag sounds=1",
+            "time": 36.069915771484378
+        },
+        {
+            "name": "tutorial.card_shown",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 36.52811813354492
+        },
+        {
+            "name": "hands.back_on_the_controller_after_letting_go",
+            "pass": true,
+            "details": "on the controller=True; holding=False",
+            "time": 36.53159713745117
+        },
+        {
+            "name": "tutorial.arrow_on_the_card",
+            "pass": true,
+            "details": "label=집기",
+            "time": 36.6346321105957
+        },
+        {
+            "name": "tutorial.card.payment_laid_down",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 36.63548278808594
+        },
+        {
+            "name": "tutorial.card.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "card; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.4 cm above it; shown=True; can be taken=True",
+            "time": 36.85303497314453
+        },
+        {
+            "name": "tutorial.card.guide_hidden_before_grab",
+            "pass": true,
+            "details": "guide=False",
+            "time": 36.85321044921875
+        },
+        {
+            "name": "tutorial.card.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 38.78346252441406
+        },
+        {
+            "name": "tutorial.card.guide_shown_while_held",
+            "pass": true,
+            "details": "guide=True; held=True",
+            "time": 41.464759826660159
+        },
+        {
+            "name": "tutorial.card.card_in_slot",
+            "pass": true,
+            "details": "card=(0.820, 0.925, 0.420) euler=(0.0, 0.0, 0.0) target=(0.820, 0.925, 0.420) hand=(0.820, 0.930, 0.417) socketHover=True",
+            "time": 41.72746658325195
+        },
+        {
+            "name": "tutorial.card.approved",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 42.15500259399414
+        },
+        {
+            "name": "tutorial.card.card_taken_back",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 46.38520050048828
+        },
+        {
+            "name": "tutorial.card.customer_takes_the_card_back",
+            "pass": true,
+            "details": "gone=True; taken back by the customer's hand 1; not given back 0; the hand at most 0.0 cm short of the card so far",
+            "time": 46.38835525512695
+        },
+        {
+            "name": "tutorial.card.guide_hidden_after_payment",
+            "pass": true,
+            "details": "guide=False; inside=False",
+            "time": 46.59252166748047
+        },
+        {
+            "name": "tutorial.first_customer_thanks_and_leaves",
+            "pass": true,
+            "details": "thanks=1; card=+1,700원; nods=1; mood=Pleased; state=Leaving; playing=Leave",
+            "time": 46.89272689819336
+        },
+        {
+            "name": "tutorial.first_customer_takes_the_bag",
+            "pass": true,
+            "details": "bag at (0.52, 0.75, 1.18); left hand (0.49, 0.87, 1.21); upright=1.00; state=Leaving",
+            "time": 46.89347839355469
+        },
+        {
+            "name": "tutorial.cash_shown",
+            "pass": true,
+            "details": "after 6.4s",
+            "time": 53.34204864501953
+        },
+        {
+            "name": "tutorial.second_customer_for_the_cash",
+            "pass": true,
+            "details": "state=AtCounter; label=집기",
+            "time": 53.54054641723633
+        },
+        {
+            "name": "tutorial.cash.payment_laid_down",
+            "pass": true,
+            "details": "after 0.6s",
+            "time": 54.12549591064453
+        },
+        {
+            "name": "tutorial.cash.laid_on_the_plate_by_the_customers_hand",
+            "pass": true,
+            "details": "note 5000; laid by a customer's hand since the last look 1; slid the last of the way so far 0; 0.0 cm from the middle of the plate, 0.2 cm above it; shown=True; can be taken=True",
+            "time": 54.32867431640625
+        },
+        {
+            "name": "tutorial.cash_bill.drawer_open",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 54.41062545776367
+        },
+        {
+            "name": "tutorial.cash_bill.till_filled_and_pos_waiting",
+            "pass": true,
+            "details": "pieces=8; received=–; laid=–",
+            "time": 54.417755126953128
+        },
+        {
+            "name": "tutorial.cash_bill.grab.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 55.62710189819336
+        },
+        {
+            "name": "tutorial.cash_bill.received",
+            "pass": true,
+            "details": "after 0.2s",
+            "time": 59.141265869140628
+        },
+        {
+            "name": "tutorial.cash_bill.pos_shows_received_and_change",
+            "pass": true,
+            "details": "desk=5000; received=5,000; change=3,500; laid=0",
+            "time": 59.63724899291992
+        },
+        {
+            "name": "tutorial.pos_shows_the_cash_sale",
+            "pass": true,
+            "details": "total=1,500원; received=5,000; change=3,500",
+            "time": 59.637454986572269
+        },
+        {
+            "name": "tutorial.arrow_over_the_next_piece",
+            "pass": true,
+            "details": "label=1,000원",
+            "time": 59.637542724609378
+        },
+        {
+            "name": "tutorial.cash_change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 61.203941345214847
+        },
+        {
+            "name": "tutorial.cash_change.pos_shows_what_is_on_the_tray",
+            "pass": true,
+            "details": "tray=1000; laid=1,000",
+            "time": 63.12578201293945
+        },
+        {
+            "name": "tutorial.cash_change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 65.98628997802735
+        },
+        {
+            "name": "tutorial.cash_change.take1000.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 70.78118896484375
+        },
+        {
+            "name": "tutorial.cash_change.take500.selected",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 76.26487731933594
+        },
+        {
+            "name": "tutorial.cash_change.matched",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 79.6176528930664
+        },
+        {
+            "name": "tutorial.cash_change.no_false_errors",
+            "pass": true,
+            "details": "errors=0; expected=0; pieces=4",
+            "time": 79.61780548095703
+        },
+        {
+            "name": "tutorial.cash_change.drawer_shut_after_the_sale",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 80.59913635253906
+        },
+        {
+            "name": "tutorial.cash_change.taken_by_the_customer",
+            "pass": true,
+            "details": "after 0.3s",
+            "time": 80.8794174194336
+        },
+        {
+            "name": "tutorial.cash_change.customer_takes_the_change_by_hand",
+            "pass": true,
+            "details": "taken by a customer's hand 1 time(s), 4 of 4 pieces; still lying about 0; the hand at most 0.0 cm short of the change so far",
+            "time": 80.88304901123047
+        },
+        {
+            "name": "tutorial.done",
+            "pass": true,
+            "details": "after 0.0s",
+            "time": 80.88333129882813
+        },
+        {
+            "name": "intro.done_message_seen",
+            "pass": true,
+            "details": "board=튜토리얼 완료\n이제 혼자 해 볼 차례입니다; state=Tutorial; narration=voice_manager_alone",
+            "time": 80.88920593261719
+        },
+        {
+            "name": "intro.shift_starts",
+            "pass": true,
+            "details": "after 2.6s",
+            "time": 83.61958312988281
+        },
+        {
+            "name": "intro.manager_goes_out",
+            "pass": true,
+            "details": "in store=False",
+            "time": 84.11979675292969
+        },
+        {
+            "name": "intro.shoppers_gone_or_served",
+            "pass": true,
+            "details": "shopping=0",
+            "time": 84.11996459960938
+        },
+        {
+            "name": "intro.manager_walked_out",
+            "pass": true,
+            "details": "after 4.3s",
+            "time": 88.45782470703125
+        },
+        {
+            "name": "intro.nothing_left_on_the_counter",
+            "pass": true,
+            "details": "products=0",
+            "time": 88.45822143554688
+        },
+        {
+            "name": "intro.no_warps",
+            "pass": true,
+            "details": "warps=0; stepped aside=0",
+            "time": 88.45832824707031
+        }
+    ]
+}

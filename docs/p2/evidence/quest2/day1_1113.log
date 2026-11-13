@@ -1,0 +1,1078 @@
+Found 2 interfaces on host : 0) 192.168.219.113 1) 100.71.35.78
+Player connection [18396]  Target information:
+
+Player connection [18396]  * "[IP] 192.168.219.113 [Port] 55000 [Flags] 2 [Guid] 139439103 [EditorId] 3482735452 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [18396]  * "[IP] 100.71.35.78 [Port] 55000 [Flags] 2 [Guid] 139439103 [EditorId] 3482735452 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [18396] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.26f1 (de8167e7440c)
+[Subsystems] Discovering subsystems at path C:/Projects/vr-convenience-store-simulator/.claude/worktrees/aaa-game-development-strategy-6d77da/Builds/Store/VRStore_Data/UnitySubsystems
+[Subsystems] No descriptors matched for  examples in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 4070
+[D3D12 Device Filter] Driver Version: 32.0.15.9159
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 12010 MB
+[D3D12 Device Filter] Processor Count: 20
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 (ID=0x2786)
+    Vendor:          NVIDIA
+    VRAM:            12010 MB
+    App VRAM Budget: 11242 MB
+    Driver:          32.0.15.9159
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+XRGeneral Settings awakening...
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.Management.XRGeneralSettings:Awake()
+
+[XR] [18396] [02:36:14.097][Info   ] Available Layers: (0)
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Input
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+Loading OpenXR loader library at path: openxr_loader
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:LoadOpenXRSymbols()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:InitializeInternal()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:Initialize()
+UnityEngine.XR.Management.XRManagerSettings:InitializeLoaderSync()
+UnityEngine.XR.Management.XRGeneralSettings:InitXRSDK()
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Display...
+[XR] [18396] [02:36:14.328][Info   ] Available Layers: (0)
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Input...
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+[RuntimeIPCLoader [RUNTIMEIPC]] [INFO] RuntimeIPC: Successfully loaded library
+[RuntimeIPCSystem [RUNTIMEIPC]] [INFO] RuntimeIPCSystem: Init called: Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: BEGIN: friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcLocalTransportMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer SUCCESS RuntimeServiceServer
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 16 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 24 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 20 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] Event buffer size (client): eventBufferSize=8192
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 8216 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer), Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 86800 bytes: 1453
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: SUCCESS. Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: SUCCESS: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[XR] [18396] [02:36:14.546][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE session=2 time=56874171761499
+[XR] [18396] [02:36:14.546][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY session=2 time=56874171787200
+[XR] XR_META_performance_metrics: Active providers:
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/cpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/cpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/dropped_frame_count
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/dropped_frame_count
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/motion_to_photon_latency
+d3d12: upload buffer was too small for the requested resource! Size: 16777216. Requested: 51118080.
+[XR] [18396] [02:36:14.970][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED session=2 time=56874704393500
+[XR] [18396] [02:36:15.723][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE session=2 time=56875456432900
+[XR] [18396] [02:36:15.723][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED session=2 time=56875456455100
+[XR] [18396] [02:36:15.723][Info   ] 
+
+==== Start Unity OpenXR Diagnostic Report ====
+
+
+[XR] [18396] [02:36:15.723][Info   ] ==== Report Reason: System Startup Completed ====
+
+
+[XR] [18396] [02:36:15.723][Info   ] ==== OpenXR Settings ====
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Symmetric Projection: False
+[XR] [18396] [02:36:15.723][Info   ] Stereo Rendering Mode: MultiPass
+[XR] [18396] [02:36:15.723][Info   ] Latency Optimization: PrioritizeRendering
+[XR] [18396] [02:36:15.723][Info   ] Color Submission Modes: kRenderTextureFormatGroup8888
+[XR] [18396] [02:36:15.723][Info   ] Depth Submission Mode: None
+[XR] [18396] [02:36:15.723][Info   ] Space Warp Motion Vector Texture Format: RGBA16f
+[XR] [18396] [02:36:15.723][Info   ] Optimize Buffer Discards: False
+[XR] [18396] [02:36:15.723][Info   ] Multiview Render Regions Optimization Mode: None
+[XR] [18396] [02:36:15.723][Info   ] Use OpenXR Predicted Time: True
+[XR] [18396] [02:36:15.723][Info   ] Foveated Rendering API: SRPFoveation
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] ==== OpenXR Provider Info ====
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Provider Version: ecb5f4e-dirty
+[XR] [18396] [02:36:15.723][Info   ] App: vr-convenience-store-simulator #3118937138
+[XR] [18396] [02:36:15.723][Info   ] Engine: 6000.3.26f1 #87139329
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] ==== OpenXR Runtime Info ====
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Available Runtime Extensions: (36)
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_D3D11_enable: Version=11
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_opengl_enable: Version=12
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_vulkan_enable: Version=10
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_vulkan_enable2: Version=4
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_win32_convert_performance_counter_time: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_convert_timespec_time: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_composition_layer_cube: Version=8
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_composition_layer_cylinder: Version=4
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_composition_layer_equirect: Version=3
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_composition_layer_color_scale_bias: Version=5
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_maintenance1: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_win32_appcontainer_compatible: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_debug_utils: Version=5
+[XR] [18396] [02:36:15.723][Info   ]   XR_OCULUS_recenter_event: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_FB_color_space: Version=3
+[XR] [18396] [02:36:15.723][Info   ]   XR_FB_display_refresh_rate: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [18396] [02:36:15.723][Info   ]   XR_META_headset_id: Version=2
+[XR] [18396] [02:36:15.723][Info   ]   XR_OCULUS_ovrsession_handle: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_active_action_set_priority: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_future: Version=2
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_palm_pose: Version=3
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_haptic_parametric: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_FB_haptic_amplitude_envelope: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_FB_haptic_pcm: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_FB_touch_controller_pro: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_META_touch_controller_plus: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_FB_touch_controller_proximity: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_OCULUS_external_camera: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_META_detached_controllers: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_LOGITECH_mx_ink_stylus_interaction: Version=1
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Available Layers: (0)
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Runtime Name: Oculus
+[XR] [18396] [02:36:15.723][Info   ] Runtime Version: 1.208.0
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Form factor: XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Runtime extensions enabled: (6)
+[XR] [18396] [02:36:15.723][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [18396] [02:36:15.723][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [18396] [02:36:15.723][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [18396] [02:36:15.723][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Available Reference Spaces: (4)
+[XR] [18396] [02:36:15.723][Info   ]   XR_REFERENCE_SPACE_TYPE_VIEW
+[XR] [18396] [02:36:15.723][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL
+[XR] [18396] [02:36:15.723][Info   ]   XR_REFERENCE_SPACE_TYPE_STAGE
+[XR] [18396] [02:36:15.723][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Instance Id  : 0x1
+[XR] [18396] [02:36:15.723][Info   ] System Id    : 0x14
+[XR] [18396] [02:36:15.723][Info   ] Session Id   : 0x2
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Available View Configuration Types: (1)
+[XR] [18396] [02:36:15.723][Info   ]   XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO (Selected): FovMutable=False
+[XR] [18396] [02:36:15.723][Info   ]     [0]: Recommended: Width=2080, Height=2096, SampleCount=1
+[XR] [18396] [02:36:15.723][Info   ]     [0]:     Maximum: Width=4160, Height=4192, SampleCount=4
+[XR] [18396] [02:36:15.723][Info   ]     [1]: Recommended: Width=2080, Height=2096, SampleCount=1
+[XR] [18396] [02:36:15.723][Info   ]     [1]:     Maximum: Width=4160, Height=4192, SampleCount=4
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Skip Present To Main Screen: No
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Available Environment Blend Modes: (1)
+[XR] [18396] [02:36:15.723][Info   ]   XR_ENVIRONMENT_BLEND_MODE_OPAQUE (Selected)
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Features requested to be enabled: (1)
+[XR] [18396] [02:36:15.723][Info   ]   Oculus Touch Controller Profile: Version=0.0.1, Company="Unity"
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Requested feature extensions not supported by runtime: (0)
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] System Properties: Name="Oculus Quest2", VendorId=-11714
+[XR] [18396] [02:36:15.723][Info   ] System Graphics Properties: MaxWidth=4096, MaxHeight=4096, MaxLayers=16
+[XR] [18396] [02:36:15.723][Info   ] System Tracking Properties: OrientationTracking=True, PositionTracking=True
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] ==== OpenXR API Spec Version ====
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] XrInstance Created with OpenXR API Version: 1.1.54
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] ==== OpenXR Input ====
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Action Sets (1): 
+[XR] [18396] [02:36:15.723][Info   ]   oculustouchcontroller: ActionCount=17
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] ==== OpenXR Swapchain Details ====
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Render Mode: MultiPass
+[XR] [18396] [02:36:15.723][Info   ] Latency Optimization: Prioritize Rendering
+[XR] [18396] [02:36:15.723][Info   ] Color Submission Mode: RGBA, 8 bits per channel (LDR)
+[XR] [18396] [02:36:15.723][Info   ] Depth Submission Mode: None
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] Swapchain Format Preferences: 
+[XR] [18396] [02:36:15.723][Info   ]    kRenderTextureFormatGroup8888
+[XR] [18396] [02:36:15.723][Info   ] Swapchain Formats: 
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_R8G8B8A8_UNORM
+[XR] [18396] [02:36:15.723][Info   ] [c:DXGI_FORMAT_R8G8B8A8_UNORM_SRGB]
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_B8G8R8A8_UNORM
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_B8G8R8A8_UNORM_SRGB
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_B8G8R8X8_UNORM_SRGB
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_R16G16B16A16_FLOAT
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_R11G11B10_FLOAT
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_D16_UNORM
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_D24_UNORM_S8_UINT
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_D32_FLOAT
+[XR] [18396] [02:36:15.723][Info   ]    DXGI_FORMAT_D32_FLOAT_S8X24_UINT
+[XR] [18396] [02:36:15.723][Info   ] Swapchain Views: (2)
+[XR] [18396] [02:36:15.723][Info   ]   [0]: Width=2080, Height=2096, SampleCount=1
+[XR] [18396] [02:36:15.723][Info   ]   [1]: Width=2080, Height=2096, SampleCount=1
+[XR] [18396] [02:36:15.723][Info   ] 
+[XR] [18396] [02:36:15.723][Info   ] ==== Last 20 Events ====
+[XR] [18396] [02:36:15.723][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE
+[XR] [18396] [02:36:15.724][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY
+[XR] [18396] [02:36:15.724][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED
+[XR] [18396] [02:36:15.724][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE
+[XR] [18396] [02:36:15.724][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED
+[XR] [18396] [02:36:15.724][Info   ] 
+
+==== End Unity OpenXR Diagnostic Report ====
+
+
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 1 col: 000002252008F370 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 1)
+IVRDeviceCallback_CreateEyeTextureResources 000002252008F370
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 2 col: 00000225200917B0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 2)
+IVRDeviceCallback_CreateEyeTextureResources 00000225200917B0
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 3 col: 000002252008C620 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 3)
+IVRDeviceCallback_CreateEyeTextureResources 000002252008C620
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 4 col: 000002252008E150 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 4)
+IVRDeviceCallback_CreateEyeTextureResources 000002252008E150
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 5 col: 000002252008BD10 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 5)
+IVRDeviceCallback_CreateEyeTextureResources 000002252008BD10
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 6 col: 0000022520090590 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 6)
+IVRDeviceCallback_CreateEyeTextureResources 0000022520090590
+UnloadTime: 0.326600 ms
+[Simulator Guard] OpenXRLoader is running; XR Device Simulator stays off.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SimulatorHmdGuard:Awake()
+
+[Scenario] Day 1: 5 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 1: 5 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Decor stock: 27 places on 9 slots, far gaussians=539502
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDecor()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 1: no intake; display stock=16 on 5 slots, gaussians=319888
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDisplays()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] start mode=game runtime=Oculus 1.208.0 xr=True eye=2080x2096 refresh=72 known=True tracking=Floor simulators=0
+[Scanner] 포테토칩 오리지널 (개발용) (dev_potato_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] Guest 1 (Female_Adult_17) found the card back on the plate 0.3 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=30 state=Tutorial frames=1984 fps=66.9 p95=27.84 max=27.9 missed=147 gpu=5.27/6.15 work_p95=3.12
+[HMD Perf] t=60 state=Tutorial frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=4.99/5.47 work_p95=2.91
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 포테토칩 오리지널 (개발용) (dev_potato_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=90 state=Shift frames=2150 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.31/6.33 work_p95=3.06
+[Customers] Customer 3 (Male_Adult_16) found the card back on the plate 2.2 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=120 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.5 missed=0 gpu=5.33/6.21 work_p95=3.06
+[Scanner] 포카칩 오리지널 (개발용) (dev_pocachip_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=150 state=Shift frames=2155 fps=71.8 p95=13.95 max=14.1 missed=0 gpu=5.40/6.50 work_p95=3.06
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] Customer 4 (Female_Adult_17) found the card back on the plate 4.1 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 양파링 (개발용) (dev_onionring_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 꼬북칩 콘스프맛 (개발용) (dev_kkobukchip_01) price=2000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=180 state=Shift frames=2153 fps=71.8 p95=13.96 max=27.9 missed=2 gpu=5.73/7.08 work_p95=3.07
+[Scanner] 안성탕면 (개발용) (dev_ansungtangmyun_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=210 state=Shift frames=2155 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.03/7.47 work_p95=3.14
+[Game] Settlement day=1 grade=S score=100.0 sales=13400/13400 paid=5/5 left=0 cancels=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 2: 8 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDays>d__183:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 12 (Male_Adult_16) found the card back on the plate 2.5 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 2: 8 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 2: 8 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Deliveries] Day 2: 처리 2건 / 스킵 0건
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DeliveryLoader:Parse(String, Int32, ProductCatalog, IReadOnlyDictionary`2, Int32, List`1)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 2: boxes=2 of 2 delivered=10 stock=6 expired=3 skipped=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=240 state=Tutorial frames=2137 fps=71.8 p95=13.96 max=14.6 missed=0 gpu=4.88/5.45 work_p95=2.89
+[HMD Perf] t=270 state=Tutorial frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=4.18/4.73 work_p95=2.69
+[HMD Perf] t=300 state=Tutorial frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=3.42/3.63 work_p95=2.41
+[HMD Perf] t=334 state=Shift frames=2010 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=4.73/6.98 work_p95=2.61
+[HMD Perf] t=364 state=Shift frames=2147 fps=59.4 p95=13.96 max=6223.5 missed=453 gpu=6.87/8.40 work_p95=3.06
+[HMD Perf] t=394 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=6.50/8.60 work_p95=3.01
+[Scanner] 꼬깔콘 군옥수수맛 (개발용) (dev_kkokkalcorn_02) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 콘칩 (개발용) (dev_cornchip_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=424 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.70/6.44 work_p95=3.20
+[Customers] Customer 16 (Male_Adult_16) found the card back on the plate 2.3 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 18 (Male_Adult_08) stood dev_dakdari_01 0.25 m short of its place and pushed it there. arm 0.529 m (reaches 0.513); shoulder (-0.097, 0.977, 0.934), bent as far as it goes (-0.142, 0.829, 1.120); hips (0.319, 0.963, 1.241), chest (0.175, 0.942, 0.989); wrist wanted at (0.420, 1.039, 0.804), 0.678 m from the bent shoulder
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<SetDownByHand>d__430:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=454 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=4.71/6.06 work_p95=2.98
+[Scanner] 닭다리 (개발용) (dev_dakdari_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=484 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=4.99/5.91 work_p95=3.17
+[Scanner] 감자깡 (개발용) (dev_gamjakkang_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 인디안밥 (개발용) (dev_indianbap_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=514 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=2 gpu=5.55/7.71 work_p95=3.52
+[HMD Perf] t=544 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.25/7.59 work_p95=3.43
+[Scanner] 카라멜콘땅콩 (개발용) (dev_caramelcorn_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 카라멜콘땅콩 (개발용) (dev_caramelcorn_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=574 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.14/6.59 work_p95=3.18
+[Customers] Customer 26 (Female_Adult_01) found the card back on the plate 3.9 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 안성탕면 (개발용) (dev_ansungtangmyun_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=604 state=Shift frames=2153 fps=71.8 p95=13.96 max=27.8 missed=2 gpu=5.35/6.34 work_p95=3.11
+[Scanner] 안성탕면 (개발용) (dev_ansungtangmyun_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] Customer 30 (Male_Adult_08) found the card back on the plate 2.9 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=634 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.53/6.34 work_p95=3.12
+[Scanner] 신짱 (개발용) (dev_shinjjang_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 신짱 (개발용) (dev_shinjjang_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=664 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.42/6.62 work_p95=3.07
+[Scanner] 오감자 (개발용) (dev_ogamja_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] Customer 37 (Male_Adult_08) found the card back on the plate 2.3 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=694 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=5.57/6.45 work_p95=3.09
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 안성탕면 (개발용) (dev_ansungtangmyun_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Game] Settlement day=2 grade=A score=90.0 sales=19900/19900 paid=8/8 left=0 cancels=2 shelved=10/10 disposed=0/3 misplaced=1 falseDisposals=0 unrecycled=0 endedEarly=False
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 3: 12 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDays>d__183:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=724 state=DayEnd frames=2147 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.85/6.73 work_p95=3.08
+[Scenario] Day 3: 12 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 3: 12 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Deliveries] Day 3: 처리 2건 / 스킵 0건
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DeliveryLoader:Parse(String, Int32, ProductCatalog, IReadOnlyDictionary`2, Int32, List`1)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 3: boxes=1 of 2 delivered=6 stock=6 expired=3 skipped=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=754 state=Shift frames=2141 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=4.49/4.99 work_p95=2.83
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 꼬깔콘 고소한맛 (개발용) (dev_kkokkalcorn_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 아몬드 초콜릿 (개발용) (dev_almondchoco_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=784 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.28/8.03 work_p95=3.81
+[Customers] Customer 44 (Male_Adult_16) found the card back on the plate 2.2 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=814 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.55/7.54 work_p95=3.59
+[Scanner] 안성탕면 (개발용) (dev_ansungtangmyun_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=844 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.25/7.68 work_p95=3.54
+[Scanner] 양파링 (개발용) (dev_onionring_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 양파링 (개발용) (dev_onionring_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] Customer 49 (Female_Adult_17) found the card back on the plate 2.5 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=874 state=Shift frames=2153 fps=71.7 p95=13.96 max=41.7 missed=3 gpu=7.12/8.50 work_p95=3.49
+[Scanner] 썬칩 (개발용) (dev_sunchip_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 썬칩 (개발용) (dev_sunchip_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=904 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=2 gpu=6.50/7.66 work_p95=3.48
+[HMD Perf] t=934 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.72/7.66 work_p95=3.45
+[Scanner] 닭다리 (개발용) (dev_dakdari_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 오감자 (개발용) (dev_ogamja_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=964 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.2 missed=0 gpu=6.35/7.02 work_p95=3.50
+[Scanner] 닭다리 (개발용) (dev_dakdari_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Cook] microwave: dev_dakdari_01 done
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+CookZone:Finish()
+
+[Scanner] 닭다리 (개발용) (dev_dakdari_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 닭다리 (개발용) (dev_dakdari_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=994 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.2 missed=0 gpu=5.71/7.05 work_p95=3.43
+[Customers] Customer 56 (Male_Adult_08) found the card back on the plate 3.1 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=1024 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.2 missed=0 gpu=6.05/7.13 work_p95=3.36
+[Scanner] 포카칩 오리지널 (개발용) (dev_pocachip_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 인디안밥 (개발용) (dev_indianbap_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Intake] Day 3: box dev_d03_02 arrived after customer 6; delivered=10
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:ReceiveMidDayBoxes(Int32)
+GameManager:OnOrderEnded(Order, Boolean)
+<RunOrder>d__472:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=1054 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=7.19/8.14 work_p95=3.52
+[HMD Perf] t=1084 state=Shift frames=2153 fps=71.8 p95=13.96 max=27.8 missed=2 gpu=6.33/9.20 work_p95=3.15
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 닭다리 (개발용) (dev_dakdari_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=1114 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.33/8.18 work_p95=3.22
+[Customers] Customer 64 (Female_Adult_17) found the card back on the plate 2.5 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 카라멜콘땅콩 (개발용) (dev_caramelcorn_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=1144 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.32/6.43 work_p95=3.10
+[HMD Perf] t=1174 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=5.95/6.54 work_p95=3.19
+[Scanner] 안성탕면 (개발용) (dev_ansungtangmyun_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Cook] hotwater: dev_ansungtangmyun_01 done
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+CookZone:Finish()
+
+[HMD Perf] t=1204 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=4.93/6.14 work_p95=3.05
+[Customers] Customer 72 (Male_Adult_16) found the card back on the plate 2.3 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 죠리퐁 (개발용) (dev_jollypong_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 죠리퐁 (개발용) (dev_jollypong_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=1234 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.30/6.73 work_p95=3.14
+[HMD Perf] t=1264 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.4 missed=0 gpu=6.75/7.24 work_p95=3.23
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Customers] Customer 79 (Female_Adult_01) found the card back on the plate 2.5 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__442:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=1294 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.3 missed=0 gpu=5.13/6.77 work_p95=3.05
+[Customers] Customer 83 (Female_Adult_01) stood dev_shinjjang_01 0.25 m short of its place and pushed it there. arm 0.468 m (reaches 0.454); shoulder (-0.007, 1.026, 1.046), bent as far as it goes (-0.039, 0.922, 1.152); hips (0.303, 1.001, 1.251), chest (0.182, 0.957, 1.056); wrist wanted at (0.420, 1.234, 0.794), 0.661 m from the bent shoulder
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<SetDownByHand>d__430:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 83 (Female_Adult_01) stood dev_shinramen_01 0.25 m short of its place and pushed it there. arm 0.468 m (reaches 0.454); shoulder (0.051, 1.025, 1.045), bent as far as it goes (0.019, 0.922, 1.153); hips (0.362, 1.001, 1.251), chest (0.241, 0.957, 1.056); wrist wanted at (0.670, 1.158, 0.819), 0.769 m from the bent shoulder
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<SetDownByHand>d__430:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 83 (Female_Adult_01) laid the note 0.02 m short of the plate and slid it there. arm 0.468 m (reaches 0.454); shoulder (-0.095, 0.909, 1.174), bent as far as it goes (-0.089, 0.888, 1.312); hips (0.223, 1.001, 1.251), chest (0.067, 0.847, 1.168); wrist wanted at (0.220, 0.960, 0.989), 0.453 m from the bent shoulder
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<PlateByHand>d__435:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 신짱 (개발용) (dev_shinjjang_01) price=1500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=1324 state=Shift frames=2155 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=5.25/7.26 work_p95=3.27
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Game] Settlement day=3 grade=A score=79.4 sales=32600/32600 paid=12/12 left=0 cancels=3 shelved=6/10 disposed=0/3 misplaced=0 falseDisposals=0 unrecycled=0 endedEarly=False
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__197:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Final report days=3 average=89.8 grade=A sales=65900/65900 paid=25/25 left=0 cancels=5 shelved=16/20 disposed=0/6
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+GameManager:ShowFinalReport()
+<RunDays>d__183:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=1354 state=DayEnd frames=2146 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.63/7.79 work_p95=3.39
+[XR] [18396] [02:59:23.606][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_FOCUSED->XR_SESSION_STATE_VISIBLE session=2 time=58263339543800
+[XR] [18396] [02:59:23.606][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_SYNCHRONIZED session=2 time=58263339550699
+[XR] [18396] [02:59:23.606][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_STOPPING session=2 time=58263339637499
+[XR] [18396] [02:59:23.606][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_STOPPING->XR_SESSION_STATE_IDLE session=2 time=58263339727300
+[HMD Perf] t=1384 state=DayEnd frames=2298 fps=82.1 p95=13.96 max=14.1 missed=0 gpu=5.76/6.48 work_p95=3.29
+Direct3D: detected that IDXGISwapChain::GetFrameStatistics is broken (it does not return proper timestamps). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+[HMD Perf] t=1414 state=DayEnd frames=3732 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.25/6.52 work_p95=3.84
+[HMD Perf] t=1444 state=DayEnd frames=3540 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.19/6.26 work_p95=3.80
+[HMD Perf] t=1474 state=DayEnd frames=3570 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.20/6.26 work_p95=3.69
+[HMD Perf] t=1504 state=DayEnd frames=4160 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.27/6.53 work_p95=3.81
+[HMD Perf] t=1534 state=DayEnd frames=4317 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.23/6.29 work_p95=3.72
+[HMD Perf] t=1564 state=DayEnd frames=4313 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.23/6.29 work_p95=3.79
+[HMD Perf] t=1594 state=DayEnd frames=4314 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.24/6.30 work_p95=3.77
+[HMD Perf] t=1624 state=DayEnd frames=4308 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.24/6.43 work_p95=3.79
+[HMD Perf] t=1654 state=DayEnd frames=4230 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.29/6.61 work_p95=3.97
+[HMD Perf] t=1685 state=DayEnd frames=4309 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.25/6.47 work_p95=3.80
+[HMD Perf] t=1715 state=DayEnd frames=4296 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.19/6.67 work_p95=4.64
+[HMD Perf] t=1745 state=DayEnd frames=4311 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.11/6.39 work_p95=4.36
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] UpdateServerConnectivity: Received server connectivity notification. Connected servers: [], disconnected servers: [RuntimeServiceServer]
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] UpdateServerConnectivity: Received server connectivity notification. Connected servers: [], disconnected servers: [HapticsServer]
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] UpdateServerConnectivity: Received server connectivity notification. Connected servers: [], disconnected servers: [HandInputDataServer]
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] UpdateServerConnectivity: Received server connectivity notification. Connected servers: [], disconnected servers: [RipcRemoteTransportServer_link]
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:23932, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+Direct3D: detected that IDXGISwapChain::GetFrameStatistics is broken (it does not return proper timestamps). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+[HMD Perf] t=1775 state=DayEnd frames=4287 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.20/6.60 work_p95=4.31
+[HMD Perf] t=1805 state=DayEnd frames=4305 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=6.22/6.56 work_p95=4.15

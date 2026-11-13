@@ -137,6 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 138575504346817467}
   - component: {fileID: 3946322493687209393}
+  - component: {fileID: 4135308250421650202}
   m_Layer: 0
   m_Name: PlayerHand_Left
   m_TagString: Untagged
@@ -223,6 +224,7 @@ MonoBehaviour:
   - {x: -0.15773116, y: -0.15963136, z: -0.97449404}
   - {x: 0.019807354, y: 0.40247273, z: -0.9152176}
   - {x: -0.019678937, y: 0.402479, z: -0.9152176}
+  ThumbDownAxis: {x: 0.21740209, y: -0.13758929, z: -0.966336}
   Tips:
   - {fileID: 8929151773120162979}
   - {fileID: 5940902389330812022}
@@ -231,7 +233,23 @@ MonoBehaviour:
   - {fileID: 3016210124357125577}
   PointTip: {x: 0.014896728, y: -0.03317184, z: 0.16676632}
   PointDirection: {x: -0.06606924, y: -0.33609906, z: 0.9395064}
+  PadPoint: {x: -0.009478959, y: -0.019546067, z: 0.08397915}
+  PadNormal: {x: -0.0621346, y: 0.95122755, z: 0.302168}
+  PadForward: {x: -0.10139398, y: -0.3072027, z: 0.94622713}
+  Web: {x: 0.03034815, y: -0.014712903, z: 0.059006944}
   Interactor: {fileID: 0}
+--- !u!114 &4135308250421650202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2673312593603794904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7bfdd5cf7f647240a029d9b955f9dd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TouchFeel
 --- !u!1 &2775571209912065985
 GameObject:
   m_ObjectHideFlags: 0

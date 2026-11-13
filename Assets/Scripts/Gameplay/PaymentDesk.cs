@@ -137,6 +137,38 @@ public class PaymentDesk : MonoBehaviour
         CashChanged?.Invoke();
     }
 
+    /// <summary>
+    /// The customer's card, taken out of this payment once it is paid (2026-11-12): EndPayment leaves it where it is, in
+    /// the clerk's hand or in the terminal, to be given back on the plate. Whoever asked for it removes it. Null: no card.
+    /// </summary>
+    public PaymentProp ReleaseCard()
+    {
+        var card = CustomerCard;
+        if (card == null) return null;
+        spawned.Remove(card);
+        CustomerCard = null;
+        return card;
+    }
+
+    /// <summary>
+    /// The change lying on the tray, taken out of this payment: EndPayment leaves it where it lies, and whoever asked
+    /// for it removes it. Nothing can pick it up or push it about any more.
+    /// </summary>
+    public List<PaymentProp> ReleaseChange()
+    {
+        var change = Tray.Release();
+        foreach (var piece in change)
+        {
+            spawned.Remove(piece);
+            piece.Grab.enabled = false;
+            var body = piece.GetComponent<Rigidbody>();
+            body.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            body.isKinematic = true;
+            foreach (var part in piece.GetComponentsInChildren<Collider>()) part.enabled = false;
+        }
+        return change;
+    }
+
     /// <summary>Removes everything this payment spawned, including change on the tray, and shuts the till.</summary>
     public void EndPayment()
     {

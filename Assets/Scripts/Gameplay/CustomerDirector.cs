@@ -58,10 +58,92 @@ public class CustomerDirector : MonoBehaviour
     const float SetDownSlant = 0.02f, SetDownJitter = 0.008f;
     const float SetDownReach = 0.09f, SetDownRise = 0.06f;
     const float SetDownSeconds = 0.24f, SetDownLaterSeconds = 0.08f;
+    // Set down by the customer's own hand (2026-11-11), one thing after another. Each is taken up at the customer's left
+    // side, low enough that the counter's edge hides it from the clerk, lifted over the edge and stood on the counter.
+    // The hand goes to the first in HandToFirstSeconds and back for each next one in HandBackSeconds; the lift takes
+    // HandPlaceSeconds; what stands farther than the arm reaches is pushed the rest of the way in HandPushSeconds.
+    const float HandToFirstSeconds = 0.22f, HandBackSeconds = 0.14f, HandPlaceSeconds = 0.42f, HandPushSeconds = 0.2f;
+    // Where a thing waits and is taken up, from the customer's feet: to their left, toward the counter, its top this far under the counter top.
+    const float TakeUpLeft = 0.2f, TakeUpForward = 0.22f, TakeUpBelowCounter = 0.04f;
+    // The wrist is this far above the thing's top and behind its back, the fingers coming down over its top edge.
+    const float WristAboveTop = 0.015f, WristBehind = 0.09f;
+    // Customers stand back from the counter and to one side of where their goods go. Before the first thing they take a
+    // step up to it: this far toward the clerk and this far to their left, in this time. The row of goods runs on to
+    // their left, so for each thing farther along they move over a little more: until the thing is StepBeside to the left
+    // of them, but no farther than StepUpLeftMost from their spot: the head of the line stands 65 cm to that side and
+    // 15 cm farther back. For a thing that is still farther along they also come right up to the counter (StepUpForwardMost,
+    // which leaves 15 cm between its face and the middle of the body). A step longer than StepUpStride takes longer in proportion.
+    const float StepUpForward = 0.13f, StepUpForwardMost = 0.2f, StepUpLeft = 0.12f, StepUpLeftMost = 0.35f, StepBeside = 0.3f, StepUpSeconds = 0.25f, StepUpStride = 0.15f;
+    // A card or a note is flat. The hand comes over it from the customer's side with the fingers nearly level: the wrist
+    // this far above where it lies and this far behind its near edge, so the fingertips are on it and the thumb under it.
+    // The plate is straight in front of the spot the customer walked to, to the right of all their goods: they lay it
+    // down from in front of the plate, or from no more than PlateFromFarther to the left of that.
+    const float FlatWristAbove = 0.045f, FlatWristBehind = 0.115f, PlateFromFarther = 0.04f, OverThePlate = 0.05f, HandOffSeconds = 0.12f;
+    // How far the hand closes (CustomerArm.Hold: fingers, thumb) over the top of a thing it stands on the counter, on a
+    // card or a note, and on the handles of the bag it carries out.
+    const float HoldGoods = 0.5f, HoldGoodsThumb = 0.5f, HoldFlat = 0.2f, HoldFlatThumb = 0.9f, HoldBag = 0.8f;
+    // Taking the change off the tray with the right hand (2026-11-12). The tray lies to the customer's right: they step
+    // over until it is StepBeside to their right, at most TrayStepMost: 20 cm would have them straight behind the
+    // scanner's upright part, hidden from the clerk as customers were before the counter was laid out anew. The hand comes over the counter's edge TrayOverEdge above the tray, down onto the change,
+    // closes on it (the pieces drawn in under the palm, to within TrayGather of where they lay), and goes back down to the
+    // customer's side, where the change is gone from sight.
+    const float TrayStepMost = 0.12f, TrayOverEdge = 0.1f, TrayOverSeconds = 0.24f, TrayDownSeconds = 0.2f, TrayCloseSeconds = 0.16f, TrayAwaySeconds = 0.36f;
+    const float TrayGather = 0.25f, HoldChange = 0.6f, HoldChangeThumb = 0.7f;
+    // The card back (2026-11-12): once paid, the customer waits this long for it to lie on their plate again, within
+    // CardBackWithin of the plate's middle and still for CardBackStill, and then takes it as they take change.
+    const float CardBackSeconds = 5f, CardBackWithin = 0.12f, CardBackStill = 0.2f;
+    // The bag off the counter (2026-11-12). It stands well in from the customer's edge, to their right, between the
+    // POS screen and the scanner: they step over as for the change and right up to the counter, and the right hand
+    // comes down on the handles (BagHandlesUp above the bag's foot) from BagOverHandles above them, closes, and draws
+    // the bag up a little and over the counter to its edge (CounterEdgeFromSpot from where a customer stands; the
+    // wrist BagOverEdge above the counter there, so the slack bag's foot is still on it), while the customer steps
+    // back to their spot. Past the edge the bag hangs free and the hand lowers it in front of them (BagHeldForward
+    // from the spot, BagHeldAbove the counter's height), where the left hand takes the handles: the right is the one
+    // that waves. The left then carries it out to their left side (BagAsideLeft, BagAsideForward, BagAsideBelow the counter's height).
+    // A short arm was 3 to 7 cm short of the middle of the handles from the 12 cm to the side that the change is taken
+    // from (2026-11-12): for the bag they step BagStepMost, and the hand takes the handles a little toward where it
+    // comes from (BagHandlesNearer toward the customer, BagHandlesAside toward their left).
+    const float BagStepMost = 0.18f, BagHandlesNearer = 0.03f, BagHandlesAside = 0.04f;
+    const float BagHandlesUp = 0.33f, BagOverHandles = 0.07f, BagOverSeconds = 0.28f, BagDownSeconds = 0.2f, BagCloseSeconds = 0.14f;
+    const float CounterEdgeFromSpot = 0.38f, BagOverEdge = 0.42f, BagEdgeForward = 0.22f, BagPullSeconds = 0.5f;
+    const float BagHeldForward = 0.2f, BagHeldAbove = 0.18f, BagLowerSeconds = 0.26f;
+    const float BagPassSeconds = 0.24f, BagPassApart = 0.025f, BagChangeHandsSeconds = 0.12f;
+    const float BagAsideLeft = 0.27f, BagAsideForward = 0.08f, BagAsideBelow = 0.05f, BagAsideSeconds = 0.3f, BagTurnSeconds = 0.35f;
+    // What still stands out of reach (the third thing of three) is stood short of its place, by no more than this, and pushed.
+    const float LongestPush = 0.25f;
+    // Goods bought without a bag, off the counter by the customer's own hand (2026-11-13): until then they were gone
+    // the moment the sale was done. The left hand, as it set them down, and the other way round: over the thing from
+    // the customer's side (GoodsOverTop above where the wrist will be), down onto its top, closed, up over the
+    // counter's edge and down at the customer's left side, where the edge hides it and it is gone. The last thing is
+    // not put away: it stays in the hand, which carries it out at the customer's side (GoodsAsideLeft, GoodsAsideForward
+    // from their spot, the wrist GoodsAsideBelow the counter top), hanging from the fingers once the arm is let go.
+    // They begin with the thing farthest to their right (where the money was handled) and go on to their left,
+    // standing so that each is in front of the left shoulder (ShoulderBeside from the middle of the body), no farther
+    // to the right than GoodsStepRightMost: behind the scanner's upright part they would be hidden.
+    // A thing the wrist does not get to comes to the hand over the counter, by no more than LongestDraw: the push of
+    // setting down, the other way round. What is farther than that, or behind the scanner's upright part as the arm
+    // would have to go (ScannerClear round it), or not standing on the counter at all, is gone as everything was before.
+    const float ShoulderBeside = 0.18f, GoodsStepRightMost = 0.12f, GoodsOverTop = 0.07f;
+    const float GoodsOverSeconds = 0.22f, GoodsDownSeconds = 0.16f, GoodsCloseSeconds = 0.12f, GoodsDrawSeconds = 0.2f, GoodsAwaySeconds = 0.42f;
+    const float LongestDraw = 0.25f, ScannerClear = 0.06f;
+    // Standing on the counter: its foot within this of the counter top, and moving no faster than this.
+    const float GoodsOnCounterWithin = 0.09f, GoodsStillBelow = 0.3f;
+    // Put away at the customer's side, its far face is this far short of the counter's edge.
+    const float GoodsShortOfEdge = 0.03f;
+    const float GoodsAsideLeft = 0.25f, GoodsAsideForward = 0.1f, GoodsAsideBelow = -0.03f, GoodsHangSeconds = 0.3f, GoodsFadeSeconds = 0.2f;
+    // Putting a thing away at their side they stand back to this far in front of their spot. Right up at the counter
+    // (StepUpForwardMost) the place for it short of the counter's edge is beside and behind the hip, lower than a short
+    // arm goes, and the body bent all the way forward after a wrist it could not get to: 16 to 18 cm off (2026-11-13).
+    const float GoodsAwayForward = 0.06f;
 
     // How the day rewards speed (game design 11, 2026-11-09, [제안] values for the 11/15 playtest). Finishing before the
     // customer's half-time hurry is what counts as fast: full satisfaction and a tip. Later the satisfaction slides down.
     public const float FastShare = 0.5f;
+    // The customer hurries the clerk when this share of their time is left, and never sooner than HurryNotBefore after
+    // they got to the counter. It was at half time (2026-11-13, first session on the headset: "they say it takes too
+    // long much too soon"); and someone who had waited long in line arrived with up to 40% of their time gone, and
+    // hurried the clerk a few seconds after arriving. [제안]
+    public const float HurryShare = 0.3f, HurryNotBefore = 15f;
     const float LowestPaidSatisfaction = 0.4f;
     const float TipRate = 0.1f;
     const int TipStep = 100;
@@ -81,6 +163,12 @@ public class CustomerDirector : MonoBehaviour
     public GameAudio Audio;
     /// <summary>The bag a customer walks out with: a pattern kept switched off in the scene, copied into the hand of whoever had goods bagged.</summary>
     public CarriedBag BagToCarry;
+    /// <summary>
+    /// The film of the bag standing on the counter. It is not drawn from when a customer's hand closes on its handles
+    /// until that customer has the bag at their side: then a new one stands there. Found by name when the scene was
+    /// built before this field existed.
+    /// </summary>
+    public Renderer BagOnCounter;
     public Transform Door, Counter;
     /// <summary>On the counter top, where the first thing a customer buys is set down. The rest follow along +x.</summary>
     public Transform GoodsAnchor;
@@ -155,6 +243,105 @@ public class CustomerDirector : MonoBehaviour
     /// <summary>Everything the customer at the counter is buying stands on it and can be picked up.</summary>
     public bool GoodsSetDown => settingDown == 0;
     int settingDown;
+    // Of those, the customer's card or note on its way to the plate. It waits for the goods.
+    int handingOver;
+    /// <summary>Cards and notes a customer's hand has laid on the plate, and how many of those it had to slide the last of the way. For the checks.</summary>
+    public int PaymentsByHand { get; private set; }
+    public int PaymentsSlid { get; private set; }
+    /// <summary>A card or a note is in a customer's hand right now, on its way to the plate.</summary>
+    public bool PaymentInHand { get; private set; }
+    // Change let go of by the desk for a customer to take, by whom; and all of it that is still lying about.
+    readonly Dictionary<CustomerCharacter, List<PaymentProp>> changeFor = new Dictionary<CustomerCharacter, List<PaymentProp>>();
+    readonly List<PaymentProp> looseChange = new List<PaymentProp>();
+    /// <summary>Times a customer's hand has taken the change off the tray, and the pieces it took. For the checks.</summary>
+    public int ChangeTakenByHand { get; private set; }
+    public int PiecesTakenByHand { get; private set; }
+    /// <summary>The customer's hand is closed on the change right now.</summary>
+    public bool ChangeInHand { get; private set; }
+    /// <summary>The farthest that hand's wrist was from the change when it closed on it, in metres.</summary>
+    public float FarthestFromChange { get; private set; }
+    // Cards paid with and not yet back with their customers, by whom; and all of them that are still about.
+    readonly Dictionary<CustomerCharacter, PaymentProp> cardFor = new Dictionary<CustomerCharacter, PaymentProp>();
+    readonly List<PaymentProp> looseCards = new List<PaymentProp>();
+    /// <summary>Cards customers took back off the plate by hand, and cards that were not given back in time. For the checks.</summary>
+    public int CardsTakenBack { get; private set; }
+    public int CardsNotReturned { get; private set; }
+    /// <summary>A paid customer is standing at the counter waiting for their card.</summary>
+    public bool WaitingForCard { get; private set; }
+    /// <summary>The customer's hand is closed on their card right now.</summary>
+    public bool CardInHand { get; private set; }
+    public float FarthestFromCard { get; private set; }
+    // What went into the counter's bag for a paid customer and waits there for them to lift it, by whom; and all of it still about.
+    readonly Dictionary<CustomerCharacter, List<ProductPrefab>> bagFor = new Dictionary<CustomerCharacter, List<ProductPrefab>>();
+    readonly List<ProductPrefab> looseBagGoods = new List<ProductPrefab>();
+    /// <summary>Paid-for goods standing in the counter's bag until their customer lifts it. For the checks.</summary>
+    public int GoodsWaitingInBag
+    {
+        get
+        {
+            int waiting = 0;
+            foreach (var product in looseBagGoods)
+                if (product) waiting++;
+            return waiting;
+        }
+    }
+    /// <summary>Bags customers lifted off the counter by hand, and the goods that were in them. For the checks.</summary>
+    public int BagsLiftedByHand { get; private set; }
+    public int GoodsLiftedInBags { get; private set; }
+    /// <summary>A customer's right hand is closed on the handles right now: from the counter until the left hand has it.</summary>
+    public bool BagInHand { get; private set; }
+    /// <summary>The farthest that hand's wrist was from where the handles wanted it when it closed on them, in metres.</summary>
+    public float FarthestFromBag { get; private set; }
+    /// <summary>The least the bag was drawn of its length while a hand had it over the counter (CarriedBag.Stretch).</summary>
+    public float ShortestBagSoFar { get; private set; } = 1f;
+    // Goods bought without a bag that stand on the counter until their customer's hand takes them, by whom; all of
+    // those still about; and the ones going out of the store in a hand.
+    readonly Dictionary<CustomerCharacter, List<ProductPrefab>> goodsFor = new Dictionary<CustomerCharacter, List<ProductPrefab>>();
+    readonly List<ProductPrefab> looseGoods = new List<ProductPrefab>();
+    readonly List<ProductPrefab> goodsCarriedOut = new List<ProductPrefab>();
+    readonly HashSet<CustomerCharacter> takingGoods = new HashSet<CustomerCharacter>();
+    /// <summary>Paid-for goods standing loose on the counter (or in the hand that is taking them). For the checks.</summary>
+    public int GoodsWaitingOnCounter => Alive(looseGoods);
+    /// <summary>Everything paid for that is still drawn somewhere: in the counter's bag, loose on the counter, or in a customer's hand on the way out.</summary>
+    public int PaidGoodsAbout => GoodsWaitingInBag + Alive(looseGoods) + Alive(goodsCarriedOut);
+    /// <summary>Things customers took off the counter by hand; of those, the ones that had to come to the hand first; the ones that went out in the hand; and the ones no hand could take, gone as before.</summary>
+    public int GoodsTakenByHand { get; private set; }
+    public int GoodsDrawnToHand { get; private set; }
+    public int GoodsCarriedOut { get; private set; }
+    public int GoodsNotTaken { get; private set; }
+    /// <summary>The farthest a thing came over the counter to the hand so far, in metres.</summary>
+    public float LongestDrawSoFar { get; private set; }
+    /// <summary>A customer's left hand is closed on a thing right now, on its way off the counter.</summary>
+    public bool GoodsInHand { get; private set; }
+    /// <summary>This customer is taking their goods off the counter right now.</summary>
+    public bool TakingGoods(CustomerCharacter customer) => customer != null && takingGoods.Contains(customer);
+    Renderer scannerTower;
+    bool scannerLookedFor;
+
+    static int Alive(List<ProductPrefab> goods)
+    {
+        int alive = 0;
+        foreach (var product in goods)
+            if (product) alive++;
+        return alive;
+    }
+
+    /// <summary>The counter's own bag is drawn (it is not while a customer is lifting theirs out of its place).</summary>
+    public bool BagOnCounterShown
+    {
+        get
+        {
+            FindBagOnCounter();
+            return BagOnCounter == null || BagOnCounter.enabled;
+        }
+    }
+    // Whose turn it is among the goods a customer is setting down by hand.
+    int setDownTurn;
+    /// <summary>Things a customer's hand has stood on the counter, and how many of those it had to push the last of the way. For the checks.</summary>
+    public int SetDownsByHand { get; private set; }
+    public int PushedIntoPlace { get; private set; }
+    /// <summary>The longest such push so far, in metres.</summary>
+    public float LongestPushSoFar { get; private set; }
 
     Text hud, hudTitle, hudIdle, hudPayText, hudBagText, hudSpecialText;
     Image hudPay, hudBag, hudTime, hudSpecial;
@@ -369,7 +556,7 @@ public class CustomerDirector : MonoBehaviour
 
     public IEnumerator BringGuest(CustomerCharacter guest)
     {
-        yield return guest.WalkTo(Counter.position);
+        yield return WalkToCounter(guest);
         yield return guest.Face(Counter.rotation);
         guest.State = CustomerState.AtCounter;
         guest.Resting = CustomerCharacter.IdleState;
@@ -382,7 +569,8 @@ public class CustomerDirector : MonoBehaviour
     /// </summary>
     /// <param name="index">Its place in the row.</param>
     /// <param name="count">How many the customer puts down in all.</param>
-    public ProductPrefab PutOnCounter(ProductPrefab prefab, int index = 0, int count = 1)
+    /// <param name="by">Whose hand sets it down. Nobody: the customer at the counter.</param>
+    public ProductPrefab PutOnCounter(ProductPrefab prefab, int index = 0, int count = 1, CustomerCharacter by = null)
     {
         // The same every time for the same place in the same order, so a run can be repeated.
         int place = (CustomerNumber * 16 + index) * 4;
@@ -391,7 +579,8 @@ public class CustomerDirector : MonoBehaviour
         var at = GoodsAnchor.position + Vector3.right * (index * ItemSpacing) + Vector3.forward * depth + Vector3.up * (prefab.Proxy.size.y * 0.5f + SpawnClearance);
         // Front to the clerk.
         var product = Instantiate(prefab, at, Quaternion.Euler(0f, 180f + Spread(place + 1, SetDownYawDegrees), 0f));
-        StartCoroutine(SetDown(product, index));
+        if (index == 0) setDownTurn = 0;
+        StartCoroutine(SetDown(product, index, by != null ? by : AtCounter));
         return product;
     }
 
@@ -413,41 +602,821 @@ public class CustomerDirector : MonoBehaviour
         }
     }
 
-    /// <summary>Lowers it from where the customer's hands are, over the counter's far side, onto its place. Until it stands it cannot be taken.</summary>
-    IEnumerator SetDown(ProductPrefab product, int index)
+    /// <summary>
+    /// Stands it on its place on the counter: by the customer's own hand when the customer has an arm to do it with,
+    /// otherwise lowered from where the hands would be. Until it stands it cannot be taken.
+    /// </summary>
+    IEnumerator SetDown(ProductPrefab product, int index, CustomerCharacter by)
     {
         settingDown++;
         var at = product.transform.position;
         var turned = product.transform.rotation;
-        var reach = Counter.position - at;
-        reach.y = 0f;
-        var from = at + reach.normalized * SetDownReach + Vector3.up * SetDownRise;
         product.Body.isKinematic = true;
         product.Grab.enabled = false;
-        product.TeleportTo(from, turned);
-        // All on their way at once, each a little longer than the one before: they land one after another.
-        float seconds = SetDownSeconds + index * SetDownLaterSeconds;
-        for (float t = 0f; t < 1f && product != null; t += Time.deltaTime / seconds)
+        var arm = by != null ? by.Arm : null;
+        if (arm != null)
         {
-            float eased = t * t * (3f - 2f * t);
-            product.TeleportTo(Vector3.Lerp(from, at, eased), turned);
-            yield return null;
+            yield return SetDownByHand(product, index, by, arm, at, turned);
+            // The last of them down, and no card or note to lay down after them: the arm goes back to the customer's side.
+            if (settingDown == 1 && arm != null) arm.LetGo();
+        }
+        else
+        {
+            var reach = Counter.position - at;
+            reach.y = 0f;
+            var from = at + reach.normalized * SetDownReach + Vector3.up * SetDownRise;
+            product.TeleportTo(from, turned);
+            // All on their way at once, each a little longer than the one before: they land one after another.
+            float seconds = SetDownSeconds + index * SetDownLaterSeconds;
+            for (float t = 0f; t < 1f && product != null; t += Time.deltaTime / seconds)
+            {
+                float eased = t * t * (3f - 2f * t);
+                product.TeleportTo(Vector3.Lerp(from, at, eased), turned);
+                yield return null;
+            }
+            if (product != null && Audio) Audio.PlayAt(StoreSound.SetDown, at);
         }
         settingDown--;
         if (product == null) yield break;
         product.TeleportTo(at, turned);
         product.Body.isKinematic = false;
         product.Grab.enabled = true;
-        if (Audio) Audio.PlayAt(StoreSound.SetDown, at);
+    }
+
+    /// <summary>
+    /// One thing, when its turn comes: the customer steps up to the counter (before the first), the hand goes down to their
+    /// side, comes up with the thing over the counter's edge and stands it on the counter. The row of goods runs off to
+    /// the customer's left; what is still out of reach at its far end is stood as near as the arm gets and pushed into place.
+    /// </summary>
+    IEnumerator SetDownByHand(ProductPrefab product, int index, CustomerCharacter by, CustomerArm arm, Vector3 at, Quaternion turned)
+    {
+        // Waiting its turn: on its place already, not drawn.
+        float opacity = product.Splat ? product.Splat.m_OpacityScale : 1f;
+        if (product.Splat) product.Splat.m_OpacityScale = 0f;
+        while (product != null && arm != null && setDownTurn != index) yield return null;
+        if (product == null || arm == null)
+        {
+            if (product != null && product.Splat) product.Splat.m_OpacityScale = opacity;
+            setDownTurn = Mathf.Max(setDownTurn, index + 1);
+            yield break;
+        }
+
+        var body = by.transform;
+        var toClerk = body.forward;
+        // A step up to the counter before the first thing, and over to the left for the ones farther along the row.
+        float toItsLeft = Vector3.Dot(at - by.Spot, -body.right) - StepBeside;
+        var step = toClerk * (toItsLeft > StepUpLeftMost ? StepUpForwardMost : StepUpForward) - body.right * Mathf.Clamp(toItsLeft, StepUpLeft, StepUpLeftMost);
+        yield return by.StepTo(step, StepSeconds(by, step));
+        if (product == null || arm == null)
+        {
+            setDownTurn = Mathf.Max(setDownTurn, index + 1);
+            yield break;
+        }
+
+        var size = Vector3.Scale(product.Proxy.size, product.transform.lossyScale);
+        float half = size.y * 0.5f, top = GoodsAnchor.position.y;
+        // Where the hand takes it up: at the customer's left side, low enough that the counter's edge hides it from the clerk.
+        var takeUp = body.position - body.right * TakeUpLeft + toClerk * TakeUpForward;
+        takeUp.y = top - TakeUpBelowCounter - half;
+        // From the middle of the thing to the wrist that holds it, and how the hand lies on it.
+        var hold = Vector3.up * (half + WristAboveTop) - toClerk * (size.z * 0.5f + WristBehind);
+        var fingers = (toClerk + Vector3.down * 0.5f).normalized;
+        var palm = (Vector3.down - toClerk * 0.5f).normalized;
+
+        // The hand goes down to it; then it is in the hand.
+        product.TeleportTo(takeUp, turned);
+        arm.ReachFor(takeUp + hold, fingers, palm);
+        yield return new WaitForSeconds(index == 0 ? HandToFirstSeconds : HandBackSeconds);
+        if (product != null && product.Splat) product.Splat.m_OpacityScale = opacity;
+        if (arm != null) arm.Hold(HoldGoods, HoldGoodsThumb);
+
+        // Up over the edge and down onto the counter: on its place, or as near it as the arm reaches from the customer's side.
+        var stand = at;
+        if (arm != null)
+        {
+            var back = body.position - at;
+            back.y = 0f;
+            var nearest = at + Vector3.ClampMagnitude(back, LongestPush);
+            stand = arm.Reachable(nearest + hold, at + hold) - hold;
+        }
+        var over = Vector3.Lerp(takeUp, stand, 0.45f);
+        over.y = top + half * 2.5f + 0.05f;
+        for (float t = 0f; t < 1f && product != null && arm != null; t += Time.deltaTime / HandPlaceSeconds)
+        {
+            float eased = t * t * (3f - 2f * t);
+            var along = Vector3.Lerp(Vector3.Lerp(takeUp, over, eased), Vector3.Lerp(over, stand, eased), eased);
+            product.TeleportTo(along, turned);
+            arm.ReachFor(along + hold, fingers, palm);
+            yield return null;
+        }
+        if (product != null)
+        {
+            product.TeleportTo(stand, turned);
+            if (Audio) Audio.PlayAt(StoreSound.SetDown, stand);
+            SetDownsByHand++;
+            // Out of reach: a push along the counter the rest of the way, the hand staying where it stood the thing.
+            if ((at - stand).sqrMagnitude > 0.01f * 0.01f)
+            {
+                PushedIntoPlace++;
+                LongestPushSoFar = Mathf.Max(LongestPushSoFar, Vector3.Distance(at, stand));
+                Debug.Log($"[Customers] {by.name} stood {product.Data.Id} {Vector3.Distance(at, stand):0.00} m short of its place and pushed it there. {(arm != null ? arm.Describe(at + hold) : "")}");
+                for (float t = 0f; t < 1f && product != null; t += Time.deltaTime / HandPushSeconds)
+                {
+                    product.TeleportTo(Vector3.Lerp(stand, at, 1f - (1f - t) * (1f - t)), turned);
+                    yield return null;
+                }
+            }
+        }
+        if (arm != null) arm.Open();
+        setDownTurn = Mathf.Max(setDownTurn, index + 1);
+    }
+
+    /// <summary>
+    /// The customer's card or note, made lying on the plate (PaymentDesk), is laid there by the customer's own hand
+    /// instead, after their goods (2026-11-12). Until it lies there it is not seen and cannot be taken. A customer with
+    /// no arm to do it with leaves it as it was made.
+    /// </summary>
+    public void PutOnPlate(PaymentProp payment, CustomerCharacter by)
+    {
+        if (payment == null || by == null || by.Arm == null) return;
+        StartCoroutine(SetOnPlate(payment, by));
+    }
+
+    IEnumerator SetOnPlate(PaymentProp payment, CustomerCharacter by)
+    {
+        settingDown++;
+        handingOver++;
+        var at = payment.transform.position;
+        var turned = payment.transform.rotation;
+        var held = payment.GetComponent<Rigidbody>();
+        var arm = by.Arm;
+        // A body moved by hand cannot sweep (as in PaymentProp.Dock). Both are put back when it lies on the plate.
+        var sweeping = held.collisionDetectionMode;
+        held.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        held.isKinematic = true;
+        payment.Grab.enabled = false;
+        // Still on the customer.
+        payment.gameObject.SetActive(false);
+        while (payment != null && arm != null && settingDown > handingOver) yield return null;
+        if (payment != null && arm != null) yield return PlateByHand(payment, held, by, arm, at, turned);
+        PaymentInHand = false;
+        settingDown--;
+        handingOver--;
+        if (arm != null)
+        {
+            arm.Open();
+            if (settingDown == 0) arm.LetGo();
+        }
+        if (payment == null) yield break;
+        payment.gameObject.SetActive(true);
+        Carry(payment, held, at, turned);
+        held.isKinematic = false;
+        held.collisionDetectionMode = sweeping;
+        payment.Grab.enabled = true;
+    }
+
+    /// <summary>How long a step to this far from the customer's spot takes from where they stand now.</summary>
+    static float StepSeconds(CustomerCharacter by, Vector3 step) =>
+        StepUpSeconds * Mathf.Max(1f, (by.Spot + step - by.transform.position).magnitude / StepUpStride);
+
+    static void Carry(PaymentProp payment, Rigidbody held, Vector3 to, Quaternion turned)
+    {
+        held.position = to;
+        held.rotation = turned;
+        payment.transform.SetPositionAndRotation(to, turned);
+    }
+
+    /// <summary>
+    /// The hand goes down to the customer's side, comes up over the counter's edge with the card or note between the
+    /// fingers and the thumb, lays it on the plate and lets it go. What the arm cannot reach is laid as near as it gets
+    /// and slid the rest of the way, like the goods.
+    /// </summary>
+    IEnumerator PlateByHand(PaymentProp payment, Rigidbody held, CustomerCharacter by, CustomerArm arm, Vector3 at, Quaternion turned)
+    {
+        var body = by.transform;
+        var toClerk = body.forward;
+        float left = Mathf.Clamp(Vector3.Dot(body.position - by.Spot, -body.right), 0f, PlateFromFarther);
+        var step = toClerk * StepUpForward - body.right * left;
+        var stands = by.Spot + step;
+
+        var size = Vector3.Scale(payment.GetComponent<BoxCollider>().size, payment.transform.lossyScale);
+        float deep = Mathf.Abs(Vector3.Dot(turned * Vector3.forward, toClerk)) * size.z + Mathf.Abs(Vector3.Dot(turned * Vector3.right, toClerk)) * size.x;
+        var hold = Vector3.up * FlatWristAbove - toClerk * (deep * 0.5f + FlatWristBehind);
+        var fingers = (toClerk + Vector3.down * 0.25f).normalized;
+        var palm = (Vector3.down - toClerk * 0.25f).normalized;
+        // Taken out at the customer's left side, below the counter's edge as the clerk sees it.
+        var takeUp = stands - body.right * TakeUpLeft + toClerk * TakeUpForward;
+        takeUp.y = GoodsAnchor.position.y - TakeUpBelowCounter - FlatWristAbove;
+
+        // The hand goes down to it, while the customer steps to where they lay it from.
+        bool fromTheGoods = arm.Reaching;
+        float began = Time.time;
+        arm.ReachFor(takeUp + hold, fingers, palm);
+        yield return by.StepTo(step, StepSeconds(by, step));
+        float still = (fromTheGoods ? HandBackSeconds : HandToFirstSeconds) - (Time.time - began);
+        if (still > 0f) yield return new WaitForSeconds(still);
+        if (payment == null || arm == null) yield break;
+
+        payment.gameObject.SetActive(true);
+        Carry(payment, held, takeUp, turned);
+        arm.Hold(HoldFlat, HoldFlatThumb);
+        PaymentInHand = true;
+
+        var back = body.position - at;
+        back.y = 0f;
+        var stand = arm.Reachable(at + Vector3.ClampMagnitude(back, LongestPush) + hold, at + hold) - hold;
+        var over = Vector3.Lerp(takeUp, stand, 0.45f);
+        over.y = at.y + OverThePlate;
+        for (float t = 0f; t < 1f && payment != null && arm != null; t += Time.deltaTime / HandPlaceSeconds)
+        {
+            float eased = t * t * (3f - 2f * t);
+            var along = Vector3.Lerp(Vector3.Lerp(takeUp, over, eased), Vector3.Lerp(over, stand, eased), eased);
+            Carry(payment, held, along, turned);
+            arm.ReachFor(along + hold, fingers, palm);
+            yield return null;
+        }
+        if (payment == null) yield break;
+        Carry(payment, held, stand, turned);
+        PaymentsByHand++;
+        if ((at - stand).sqrMagnitude > 0.01f * 0.01f)
+        {
+            PaymentsSlid++;
+            Debug.Log($"[Customers] {by.name} laid the {(payment.IsCard ? "card" : "note")} {Vector3.Distance(at, stand):0.00} m short of the plate and slid it there. {(arm != null ? arm.Describe(at + hold) : "")}");
+            for (float t = 0f; t < 1f && payment != null; t += Time.deltaTime / HandPushSeconds)
+            {
+                Carry(payment, held, Vector3.Lerp(stand, at, 1f - (1f - t) * (1f - t)), turned);
+                yield return null;
+            }
+        }
+        // The fingers come off it before the hand goes.
+        PaymentInHand = false;
+        if (arm != null) arm.Open();
+        yield return new WaitForSeconds(HandOffSeconds);
+    }
+
+    /// <summary>
+    /// The change on the tray is this customer's to take when they leave: call it once they are paid, before
+    /// PaymentDesk.EndPayment, which would clear it away. A customer with no arm to take it with leaves it to be cleared.
+    /// </summary>
+    public void LeaveChangeFor(CustomerCharacter customer)
+    {
+        if (customer == null || customer.RightArm == null) return;
+        var change = Desk.ReleaseChange();
+        if (change.Count == 0) return;
+        changeFor[customer] = change;
+        looseChange.AddRange(change);
+    }
+
+    /// <summary>Change nobody came to take (the customer was stopped on the way): gone before the next payment begins.</summary>
+    void ClearLooseChange()
+    {
+        foreach (var piece in looseChange)
+            if (piece) Destroy(piece.gameObject);
+        looseChange.Clear();
+        changeFor.Clear();
+        ChangeInHand = false;
+        // A card still out when the next customer pays is gone too; the one waiting for it then goes.
+        foreach (var card in looseCards)
+            if (card) Destroy(card.gameObject);
+        looseCards.Clear();
+        // And goods left in the bag by someone who never lifted it.
+        foreach (var product in looseBagGoods)
+            if (product) Destroy(product.gameObject);
+        looseBagGoods.Clear();
+        bagFor.Clear();
+        BagInHand = false;
+        ShowBagOnCounter(true);
+        // And goods nobody came to take (what is in a hand on the way out goes with its customer).
+        foreach (var product in looseGoods)
+            if (product) Destroy(product.gameObject);
+        looseGoods.Clear();
+        goodsFor.Clear();
+        goodsCarriedOut.RemoveAll(product => !product);
+        GoodsInHand = false;
+    }
+
+    /// <summary>
+    /// The card a customer paid with is theirs to take back when they leave: call it once they are paid, before
+    /// PaymentDesk.EndPayment, which would remove it. It stays what it was, a card in the clerk's hand or in the terminal,
+    /// until it lies on the plate again or the customer has waited long enough. Null: there was no card, or no arm to take it with.
+    /// </summary>
+    public PaymentProp LeaveCardFor(CustomerCharacter customer)
+    {
+        if (customer == null || customer.RightArm == null) return null;
+        var card = Desk.ReleaseCard();
+        if (card == null) return null;
+        cardFor[customer] = card;
+        looseCards.Add(card);
+        return card;
+    }
+
+    /// <summary>Paid with, and not yet back with its customer or gone.</summary>
+    public bool IsOut(PaymentProp card) => card != null && looseCards.Contains(card);
+
+    /// <summary>In the clerk's hand, as opposed to lying somewhere or sitting in the terminal's slot (which also "holds" it).</summary>
+    static bool InAHand(PaymentProp card)
+    {
+        foreach (var holder in card.Grab.interactorsSelecting)
+            if (!(holder is UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor)) return true;
+        return false;
+    }
+
+    /// <summary>Given back: lying still on the customer's plate, in nobody's hand and not in the terminal.</summary>
+    public bool CardLiesOnPlate(PaymentProp card)
+    {
+        if (card == null || card.Grab.isSelected) return false;
+        var from = card.transform.position - Desk.CustomerPlate.position;
+        return new Vector2(from.x, from.z).magnitude < CardBackWithin && Mathf.Abs(from.y) < 0.05f && card.Speed < 0.1f;
+    }
+
+    /// <summary>
+    /// The customer waits for their card to be laid on the plate, and takes it with the right hand. A card that does not
+    /// come back in CardBackSeconds is gone as it used to be at once, and the customer goes without a word about it.
+    /// </summary>
+    IEnumerator TakeCardBack(CustomerCharacter by, PaymentProp card)
+    {
+        WaitingForCard = true;
+        float waited = 0f, lying = 0f, inAll = 0f;
+        // A card that is back while the customer is still taking their goods off the counter lies there until they are done.
+        while (card != null && by != null && (lying < CardBackStill ? waited < CardBackSeconds && inAll < CardBackSeconds * 2.5f : TakingGoods(by)))
+        {
+            bool back = lying >= CardBackStill;
+            lying = CardLiesOnPlate(card) ? lying + Time.deltaTime : 0f;
+            if (!back)
+            {
+                // The clerk is bringing it: the customer does not walk off in the last second while it is on its way in a
+                // hand. But not for ever either.
+                if (!InAHand(card) || waited < CardBackSeconds - 1f) waited += Time.deltaTime;
+                inAll += Time.deltaTime;
+            }
+            yield return null;
+        }
+        WaitingForCard = false;
+        if (card == null) yield break;
+        looseCards.Remove(card);
+        if (by == null || lying < CardBackStill)
+        {
+            CardsNotReturned++;
+            // In the log for whoever looks afterwards at how a session on the headset went.
+            Debug.Log($"[Customers] {(by != null ? by.name : "A customer")} was not given the card back in {inAll:0.0} s and went without it.");
+            Destroy(card.gameObject);
+            yield break;
+        }
+        Debug.Log($"[Customers] {by.name} found the card back on the plate {inAll:0.0} s after paying and takes it.");
+        // The customer's from here on.
+        card.Grab.enabled = false;
+        var held = card.GetComponent<Rigidbody>();
+        held.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+        held.isKinematic = true;
+        foreach (var part in card.GetComponentsInChildren<Collider>()) part.enabled = false;
+        var body = by.transform;
+        float left = Mathf.Clamp(Vector3.Dot(body.position - by.Spot, -body.right), 0f, PlateFromFarther);
+        yield return TakeByHand(by, new List<PaymentProp> { card }, body.forward * StepUpForward - body.right * left, PaymentDesk.CardSize.z * 0.5f, true);
+        CardsTakenBack++;
+    }
+
+    IEnumerator TakeChange(CustomerCharacter by, List<PaymentProp> change)
+    {
+        var body = by.transform;
+        var middle = Vector3.zero;
+        int lying = 0;
+        foreach (var piece in change)
+        {
+            if (!piece) continue;
+            middle += piece.transform.position;
+            lying++;
+        }
+        if (lying == 0) yield break;
+        middle /= lying;
+        // Over to the tray, as far as the right hand needs, and right up to the counter: from the 12 cm to the side that
+        // keeps them out from behind the scanner, a short arm was still 5 cm short of the change.
+        float toItsRight = Vector3.Dot(middle - by.Spot, body.right) - StepBeside;
+        var step = body.forward * (toItsRight > TrayStepMost ? StepUpForwardMost : StepUpForward) + body.right * Mathf.Clamp(toItsRight, 0f, TrayStepMost);
+        yield return TakeByHand(by, change, step, 0f, false);
+        ChangeTakenByHand++;
+        PiecesTakenByHand += lying;
+    }
+
+    /// <summary>
+    /// The right hand takes what lies on the counter for this customer: over the counter's edge, down onto it, closed on
+    /// it (the pieces drawn in under the palm), and back down to the customer's side, where it is gone from sight.
+    /// </summary>
+    /// <param name="step">Where they take it from, from the spot they walked to.</param>
+    /// <param name="deep">Half of how far the thing reaches toward the customer from its middle: the wrist stays behind its near edge.</param>
+    IEnumerator TakeByHand(CustomerCharacter by, List<PaymentProp> things, Vector3 step, float deep, bool card)
+    {
+        var arm = by.RightArm;
+        var body = by.transform;
+        var toClerk = body.forward;
+        var middle = Vector3.zero;
+        int lying = 0;
+        foreach (var piece in things)
+        {
+            if (!piece) continue;
+            middle += piece.transform.position;
+            lying++;
+        }
+        if (lying == 0 || arm == null) yield break;
+        middle /= lying;
+
+        var stands = by.Spot + step;
+        var hold = Vector3.up * FlatWristAbove - toClerk * (deep + FlatWristBehind);
+        var fingers = (toClerk + Vector3.down * 0.25f).normalized;
+        var palm = (Vector3.down - toClerk * 0.25f).normalized;
+        // Beside the customer's right hip, below the counter's edge as the clerk sees it: where the hand comes from and goes back to.
+        var beside = stands + body.right * TakeUpLeft + toClerk * TakeUpForward;
+        beside.y = GoodsAnchor.position.y - TakeUpBelowCounter;
+
+        yield return by.StepTo(step, StepSeconds(by, step));
+        if (arm == null) yield break;
+        // From where they stand now: what the arm reaches is asked of the shoulder as it is.
+        yield return null;
+        if (arm == null) yield break;
+        var back = stands - middle;
+        back.y = 0f;
+        var on = arm.Reachable(middle + Vector3.ClampMagnitude(back, LongestPush) + hold, middle + hold);
+        var over = Vector3.Lerp(beside, on, 0.6f);
+        over.y = on.y + TrayOverEdge;
+
+        // Up over the edge, then down onto it.
+        arm.ReachFor(over, fingers, palm);
+        yield return new WaitForSeconds(TrayOverSeconds);
+        for (float t = 0f; t < 1f && arm != null; t += Time.deltaTime / TrayDownSeconds)
+        {
+            arm.ReachFor(Vector3.Lerp(over, on, Mathf.SmoothStep(0f, 1f, t)), fingers, palm);
+            yield return null;
+        }
+        if (arm == null) yield break;
+        arm.ReachFor(on, fingers, palm);
+        float shortBy = Vector3.Distance(on, middle + hold);
+        if (card) FarthestFromCard = Mathf.Max(FarthestFromCard, shortBy);
+        else FarthestFromChange = Mathf.Max(FarthestFromChange, shortBy);
+
+        // The hand closes, and what lies there is drawn in under it.
+        if (card) arm.Hold(HoldFlat, HoldFlatThumb);
+        else arm.Hold(HoldChange, HoldChangeThumb);
+        if (card) CardInHand = true;
+        else ChangeInHand = true;
+        var under = on - hold;
+        var lay = new List<Vector3>();
+        foreach (var piece in things) lay.Add(piece ? piece.transform.position : under);
+        bool rang = false;
+        for (float t = 0f; t < 1f; t += Time.deltaTime / TrayCloseSeconds)
+        {
+            for (int i = 0; i < things.Count; i++)
+            {
+                if (!things[i]) continue;
+                things[i].transform.position = Vector3.Lerp(lay[i], Vector3.Lerp(under, lay[i], TrayGather), Mathf.SmoothStep(0f, 1f, t));
+                if (!rang && Audio && !card)
+                {
+                    rang = true;
+                    Audio.PlayAt(things[i].IsCoin ? StoreSound.Coin : StoreSound.Note, under);
+                }
+            }
+            yield return null;
+        }
+
+        // Away over the edge and down to the customer's side, the thing going with the hand.
+        for (int i = 0; i < things.Count; i++)
+            if (things[i]) lay[i] = things[i].transform.position - on;
+        for (float t = 0f; t < 1f && arm != null; t += Time.deltaTime / TrayAwaySeconds)
+        {
+            float eased = t * t * (3f - 2f * t);
+            var along = Vector3.Lerp(Vector3.Lerp(on, over, eased), Vector3.Lerp(over, beside + hold, eased), eased);
+            arm.ReachFor(along, fingers, palm);
+            for (int i = 0; i < things.Count; i++)
+                if (things[i]) things[i].transform.position = along + lay[i];
+            yield return null;
+        }
+        foreach (var piece in things)
+        {
+            looseChange.Remove(piece);
+            if (piece) Destroy(piece.gameObject);
+        }
+        ChangeInHand = false;
+        CardInHand = false;
+        if (arm != null)
+        {
+            arm.Open();
+            arm.LetGo();
+        }
+    }
+
+    // ---------- Goods bought without a bag, taken off the counter by hand (2026-11-13) ----------
+
+    /// <summary>The box a product fills as it stands or lies, level with the world: its collider's, which may be switched off.</summary>
+    static Bounds BoxOf(ProductPrefab product)
+    {
+        var t = product.transform;
+        var half = Vector3.Scale(product.Proxy.size, t.lossyScale) * 0.5f;
+        Vector3 x = t.right * half.x, y = t.up * half.y, z = t.forward * half.z;
+        var reach = new Vector3(Mathf.Abs(x.x) + Mathf.Abs(y.x) + Mathf.Abs(z.x), Mathf.Abs(x.y) + Mathf.Abs(y.y) + Mathf.Abs(z.y), Mathf.Abs(x.z) + Mathf.Abs(y.z) + Mathf.Abs(z.z));
+        return new Bounds(t.TransformPoint(product.Proxy.center), reach * 2f);
+    }
+
+    /// <summary>On the counter top (or on the scanner's flat window), in nobody's hand and not on its way anywhere.</summary>
+    bool StandsOnCounter(ProductPrefab product)
+    {
+        if (product.Grab.isSelected || product.IsBagged) return false;
+        float foot = BoxOf(product).min.y - GoodsAnchor.position.y;
+        if (foot < -0.02f || foot > GoodsOnCounterWithin) return false;
+        return product.Body.isKinematic || product.Body.linearVelocity.magnitude < GoodsStillBelow;
+    }
+
+    /// <summary>The way from one point to the other goes through the scanner's upright part, or too near it for an arm.</summary>
+    bool PastScanner(Vector3 from, Vector3 to)
+    {
+        if (!scannerLookedFor)
+        {
+            scannerLookedFor = true;
+            var tower = GameObject.Find("Scanner Tower");
+            if (tower != null) scannerTower = tower.GetComponent<Renderer>();
+        }
+        if (scannerTower == null) return false;
+        var box = scannerTower.bounds;
+        box.Expand(ScannerClear * 2f);
+        if (box.Contains(from) || box.Contains(to)) return true;
+        var way = to - from;
+        return box.IntersectRay(new Ray(from, way.normalized), out float hit) && hit >= 0f && hit <= way.magnitude;
+    }
+
+    /// <summary>
+    /// How this customer's left hand would take the thing: where they stand for it (from their spot), where the wrist
+    /// wants to be on it, and where it gets to. False: the hand cannot take it, even with the thing coming LongestDraw
+    /// of the way, or only through the scanner.
+    /// </summary>
+    bool PlanTake(CustomerCharacter by, ProductPrefab product, out Vector3 step, out Vector3 wanted, out Vector3 on)
+    {
+        var arm = by.Arm;
+        var body = by.transform;
+        var toClerk = body.forward;
+        var spot = by.Spot;
+        var box = BoxOf(product);
+        float deep = Mathf.Abs(toClerk.x) * box.extents.x + Mathf.Abs(toClerk.z) * box.extents.z;
+        wanted = box.center + Vector3.up * (box.extents.y + WristAboveTop) - toClerk * (deep + WristBehind);
+        float toItsLeft = Vector3.Dot(box.center - spot, -body.right) - ShoulderBeside;
+        // No nearer the counter than the thing asks for: right up to it only for what the wrist would not get to otherwise.
+        step = Vector3.zero;
+        on = wanted;
+        Vector3 stepped = Vector3.zero;
+        foreach (float forward in new[] { StepUpForward, StepUpForwardMost })
+        {
+            step = toClerk * forward - body.right * Mathf.Clamp(toItsLeft, -GoodsStepRightMost, StepUpLeftMost);
+            // The body is not there yet: the shoulder will be this far from where it is now.
+            stepped = spot + step - body.position;
+            var back = spot + step - box.center;
+            back.y = 0f;
+            on = arm.Reachable(wanted + Vector3.ClampMagnitude(back, LongestDraw), wanted, stepped);
+            if ((on - wanted).sqrMagnitude < 1e-6f) break;
+        }
+        if (!arm.Reaches(on, stepped)) return false;
+        var shoulder = arm.BentShoulder + stepped;
+        return !PastScanner(shoulder, on) && !PastScanner(shoulder, box.center);
+    }
+
+    /// <summary>
+    /// Goods that stand loose on the counter when their customer has paid are that customer's to take by hand on the
+    /// way out (2026-11-13). They stand where they are until then, and the clerk can no longer take them. What the
+    /// hand could not take is gone now, as all of them were before; so are all of them for a customer with no arm.
+    /// </summary>
+    void LeaveGoodsFor(CustomerCharacter customer, List<ProductPrefab> goods)
+    {
+        var mine = new List<ProductPrefab>();
+        foreach (var product in goods)
+        {
+            if (!product) continue;
+            bool arm = customer != null && customer.Arm != null;
+            if (arm && StandsOnCounter(product) && PlanTake(customer, product, out _, out _, out _))
+            {
+                product.Grab.enabled = false;
+                product.Body.isKinematic = true;
+                mine.Add(product);
+                continue;
+            }
+            if (arm)
+            {
+                GoodsNotTaken++;
+                Debug.Log($"[Customers] {customer.name} cannot take {product.Data.Id} at {product.transform.position.ToString("F2")} by hand ({(product.Grab.isSelected ? "in the clerk's hand" : !StandsOnCounter(product) ? "not standing on the counter" : "out of reach or behind the scanner")}): gone with the sale.");
+            }
+            Destroy(product.gameObject);
+        }
+        if (mine.Count == 0) return;
+        if (goodsFor.TryGetValue(customer, out var already)) already.AddRange(mine);
+        else goodsFor[customer] = mine;
+        looseGoods.AddRange(mine);
+    }
+
+    /// <summary>A thing the hand turned out not to get to after all: it fades where it stands.</summary>
+    IEnumerator FadeAway(ProductPrefab product, CustomerCharacter by)
+    {
+        GoodsNotTaken++;
+        Debug.Log($"[Customers] {(by != null ? by.name : "A customer")} could not take {product.Data.Id} at {product.transform.position.ToString("F2")} after all: gone.");
+        float opacity = product.Splat ? product.Splat.m_OpacityScale : 1f;
+        for (float t = 0f; t < 1f && product != null; t += Time.deltaTime / GoodsFadeSeconds)
+        {
+            if (product.Splat) product.Splat.m_OpacityScale = opacity * (1f - t);
+            yield return null;
+        }
+        looseGoods.Remove(product);
+        if (product != null) Destroy(product.gameObject);
+    }
+
+    static IEnumerator StepThen(CustomerCharacter by, Vector3 step, float seconds, Action then)
+    {
+        yield return by.StepTo(step, seconds);
+        then();
+    }
+
+    IEnumerator TakeGoods(CustomerCharacter by, List<ProductPrefab> goods, bool carryLast)
+    {
+        takingGoods.Add(by);
+        yield return TakeOneByOne(by, goods, carryLast);
+        takingGoods.Remove(by);
+        GoodsInHand = false;
+    }
+
+    /// <summary>
+    /// The customer takes what they bought off the counter with the left hand, one thing after another from their
+    /// right to their left: over it, down on its top, closed, up over the counter's edge and down at their side, where
+    /// it is gone. The last thing stays in the hand and goes out with them (unless a bag is to follow into that hand).
+    /// </summary>
+    IEnumerator TakeOneByOne(CustomerCharacter by, List<ProductPrefab> goods, bool carryLast)
+    {
+        var arm = by.Arm;
+        var body = by.transform;
+        var toClerk = body.forward;
+        var toLeft = -body.right;
+        float top = GoodsAnchor.position.y;
+        // The hand lies over the thing's top from the customer's side, as it did setting it down.
+        var fingers = (toClerk + Vector3.down * 0.5f).normalized;
+        var palm = (Vector3.down - toClerk * 0.5f).normalized;
+        goods.RemoveAll(product => !product);
+        goods.Sort((a, b) => Vector3.Dot(a.transform.position - b.transform.position, toLeft).CompareTo(0f));
+
+        for (int i = 0; i < goods.Count; i++)
+        {
+            var product = goods[i];
+            if (by == null || arm == null) yield break;
+            if (!product) continue;
+            bool last = true;
+            for (int next = i + 1; next < goods.Count; next++)
+                if (goods[next]) last = false;
+
+            // Over to it, the hand already on its way to above it.
+            if (!PlanTake(by, product, out var step, out _, out var on))
+            {
+                yield return FadeAway(product, by);
+                continue;
+            }
+            float began = Time.time;
+            arm.Open();
+            // The hand goes ahead of the step, as far toward the thing as the arm gets from where the body is.
+            var ahead = on + Vector3.up * GoodsOverTop - toClerk * 0.04f;
+            bool there = false;
+            StartCoroutine(StepThen(by, step, StepSeconds(by, step), () => there = true));
+            while (!there && by != null && arm != null)
+            {
+                var near = body.position + toLeft * TakeUpLeft + toClerk * 0.1f;
+                near.y = ahead.y;
+                arm.ReachFor(arm.Reachable(near, ahead), fingers, palm);
+                yield return null;
+            }
+            // From where they stand now: what the arm reaches is asked of the shoulder as it is.
+            yield return null;
+            if (by == null || arm == null) yield break;
+            if (!product) continue;
+            if (!PlanTake(by, product, out _, out var wanted, out on))
+            {
+                yield return FadeAway(product, by);
+                continue;
+            }
+            var over = on + Vector3.up * GoodsOverTop - toClerk * 0.04f;
+            arm.ReachFor(over, fingers, palm);
+            while (Time.time - began < GoodsOverSeconds) yield return null;
+            for (float t = 0f; t < 1f && arm != null; t += Time.deltaTime / GoodsDownSeconds)
+            {
+                arm.ReachFor(Vector3.Lerp(over, on, Mathf.SmoothStep(0f, 1f, t)), fingers, palm);
+                yield return null;
+            }
+            if (by == null || arm == null) yield break;
+            if (!product) continue;
+            arm.ReachFor(on, fingers, palm);
+
+            // The hand closes on it. What it did not get to comes to it over the counter.
+            arm.Hold(HoldGoods, HoldGoodsThumb);
+            GoodsInHand = true;
+            foreach (var part in product.GetComponentsInChildren<Collider>()) part.enabled = false;
+            var box = BoxOf(product);
+            var turned = product.transform.rotation;
+            var stood = product.transform.position;
+            float shortBy = Vector3.Distance(on, wanted);
+            if (shortBy > 0.01f)
+            {
+                GoodsDrawnToHand++;
+                LongestDrawSoFar = Mathf.Max(LongestDrawSoFar, shortBy);
+                Debug.Log($"[Customers] {by.name}'s hand was {shortBy:0.00} m short of {product.Data.Id}, which came to it over the counter. {arm.Describe(wanted)}");
+                for (float t = 0f; t < 1f && product != null; t += Time.deltaTime / GoodsDrawSeconds)
+                {
+                    product.TeleportTo(Vector3.Lerp(stood, stood + on - wanted, t * t * (3f - 2f * t)), turned);
+                    yield return null;
+                }
+                if (product != null) product.TeleportTo(stood + on - wanted, turned);
+            }
+            else yield return new WaitForSeconds(GoodsCloseSeconds);
+            if (by == null || arm == null) yield break;
+            if (!product) continue;
+            box = BoxOf(product);
+            if (Audio) Audio.PlayTouch(TouchFeel.KindOf(product.transform) == TouchKind.Carton ? StoreSound.Carton : StoreSound.Crinkle, box.center, 0.5f);
+
+            // In the hand from here: it goes where the wrist goes.
+            var toWrist = on - box.center;
+            var carried = CarriedGoods.Carry(by, product, box, toWrist);
+            float deep = Mathf.Abs(toClerk.x) * box.extents.x + Mathf.Abs(toClerk.z) * box.extents.z;
+            bool carry = last && carryLast;
+            // Back from the counter with it: to the spot they walked to with the last one, and with the others far
+            // enough for the hand to get down beside them.
+            var backTo = Vector3.zero;
+            if (!last)
+            {
+                var stepped = body.position - by.Spot;
+                backTo = stepped - toClerk * Mathf.Max(0f, Vector3.Dot(stepped, toClerk) - GoodsAwayForward);
+            }
+            StartCoroutine(by.StepTo(backTo, GoodsAwaySeconds));
+            var stands = by.Spot + backTo;
+            // Where its middle goes: down at the left hip short of the counter's edge, its top under the counter top;
+            // or, carried out, at the customer's side.
+            Vector3 away;
+            if (carry)
+            {
+                away = by.Spot + toLeft * GoodsAsideLeft + toClerk * GoodsAsideForward - toWrist;
+                away.y = top - GoodsAsideBelow - toWrist.y;
+            }
+            else
+            {
+                float toEdge = CounterEdgeFromSpot - Vector3.Dot(stands - by.Spot, toClerk);
+                away = stands + toLeft * TakeUpLeft + toClerk * (toEdge - deep - GoodsShortOfEdge);
+                away.y = top - TakeUpBelowCounter - box.extents.y;
+            }
+            var from = box.center;
+            var high = Vector3.Lerp(away, from, 0.45f);
+            high.y = Mathf.Max(from.y, top + box.extents.y) + box.extents.y * 1.5f + 0.05f;
+            for (float t = 0f; t < 1f && arm != null && product != null; t += Time.deltaTime / GoodsAwaySeconds)
+            {
+                float eased = t * t * (3f - 2f * t);
+                var along = Vector3.Lerp(Vector3.Lerp(from, high, eased), Vector3.Lerp(high, away, eased), eased);
+                arm.ReachFor(along + toWrist, fingers, palm);
+                yield return null;
+            }
+            GoodsInHand = false;
+            looseGoods.Remove(product);
+            if (by == null || arm == null) yield break;
+            GoodsTakenByHand++;
+            if (!product) continue;
+            if (carry)
+            {
+                // It stays in the hand, hanging from the fingers as the arm goes back to how the clip has it.
+                arm.ReachFor(away + toWrist, fingers, palm);
+                carried.Hang(GoodsHangSeconds);
+                arm.LetGo();
+                by.Goods = carried;
+                goodsCarriedOut.Add(product);
+                GoodsCarriedOut++;
+                yield return new WaitForSeconds(GoodsHangSeconds);
+                yield break;
+            }
+            Destroy(product.gameObject);
+            arm.Open();
+        }
+        if (arm != null)
+        {
+            arm.Open();
+            arm.LetGo();
+        }
     }
 
     /// <summary>The line and the mouth moving with it. Returns its length.</summary>
     public float GuestSays(CustomerCharacter guest, CustomerLine line, int variant = 0) => Audio ? Speak(guest, line, variant) : 0f;
 
     /// <summary>
-    /// What went into the counter's bag leaves in the customer's hand. The goods in the counter's bag are removed in the
-    /// same moment, and the hand is below the counter's edge as the clerk sees it, so the bag is simply theirs when they turn to go.
+    /// What went into the counter's bag is this customer's to lift off the counter when they leave (2026-11-12): call
+    /// it once they are paid, with the goods that stand in the bag, which then stay there until the hand closes on the
+    /// handles. A customer with no arms to lift it with has it in the hand at once, as everyone had before.
     /// </summary>
+    void LeaveBagFor(CustomerCharacter customer, List<ProductPrefab> goods)
+    {
+        if (BagToCarry == null || customer == null || customer.Bag != null || bagFor.ContainsKey(customer)) return;
+        if (customer.Arm == null || customer.RightArm == null)
+        {
+            foreach (var product in goods)
+                if (product) Destroy(product.gameObject);
+            HandOverBag(customer);
+            return;
+        }
+        bagFor[customer] = goods;
+        looseBagGoods.AddRange(goods);
+    }
+
+    /// <summary>The bag, in the left hand at once, the hand below the counter's edge as the clerk sees it.</summary>
     void HandOverBag(CustomerCharacter customer)
     {
         if (BagToCarry == null || customer.Bag != null) return;
@@ -455,12 +1424,171 @@ public class CustomerDirector : MonoBehaviour
         bag.name = "Bag (carried)";
         bag.Hang(customer);
         customer.Bag = bag;
+        // The left hand, the one the bag hangs from, closes on its handles.
+        if (customer.Arm != null) customer.Arm.Hold(HoldBag, HoldBag);
     }
 
-    /// <summary>The end of a served guest: the money on the card, thanks, a nod, a wave, and out, with the bag if something was bagged.</summary>
-    public void GuestLeaves(CustomerCharacter guest, int amount, bool withBag = false)
+    void FindBagOnCounter()
     {
-        if (withBag) HandOverBag(guest);
+        if (BagOnCounter != null) return;
+        var film = GameObject.Find("Plastic Bag");
+        if (film != null) BagOnCounter = film.GetComponent<Renderer>();
+    }
+
+    void ShowBagOnCounter(bool shown)
+    {
+        FindBagOnCounter();
+        if (BagOnCounter != null) BagOnCounter.enabled = shown;
+    }
+
+    /// <summary>
+    /// The customer takes their bag off the counter: the right hand on its handles, the bag drawn over the counter to
+    /// the edge and off it, and into the left hand, which carries it out. From the moment the hand closes, the bag that
+    /// stood on the counter with the goods in it is the one in the hand; a new one stands there when they are done.
+    /// </summary>
+    IEnumerator TakeBag(CustomerCharacter by, List<ProductPrefab> goods)
+    {
+        var right = by.RightArm;
+        var left = by.Arm;
+        var body = by.transform;
+        var toClerk = body.forward;
+        var toRight = body.right;
+        // The foot of the counter's bag (the pattern is kept under it).
+        var stood = BagToCarry.transform.parent;
+        float top = stood.position.y;
+        var handles = stood.position + Vector3.up * BagHandlesUp - toClerk * BagHandlesNearer - toRight * BagHandlesAside;
+        var spot = by.Spot;
+
+        float toItsRight = Vector3.Dot(handles - spot, toRight) - StepBeside;
+        var step = toClerk * StepUpForwardMost + toRight * Mathf.Clamp(toItsRight, 0f, BagStepMost);
+        // The hand comes down on the handles from above, the fingers hooked under them, the palm toward the customer.
+        var fingers = (Vector3.down + toClerk * 0.5f).normalized;
+        var palm = (Vector3.down * 0.5f - toClerk).normalized;
+        // From where the handles are held to the wrist (CarriedBag.Grip, the other way round).
+        var hold = by.RightKnuckles != null
+            ? Vector3.up * 0.03f - fingers * Vector3.Distance(by.RightHand.position, by.RightKnuckles.position)
+            : Vector3.up * 0.09f;
+
+        yield return by.StepTo(step, StepSeconds(by, step));
+        // From where they stand now: what the arm reaches is asked of the shoulder as it is.
+        yield return null;
+        if (right == null || left == null || by == null) yield break;
+        var back = spot + step - handles;
+        back.y = 0f;
+        var on = right.Reachable(handles + Vector3.ClampMagnitude(back, LongestPush) + hold, handles + hold);
+        var over = on + Vector3.up * BagOverHandles - toClerk * 0.05f;
+        right.ReachFor(over, fingers, palm);
+        yield return new WaitForSeconds(BagOverSeconds);
+        for (float t = 0f; t < 1f && right != null; t += Time.deltaTime / BagDownSeconds)
+        {
+            right.ReachFor(Vector3.Lerp(over, on, Mathf.SmoothStep(0f, 1f, t)), fingers, palm);
+            yield return null;
+        }
+        if (right == null) yield break;
+        right.ReachFor(on, fingers, palm);
+        float shortBy = Vector3.Distance(on, handles + hold);
+        FarthestFromBag = Mathf.Max(FarthestFromBag, shortBy);
+        if (shortBy > 0.01f) Debug.Log($"[Customers] {by.name}'s hand closed {shortBy:0.00} m short of the bag's handles. {right.Describe(handles + hold)}");
+        right.Hold(HoldBag, HoldBag);
+        yield return new WaitForSeconds(BagCloseSeconds);
+        if (right == null) yield break;
+
+        // The bag is in the hand from here: what stood on the counter is not drawn, and its goods are inside this one.
+        int inside = 0;
+        foreach (var product in goods)
+        {
+            looseBagGoods.Remove(product);
+            if (!product) continue;
+            inside++;
+            Destroy(product.gameObject);
+        }
+        var bag = Instantiate(BagToCarry, body);
+        bag.name = "Bag (carried)";
+        bag.Hang(by, true);
+        var edge = spot + toClerk * CounterEdgeFromSpot;
+        edge.y = top;
+        bag.StandOn(top, edge, -toClerk, stood.eulerAngles.y);
+        by.Bag = bag;
+        ShowBagOnCounter(false);
+        BagInHand = true;
+        GoodsLiftedInBags += inside;
+        if (Audio) Audio.PlayAt(StoreSound.Bag, handles);
+
+        // Up a little and over the counter to its edge, the customer stepping back to make room for it.
+        var atEdge = spot + toClerk * BagEdgeForward;
+        atEdge.y = top + BagOverEdge;
+        // Toward the customer first, between the POS screen and the scanner's upright part, and then along the edge
+        // to in front of them: straight across, the bag's corner went through the back of the scanner.
+        var rise = on + Vector3.Project(atEdge - on, toClerk) * 0.75f + Vector3.Project(atEdge - on, toRight) * 0.25f;
+        rise.y = Mathf.Max(on.y, atEdge.y) + 0.06f;
+        StartCoroutine(by.StepTo(Vector3.zero, BagPullSeconds));
+        for (float t = 0f; t < 1f && right != null; t += Time.deltaTime / BagPullSeconds)
+        {
+            float eased = t * t * (3f - 2f * t);
+            right.ReachFor(Vector3.Lerp(Vector3.Lerp(on, rise, eased), Vector3.Lerp(rise, atEdge, eased), eased), fingers, palm);
+            if (bag != null) ShortestBagSoFar = Mathf.Min(ShortestBagSoFar, bag.Stretch);
+            yield return null;
+        }
+        // Off the edge, where it hangs free, and down in front of them.
+        var held = spot + toClerk * BagHeldForward;
+        held.y = top + BagHeldAbove;
+        for (float t = 0f; t < 1f && right != null; t += Time.deltaTime / BagLowerSeconds)
+        {
+            right.ReachFor(Vector3.Lerp(atEdge, held, Mathf.SmoothStep(0f, 1f, t)), fingers, palm);
+            yield return null;
+        }
+        if (right == null || left == null || bag == null) yield break;
+        right.ReachFor(held, fingers, palm);
+
+        // Into the left hand, which comes to the handles from its own side.
+        var leftFingers = (Vector3.down + toClerk * 0.3f).normalized;
+        var leftHold = by.LeftKnuckles != null
+            ? Vector3.up * 0.03f - leftFingers * Vector3.Distance(by.LeftHand.position, by.LeftKnuckles.position)
+            : Vector3.up * 0.09f;
+        for (float t = 0f; t < 1f && left != null && bag != null; t += Time.deltaTime / BagPassSeconds)
+        {
+            left.ReachFor(bag.Grip() - toRight * BagPassApart + leftHold, leftFingers, toRight);
+            yield return null;
+        }
+        if (right == null || left == null || bag == null) yield break;
+        var taken = bag.Grip() - toRight * BagPassApart;
+        left.ReachFor(taken + leftHold, leftFingers, toRight);
+        left.Hold(HoldBag, HoldBag);
+        yield return new WaitForSeconds(BagChangeHandsSeconds);
+        if (right == null || left == null || bag == null) yield break;
+        bag.Hang(by);
+        BagInHand = false;
+        right.Open();
+        right.LetGo();
+        bag.TurnAlongLeg(BagTurnSeconds);
+
+        // Out to their left side, in front of the leg and not through it, and from there the arm hangs as the clip has it.
+        var aside = spot - toRight * BagAsideLeft + toClerk * BagAsideForward;
+        aside.y = top - BagAsideBelow;
+        for (float t = 0f; t < 1f && left != null; t += Time.deltaTime / BagAsideSeconds)
+        {
+            left.ReachFor(Vector3.Lerp(taken, aside, Mathf.SmoothStep(0f, 1f, t)) + leftHold, leftFingers, toRight);
+            yield return null;
+        }
+        if (left != null) left.LetGo();
+        BagsLiftedByHand++;
+        // A new bag on the counter for whoever comes next.
+        ShowBagOnCounter(true);
+    }
+
+    /// <summary>
+    /// The end of a served guest: the money on the card, thanks, a nod, a wave, and out, with the bag if something was
+    /// bagged (<paramref name="inBag"/>: what stands in the counter's bag, which the guest lifts off the counter).
+    /// </summary>
+    public void GuestLeaves(CustomerCharacter guest, int amount, bool withBag = false, ProductPrefab inBag = null)
+    {
+        if (withBag)
+        {
+            var goods = new List<ProductPrefab>();
+            if (inBag != null) goods.Add(inBag);
+            LeaveBagFor(guest, goods);
+        }
+        else if (inBag != null) LeaveGoodsFor(guest, new List<ProductPrefab> { inBag });
         ShowOutcome($"+{amount:N0}원", WorldUi.Palette.Good);
         if (Audio) Speak(guest, CustomerLine.Thanks);
         if (guest.FaceRig != null)
@@ -580,9 +1708,33 @@ public class CustomerDirector : MonoBehaviour
         return next;
     }
 
-    IEnumerator RunOrder(Order order, CustomerCharacter customer)
+    /// <summary>
+    /// To the spot in front of the counter. Whoever was served before may still be standing on it, taking their change
+    /// or waving, and a walk that finds it taken ends short of it: 44 cm short once (2026-11-12), and that guest paid
+    /// from there, the hand nowhere near the plate. So the rest of the way is walked once the spot is free.
+    /// </summary>
+    IEnumerator WalkToCounter(CustomerCharacter customer)
     {
         yield return customer.WalkTo(Counter.position);
+        for (int again = 0; again < CounterRetries && customer != null && Vector3.Distance(customer.transform.position, Counter.position) > CounterWithin; again++)
+        {
+            yield return new WaitForSeconds(CounterRetrySeconds);
+            if (customer == null) yield break;
+            CounterRetriesSoFar++;
+            yield return customer.WalkTo(Counter.position);
+        }
+    }
+
+    // Enough tries to outlast a customer who waits for their card, takes it and waves.
+    // (And, since the same day, lifts their bag off the counter.)
+    const int CounterRetries = 20;
+    const float CounterWithin = 0.2f, CounterRetrySeconds = 0.6f;
+    /// <summary>Times a customer walked the rest of the way to the counter after finding the spot taken. For the checks.</summary>
+    public int CounterRetriesSoFar { get; private set; }
+
+    IEnumerator RunOrder(Order order, CustomerCharacter customer)
+    {
+        yield return WalkToCounter(customer);
         yield return customer.Face(Counter.rotation);
         customer.State = CustomerState.AtCounter;
         customer.Resting = CustomerCharacter.IdleState;
@@ -592,7 +1744,7 @@ public class CustomerDirector : MonoBehaviour
         OrderReachedCounter?.Invoke(order);
         SpawnProducts(order);
         Pos.BeginOrder(order);
-        BeginPayment(order);
+        BeginPayment(order, customer);
         linePenalty = order.Day > 1 && !Lenient && customer.Record.QueuedAt >= 0f ? LinePenalty(customer.Record.CalledAt - customer.Record.QueuedAt, order.TimeLimitSeconds) : 0f;
         customer.Record.LinePenalty = linePenalty;
         if (customer.FaceRig != null) customer.FaceRig.SetMood(linePenalty > 0f ? CustomerMood.Impatient : CustomerMood.Neutral);
@@ -617,9 +1769,9 @@ public class CustomerDirector : MonoBehaviour
         while (!orderPaid)
         {
             remaining -= Time.deltaTime;
-            if (order.Day > 1 && !hurried && remaining <= order.TimeLimitSeconds * 0.5f)
+            if (order.Day > 1 && !hurried && remaining <= order.TimeLimitSeconds * HurryShare && Time.time - customer.Record.ArrivedAt >= HurryNotBefore)
             {
-                // Game design 8: at half time the customer hurries the clerk (voice clip pending, P3-K3).
+                // Game design 8: the customer hurries the clerk (at half time until 2026-11-13).
                 hurried = true;
                 Hurries++;
                 customer.Record.HurriedAt = Time.time;
@@ -654,7 +1806,6 @@ public class CustomerDirector : MonoBehaviour
         customer.Record.ShareLeft = shareLeft;
         if (orderPaid)
         {
-            if (order.NeedsBag) HandOverBag(customer);
             int total = Pos.Total;
             Paid++;
             Sales += total;
@@ -668,7 +1819,9 @@ public class CustomerDirector : MonoBehaviour
             ShowOutcome(fast ? $"+{total:N0}원  ·  팁 {tip:N0}원" : $"+{total:N0}원", fast ? WorldUi.Palette.Good : WorldUi.Palette.Text);
             if (Audio)
             {
-                Speak(customer, fast ? CustomerLine.ThanksFast : CustomerLine.Thanks);
+                // Just thanks, however fast it went: people at a counter do not remark on the speed (2026-11-13, from
+                // the first session on the headset). The tip and its sound are what say it was fast.
+                Speak(customer, CustomerLine.Thanks);
                 if (fast) Audio.PlayAt(StoreSound.Tip, Mouth(customer));
             }
             if (customer.FaceRig != null)
@@ -690,6 +1843,22 @@ public class CustomerDirector : MonoBehaviour
             }
         }
         customer.Record.DoneAt = Time.time;
+        if (orderPaid)
+        {
+            LeaveChangeFor(customer);
+            LeaveCardFor(customer);
+            if (order.NeedsBag)
+            {
+                // What stands in the bag stays there until the customer lifts the bag; the rest goes as before.
+                var bagged = OrderProducts.FindAll(product => product && product.IsBagged);
+                OrderProducts.RemoveAll(product => product && product.IsBagged);
+                LeaveBagFor(customer, bagged);
+            }
+            // What stands loose on the counter is theirs to take by hand; what no hand can get at goes as it always did.
+            var loose = OrderProducts.FindAll(product => product && !product.IsBagged);
+            OrderProducts.RemoveAll(product => loose.Contains(product));
+            LeaveGoodsFor(customer, loose);
+        }
         Desk.EndPayment();
         Pos.EndOrder();
         foreach (var product in OrderProducts)
@@ -798,8 +1967,9 @@ public class CustomerDirector : MonoBehaviour
         return seconds;
     }
 
-    void BeginPayment(Order order)
+    void BeginPayment(Order order, CustomerCharacter customer)
     {
+        ClearLooseChange();
         Desk.NotReadyNotice = () => Pos.NotReadyNotice;
         if (order.Payment == PaymentMethod.Card)
         {
@@ -809,6 +1979,7 @@ public class CustomerDirector : MonoBehaviour
         {
             Desk.BeginCash(PaymentDesk.BillFor(order.TotalPrice), () => Pos.ReadyForPayment, () => Pos.Total, Pos.ReceiveCash, Pos.SetNotice, Pos.CompleteCash);
         }
+        PutOnPlate(order.Payment == PaymentMethod.Card ? Desk.CustomerCard : Desk.CustomerBill, customer);
     }
 
     /// <summary>A short line on the order card between customers, with the blink (doc 5.7.2: the mid-day delivery).</summary>
@@ -982,11 +2153,32 @@ public class CustomerDirector : MonoBehaviour
         customer.Resting = CustomerCharacter.IdleState;
         Browsers.Remove(customer);
         ReleaseSpot(customer);
-        if (wave)
+        // The change first, by hand; then the wave, which is the same hand's.
+        if (changeFor.TryGetValue(customer, out var change))
         {
-            customer.Record.LeaveAnimationSeconds = customer.LeaveSeconds;
-            yield return customer.PlayLeave();
+            changeFor.Remove(customer);
+            yield return TakeChange(customer, change);
         }
+        // What they bought without a bag, with the left hand: while the clerk still has their card, if they paid with one.
+        if (goodsFor.TryGetValue(customer, out var loose))
+        {
+            goodsFor.Remove(customer);
+            StartCoroutine(TakeGoods(customer, loose, !bagFor.ContainsKey(customer)));
+        }
+        if (cardFor.TryGetValue(customer, out var card))
+        {
+            cardFor.Remove(customer);
+            yield return TakeCardBack(customer, card);
+        }
+        while (TakingGoods(customer)) yield return null;
+        // Then the bag, off the counter and into the left hand.
+        if (bagFor.TryGetValue(customer, out var bagged))
+        {
+            bagFor.Remove(customer);
+            yield return TakeBag(customer, bagged);
+        }
+        // No wave (2026-11-13): a customer who raised a hand high and waved after every sale was not like anyone at a
+        // real counter. They have said thanks and nodded when the sale was done; with their things in hand they go.
         yield return customer.WalkTo(DoorExit, DoorArriveRadius);
         customer.Record.GoneAt = Time.time;
         Present.Remove(customer);

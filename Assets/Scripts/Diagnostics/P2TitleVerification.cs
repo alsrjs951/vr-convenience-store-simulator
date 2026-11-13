@@ -313,12 +313,13 @@ public partial class P2DayVerification
                 Check("customer.looks_at_clerk", looking != null && looking.HasFaceBones && looking.GazeErrorDegrees < 35f, looking == null ? "no face" : $"off by {looking.GazeErrorDegrees:0.0}°");
             }
             var served = director.AtCounter;
-            int spoken = Game.Pos.Audio.SpokenCount(CustomerLine.ThanksFast);
+            // Plain thanks also when it was fast (2026-11-13).
+            int spoken = Game.Pos.Audio.SpokenCount(CustomerLine.Thanks);
             Game.Pos.CompleteCard();
             yield return WaitUntil(() => Game.Pos.Current == null, 3f, $"day.customer{n}_paid");
             yield return null;
             var record = director.Records.Find(r => r.ForOrder && r.Sequence == n);
-            Check($"day.customer{n}_rewarded", record != null && record.Tip > 0 && Mathf.Approximately(record.Satisfaction, 1f) && director.LastOutcome.Contains("팁") && Game.Pos.Audio.SpokenCount(CustomerLine.ThanksFast) == spoken + 1,
+            Check($"day.customer{n}_rewarded", record != null && record.Tip > 0 && Mathf.Approximately(record.Satisfaction, 1f) && director.LastOutcome.Contains("팁") && Game.Pos.Audio.SpokenCount(CustomerLine.Thanks) == spoken + 1 && Game.Pos.Audio.SpokenCount(CustomerLine.ThanksFast) == 0,
                 record == null ? "no record" : $"tip={record.Tip}; satisfaction={record.Satisfaction:0.00}; share left={record.ShareLeft:0.00}; card={director.LastOutcome}");
             Check($"day.customer{n}_nods_and_thanks", served != null && served.FaceRig != null && served.FaceRig.Nods == 1 && served.FaceRig.Talking && served.FaceRig.Mood == CustomerMood.Pleased,
                 served == null || served.FaceRig == null ? "no face" : $"nods={served.FaceRig.Nods}; talking={served.FaceRig.Talking}; mood={served.FaceRig.Mood}");

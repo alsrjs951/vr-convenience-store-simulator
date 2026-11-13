@@ -706,6 +706,8 @@ public static class P3StoreDressing
         carried.SetActive(false);
         var director = UnityEngine.Object.FindFirstObjectByType<CustomerDirector>() ?? throw new Exception("Dressing: CustomerDirector missing.");
         director.BagToCarry = carried.GetComponent<CarriedBag>();
+        // Not drawn while a customer lifts theirs out of its place (CustomerDirector.TakeBag).
+        director.BagOnCounter = bagRenderer;
 
         // Two screens on stands: the POS on the left, the order screen on the right. Plain backs.
         foreach (var (center, sizePx) in new[] { (posScreen, new Vector2(860f, 660f)), (orderScreen, new Vector2(620f, 470f)) })

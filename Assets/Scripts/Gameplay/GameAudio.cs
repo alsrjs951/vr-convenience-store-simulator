@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip, DrawerOpen, DrawerClose, Coin, Note, SetDown, Bag }
+public enum StoreSound { Bell, Hurry, Thud, Tape, Flap, Place, Recycle, Dispose, Error, Door, Delivery, Ding, Tip, DrawerOpen, DrawerClose, Coin, Note, SetDown, Bag, Crinkle, Rustle, Carton, BagDown }
 
 /// <summary>Customer lines of implementation doc 6.1: two greetings, the hurry, the leaving line, the four requests, and the two thanks.</summary>
 public enum CustomerLine { Greet, Bag, Hurry, Leave, Microwave, HotWater, OnePlus, Thanks, ThanksFast, Waited }
@@ -65,6 +65,10 @@ public class GameAudio : MonoBehaviour
     [Header("Bag (doc 5.4): the film as something goes in")]
     public AudioClip BagClip;
 
+    [Header("Hands (2026-11-11): a film bag taken, turned in the hand and set down; a carton knocked. Several takes of each.")]
+    public AudioClip[] CrinkleClips = new AudioClip[0];
+    public AudioClip[] RustleClips = new AudioClip[0], CartonClips = new AudioClip[0], BagDownClips = new AudioClip[0];
+
     [Header("Store")]
     public AudioClip BellClip;
     public AudioClip DoorClip, HurryClip, DeliveryClip, Ambience;
@@ -94,7 +98,12 @@ public class GameAudio : MonoBehaviour
     public AudioClip[] ManagerLines = new AudioClip[0];
 
     const float MusicVolume = 0.16f;
+    // The sounds of the hands come one over another (a bag crackles while a carton is set down), each a little off pitch.
+    const int TouchVoices = 6;
+    const float TouchPitchSpread = 0.07f;
     AudioSource speaker, narrator, ambience, music;
+    AudioSource[] touchVoices;
+    int nextTouchVoice;
     readonly Dictionary<AudioClip, float[]> envelopes = new Dictionary<AudioClip, float[]>();
 
     /// <summary>How many times each sound was asked for, for the checks. Sounds are not listened to.</summary>
@@ -132,6 +141,10 @@ public class GameAudio : MonoBehaviour
         if (DisposeClip == null) DisposeClip = Tone("Dispose", 330f, 0.12f);
         if (DingClip == null) DingClip = Chime("Ding", 1568f, 1568f, 0.6f);
         if (TipClip == null) TipClip = Chime("Tip", 1568f, 2093f, 0.35f);
+        if (CrinkleClips == null || CrinkleClips.Length == 0) CrinkleClips = new[] { Noise("Crinkle", 0.22f, 0.2f) };
+        if (RustleClips == null || RustleClips.Length == 0) RustleClips = new[] { Noise("Rustle", 0.1f, 0.12f) };
+        if (CartonClips == null || CartonClips.Length == 0) CartonClips = new[] { Tone("Carton", 300f, 0.07f) };
+        if (BagDownClips == null || BagDownClips.Length == 0) BagDownClips = new[] { Tone("Bag Down", 110f, 0.1f) };
 
         // On its own object: it moves to whoever is speaking, and the counter sounds on this object must stay at the counter.
         var voice = new GameObject("Narrator");
@@ -206,6 +219,37 @@ public class GameAudio : MonoBehaviour
             default: clip = ErrorClip; break;
         }
         if (clip != null) AudioSource.PlayClipAtPoint(clip, position, EffectVolume);
+    }
+
+    /// <summary>
+    /// A sound of the hands (<see cref="StoreSound.Crinkle"/>, Rustle, Carton, BagDown) where the thing is: one of its
+    /// takes, a little higher or lower each time, as loud as asked (0 to 1).
+    /// </summary>
+    public void PlayTouch(StoreSound sound, Vector3 position, float volume)
+    {
+        Count(sound);
+        var clips = sound == StoreSound.Crinkle ? CrinkleClips : sound == StoreSound.Rustle ? RustleClips : sound == StoreSound.Carton ? CartonClips : BagDownClips;
+        if (clips == null || clips.Length == 0) return;
+        var clip = clips[UnityEngine.Random.Range(0, clips.Length)];
+        if (clip == null) return;
+        if (touchVoices == null)
+        {
+            touchVoices = new AudioSource[TouchVoices];
+            for (int i = 0; i < TouchVoices; i++)
+            {
+                var voice = new GameObject("Touch Voice").AddComponent<AudioSource>();
+                voice.transform.SetParent(transform, false);
+                voice.spatialBlend = 1f;
+                voice.playOnAwake = false;
+                touchVoices[i] = voice;
+            }
+        }
+        var free = touchVoices[nextTouchVoice++ % TouchVoices];
+        free.transform.position = position;
+        free.pitch = 1f + UnityEngine.Random.Range(-TouchPitchSpread, TouchPitchSpread);
+        free.volume = Mathf.Clamp01(volume) * EffectVolume;
+        free.clip = clip;
+        free.Play();
     }
 
     /// <summary>A customer speaks at <paramref name="mouth"/>. Returns the clip length (0 without a clip) so lines can follow each other.</summary>
