@@ -109,6 +109,9 @@ public class P1InteractionVerification : MonoBehaviour
         Directory.CreateDirectory(output);
         keyboard = InputSystem.AddDevice<Keyboard>("P1 Verify Keyboard");
         mouse = InputSystem.AddDevice<Mouse>("P1 Verify Mouse");
+        // The person's own mouse and keyboard are out of it until the check ends (2026-11-13): see VerificationInput.
+        VerificationInput.SilenceAllBut(keyboard, mouse);
+        Debug.Log($"[Verification] real input switched off for the check: {VerificationInput.Describe()}");
         started = Time.realtimeSinceStartup;
         StartCoroutine(Run());
     }
@@ -574,6 +577,7 @@ public class P1InteractionVerification : MonoBehaviour
         File.WriteAllText(Path.Combine(output, "interaction_report.json"), JsonUtility.ToJson(report, true));
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P1 Interaction] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} avgFps={report.averageFps:F1} hmdActive={report.hmdRuntimeActive}");
+        VerificationInput.Restore();
         if (keyboard != null) { InputSystem.RemoveDevice(keyboard); keyboard = null; }
         if (mouse != null) { InputSystem.RemoveDevice(mouse); mouse = null; }
 #if UNITY_EDITOR
@@ -585,6 +589,7 @@ public class P1InteractionVerification : MonoBehaviour
 
     void OnDestroy()
     {
+        VerificationInput.Restore();
         if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
         if (mouse != null && mouse.added) InputSystem.RemoveDevice(mouse);
     }

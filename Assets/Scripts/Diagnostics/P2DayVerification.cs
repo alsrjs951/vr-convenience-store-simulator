@@ -134,6 +134,9 @@ public partial class P2DayVerification : MonoBehaviour
         Directory.CreateDirectory(output);
         keyboard = InputSystem.AddDevice<Keyboard>("P2 Verify Keyboard");
         mouse = InputSystem.AddDevice<Mouse>("P2 Verify Mouse");
+        // The person's own mouse and keyboard are out of it until the check ends (2026-11-13): see VerificationInput.
+        VerificationInput.SilenceAllBut(keyboard, mouse);
+        StartCoroutine(CheckRealInputShutOut());
         started = Time.realtimeSinceStartup;
         Scanner.Scanned += scanned =>
         {
@@ -146,6 +149,33 @@ public partial class P2DayVerification : MonoBehaviour
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
         StartCoroutine(growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
+    }
+
+    /// <summary>
+    /// A move sent in on each real mouse, the way one from the person's hand would come, must not arrive: the device is
+    /// switched off, so it reads no motion and the simulator, which listens to every mouse, hears none either.
+    /// </summary>
+    IEnumerator CheckRealInputShutOut()
+    {
+        yield return null;
+        int mice = 0;
+        float heard = 0f;
+        bool allOff = true;
+        foreach (var device in VerificationInput.Silenced)
+        {
+            allOff &= !device.enabled;
+            if (!(device is Mouse real)) continue;
+            mice++;
+            InputSystem.QueueDeltaStateEvent(real.delta, new Vector2(400f, 250f));
+        }
+        for (int frame = 0; frame < 3; frame++)
+        {
+            yield return null;
+            foreach (var device in VerificationInput.Silenced)
+                if (device is Mouse real) heard += real.delta.ReadValue().magnitude;
+        }
+        Check("input.real_mouse_and_keyboard_shut_out", allOff && heard == 0f && mouse.enabled && keyboard.enabled,
+            $"switched off for the check: {VerificationInput.Describe()}; a 472 px move sent in on each of {mice} real mouse(s) was heard as {heard:0} px; the check's own mouse on={mouse.enabled}, keyboard on={keyboard.enabled}");
     }
 
     void Update()
@@ -1884,6 +1914,7 @@ public partial class P2DayVerification : MonoBehaviour
         WriteDay2Details();
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P2 Day] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} grade={report.grade} sales={report.sales}/{report.possibleSales} mouse={report.externalMouseMotion:0} fps={report.meanDesktopFps:0}");
+        VerificationInput.Restore();
         if (keyboard != null) { InputSystem.RemoveDevice(keyboard); keyboard = null; }
         if (mouse != null) { InputSystem.RemoveDevice(mouse); mouse = null; }
 #if UNITY_EDITOR
@@ -1895,6 +1926,7 @@ public partial class P2DayVerification : MonoBehaviour
 
     void OnDestroy()
     {
+        VerificationInput.Restore();
         if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
         if (mouse != null && mouse.added) InputSystem.RemoveDevice(mouse);
     }

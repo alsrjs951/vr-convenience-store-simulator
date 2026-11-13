@@ -119,6 +119,9 @@ public class P2LocomotionVerification : MonoBehaviour
         Directory.CreateDirectory(output);
         keyboard = InputSystem.AddDevice<Keyboard>("P2 Locomotion Keyboard");
         mouse = InputSystem.AddDevice<Mouse>("P2 Locomotion Mouse");
+        // The person's own mouse and keyboard are out of it until the check ends (2026-11-13): see VerificationInput.
+        VerificationInput.SilenceAllBut(keyboard, mouse);
+        Debug.Log($"[Verification] real input switched off for the check: {VerificationInput.Describe()}");
         started = Time.realtimeSinceStartup;
         StartCoroutine(Run());
     }
@@ -766,6 +769,7 @@ public class P2LocomotionVerification : MonoBehaviour
         File.WriteAllText(Path.Combine(output, "locomotion_report.json"), JsonUtility.ToJson(report, true));
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P2 Locomotion] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} mouse={report.externalMouseMotion:0} fps={report.meanDesktopFps:0}");
+        VerificationInput.Restore();
         if (keyboard != null) { InputSystem.RemoveDevice(keyboard); keyboard = null; }
         if (mouse != null) { InputSystem.RemoveDevice(mouse); mouse = null; }
 #if UNITY_EDITOR
@@ -777,6 +781,7 @@ public class P2LocomotionVerification : MonoBehaviour
 
     void OnDestroy()
     {
+        VerificationInput.Restore();
         if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
         if (mouse != null && mouse.added) InputSystem.RemoveDevice(mouse);
     }
