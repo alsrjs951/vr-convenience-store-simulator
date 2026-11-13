@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_almondchoco_01
   Name: "\uC544\uBAAC\uB4DC \uCD08\uCF5C\uB9BF (\uAC1C\uBC1C\uC6A9)"
   Price: 1500
-  SizeCm: {x: 15.000001, y: 7.700374, z: 2.1980834}
+  SizeCm: {x: 15.000001, y: 7.6822863, z: 2.2143962}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: 23cbbfdeb0959914fa233f04f68f426c, type: 2}
   LightSplat: {fileID: 11400000, guid: bf2116958ad439b49bd58e6bfeee7830, type: 2}

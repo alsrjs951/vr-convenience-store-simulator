@@ -1,4 +1,4 @@
-PASS gates: layers ok; splats=81570<=150000; root scale +1; splat localScale=(-0.25378, 0.25378, 0.25378); BarcodeTrigger inside proxy; scale gate NOT APPLIED (no measured size)
-provisional size_m=(0.1500, 0.0770, 0.0220) (width is a placeholder; height/depth follow reconstruction ratios)
-uniform scale=0.25378; mass_kg=0.05 (placeholder)
-preserved unchanged: Assets/Scenes/DakdariRefined.unity, Assets/GaussianSplats/Products/dev_almondchoco_01.asset, Assets/GaussianSplats/Products/dev_almondchoco_01.ply
+PASS gates: layers ok; splats=74875<=150000; root scale +1; splat localScale=(-0.23788, 0.23788, 0.23788); BarcodeTrigger inside proxy; scale gate NOT APPLIED (no measured size)
+provisional size_m=(0.1500, 0.0768, 0.0221) (width is a placeholder; height/depth follow reconstruction ratios)
+uniform scale=0.23788; mass_kg=0.05 (placeholder)
+preserved unchanged: Assets/Scenes/DakdariRefined.unity, Assets/GaussianSplats/Products/dev_almondchoco_01.ply

@@ -1,9 +1,9 @@
 {
   "id": "dev_dakdari_01",
-  "capture_id": "capture_01",
+  "capture_id": "capture_32",
   "display_name": "닭다리 (개발용)",
   "price": 1500,
-  "splat_asset": "Assets/GaussianSplats/DakdariRefined/dakdari.asset",
+  "splat_asset": "Assets/GaussianSplats/Products/dev_dakdari_01.asset",
   "box_fit": "Assets/Data/Provisional/dev_dakdari_01.box_fit.json",
   "scene": "Assets/Scenes/DakdariInteraction.unity",
   "evidence_dir": "docs/p1/evidence/dakdari_interaction",

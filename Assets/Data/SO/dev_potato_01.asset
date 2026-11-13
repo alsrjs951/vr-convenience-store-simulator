@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: dev_potato_01
   Name: "\uD3EC\uD14C\uD1A0\uCE69 \uC624\uB9AC\uC9C0\uB110 (\uAC1C\uBC1C\uC6A9)"
   Price: 1700
-  SizeCm: {x: 20, y: 26.567831, z: 8.068441}
+  SizeCm: {x: 20, y: 26.642609, z: 8.191827}
   BarcodeFace: 1
   SplatAsset: {fileID: 11400000, guid: 22e3fb75ac772fd4c92fba007b1f47cf, type: 2}
   LightSplat: {fileID: 11400000, guid: bb15193bce958844dbe300d9fe53e51c, type: 2}

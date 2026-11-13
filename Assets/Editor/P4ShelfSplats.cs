@@ -90,7 +90,11 @@ public static class P4ShelfSplats
         Debug.Log($"[ShelfSplats] PASS new slots={madeSlots} merged near={nearTotal} far={farTotal} in {scene.path}");
     }
 
-    static bool Made(string assetPath) => File.Exists(assetPath);
+    // -p4-regenerate: the product PLYs changed, so every light copy and merged slot is made again over the old files.
+    // The .meta files stay, so nothing that points at these assets loses them.
+    static readonly bool Regenerate = Array.IndexOf(Environment.GetCommandLineArgs(), "-p4-regenerate") >= 0;
+
+    static bool Made(string assetPath) => !Regenerate && File.Exists(assetPath);
 
     static Ply Read(string path)
     {

@@ -71,10 +71,13 @@ public static class P1InteractionTrial
         var manifest = JsonUtility.FromJson<Manifest>(File.ReadAllText(manifestPath));
         var fit = JsonUtility.FromJson<BoxFit>(File.ReadAllText(manifest.box_fit));
         var ply = Path.ChangeExtension(manifest.splat_asset, ".ply").Replace('\\', '/');
-        bool assetExisted = File.Exists(manifest.splat_asset);
+        // -p1-reimport-splat: the PLY was replaced by a better reconstruction, so the splat asset is made again from it.
+        // Its .meta stays, so the prefabs and scenes that point at the asset keep pointing at it.
+        bool reimport = Array.IndexOf(Environment.GetCommandLineArgs(), "-p1-reimport-splat") >= 0;
+        bool assetExisted = File.Exists(manifest.splat_asset) && !reimport;
         var preserved = assetExisted ? new[] { SourceScene, manifest.splat_asset, ply } : new[] { SourceScene, ply };
         var before = Array.ConvertAll(preserved, Hash);
-        var asset = LoadOrCreateAsset(manifest.splat_asset, ply);
+        var asset = LoadOrCreateAsset(manifest.splat_asset, ply, reimport);
 
         Directory.CreateDirectory(PrefabFolder);
         Directory.CreateDirectory(DataFolder);
@@ -100,9 +103,9 @@ public static class P1InteractionTrial
         Debug.Log($"[P1 Interaction] Build PASS {manifest.id}: {gateReport}");
     }
 
-    static GaussianSplatAsset LoadOrCreateAsset(string assetPath, string plyPath)
+    static GaussianSplatAsset LoadOrCreateAsset(string assetPath, string plyPath, bool reimport = false)
     {
-        var asset = AssetDatabase.LoadAssetAtPath<GaussianSplatAsset>(assetPath);
+        var asset = reimport ? null : AssetDatabase.LoadAssetAtPath<GaussianSplatAsset>(assetPath);
         if (asset != null) return asset;
         if (!File.Exists(plyPath)) throw new Exception("PLY missing: " + plyPath);
         var creator = ScriptableObject.CreateInstance<GaussianSplatAssetCreator>();

@@ -1,4 +1,4 @@
-PASS gates: layers ok; splats=98248<=150000; root scale +1; splat localScale=(-0.24633, 0.24633, 0.24633); BarcodeTrigger inside proxy; scale gate NOT APPLIED (no measured size)
-provisional size_m=(0.2000, 0.2944, 0.0926) (width is a placeholder; height/depth follow reconstruction ratios)
-uniform scale=0.24633; mass_kg=0.1 (placeholder)
+PASS gates: layers ok; splats=82241<=150000; root scale +1; splat localScale=(-0.35159, 0.35159, 0.35159); BarcodeTrigger inside proxy; scale gate NOT APPLIED (no measured size)
+provisional size_m=(0.2000, 0.2893, 0.0812) (width is a placeholder; height/depth follow reconstruction ratios)
+uniform scale=0.35159; mass_kg=0.1 (placeholder)
 preserved unchanged: Assets/Scenes/DakdariRefined.unity, Assets/GaussianSplats/Products/dev_indianbap_01.ply
