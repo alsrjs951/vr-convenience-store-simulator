@@ -39,6 +39,9 @@ public static class P2StoreBuilder
     // The short days of learning of a store that is kept: same schemas as the scenario and the deliveries.
     const string TrainingScenarioSource = "Data/training_scenarios.csv";
     const string TrainingScenarioPath = "Assets/Data/Generated/training_scenarios.csv";
+    // The demo's customers (-demo): rows of Day 1 only.
+    const string DemoScenarioSource = "Data/demo_scenarios.csv";
+    const string DemoScenarioPath = "Assets/Data/Generated/demo_scenarios.csv";
     const string TrainingDeliveriesSource = "Data/training_deliveries.csv";
     const string TrainingDeliveriesPath = "Assets/Data/Generated/training_deliveries.csv";
     const string ManifestFolder = "Assets/Data/Provisional";
@@ -695,6 +698,7 @@ public static class P2StoreBuilder
         BuildWristWatch(game, director);
         game.Unlocks = ImportUnlocks(intake);
         game.TrainingScenario = ImportScenario(catalog, TrainingScenarioSource, TrainingScenarioPath);
+        game.DemoScenario = ImportScenario(catalog, DemoScenarioSource, DemoScenarioPath, 1);
         if (!File.Exists(TrainingDeliveriesSource)) throw new Exception("Deliveries missing: " + TrainingDeliveriesSource);
         File.Copy(TrainingDeliveriesSource, TrainingDeliveriesPath, true);
         AssetDatabase.ImportAsset(TrainingDeliveriesPath);
@@ -972,6 +976,22 @@ public static class P2StoreBuilder
     };
 
     /// <summary>
+    /// Gives the game the demo's customers (Data/demo_scenarios.csv, 2026-11-13) in the store as it is, without building it
+    /// again (a build bakes the light anew).
+    /// Unity.exe -batchmode -executeMethod P2StoreBuilder.InstallDemoScenarioInStore -quit
+    /// </summary>
+    public static void InstallDemoScenarioInStore()
+    {
+        var scene = EditorSceneManager.OpenScene(StoreScene, OpenSceneMode.Single);
+        var game = UnityEngine.Object.FindFirstObjectByType<GameManager>() ?? throw new Exception("No GameManager in " + StoreScene);
+        game.DemoScenario = ImportScenario(null, DemoScenarioSource, DemoScenarioPath, 1);
+        EditorUtility.SetDirty(game);
+        EditorSceneManager.MarkSceneDirty(scene);
+        if (!EditorSceneManager.SaveScene(scene)) throw new Exception("Scene save failed.");
+        Debug.Log($"[Store] demo scenario installed: {DayScenarioLoader.Parse(game.DemoScenario.text, 1, game.Catalog).Count} customers");
+    }
+
+    /// <summary>
     /// Gives the customers their line for change that is short (2026-11-13) in the store as it is, without building it
     /// again (a build bakes the light anew).
     /// Unity.exe -batchmode -executeMethod P2StoreBuilder.InstallChangeShortVoiceInStore -quit
@@ -1087,7 +1107,7 @@ public static class P2StoreBuilder
     }
 
     /// <summary>Copies Data/scenarios.csv into Assets and fails the build if any row of any day is skipped or a day is empty.</summary>
-    static TextAsset ImportScenario(ProductCatalog catalog, string source = ScenarioSourceDefault, string imported = ScenarioPathDefault)
+    static TextAsset ImportScenario(ProductCatalog catalog, string source = ScenarioSourceDefault, string imported = ScenarioPathDefault, int days = ScenarioDays)
     {
         if (!File.Exists(source)) throw new Exception("Scenario missing: " + source);
         var text = File.ReadAllText(source);
@@ -1103,7 +1123,7 @@ public static class P2StoreBuilder
         }
         var skipped = new List<string>();
         var counts = new List<string>();
-        for (int day = 1; day <= ScenarioDays; day++)
+        for (int day = 1; day <= days; day++)
         {
             var orders = DayScenarioLoader.Parse(text, day, catalog, day == 1 ? skipped : null);
             if (orders.Count == 0) throw new Exception($"{source} has no orders for day {day}.");

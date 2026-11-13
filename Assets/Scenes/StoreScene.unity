@@ -39623,6 +39623,7 @@ MonoBehaviour:
   Day: 1
   LastDay: 3
   Scenario: {fileID: 4900000, guid: 7abf1620493c5224bb01557abe370768, type: 3}
+  DemoScenario: {fileID: 4900000, guid: 5364ec1c50c028944ad06b8abe567990, type: 3}
   MoreScenarios: []
   Catalog: {fileID: 11400000, guid: 240f8883836dcd04cad03098ed03f452, type: 2}
   Pos: {fileID: 1394454049}

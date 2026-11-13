@@ -106,6 +106,7 @@ public partial class P2DayVerification : MonoBehaviour
     int bagsSeen;
     int cardsRejected;
     bool walking;
+    bool demoMode;
     bool walkedHoldingProduct;
     bool walkedHoldingProp;
     readonly Dictionary<DayState, int> statFrames = new Dictionary<DayState, int>();
@@ -119,7 +120,8 @@ public partial class P2DayVerification : MonoBehaviour
         faceMode = Array.IndexOf(args, "-p2-face-verify") >= 0;
         introMode = Array.IndexOf(args, "-p2-intro-verify") >= 0;
         growthHandsMode = Array.IndexOf(args, "-p2-growth-hands") >= 0;
-        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode && !growthHandsMode) return;
+        demoMode = Array.IndexOf(args, "-p2-demo-verify") >= 0;
+        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode && !growthHandsMode && !demoMode) return;
         if (faceMode) Game.RunTutorial = false;
         walking = Array.IndexOf(args, "-p2-walk") >= 0;
         nextDayCheck = Array.IndexOf(args, "-p2-next-day") >= 0;
@@ -129,6 +131,7 @@ public partial class P2DayVerification : MonoBehaviour
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
 #endif
         output = Path.Combine(Application.dataPath, growthHandsMode ? "../docs/p2/evidence/growth/hands" : introMode ? "../docs/p2/evidence/first_minute" : faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
+        if (demoMode) output = Path.Combine(Application.dataPath, "../docs/p2/evidence/demo");
         int index = Array.IndexOf(args, "-p2-evidence");
         if (index >= 0 && index + 1 < args.Length) output = args[index + 1];
         Directory.CreateDirectory(output);
@@ -148,7 +151,7 @@ public partial class P2DayVerification : MonoBehaviour
         };
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
-        StartCoroutine(growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
+        StartCoroutine(demoMode ? RunDemoCheck() : growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
     }
 
     /// <summary>
@@ -1909,8 +1912,8 @@ public partial class P2DayVerification : MonoBehaviour
         report.meanDesktopFps = frames / Mathf.Max(0.01f, Time.realtimeSinceStartup - started);
         foreach (var state in statFrames)
             Debug.Log($"[P2 Day] fps in {state.Key}: {state.Value / Mathf.Max(0.01f, statSeconds[state.Key]):0.0} over {statSeconds[state.Key]:0.0}s");
-        report.scope = (growthHandsMode ? "A store that is kept: two boxes of new products shelved by hand on display shelves; the title, the time card and the customers by code. " : day2Mode ? "Day 2 (intake, disposal, leaving customers). " : "") + "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.";
-        File.WriteAllText(Path.Combine(output, growthHandsMode ? "growth_hands_report.json" : introMode ? "intro_report.json" : faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
+        report.scope = (demoMode ? "The demo for a first-time player (-demo): no title, the Day 1 tutorial and three customers by hand, then started over by the button, by F5 in the middle of the tutorial, and put back at the counter by F6. " : growthHandsMode ? "A store that is kept: two boxes of new products shelved by hand on display shelves; the title, the time card and the customers by code. " : day2Mode ? "Day 2 (intake, disposal, leaving customers). " : "") + "XR Device Simulator with virtual keyboard/mouse. No HMD, no physical controllers, nothing about reach or comfort. FPS is desktop-only and not a VR measurement. Prices and the scenario are placeholders; customers are Rocketbox characters on a NavMesh in a placeholder store layout.";
+        File.WriteAllText(Path.Combine(output, demoMode ? "demo_report.json" : growthHandsMode ? "growth_hands_report.json" : introMode ? "intro_report.json" : faceMode ? "face_report.json" : titleMode ? "title_report.json" : day2Mode ? "day2_report.json" : "day_report.json"), JsonUtility.ToJson(report, true));
         WriteDay2Details();
         int failed = report.stages.FindAll(s => !s.pass).Count;
         Debug.Log($"[P2 Day] {(report.pass ? "PASS" : "FAIL")} checks={report.stages.Count} failed={failed} grade={report.grade} sales={report.sales}/{report.possibleSales} mouse={report.externalMouseMotion:0} fps={report.meanDesktopFps:0}");

@@ -6,6 +6,9 @@ public class StationLabel : MonoBehaviour
     static readonly System.Collections.Generic.List<StationLabel> all = new System.Collections.Generic.List<StationLabel>();
     static bool shown = true;
 
+    /// <summary>The tags are on. Statics outlive a scene: the demo's restart switches them on again (GameManager.RestartDemo).</summary>
+    public static bool Shown => shown;
+
     /// <summary>All tags on or off (GameManager: off when the shift starts; the tutorials turn them on).</summary>
     public static void ShowAll(bool show)
     {

@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     const float BriefSeconds = 7f;
     const float RequestGuideSeconds = 12f;
     const int AmbientCustomers = 2;
-    static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check" };
+    static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check", "-demo", "-p2-demo-verify" };
 
     // ---------- A store that is kept and grows (docs/p2/해금_성장_기획_2026-11-10.md). All numbers are [제안]. ----------
     /// <summary>The days of learning. From the next one the customers follow from what the store sells.</summary>
@@ -64,6 +64,8 @@ public class GameManager : MonoBehaviour
     public int Day = 1;
     public int LastDay = 3;
     public TextAsset Scenario;
+    /// <summary>Data/demo_scenarios.csv: the few customers of the demo (-demo), all of Day 1.</summary>
+    public TextAsset DemoScenario;
     /// <summary>More rows of the same schema (doc 6.5), for later days.</summary>
     public TextAsset[] MoreScenarios = new TextAsset[0];
     public ProductCatalog Catalog;
@@ -92,6 +94,18 @@ public class GameManager : MonoBehaviour
     public int LastEarned { get; private set; }
     /// <summary>Products ordered today, standing on the counter to be looked at until the next morning. An empty place is null.</summary>
     public readonly ProductPrefab[] Samples = new ProductPrefab[SampleSpots];
+
+    /// <summary>
+    /// The demo for someone who has never played and has a few minutes (-demo, 2026-11-13): no title, no walk in, no time
+    /// card. The player is put at the counter, the manager teaches the six steps, three customers come, and the day's
+    /// settlement ends it with a button to play again. At the PC, F5 starts it over at any moment (for the next person)
+    /// and F6 puts whoever wears the headset back at the counter.
+    /// </summary>
+    public bool Demo { get; private set; }
+    /// <summary>Times the demo was started over since the program began. Statics outlive the scene. For the checks.</summary>
+    public static int DemoRestarts { get; private set; }
+    const string PlayAgain = "다시 하기";
+    const float HeadTrackedWithin = 2f;
 
     public DayState State { get; private set; } = DayState.Intro;
     public int OrderCount { get; private set; }
@@ -179,6 +193,7 @@ public class GameManager : MonoBehaviour
         if (index >= 0 && index + 1 < args.Length && int.TryParse(args[index + 1], out int start) && start >= 1) Day = start;
         // -with-title: through the title all the same, for the store that is kept with the headset recorder on (-hmd-perf).
         UsesTitle = Title != null && (Array.IndexOf(args, "-with-title") >= 0 || !Array.Exists(args, argument => Array.IndexOf(NoTitleArguments, argument) >= 0));
+        Demo = !UsesTitle && (Array.IndexOf(args, "-demo") >= 0 || Array.IndexOf(args, "-p2-demo-verify") >= 0);
         Director.OrderArrived += OnOrderArrived;
         Director.OrderEnded += OnOrderEnded;
 
@@ -238,7 +253,7 @@ public class GameManager : MonoBehaviour
     {
         if (!UsesTitle)
         {
-            yield return RunDays();
+            yield return Demo ? RunDemo() : RunDays();
             yield break;
         }
         while (true)
@@ -526,6 +541,59 @@ public class GameManager : MonoBehaviour
         samplesPlaced = 0;
     }
 
+    // ---------- The demo ----------
+
+    IEnumerator RunDemo()
+    {
+        // Wherever in the room the headset is, that is the clerk's place. Its pose takes a moment to arrive.
+        var head = Title.Rig.Camera.transform;
+        for (float waited = 0f; head.localPosition.sqrMagnitude < 1e-6f && waited < HeadTrackedWithin; waited += Time.unscaledDeltaTime) yield return null;
+        Title.PlacePlayer(Title.CounterSpot);
+        Debug.Log($"[Game] Demo: the player is put at the counter; started over {DemoRestarts} time(s) so far. F5 starts over, F6 puts the player at the counter again.");
+        yield return RunDay(1);
+        DaysFinished++;
+        yield return WaitForButton(PlayAgain);
+        RestartDemo();
+    }
+
+    void Update()
+    {
+        if (!Demo) return;
+        // Whoever runs the demo sits at the PC. Every keyboard is asked: the checks press these keys on one of their own.
+        bool startOver = false, recenter = false;
+        foreach (var device in UnityEngine.InputSystem.InputSystem.devices)
+        {
+            if (!(device is UnityEngine.InputSystem.Keyboard keys) || !keys.enabled) continue;
+            startOver |= keys.f5Key.wasPressedThisFrame;
+            recenter |= keys.f6Key.wasPressedThisFrame;
+        }
+        if (startOver) RestartDemo();
+        else if (recenter)
+        {
+            Title.PlacePlayer(Title.CounterSpot);
+            Debug.Log("[Game] Demo: the player is put at the counter again (F6).");
+        }
+    }
+
+    /// <summary>
+    /// The store as it was built, by loading its scene again: customers, goods, money and every half-done step are gone
+    /// with the old one. What is static has to be put right by hand.
+    /// </summary>
+    public void RestartDemo()
+    {
+        DemoRestarts++;
+        Debug.Log($"[Game] Demo: started over ({DemoRestarts}) from {State}.");
+        StationLabel.ShowAll(true);
+        Time.timeScale = 1f;
+        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+#if UNITY_EDITOR
+        // The editor plays the scene it has open, which need not be in the build settings.
+        UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(scene.path, new UnityEngine.SceneManagement.LoadSceneParameters(UnityEngine.SceneManagement.LoadSceneMode.Single));
+#else
+        UnityEngine.SceneManagement.SceneManager.LoadScene(scene.buildIndex);
+#endif
+    }
+
     IEnumerator RunDays()
     {
         while (true)
@@ -717,6 +785,7 @@ public class GameManager : MonoBehaviour
 
     System.Collections.Generic.List<Order> ParseOrders(int day)
     {
+        if (Demo && DemoScenario != null) return DayScenarioLoader.Parse(DemoScenario.text, day, Catalog);
         // Past the training there are no rows: the customers follow from what the store sells.
         if (Growth && day > TrainingDays) return OrderGenerator.Build(PlanFor(day));
         if (IsTraining(day) && TrainingScenario != null) return DayScenarioLoader.Parse(TrainingScenario.text, day, Catalog);
