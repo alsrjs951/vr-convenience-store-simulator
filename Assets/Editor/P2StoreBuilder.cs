@@ -94,22 +94,28 @@ public static class P2StoreBuilder
     const float StandTop = 0.8f;
     static readonly Vector3 StandACenter = new Vector3(ShelfAX - ShelfWidth * 0.5f - 0.25f, 0f, 3.25f), StandBCenter = new Vector3(ShelfBX + ShelfWidth * 0.5f + 0.25f, 0f, 3.25f);
     static readonly Vector3 CartCenter = new Vector3(3.5f, 0f, -1.55f);
-    const float CartWidth = 1.1f, CartSpotOffset = 0.28f;
+    const float CartWidth = 1.1f, CartDepth = 0.6f, CartSpotOffset = 0.28f;
     static readonly Vector3 RecycleCenter = new Vector3(2.6f, 0f, -1.575f);
     static readonly Vector3 RecycleSize = new Vector3(0.6f, 0.7f, 0.65f);
     static readonly Vector3 DisposalCenter = new Vector3(-1.0f, 0f, -0.7f);
     // A card whose centre comes this close to its seat in the terminal slot is pulled in. The seat is half a card inside the
     // face, so this starts about 3 cm before the card's front edge reaches the opening.
     const float CardSnapMeters = 0.08f;
-    // Barcode roughly toward one of the scanner's two glasses. A product standing on the flat one, with its barcode facing
-    // the clerk or a side, does not scan.
+    // Barcode roughly toward the scanner's glass. A product held in front of it with its barcode facing the clerk or a
+    // side does not scan.
     const float MaxBarcodeAngle = 50f;
-    // The scanner's upright part, which P3StoreDressing draws: it stands this far behind the flat glass and leans away from
-    // the clerk. The red light comes out of the glass in its face, whose middle is at ScannerWindowHeight above the counter.
-    public const float ScannerTowerGap = 0.03f, ScannerTowerHeight = 0.3f, ScannerTowerLean = 0.05f, ScannerWindowHeight = 0.165f;
-    // The space in front of the upright glass where a barcode is read in the air: as wide as the scanner, from just above
-    // the flat glass up to about the top of the upright one, and out to the scanner's front edge.
-    const float ScanReadWidth = 0.2f, ScanReadHeight = 0.22f, ScanReadDepth = 0.24f;
+    // The counter as stores have it (2026-11-14, after photos of three store counters): the card terminal stands at the
+    // till's end (DeviceX), and what passes between clerk and customer (the bag, the money tray, the goods) has the
+    // middle. The scanner is at the clerk's right hand (ScannerX), on the clerk's side of the counter, in front of where
+    // the goods are set down: a thing taken from the row comes past it on its way to the clerk.
+    public const float DeviceX = -0.47f, ScannerX = 0.36f;
+    // The scanner, a small fixed one that P3StoreDressing draws: low, so the goods standing behind it are seen over it.
+    // Its face stands at ScannerFront and leans away from the clerk by ScannerLean over its height, looking up at them.
+    // The red light comes out of the glass in that face, whose middle is at ScannerWindowHeight above the counter.
+    public const float ScannerFront = 0.45f, ScannerWidth = 0.11f, ScannerDepth = 0.06f, ScannerHeight = 0.14f, ScannerLean = 0.05f, ScannerWindowHeight = 0.075f;
+    // The space in front of the glass where a barcode is read in the air: a little wider than the scanner, from just over
+    // the counter to above the scanner, and out toward the clerk past the counter's edge.
+    const float ScanReadWidth = 0.16f, ScanReadBottom = 0.03f, ScanReadHeight = 0.24f, ScanReadDepth = 0.24f;
     // The light starts this far behind the glass, so it is already a few centimetres wide where it comes out.
     const float ScanLightBehindGlass = 0.06f;
     static readonly Vector3 EyePosition = new Vector3(0f, 1.36f, 0f);
@@ -332,7 +338,6 @@ public static class P2StoreBuilder
         var wood = Material("P2_Counter", new Color(0.62f, 0.5f, 0.38f));
         var dark = Material("P2_Device", new Color(0.13f, 0.14f, 0.16f));
         var shelf = Material("P2_Shelf", new Color(0.55f, 0.6f, 0.65f));
-        var red = Material("P2_ScannerPad", new Color(0.8f, 0.08f, 0.08f));
 
         var environment = new GameObject("Environment").transform;
         float roomCenterX = (RoomFar + RoomNear) * 0.5f, roomWidth = RoomNear - RoomFar, roomCenterZ = (RoomBack + RoomFront) * 0.5f, roomDepth = RoomFront - RoomBack;
@@ -368,52 +373,41 @@ public static class P2StoreBuilder
         Box("Counter", new Vector3(0f, CounterTop * 0.5f, 0.65f), new Vector3(2f, CounterTop, 0.6f), wood, environment, true);
         Box("Counter Extension", new Vector3((1f + CounterExtensionEnd) * 0.5f, CounterTop * 0.5f, 0.65f), new Vector3(CounterExtensionEnd - 1f, CounterTop, 0.6f), wood, environment, true);
 
-        // ---------- Scanner: two glasses, as on a shop's fixed scanner ----------
-        // The flat one is a solid pad with a thin zone on top, so only the face lying on it can scan.
-        var padTop = CounterTop + 0.05f;
-        var padCenter = new Vector3(0f, CounterTop + 0.025f, 0.55f);
-        var padSize = new Vector3(0.2f, 0.05f, 0.2f);
-        Box("Scanner Pad", padCenter, padSize, dark, environment, true);
-        var scannerMark = Box("Scanner Glass", new Vector3(0f, padTop + 0.001f, 0.55f), new Vector3(0.18f, 0.002f, 0.18f), red, environment, false);
+        // ---------- Scanner: a small fixed one at the clerk's right hand, as on a store's counter ----------
+        // It reads in the air in front of its glass, on the clerk's side: a barcode held up to it is read without touching
+        // anything. The box is what a hand or a product runs into; P3StoreDressing draws the scanner in its place.
+        float scannerSlant = Mathf.Atan2(ScannerLean, ScannerHeight);
+        var glassOut = new Vector3(0f, Mathf.Sin(scannerSlant), -Mathf.Cos(scannerSlant));
+        var glassCenter = new Vector3(ScannerX, CounterTop + ScannerWindowHeight, ScannerFront + ScannerLean * ScannerWindowHeight / ScannerHeight) + glassOut * 0.004f;
+        Box("Scanner Body", new Vector3(ScannerX, CounterTop + ScannerHeight * 0.5f, ScannerFront + (ScannerLean + ScannerDepth) * 0.5f),
+            new Vector3(ScannerWidth, ScannerHeight, ScannerLean + ScannerDepth), dark, environment, true);
+        // The zone is the space it reads, its up axis pointing out of the glass. The glass leans back with the scanner; the
+        // space is kept level, so it does not rise off the counter toward the clerk.
         var scannerObject = new GameObject("ScannerZone") { layer = LayerMask.NameToLayer("Scanner") };
-        scannerObject.transform.position = new Vector3(0f, padTop + 0.004f, 0.55f);
+        scannerObject.transform.SetPositionAndRotation(
+            new Vector3(ScannerX, CounterTop + ScanReadBottom + ScanReadHeight * 0.5f, glassCenter.z - 0.01f - ScanReadDepth * 0.5f),
+            Quaternion.LookRotation(Vector3.up, Vector3.back));
         var scannerCollider = scannerObject.AddComponent<BoxCollider>();
         scannerCollider.isTrigger = true;
-        scannerCollider.size = new Vector3(0.18f, 0.008f, 0.18f);
+        scannerCollider.size = new Vector3(ScanReadWidth, ScanReadDepth, ScanReadHeight);
         var scanner = scannerObject.AddComponent<ScannerZone>();
-        scanner.Indicator = scannerMark.GetComponent<Renderer>();
         scanner.MaxBarcodeAngle = MaxBarcodeAngle;
-        AddLabel(scannerObject.transform, "스캐너");
-
-        // The upright one reads in the air in front of it, and the red light comes out of it. Its glass leans back with the
-        // tower; the space it reads is kept level, so it does not rise off the flat glass toward the clerk.
-        float towerSlant = Mathf.Atan2(ScannerTowerLean, ScannerTowerHeight);
-        var glassOut = new Vector3(0f, Mathf.Sin(towerSlant), -Mathf.Cos(towerSlant));
-        float towerFront = padCenter.z + padSize.z * 0.5f + ScannerTowerGap;
-        var glassCenter = new Vector3(padCenter.x, CounterTop + ScannerWindowHeight, towerFront + ScannerTowerLean * ScannerWindowHeight / ScannerTowerHeight) + glassOut * 0.004f;
-        var windowObject = new GameObject("Scan Window") { layer = scannerObject.layer };
-        windowObject.transform.SetParent(scannerObject.transform, false);
-        windowObject.transform.SetPositionAndRotation(
-            new Vector3(padCenter.x, padTop + 0.008f + ScanReadHeight * 0.5f, glassCenter.z - 0.01f - ScanReadDepth * 0.5f),
-            Quaternion.LookRotation(Vector3.up, Vector3.back));
-        var windowCollider = windowObject.AddComponent<BoxCollider>();
-        windowCollider.isTrigger = true;
-        windowCollider.size = new Vector3(ScanReadWidth, ScanReadDepth, ScanReadHeight);
-        windowObject.AddComponent<ScanWindow>().Zone = scanner;
         scanner.Aim = Marker("Scan Aim", glassCenter, Quaternion.LookRotation(Vector3.Cross(Vector3.right, glassOut), glassOut), scannerObject.transform);
+        // The name tag stands on its own, upright: the zone is turned.
+        AddLabel(Marker("Scanner Label", new Vector3(ScannerX, CounterTop + 0.06f, ScannerFront)), "스캐너");
 
         var beamObject = new GameObject("Scan Beam");
         beamObject.transform.SetParent(scannerObject.transform, false);
         var lightFrom = glassCenter - glassOut * ScanLightBehindGlass;
-        beamObject.transform.SetPositionAndRotation(lightFrom, Quaternion.LookRotation(Vector3.back, Vector3.up));
+        // Out along the way the glass looks: up toward what the clerk holds over it.
+        beamObject.transform.SetPositionAndRotation(lightFrom, Quaternion.LookRotation(glassOut, Vector3.up));
         var beam = beamObject.AddComponent<ScanBeam>();
         beam.Zone = scanner;
         beam.Material = BeamMaterial();
-        beam.Reaches = LayerMask.GetMask("Default", "Interactable");
-        // One line that falls on the middle of the flat glass when nothing is there, and a cross above it that only shows on
-        // a product held up to the upright glass.
-        float toFlatGlass = Mathf.Atan2(lightFrom.y - padTop, lightFrom.z - (padCenter.z - 0.01f)) * Mathf.Rad2Deg;
-        beam.Lines = new[] { new Vector2(toFlatGlass, 0f), new Vector2(6f, 24f), new Vector2(6f, -24f) };
+        // On what is held up to it only. With nothing there the light is seen in the glass, not painted on the clerk.
+        beam.Reaches = LayerMask.GetMask("Interactable");
+        // A cross on the face a product shows the glass.
+        beam.Lines = new[] { new Vector2(4f, 24f), new Vector2(4f, -24f) };
         beam.HalfAngle = 20f;
 
         // ---------- Systems ----------
@@ -433,7 +427,8 @@ public static class P2StoreBuilder
         // An open plastic bag standing on the counter. Its film is drawn by P3StoreDressing (P3Meshes.PlasticBag); here is
         // what it does. Only its foot is solid: unseen walls keep what is dropped in from sliding out under the film,
         // and above them the film gives way to a hand or a product, as film does.
-        var bagCenter = new Vector3(-0.4f, CounterTop, 0.56f);
+        // Left of the middle, beside the card terminal, on the clerk's side of the counter.
+        var bagCenter = new Vector3(-0.14f, CounterTop, 0.56f);
         var bagRoot = new GameObject("Bag").transform;
         bagRoot.position = bagCenter;
         // As high as the film's rim at its lowest: what is let go lying across the mouth rests on the rim.
@@ -473,7 +468,7 @@ public static class P2StoreBuilder
         // ---------- Payment ----------
         // The card slot is a real opening in the face toward the clerk, so a card physically goes in. On Quest 2 a plain box
         // with an invisible zone above it left the wearer guessing where and which way the card went.
-        var terminal = new Vector3(0.82f, CounterTop, 0.52f);
+        var terminal = new Vector3(DeviceX, CounterTop, 0.52f);
         const float terminalWidth = 0.16f, terminalHeight = 0.08f, terminalDepth = 0.2f;
         const float slotWidth = 0.09f, slotGap = 0.02f, slotDepth = 0.07f, slotBottom = 0.015f, frameBar = 0.006f;
         float face = terminal.z - terminalDepth * 0.5f;
@@ -544,8 +539,12 @@ public static class P2StoreBuilder
 
         var register = BuildCashRegister(environment, gameAudio, out var drawer);
 
-        var trayCenter = new Vector3(-0.3f, CounterTop, 0.84f);
+        // One money tray, as a store has (2026-11-14): the customer lays the card or the note on it, and the clerk lays
+        // the change and the card back on it. It is on the customer's side of the counter, where their arm reaches (from
+        // their place a hand gets about 15 cm past the counter's far edge), between the bag and the goods, so neither
+        // stands between it and the clerk. Until then there were two, a plate for the customer and a tray for the change.
         // Solid (2026-11-13): without a collider a note lay on the counter under the tray's 4 mm, and was not seen.
+        var trayCenter = new Vector3(0.18f, CounterTop, 0.84f);
         Box("Change Tray", trayCenter + Vector3.up * 0.002f, new Vector3(0.3f, 0.004f, 0.2f), shelf, environment, true);
         var trayObject = new GameObject("ChangeTrayZone") { layer = LayerMask.NameToLayer("Zone") };
         trayObject.transform.position = trayCenter + Vector3.up * 0.07f;
@@ -554,16 +553,11 @@ public static class P2StoreBuilder
         trayCollider.size = new Vector3(0.3f, 0.14f, 0.2f);
         var tray = trayObject.AddComponent<ChangeTrayZone>();
         tray.Audio = gameAudio;
-        AddLabel(trayObject.transform, "거스름돈 접시");
+        AddLabel(trayObject.transform, "돈 접시");
 
-        // To the right of the scanner as the clerk sees it, not behind it (2026-11-12): the scanner's upright part stands in
-        // the middle of the counter, 30 cm high, and from the clerk's place it hides the counter behind it about 12 cm to
-        // either side of the middle. The plate used to begin 2 cm from the middle, and the card on it was half hidden.
-        var plate = new Vector3(0.22f, CounterTop, 0.84f);
-        Box("Customer Plate", plate + Vector3.up * 0.002f, new Vector3(0.24f, 0.004f, 0.18f), shelf, environment, true);
+        // Where the customer's card or note lies: the middle of the tray.
         var plateMark = new GameObject("Customer Plate Anchor").transform;
-        plateMark.position = plate;
-        AddLabel(plateMark, "손님 접시");
+        plateMark.position = trayCenter;
 
         var desk = new GameObject("PaymentDesk").AddComponent<PaymentDesk>();
         desk.transform.SetParent(systems, false);
@@ -579,9 +573,10 @@ public static class P2StoreBuilder
         desk.Cash = CashLooks();
 
         // ---------- Customers (doc 2.3 Customers/, 6.1, D12), tutorial, game ----------
-        // Where a customer sets the goods down, straight on the counter top: between the scanner and the card terminal.
-        // The row begins far enough to the right that the first thing, standing, does not hide the plate behind it.
-        var goods = Marker("Goods Anchor", new Vector3(0.42f, CounterTop, 0.68f));
+        // Where a customer sets the goods down, straight on the counter top: to the right of the money tray, with nothing
+        // of the store's standing among them. The row begins far enough to the right that the first thing, standing, does
+        // not hide the tray behind it.
+        var goods = Marker("Goods Anchor", new Vector3(0.45f, CounterTop, 0.68f));
         var directorPosition = new Vector3(0.62f, 1.32f, 0.98f);
         var director = new GameObject("CustomerDirector").AddComponent<CustomerDirector>();
         director.transform.SetPositionAndRotation(directorPosition, Facing(directorPosition));
@@ -595,7 +590,8 @@ public static class P2StoreBuilder
         var towardFront = Quaternion.identity;
         var towardFarWall = Quaternion.Euler(0f, -90f, 0f);
         director.Door = Marker("Door", new Vector3(DoorCenter.x, 0f, StorefrontZ - VestibuleDepth + 0.4f), towardFront, customers);
-        // In front of the plate and the goods, beside the scanner: straight behind the scanner the customer was hidden too.
+        // In front of the money tray, the goods to their left. Where it was: the strip the NavMesh leaves out between the
+        // counter and the line begins 15 cm to the side of this place, and the bake's voxels put its edge just clear of it.
         director.Counter = Marker("Counter Front", new Vector3(0.2f, 0f, 1.35f), towardClerk, customers);
         // The line stands along the counter on the side away from the door, so leaving customers do not cut through it. Not
         // straight back toward the gondolas: a line there walls the store in two (2026-11-08 layout, customers stuck).
@@ -1236,6 +1232,11 @@ public static class P2StoreBuilder
         var tape = Material("P2_Tape", new Color(0.55f, 0.42f, 0.25f));
         var hole = Material("P2_HandHole", new Color(0.08f, 0.07f, 0.06f));
         var standMaterial = Material("P2_Stand", new Color(0.3f, 0.33f, 0.36f));
+        var steelMaterial = Material("P2_CartSteel", new Color(0.74f, 0.76f, 0.78f));
+        steelMaterial.SetFloat("_Metallic", 0.75f);
+        steelMaterial.SetFloat("_Smoothness", 0.55f);
+        var rubberMaterial = Material("P2_CartRubber", new Color(0.07f, 0.07f, 0.075f));
+        rubberMaterial.SetFloat("_Smoothness", 0.25f);
         var cutterMaterial = Material("P2_CutterHandle", new Color(0.95f, 0.55f, 0.1f));
         var bladeMaterial = Material("P2_CutterBlade", new Color(0.75f, 0.78f, 0.8f));
         var binMaterial = Material("P2_Bin", new Color(0.2f, 0.35f, 0.25f));
@@ -1267,6 +1268,7 @@ public static class P2StoreBuilder
             Slot("B-2", "dev_ogamja_01", 2, 1, ShelfBX - 0.13f, ShelfBoardTops[1], catalog, yellow, green, red, audio, slots),
         };
         intake.DecorSlots = BuildDecorSlots(catalog, yellow, green, red, audio, slots);
+        intake.FillSlots = BuildFillSlots(catalog, yellow, green, red, audio, slots);
 
         // Stands and cutters (doc 5.7.1 B2, B3; 5.7.3 one cutter per stand).
         var stands = new List<BoxStandSocket>();
@@ -1276,7 +1278,8 @@ public static class P2StoreBuilder
             var standRoot = new GameObject("Box Stand " + letter).transform;
             standRoot.SetParent(environment, false);
             standRoot.position = center + Vector3.up * StandTop;
-            Box($"Stand {letter} Body", center + Vector3.up * (StandTop * 0.5f), new Vector3(0.5f, StandTop, 0.5f), standMaterial, standRoot, true);
+            Solid($"Stand {letter} Solid", center + Vector3.up * (StandTop * 0.5f), new Vector3(0.5f, StandTop, 0.5f), standRoot);
+            WorkStand(letter, center, standMaterial, steelMaterial, rubberMaterial, standRoot);
             var socketObject = new GameObject($"BoxStandSocket {letter}") { layer = LayerMask.NameToLayer("Zone") };
             socketObject.transform.SetParent(standRoot, false);
             socketObject.transform.position = center + Vector3.up * (StandTop + 0.17f);
@@ -1311,7 +1314,8 @@ public static class P2StoreBuilder
         var cart = new GameObject("Intake Cart").transform;
         cart.SetParent(environment, false);
         cart.position = CartCenter + Vector3.up * StandTop;
-        Box("Cart Body", CartCenter + Vector3.up * 0.4f, new Vector3(CartWidth, 0.8f, 0.6f), standMaterial, cart, true);
+        Solid("Cart Solid", CartCenter + Vector3.up * 0.4f, new Vector3(CartWidth, 0.8f, CartDepth), cart);
+        DeliveryCart(CartCenter, standMaterial, steelMaterial, rubberMaterial, cart);
         intake.CartSpots = new[]
         {
             Marker("Cart Spot 1", CartCenter + new Vector3(-CartSpotOffset, StandTop, 0f), Quaternion.Euler(0f, 180f, 0f), cart),
@@ -1368,6 +1372,36 @@ public static class P2StoreBuilder
         Add("E-1", "dev_shinjjang_01", ShelfAX - half, ShelfBoardTops[2], ShelfFront, true);
         Add("E-2", "dev_jollypong_01", ShelfBX - half, ShelfBoardTops[2], ShelfFront, true);
         Add("E-3", "dev_almondchoco_01", ShelfBX + half, ShelfBoardTops[2], ShelfFront, true);
+        return made.ToArray();
+    }
+
+    /// <summary>
+    /// The lower two boards of row A + B's face toward the counter (2026-11-14), which were cartons: the face the clerk
+    /// looks at all day and the one the demo film shows. Far copies only and never a target. None of them is a product a
+    /// growing store orders in (Data/unlocks.csv), so they can stand there on every day in every mode.
+    /// </summary>
+    static ShelfSlotZone[] BuildFillSlots(ProductCatalog catalog, Material yellow, Material green, Material red, GameAudio audio, Transform parent)
+    {
+        const float half = 0.36f, lowest = 0.1f;
+        var made = new List<ShelfSlotZone>();
+        void Add(string id, string product, float centerX, float board, int columns = 3)
+        {
+            var slot = Slot(id, product, columns, 1, centerX, board, catalog, yellow, green, red, audio, parent, ShelfFront, true);
+            slot.DisplayOnly = true;
+            slot.FarOnly = true;
+            slot.GetComponent<BoxCollider>().enabled = false;
+            made.Add(slot);
+        }
+        Add("F-1", "dev_kkobukchip_01", ShelfAX - half, ShelfBoardTops[0]);
+        Add("F-2", "dev_potato_01", ShelfAX + half, ShelfBoardTops[0]);
+        Add("F-3", "dev_sunchip_01", ShelfBX - half, ShelfBoardTops[0]);
+        Add("F-4", "dev_cornchip_01", ShelfBX + half, ShelfBoardTops[0]);
+        Add("F-5", "dev_kkokkalcorn_01", ShelfAX - half, lowest);
+        Add("F-6", "dev_shinramen_01", ShelfAX + half, lowest);
+        Add("F-7", "dev_ogamja_01", ShelfBX - half, lowest);
+        Add("F-8", "dev_cheetos_01", ShelfBX + half, lowest);
+        // The one place left beside the delivery slots B-2 and B-1.
+        Add("F-9", "dev_squidpeanut_01", ShelfBX - 0.54f, ShelfBoardTops[1], 1);
         return made.ToArray();
     }
 
@@ -1629,6 +1663,73 @@ public static class P2StoreBuilder
         }
     }
 
+    /// <summary>What is solid of a piece of furniture drawn from parts: one box, as when the furniture was one box.</summary>
+    static void Solid(string name, Vector3 center, Vector3 size, Transform parent)
+    {
+        var solid = new GameObject(name);
+        solid.transform.SetParent(parent, false);
+        solid.transform.position = center;
+        solid.AddComponent<BoxCollider>().size = size;
+    }
+
+    /// <summary>A round bar from one point to another, looks only.</summary>
+    static void Tube(string name, Vector3 from, Vector3 to, float diameter, Material material, Transform parent)
+    {
+        var tube = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        tube.name = name;
+        UnityEngine.Object.DestroyImmediate(tube.GetComponent<Collider>());
+        tube.transform.SetParent(parent, false);
+        tube.transform.SetPositionAndRotation((from + to) * 0.5f, Quaternion.FromToRotation(Vector3.up, to - from));
+        // Unity's cylinder is 2 units tall.
+        tube.transform.localScale = new Vector3(diameter, (to - from).magnitude * 0.5f, diameter);
+        tube.GetComponent<Renderer>().sharedMaterial = material;
+    }
+
+    /// <summary>
+    /// The stand by a shelf, where a box is opened: a small steel work table, the top a dark mat, a shelf under it.
+    /// Looks only; the stand's solid is one box (2026-11-14: it was drawn as that box before).
+    /// </summary>
+    static void WorkStand(string letter, Vector3 center, Material mat, Material steel, Material rubber, Transform parent)
+    {
+        const float width = 0.5f, leg = 0.03f;
+        float reach = width * 0.5f - 0.02f - leg * 0.5f;
+        P3Meshes.Round(Box($"Stand {letter} Top", center + Vector3.up * (StandTop - 0.012f), new Vector3(width, 0.024f, width), mat, parent, false), 0.006f);
+        Box($"Stand {letter} Frame", center + Vector3.up * (StandTop - 0.049f), new Vector3(width - 0.04f, 0.05f, width - 0.04f), steel, parent, false);
+        Box($"Stand {letter} Shelf", center + Vector3.up * 0.2f, new Vector3(width - 0.05f, 0.018f, width - 0.05f), steel, parent, false);
+        foreach (float x in new[] { -reach, reach })
+            foreach (float z in new[] { -reach, reach })
+            {
+                var foot = center + new Vector3(x, 0f, z);
+                Box($"Stand {letter} Leg", foot + Vector3.up * ((StandTop - 0.03f) * 0.5f + 0.012f), new Vector3(leg, StandTop - 0.054f, leg), steel, parent, false);
+                Box($"Stand {letter} Foot", foot + Vector3.up * 0.006f, new Vector3(leg + 0.012f, 0.012f, leg + 0.012f), rubber, parent, false);
+            }
+    }
+
+    /// <summary>
+    /// The cart the morning's boxes come in on: two decks on four posts, casters, a push handle at the end by the wall.
+    /// Looks only; the cart's solid is one box, and the boxes sit on the top deck (CartSpots).
+    /// </summary>
+    static void DeliveryCart(Vector3 center, Material deck, Material steel, Material rubber, Transform parent)
+    {
+        const float post = 0.028f, wheel = 0.1f;
+        float reachX = CartWidth * 0.5f - 0.035f, reachZ = CartDepth * 0.5f - 0.035f;
+        P3Meshes.Round(Box("Cart Top Deck", center + Vector3.up * (StandTop - 0.0125f), new Vector3(CartWidth, 0.025f, CartDepth), deck, parent, false), 0.008f);
+        P3Meshes.Round(Box("Cart Lower Deck", center + Vector3.up * 0.21f, new Vector3(CartWidth, 0.025f, CartDepth), deck, parent, false), 0.008f);
+        foreach (float x in new[] { -reachX, reachX })
+            foreach (float z in new[] { -reachZ, reachZ })
+            {
+                var foot = center + new Vector3(x, 0f, z);
+                Tube("Cart Post", foot + Vector3.up * 0.2f, foot + Vector3.up * (StandTop - 0.02f), post, steel, parent);
+                Box("Cart Caster Fork", foot + Vector3.up * 0.15f, new Vector3(0.05f, 0.1f, 0.012f), steel, parent, false);
+                Tube("Cart Wheel", foot + new Vector3(0f, wheel * 0.5f, -0.014f), foot + new Vector3(0f, wheel * 0.5f, 0.014f), wheel, rubber, parent);
+            }
+        // The handle leans out a little from the end posts and rises to where a hand pushes.
+        float handleX = reachX + 0.07f, handleY = StandTop + 0.17f;
+        foreach (float z in new[] { -reachZ, reachZ })
+            Tube("Cart Handle Post", center + new Vector3(reachX, StandTop - 0.02f, z), center + new Vector3(handleX, handleY, z), post, steel, parent);
+        Tube("Cart Handle Bar", center + new Vector3(handleX, handleY, -reachZ - post * 0.5f), center + new Vector3(handleX, handleY, reachZ + post * 0.5f), post, steel, parent);
+    }
+
     static GameObject Box(string name, Vector3 center, Vector3 size, Material material, Transform parent, bool collider)
     {
         var box = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -1706,7 +1807,7 @@ public static class P2StoreBuilder
     {
         var scene = EditorSceneManager.OpenScene(StoreScene, OpenSceneMode.Single);
         int made = 0;
-        foreach (var name in new[] { "Change Tray", "Customer Plate" })
+        foreach (var name in new[] { "Change Tray" })
         {
             var tray = GameObject.Find(name) ?? throw new Exception("No " + name + " in " + StoreScene);
             if (tray.GetComponent<Collider>() != null) continue;

@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// The scanner's red light, where it lands (2026-11-10). Fans of rays leave a point behind the upright glass, along this
-/// object's forward, and a thin red line is drawn on whatever they reach first: the flat glass in the counter when nothing
-/// is there, and the product as soon as one is held in front. So the light is seen to come out of the upright glass, as on
-/// a real scanner, instead of being painted on the counter.
+/// The scanner's red light, where it lands (2026-11-10). Fans of rays leave a point behind the scanner's glass, along this
+/// object's forward, and a thin red line is drawn on whatever of <see cref="Reaches"/> they reach first: the product, as
+/// soon as one is held in front. So the light is seen to come out of the glass, as on a real scanner, instead of being
+/// painted on the counter.
 ///
 /// The lines are opaque. Splats are blended in before the transparent things and tested against depth, so an opaque line
 /// sits correctly in front of or behind a product; a transparent one would show through it.

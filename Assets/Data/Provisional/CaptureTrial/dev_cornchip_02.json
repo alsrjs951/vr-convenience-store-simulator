@@ -1,0 +1,19 @@
+{
+  "id": "dev_cornchip_02",
+  "capture_id": "capture_13",
+  "display_name": "콘칩 (개발용, 11/07 재촬영)",
+  "price": 0,
+  "splat_asset": "Assets/GaussianSplats/Products/dev_cornchip_02.asset",
+  "box_fit": "Assets/Data/Provisional/CaptureTrial/dev_cornchip_02.box_fit.json",
+  "scene": "Assets/Scenes/CornChipRecaptureInteraction.unity",
+  "evidence_dir": "docs/p1/evidence/capture_technique_2026-11-07/cornchip_02",
+  "provisional_width_m": 0.2,
+  "provisional_mass_kg": 0.1,
+  "barcode_face": "Back",
+  "barcode_local_normal": {
+    "x": 0,
+    "y": 0,
+    "z": -1
+  },
+  "note": "CAPTURE TECHNIQUE TRIAL (2026-11-07 re-shoot), kept out of the game catalog on purpose: P2StoreBuilder only reads Assets/Data/Provisional/dev_*.json at the top level. Front = capture_13 (new video), back = capture_08 session_back (the 2026-10-25 video), joined by an ASSUMED alignment (scripts/windows/merge_bag_shells.py). NOT measured. Width, mass and price are development placeholders; other sizes follow the reconstruction's ratios."
+}

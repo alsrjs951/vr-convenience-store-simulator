@@ -83,8 +83,10 @@ public class ChangeTrayZone : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        // Change only. The customer's own note lies on this tray too until the clerk takes it (one tray, 2026-11-14), and
+        // it is neither change given nor the tray's to clear away.
         var prop = other.GetComponentInParent<PaymentProp>();
-        if (prop != null && !prop.IsCard) inside.Add(prop);
+        if (prop != null && prop.Kind == PaymentKind.Change) inside.Add(prop);
     }
 
     void OnTriggerExit(Collider other)

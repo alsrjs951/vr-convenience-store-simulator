@@ -403,7 +403,7 @@ public class P2GrowthVerification : MonoBehaviour
         // What was ordered is seen: the scanner's head, the coin dispenser by the tray, the speakers, the cutters' grips.
         Check("day5.equipment_seen", LooksShown() == 4 && PartShown("Microwave Sign") && PartShown("Dispenser Sign"),
             $"scanner={Game.LookShown(GameManager.ScannerLook)}; coins={Game.LookShown(GameManager.CoinLook)}; speakers={Game.LookShown(GameManager.MusicLook)}; cutters={Game.LookShown(GameManager.CutterLook)}; signs={PartShown("Microwave Sign")},{PartShown("Dispenser Sign")}");
-        yield return CaptureFrom("g07b_day5_counter_equipment", new Vector3(-0.2f, 1.45f, 0.05f), new Vector3(-0.2f, 1.0f, 0.78f), 62f);
+        yield return CaptureFrom("g07b_day5_counter_equipment", new Vector3(-0.03f, 1.5f, -0.05f), new Vector3(-0.03f, 1.0f, 0.8f), 78f);
         yield return CaptureFrom("g07c_day5_ceiling_speakers", new Vector3(0.4f, 1.4f, 0.1f), new Vector3(0.5f, 3f, 1.9f), 60f);
         if (Intake.Cutters.Length > 0)
         {

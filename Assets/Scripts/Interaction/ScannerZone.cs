@@ -8,9 +8,10 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 /// Game-rule scan (doc 5.3): a product counts when its BarcodeTrigger volume is in one of the scanner's windows and faces
 /// it. This is collision logic only. It does not read the barcode image.
 ///
-/// A window is a trigger volume whose up axis points out of its glass. This object's own collider is one (the flat glass
-/// in the counter, read on contact); a <see cref="ScanWindow"/> adds another (the upright glass, read in the air in front
-/// of it). Like a real scanner, the same product is read once for as long as it stays in sight: it has to be taken out of
+/// A window is a trigger volume whose up axis points out of its glass. This object's own collider is one: the space in
+/// front of the store scanner's glass, read in the air (2026-11-14; before that it was a flat glass in the counter, read
+/// on contact). A <see cref="ScanWindow"/> adds another, should a scanner have a second glass.
+/// Like a real scanner, the same product is read once for as long as it stays in sight: it has to be taken out of
 /// every window for <see cref="CooldownSeconds"/> before it can be read again, so a hand hovering at the edge of the
 /// reading range does not ring the item up twice.
 /// </summary>

@@ -1139,7 +1139,7 @@ public class CustomerDirector : MonoBehaviour
         if (!scannerLookedFor)
         {
             scannerLookedFor = true;
-            var tower = GameObject.Find("Scanner Tower");
+            var tower = GameObject.Find("Scanner Housing");
             if (tower != null) scannerTower = tower.GetComponent<Renderer>();
         }
         if (scannerTower == null) return false;
@@ -2271,6 +2271,9 @@ public class CustomerDirector : MonoBehaviour
         return customer;
     }
 
+    /// <summary>A model's second look (other clothes, a prefab named with _B at the end) is still the same face.</summary>
+    public static string Model(string avatar) => avatar != null && avatar.EndsWith("_B", System.StringComparison.Ordinal) ? avatar.Substring(0, avatar.Length - 2) : avatar;
+
     /// <summary>The avatar least often in the store right now, so five people are not two pairs of twins.</summary>
     CustomerCharacter PickCharacter()
     {
@@ -2280,11 +2283,12 @@ public class CustomerDirector : MonoBehaviour
         foreach (var candidate in Characters)
         {
             if (candidate == null) continue;
-            int count = candidate.name == ReservedAvatar ? 1 : 0;
+            string model = Model(candidate.name);
+            int count = model == Model(ReservedAvatar) ? 1 : 0;
             foreach (var present in Present)
-                if (present != null && present.Record.Avatar == candidate.name) count++;
+                if (present != null && Model(present.Record.Avatar) == model) count++;
             foreach (var guest in Ambient)
-                if (guest != null && guest.Record.Avatar == candidate.name) count++;
+                if (guest != null && Model(guest.Record.Avatar) == model) count++;
             if (count < fewest)
             {
                 fewest = count;

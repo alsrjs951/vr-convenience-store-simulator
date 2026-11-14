@@ -741,6 +741,12 @@ public partial class P2DayVerification
         yield return GrabAt(product.transform.position, () => product.Grab.interactorsSelecting.Contains(rightInteractor), label + ".grab");
         if (finished) yield break;
         yield return MoveProduct(product, product.transform.position + new Vector3(0f, 0.05f, -0.25f), label + ".out");
+        // Lifted over the scanner's sight, as in FalseDisposal: the scanner stands at the till's end of the counter now
+        // (2026-11-14), and the walk to the bin carries the hand past it. A barcode going by in front of the glass at
+        // counter height is read, as it should be, and rung up on the order of whoever is at the counter.
+        var held = product.transform.position;
+        float clear = CounterTop + AboveScannerSight + held.y - LowestProxyPoint(product);
+        if (held.y < clear) yield return MoveProduct(product, new Vector3(held.x, clear, held.z), label + ".lift");
         yield return Go("D");
         int disposed = Intake.Disposed;
         var bin = Disposal.transform.position;
@@ -815,8 +821,8 @@ public partial class P2DayVerification
             string label = $"d2.order{number}.item{i}";
             yield return GrabProduct(product, label);
             yield return TurnBarcodeDown(product);
-            yield return MoveHeldAbovePad(product);
-            yield return LowerUntilScanned(product, label + ".scan");
+            yield return MoveHeldBeforeScanner(product);
+            yield return ShowUntilScanned(product, label + ".scan");
             if (order.NeedsBag) yield return PutInBag(product, label + ".bag");
             else yield return SetAside(product, i);
             yield return ResetHandRotation();

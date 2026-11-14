@@ -32,16 +32,21 @@ public partial class P2DayVerification : MonoBehaviour
     const float LookDownMouseUnits = -75f;
     const float CounterTop = 0.9f;
     const float TravelHeight = 1.32f;
-    const float AbovePad = 0.05f;
     const float PressStep = 0.004f;
     const float LowerTimeout = 8f;
     const float BagDropHeight = 0.32f;
     const float ScanCooldown = 0.9f;
-    // Beside the scanner (x, z), where neither glass sees a held product while the wrist turns it.
-    static readonly Vector2 BesideScanner = new Vector2(0.45f, 0.42f);
-    // A product shown to the upright glass starts here, on the clerk's side of the counter, and goes in by this much a step.
-    const float ShowFromZ = 0.2f, ShowStep = 0.02f;
-    // The upright glass reads up to 0.28 m above the counter. A product whose lowest point is this high passes over that.
+    // Away from the scanner (x, z), where its glass does not see a held product while the wrist turns it.
+    static readonly Vector2 BesideScanner = new Vector2(0.05f, 0.42f);
+    // A product shown to the scanner's glass starts on the clerk's side of it, this far from the glass at least and no
+    // farther into the counter than ShowFromZ, and goes in by ShowStep a step.
+    const float ShowFromZ = 0.2f, ShowFromBeforeGlass = 0.42f, ShowStep = 0.02f;
+    float ShowFrom => Mathf.Min(ShowFromZ, Scanner.Shown.position.z - ShowFromBeforeGlass);
+    // What is shown to the glass is held this far above the counter at its lowest.
+    const float OverTheTerminal = 0.11f;
+    // And is brought straight to this far from the glass, barcode face first: the scanner reads from 25 cm.
+    const float ShowFromGlass = 0.31f;
+    // The glass reads up to 0.33 m above the counter. A product whose lowest point is this high passes over that.
     const float AboveScannerSight = 0.36f;
     // XRI throws what is let go using the last quarter second of hand motion, so a test that means to set something
     // down has to stop first. Otherwise a light bill flies, and the tray is a centimeter from the counter's far edge.
@@ -49,7 +54,8 @@ public partial class P2DayVerification : MonoBehaviour
     const float SettledSpeed = 0.1f;
     // Just past ChangeTrayZone.StoppedAddingSeconds.
     const float StoppedAddingWait = 8.6f;
-    static readonly Vector3 OffCounterDrop = new Vector3(0.35f, 1.05f, 0.18f);
+    // In front of the clerk, on their side of the counter and clear of the space the scanner reads.
+    static readonly Vector3 OffCounterDrop = new Vector3(0.05f, 1.05f, 0.18f);
     // How far in front of the card slot the card is lined up before it goes in.
     const float CardApproach = 0.12f;
     const float WalkSpeed = 1.5f;
@@ -121,8 +127,15 @@ public partial class P2DayVerification : MonoBehaviour
         introMode = Array.IndexOf(args, "-p2-intro-verify") >= 0;
         growthHandsMode = Array.IndexOf(args, "-p2-growth-hands") >= 0;
         demoMode = Array.IndexOf(args, "-p2-demo-verify") >= 0;
-        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode && !growthHandsMode && !demoMode) return;
-        if (faceMode) Game.RunTutorial = false;
+        // -p2-film-growth: the hands' run through a store that is kept, filmed (P2FilmRun).
+        filmGrowth = Array.IndexOf(args, "-p2-film-growth") >= 0;
+        if (filmGrowth) growthHandsMode = true;
+        // -p2-film-intro: the first minute (the title, the walk in, the time card, the manager), filmed (P2FilmRun).
+        filmIntro = Array.IndexOf(args, "-p2-film-intro") >= 0;
+        if (filmIntro) introMode = true;
+        filmMode = Array.IndexOf(args, "-p2-film") >= 0 || filmGrowth || filmIntro;
+        if (Array.IndexOf(args, "-p2-verify") < 0 && !day2Mode && !titleMode && !faceMode && !introMode && !growthHandsMode && !demoMode && !filmMode) return;
+        if (faceMode || FilmsTheCounter) Game.RunTutorial = false;
         walking = Array.IndexOf(args, "-p2-walk") >= 0;
         nextDayCheck = Array.IndexOf(args, "-p2-next-day") >= 0;
         Application.runInBackground = true;
@@ -132,6 +145,7 @@ public partial class P2DayVerification : MonoBehaviour
 #endif
         output = Path.Combine(Application.dataPath, growthHandsMode ? "../docs/p2/evidence/growth/hands" : introMode ? "../docs/p2/evidence/first_minute" : faceMode ? "../docs/p2/evidence/customer_face" : titleMode ? "../docs/p2/evidence/title/editor" : day2Mode ? "../docs/p2/evidence/day2/editor" : "../docs/p2/evidence/day1/editor");
         if (demoMode) output = Path.Combine(Application.dataPath, "../docs/p2/evidence/demo");
+        if (filmMode) output = Path.Combine(Application.dataPath, "../capture/film/take");
         int index = Array.IndexOf(args, "-p2-evidence");
         if (index >= 0 && index + 1 < args.Length) output = args[index + 1];
         Directory.CreateDirectory(output);
@@ -151,7 +165,7 @@ public partial class P2DayVerification : MonoBehaviour
         };
         Bag.Bagged += _ => bagsSeen++;
         Desk.CardSlot.Rejected += () => cardsRejected++;
-        StartCoroutine(demoMode ? RunDemoCheck() : growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
+        StartCoroutine(FilmsTheCounter ? RunFilm() : demoMode ? RunDemoCheck() : growthHandsMode ? RunGrowthHands() : introMode ? RunIntroCheck() : faceMode ? RunFaceCheck() : titleMode ? RunTitleCheck() : day2Mode ? RunDay2() : Run());
     }
 
     /// <summary>
@@ -326,7 +340,7 @@ public partial class P2DayVerification : MonoBehaviour
         foreach (var r in forOrders) sequences.Add(r.Sequence);
         Check("customers.one_person_per_order", forOrders.Count == Game.OrderCount && sequences.Count == Game.OrderCount && !sequences.Contains(0),
             $"customers for orders={forOrders.Count}; distinct orders={sequences.Count}; orders={Game.OrderCount}");
-        Check("customers.real_characters", director.Characters.Length == 4 && director.Records.TrueForAll(r => r.Avatar != "placeholder"),
+        Check("customers.real_characters", director.Characters.Length == 8 && director.Records.TrueForAll(r => r.Avatar != "placeholder"),
             $"prefabs={director.Characters.Length}; avatars=[{string.Join(", ", director.Records.ConvertAll(r => r.Avatar))}]");
         Check("customers.one_at_a_time_at_counter", director.MaxAtCounterSeen == 1, $"max at counter={director.MaxAtCounterSeen}");
         // Nobody waves any more (2026-11-13): thanks and a nod when the sale is done, and out with their things.
@@ -621,12 +635,12 @@ public partial class P2DayVerification : MonoBehaviour
         int rustlesBefore = Game.Pos.Audio.CountOf(StoreSound.Rustle);
         yield return TurnBarcodeDown(product);
         Check("hands.bag_rustles_as_it_is_turned", Game.Pos.Audio.CountOf(StoreSound.Rustle) > rustlesBefore, $"rustles {rustlesBefore}->{Game.Pos.Audio.CountOf(StoreSound.Rustle)}");
-        yield return MoveHeldAbovePad(product);
+        yield return MoveHeldBeforeScanner(product);
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Scan, StepTimeout, "tutorial.scan_shown");
         yield return new WaitForSeconds(0.1f);
         Check("tutorial.arrow_at_the_scanner", pointer.Shown && pointer.Label == "여기에 대기", $"label={pointer.Label}");
-        yield return Capture("03_tutorial_barcode_down");
-        yield return LowerUntilScanned(product, "tutorial.scan");
+        yield return Capture("03_tutorial_barcode_to_the_scanner");
+        yield return ShowUntilScanned(product, "tutorial.scan");
         yield return WaitUntil(() => tutorial.Step == TutorialStep.Bag, StepTimeout, "tutorial.bag_shown");
         yield return new WaitForSeconds(0.1f);
         Check("tutorial.customer_asks_for_a_bag", Game.Pos.Audio.SpokenCount(CustomerLine.Bag) >= 1 && pointer.Label == "여기에 넣기", $"bag lines={Game.Pos.Audio.SpokenCount(CustomerLine.Bag)}; label={pointer.Label}");
@@ -706,12 +720,12 @@ public partial class P2DayVerification : MonoBehaviour
                 string label = $"order{number}.item{i}";
                 yield return GrabProduct(product, label);
                 if (walking && !walkedHoldingProduct) yield return WalkHoldingProduct(product);
-                if (number == 1 && i == 0) yield return PressUprightOnPad(product);
+                if (number == 1 && i == 0) yield return ShowTurnedAway(product);
                 if (number == 5) yield return DropOnFloorAndGrabAgain(product);
                 yield return TurnBarcodeDown(product);
                 if (number == 4 && i == 0) yield return TryBaggingBeforeScanning(product);
-                yield return MoveHeldAbovePad(product);
-                yield return LowerUntilScanned(product, label + ".scan");
+                yield return MoveHeldBeforeScanner(product);
+                yield return ShowUntilScanned(product, label + ".scan");
                 if (number == 3 && i == 0) yield return OverscanAndCancel(product);
                 else if (order.NeedsBag) yield return PutInBag(product, label + ".bag");
                 else yield return SetAside(product, i);
@@ -871,10 +885,10 @@ public partial class P2DayVerification : MonoBehaviour
                 bagLiftPictured = true;
                 // The hand has just closed on the handles and the bag still stands on the counter; then on its way over
                 // the counter; then in the left hand.
-                yield return CaptureFrom("bag_lift_1_hand_on_the_handles_from_the_clerk", new Vector3(0f, 1.5f, 0.1f), new Vector3(-0.25f, 1.05f, 0.8f), 65f);
-                yield return CaptureFrom("bag_lift_2_from_the_side", new Vector3(0.8f, 1.75f, 0.25f), new Vector3(-0.25f, 1.05f, 0.85f), 55f);
+                yield return CaptureFrom("bag_lift_1_hand_on_the_handles_from_the_clerk", new Vector3(0.1f, 1.5f, 0.1f), Bag.Floor.position + new Vector3(0.1f, 0.15f, 0.24f), 65f);
+                yield return CaptureFrom("bag_lift_2_from_the_side", new Vector3(0.95f, 1.75f, 0.25f), Bag.Floor.position + new Vector3(0.1f, 0.15f, 0.29f), 55f);
                 yield return new WaitForSeconds(0.22f);
-                yield return CaptureFrom("bag_lift_3_over_the_counter", new Vector3(0.8f, 1.75f, 0.25f), new Vector3(-0.1f, 1.05f, 0.95f), 55f);
+                yield return CaptureFrom("bag_lift_3_over_the_counter", new Vector3(0.95f, 1.75f, 0.25f), Bag.Floor.position + new Vector3(0.2f, 0.15f, 0.39f), 55f);
                 float began = Time.time;
                 while (director.BagInHand && Time.time - began < 4f) yield return null;
                 yield return CaptureFrom("bag_lift_4_into_the_left_hand", new Vector3(1.3f, 2.1f, 0.75f), new Vector3(0.42f, 0.75f, 1.3f), 50f);
@@ -1071,65 +1085,61 @@ public partial class P2DayVerification : MonoBehaviour
     }
 
     /// <summary>
-    /// The body and the barcode's lower edge both touch the flat glass, but the barcode faces sideways, toward neither glass.
-    /// A barcode that happens to face the upright glass would be read by it, rightly, so that one is first turned round to
-    /// the clerk's side, and turned back afterwards beside the scanner, out of its sight.
+    /// The product is in the space the scanner reads, body and barcode both, but the barcode faces the clerk, away from the
+    /// glass: it is not read. A customer sets a thing down with its barcode on the far side, which is toward the glass, so
+    /// it is first turned round where the scanner does not see it, and turned back there afterwards.
     /// </summary>
-    IEnumerator PressUprightOnPad(ProductPrefab product)
+    IEnumerator ShowTurnedAway(ProductPrefab product)
     {
+        var glass = Scanner.Shown;
         var start = product.transform.position;
+        float travel = Mathf.Max(start.y, TravelHeight);
+        yield return MoveProduct(product, new Vector3(start.x, travel, start.z), "rule.turned_away.rise");
         var facing = product.transform.TransformDirection(product.Data.BarcodeLocalNormal);
-        bool turnedRound = Vector3.Dot(facing, -Scanner.Shown.up) > 0f;
+        bool turnedRound = Vector3.Dot(facing, -glass.up) > 0f;
         if (turnedRound)
         {
-            yield return MoveProduct(product, new Vector3(start.x, Mathf.Max(start.y, TravelHeight), start.z), "rule.upright.rise");
             yield return RotateHand(new Vector3(0f, 180f, 0f));
             yield return new WaitForSeconds(0.3f);
         }
         int scans = scansSeen;
         int bodies = Scanner.IgnoredBodyEntries;
         int angled = Scanner.AngledBarcodeEntries;
-        yield return MoveHeldAbovePad(product);
-        float padTop = Scanner.transform.position.y - 0.004f;
+        var center = product.transform.position;
+        float height = Mathf.Max(glass.position.y, CounterTop + OverTheTerminal + center.y - LowestProxyPoint(product));
+        yield return MoveProduct(product, new Vector3(glass.position.x, travel, ShowFrom), "rule.turned_away.over");
+        yield return MoveProduct(product, new Vector3(glass.position.x, height, ShowFrom), "rule.turned_away.level");
+        // In until its far side is nearly at the glass: the barcode, on its near side, is well inside by then.
         var target = rightHand.position;
         float begun = Time.realtimeSinceStartup;
-        while (LowestProxyPoint(product) > padTop + 0.002f && Time.realtimeSinceStartup - begun < LowerTimeout)
+        while (glass.position.z - FarSideZ(product) > 0.04f && Time.realtimeSinceStartup - begun < LowerTimeout * 2f)
         {
-            target += Vector3.down * PressStep;
-            yield return MoveHand(target, "rule.upright.lower");
+            target += Vector3.forward * ShowStep;
+            yield return MoveHand(target, "rule.turned_away.approach");
             yield return new WaitForSeconds(0.03f);
         }
         yield return new WaitForSeconds(0.3f);
-        yield return Capture("11y_upright_on_pad_no_scan");
+        yield return Capture("11y_turned_away_no_scan");
         var normal = product.transform.TransformDirection(product.Data.BarcodeLocalNormal);
-        Check("rule.upright_press_no_scan",
-            scansSeen == scans && Scanner.IgnoredBodyEntries > bodies,
-            $"scans {scans}->{scansSeen}; bodyEntries {bodies}->{Scanner.IgnoredBodyEntries}; angledBarcodeEntries {angled}->{Scanner.AngledBarcodeEntries}; barcode angle from down={Vector3.Angle(normal, Vector3.down):0}; from the upright glass={Vector3.Angle(normal, -Scanner.Shown.up):0}; turned round={turnedRound}; lowest={LowestProxyPoint(product):0.000}; padTop={padTop:0.000}");
+        Check("rule.turned_away_no_scan",
+            scansSeen == scans && Scanner.IgnoredBodyEntries > bodies && Scanner.AngledBarcodeEntries > angled,
+            $"scans {scans}->{scansSeen}; bodyEntries {bodies}->{Scanner.IgnoredBodyEntries}; angledBarcodeEntries {angled}->{Scanner.AngledBarcodeEntries}; barcode angle from the glass={Vector3.Angle(normal, -glass.up):0}; turned round={turnedRound}; far side {(glass.position.z - FarSideZ(product)) * 100f:0.0} cm from the glass");
+        yield return MoveProduct(product, new Vector3(glass.position.x, height, ShowFrom), "rule.turned_away.back");
+        yield return MoveProduct(product, new Vector3(glass.position.x, travel, ShowFrom), "rule.turned_away.lift");
+        yield return MoveProduct(product, new Vector3(start.x, travel, start.z), "rule.turned_away.beside");
         if (!turnedRound) yield break;
-        var center = product.transform.position;
-        yield return MoveProduct(product, new Vector3(center.x, Mathf.Max(center.y, TravelHeight), center.z), "rule.upright.lift");
-        yield return MoveProduct(product, new Vector3(start.x, Mathf.Max(center.y, TravelHeight), start.z), "rule.upright.beside");
         yield return RotateHand(new Vector3(0f, -180f, 0f));
         yield return new WaitForSeconds(0.3f);
     }
 
     /// <summary>
-    /// Holds a product, whose barcode faces down, up to the upright glass instead: turned beside the scanner, brought in
-    /// from the clerk's side at the height of the glass, and moved toward it until it is read. Nothing is touched.
+    /// Shows a product, held barcode down, to the scanner's glass once more and keeps it there: read in the air with
+    /// nothing touched, and read once for as long as it stays in the scanner's sight.
     /// </summary>
-    IEnumerator ShowToUprightGlass(ProductPrefab product, string label)
+    IEnumerator ShowToGlassAndHold(ProductPrefab product, string label)
     {
         var glass = Scanner.Shown;
-        float padTop = Scanner.transform.position.y - 0.004f;
-        yield return RotateHand(new Vector3(-90f, 0f, 0f));
-        yield return new WaitForSeconds(0.5f);
-        var normal = product.transform.TransformDirection(product.Data.BarcodeLocalNormal);
-        Check(label + ".barcode_faces_the_glass", Vector3.Angle(normal, -glass.up) < 20f, $"{product.Data.Id} angle from the glass={Vector3.Angle(normal, -glass.up):0.0}");
-
-        var center = product.transform.position;
-        float height = Mathf.Max(glass.position.y, padTop + 0.04f + center.y - LowestProxyPoint(product));
-        yield return MoveProduct(product, new Vector3(glass.position.x, center.y, ShowFromZ), label + ".before");
-        yield return MoveProduct(product, new Vector3(glass.position.x, height, ShowFromZ), label + ".level");
+        yield return MoveHeldBeforeScanner(product);
         int before = scansSeen;
         var target = rightHand.position;
         float begun = Time.realtimeSinceStartup;
@@ -1141,16 +1151,27 @@ public partial class P2DayVerification : MonoBehaviour
         }
         float gap = glass.position.z - BarcodeFaceZ(product);
         Check(label, scansSeen == before + 1, $"{product.Data.Id} scans {before}->{scansSeen}; gap to the glass={gap:0.000}");
-        Check("scan.upright_glass_reads_in_the_air", scansSeen > before && gap > 0.08f && LowestProxyPoint(product) > padTop + 0.02f,
-            $"gap to the glass={gap:0.000}; lowest={LowestProxyPoint(product):0.000}; padTop={padTop:0.000}");
-        yield return Capture("13w_read_at_the_upright_glass");
+        Check("scan.glass_reads_in_the_air", scansSeen > before && gap > 0.08f && LowestProxyPoint(product) > CounterTop + 0.1f,
+            $"gap to the glass={gap:0.000}; lowest={LowestProxyPoint(product):0.000}; counter={CounterTop:0.000}");
+        yield return Capture("13w_read_at_the_glass");
         // Still held there, in the scanner's sight: one read, not one every cooldown.
         yield return new WaitForSeconds(ScanCooldown + 0.4f);
         Check("scan.read_once_while_in_sight", scansSeen == before + 1, $"scans {before}->{scansSeen}");
         // From the customer's side, past the scanner: the red light on the face the clerk cannot see.
-        yield return CaptureFrom("13w_red_light_on_the_product", new Vector3(-0.36f, 1.2f, 0.78f), new Vector3(0f, 1.04f, 0.47f), 45f);
-        yield return RotateHand(new Vector3(90f, 0f, 0f));
-        yield return new WaitForSeconds(0.3f);
+        yield return CaptureFrom("13w_red_light_on_the_product", glass.position + new Vector3(0.34f, 0.2f, 0.07f), glass.position + new Vector3(0f, -0.02f, -0.24f), 45f);
+        yield return BackFromScanner(product, label);
+    }
+
+    /// <summary>How far along z the product reaches, toward the customers' side.</summary>
+    static float FarSideZ(ProductPrefab product)
+    {
+        var half = product.Proxy.size * 0.5f;
+        float farthest = float.NegativeInfinity;
+        for (int x = -1; x <= 1; x += 2)
+            for (int y = -1; y <= 1; y += 2)
+                for (int z = -1; z <= 1; z += 2)
+                    farthest = Mathf.Max(farthest, product.transform.TransformPoint(product.Proxy.center + new Vector3(x * half.x, y * half.y, z * half.z)).z);
+        return farthest;
     }
 
     /// <summary>How far along z the middle of the barcode face is.</summary>
@@ -1250,8 +1271,8 @@ public partial class P2DayVerification : MonoBehaviour
     }
 
     /// <summary>
-    /// Scans again on purpose, lets go, and presses the POS [-] with the ray and trigger. The first read was on the flat
-    /// glass; this one is at the upright glass, after the product has been out of the scanner's sight for the cooldown.
+    /// Scans again on purpose, lets go, and presses the POS [-] with the ray and trigger. The second read comes after the
+    /// product has been out of the scanner's sight for the cooldown.
     /// </summary>
     IEnumerator OverscanAndCancel(ProductPrefab product)
     {
@@ -1260,7 +1281,7 @@ public partial class P2DayVerification : MonoBehaviour
         yield return MoveProduct(product, new Vector3(center.x, travel, center.z), "cancel.rise");
         yield return MoveProduct(product, new Vector3(BesideScanner.x, travel, BesideScanner.y), "cancel.beside");
         yield return new WaitForSeconds(ScanCooldown);
-        yield return ShowToUprightGlass(product, "cancel.second_scan");
+        yield return ShowToGlassAndHold(product, "cancel.second_scan");
         var line = Game.Pos.Lines.Find(l => l.Data == product.Data);
         Check("cancel.overscan_blocks_payment", line != null && line.Scanned == 2 && !Game.Pos.ReadyForPayment && Game.Pos.Notice.Contains("취소"), $"scanned={line?.Scanned}; notice={Game.Pos.Notice}");
         yield return Capture("13x_overscan");
@@ -1396,30 +1417,54 @@ public partial class P2DayVerification : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator MoveHeldAbovePad(ProductPrefab product)
+    /// <summary>
+    /// A product held barcode down goes to the clerk's side of the scanner, out of its sight, and the wrist turns the
+    /// barcode to the glass there, at the height the glass reads at and clear of the card terminal under it.
+    /// </summary>
+    IEnumerator MoveHeldBeforeScanner(ProductPrefab product)
     {
-        var pad = Scanner.transform.position;
+        var glass = Scanner.Shown;
         var center = product.transform.position;
-        float aboveLowest = center.y - LowestProxyPoint(product);
         float travel = Mathf.Max(center.y, TravelHeight);
-        yield return MoveProduct(product, new Vector3(center.x, travel, center.z), "pad.rise");
-        yield return MoveProduct(product, new Vector3(pad.x, travel, pad.z), "pad.over");
-        yield return MoveProduct(product, new Vector3(pad.x, pad.y + AbovePad + aboveLowest, pad.z), "pad.above");
+        yield return MoveProduct(product, new Vector3(center.x, travel, center.z), "scanner.rise");
+        yield return MoveProduct(product, new Vector3(glass.position.x, travel, ShowFrom), "scanner.over");
+        yield return RotateHand(new Vector3(-90f, 0f, 0f));
+        yield return new WaitForSeconds(0.25f);
+        var normal = product.transform.TransformDirection(product.Data.BarcodeLocalNormal);
+        // The glass looks up at the clerk by 20 degrees; the barcode is held upright in front of it.
+        Check("turn.barcode_faces_the_glass", Vector3.Angle(normal, -glass.up) < 32f, $"{product.Data.Id} angle from the glass={Vector3.Angle(normal, -glass.up):0.0}");
+        center = product.transform.position;
+        float height = Mathf.Max(glass.position.y, CounterTop + OverTheTerminal + center.y - LowestProxyPoint(product));
+        // Up to just short of where it reads, in one move: a customer is waiting.
+        float near = Mathf.Max(ShowFrom, center.z + glass.position.z - ShowFromGlass - BarcodeFaceZ(product));
+        yield return MoveProduct(product, new Vector3(glass.position.x, height, near), "scanner.level");
     }
 
-    IEnumerator LowerUntilScanned(ProductPrefab product, string label)
+    /// <summary>In toward the glass until it is read, touching nothing; then barcode down again.</summary>
+    IEnumerator ShowUntilScanned(ProductPrefab product, string label)
     {
+        var glass = Scanner.Shown;
         int before = scansSeen;
         var target = rightHand.position;
-        float begun = Time.realtimeSinceStartup;
-        while (scansSeen == before && Time.realtimeSinceStartup - begun < LowerTimeout)
+        float begun = Clock;
+        while (scansSeen == before && Clock - begun < LowerTimeout * 2f && glass.position.z - BarcodeFaceZ(product) > 0.04f)
         {
-            target += Vector3.down * PressStep;
-            yield return MoveHand(target, label + ".lower");
+            target += Vector3.forward * ShowStep;
+            yield return MoveHand(target, label + ".approach");
             yield return new WaitForSeconds(0.05f);
         }
-        Check(label, scansSeen > before, $"{product.Data.Id} scans {before}->{scansSeen} lowest={LowestProxyPoint(product):0.000}");
-        yield return MoveProduct(product, product.transform.position + Vector3.up * 0.1f, label + ".lift");
+        Check(label, scansSeen > before, $"{product.Data.Id} scans {before}->{scansSeen}; gap to the glass={glass.position.z - BarcodeFaceZ(product):0.000}; lowest={LowestProxyPoint(product):0.000}");
+        yield return BackFromScanner(product, label);
+    }
+
+    /// <summary>
+    /// The wrist turned back where it is: barcode down, as it was brought. Still in the scanner's sight, where a thing is
+    /// read once for as long as it stays.
+    /// </summary>
+    IEnumerator BackFromScanner(ProductPrefab product, string label)
+    {
+        yield return RotateHand(new Vector3(90f, 0f, 0f));
+        yield return new WaitForSeconds(0.15f);
     }
 
     IEnumerator CarryToBagAndRelease(ProductPrefab product, string label)
@@ -1440,8 +1485,8 @@ public partial class P2DayVerification : MonoBehaviour
         yield return WaitUntil(() => bagsSeen > before, 5f, label);
         // It is stood in the bag with what is already there, not left lying as it fell.
         int rustles = Game.Pos.Audio.CountOf(StoreSound.Bag);
-        float begun = Time.realtimeSinceStartup;
-        while (!Bag.Settled && Time.realtimeSinceStartup - begun < 2f) yield return null;
+        float begun = Clock;
+        while (!Bag.Settled && Clock - begun < 2f) yield return null;
         yield return new WaitForSeconds(0.2f);
         if (product == null)
         {
@@ -1456,28 +1501,69 @@ public partial class P2DayVerification : MonoBehaviour
             Bag.Settled && upright > 0.98f && Mathf.Abs(middle.x) < Bag.Inside.x * 0.5f && Mathf.Abs(middle.z) < Bag.Inside.y * 0.5f + 0.01f && Mathf.Abs(lowest) < 0.012f && rustles >= 1,
             $"settled={Bag.Settled}; upright={upright:0.000}; middle={middle.ToString("F3")}; lowest={lowest:0.000}; bag sounds={rustles}");
         // One thing in the bag as the clerk sees it; then two, from the clerk's side and from the customer's.
-        if (label == "tutorial.bag") yield return CaptureFrom("bag_1_one_thing_in", new Vector3(-0.2f, 1.5f, -0.1f), new Vector3(-0.4f, 1.0f, 0.56f), 60f);
+        if (label == "tutorial.bag") yield return CaptureFrom("bag_1_one_thing_in", Bag.Floor.position + new Vector3(0.2f, 0.6f, -0.66f), Bag.Floor.position + Vector3.up * 0.1f, 60f);
         if (label == "order1.item1.bag")
         {
-            yield return CaptureFrom("bag_2_two_things_in", new Vector3(-0.2f, 1.5f, -0.1f), new Vector3(-0.4f, 1.0f, 0.56f), 60f);
-            yield return CaptureFrom("bag_3_two_things_in_close", new Vector3(-0.08f, 1.25f, 0.2f), new Vector3(-0.4f, 1.02f, 0.56f), 60f);
+            yield return CaptureFrom("bag_2_two_things_in", Bag.Floor.position + new Vector3(0.2f, 0.6f, -0.66f), Bag.Floor.position + Vector3.up * 0.1f, 60f);
+            yield return CaptureFrom("bag_3_two_things_in_close", Bag.Floor.position + new Vector3(0.32f, 0.35f, -0.36f), Bag.Floor.position + Vector3.up * 0.12f, 60f);
         }
     }
 
+    const float AsideDrop = 0.06f;
+
     IEnumerator SetAside(ProductPrefab product, int index)
     {
+        // What it runs into from here on, for the log (2026-11-15: on the player this check failed and nothing said why).
+        var trace = product.gameObject.AddComponent<AsideTrace>();
         var center = product.transform.position;
         float travel = Mathf.Max(center.y, TravelHeight);
-        var spot = new Vector3(0.5f - index * 0.24f, travel, 0.44f);
-        float aboveLowest = center.y - LowestProxyPoint(product);
+        // On the clerk's side of the counter: the first between the bag and the scanner, the rest past the scanner.
+        var spot = new Vector3(index == 0 ? 0.14f : 0.4f + index * 0.24f, travel, 0.44f);
         yield return MoveProduct(product, new Vector3(center.x, travel, center.z), "aside.rise");
         yield return MoveProduct(product, spot, "aside.over");
-        yield return MoveProduct(product, new Vector3(spot.x, CounterTop + aboveLowest + 0.03f, spot.z), "aside.lower");
+        // Measured here, not before the moves: a product whose wrist has just been turned is still coming round in the
+        // hand, and one measured too early was lowered onto the counter while still held, where it makes no sound.
+        float aboveLowest = product.transform.position.y - LowestProxyPoint(product);
+        // From 6 cm (2026-11-15; it was 3). Let go 3 cm up, a product met the counter at 0.4 m/s as the physics reports it,
+        // just over the 0.3 m/s a landing has to have to make its sound (ProductPrefab, TouchFeel): whether it sounded hung
+        // on where in a physics step the hand opened, and on the player it mostly did not.
+        yield return MoveProduct(product, new Vector3(spot.x, CounterTop + aboveLowest + AsideDrop, spot.z), "aside.lower");
         int landingsBefore = Game.Pos.Audio.CountOf(StoreSound.BagDown) + Game.Pos.Audio.CountOf(StoreSound.Carton);
-        yield return SetDown(product.GetComponent<Rigidbody>());
-        yield return new WaitForSeconds(0.6f);
+        var body = product.GetComponent<Rigidbody>();
+        float heldAbove = LowestProxyPoint(product) - CounterTop;
+        string held = $"before the hand opens: lowest {heldAbove * 100f:0.0} cm over the counter; speed {body.linearVelocity.magnitude:0.00}; selected={product.Grab.isSelected}; kinematic={body.isKinematic}; touching={trace.Touching}";
+        yield return SetDown(body);
+        float letGo = Time.time, selectedFor = 0f, fastest = 0f, lowestSeen = float.PositiveInfinity;
+        while (Time.time - letGo < 0.6f)
+        {
+            if (product == null) break;
+            if (product.Grab.isSelected) selectedFor = Time.time - letGo;
+            fastest = Mathf.Max(fastest, -body.linearVelocity.y);
+            lowestSeen = Mathf.Min(lowestSeen, LowestProxyPoint(product) - CounterTop);
+            yield return null;
+        }
         int landings = Game.Pos.Audio.CountOf(StoreSound.BagDown) + Game.Pos.Audio.CountOf(StoreSound.Carton) - landingsBefore;
-        Check("aside.lands_with_a_sound", landings >= 1, $"{product.Data.Id} let go 3 cm over the counter: landing sounds {landings}");
+        string after = product == null ? "gone" : $"after: still selected for {selectedFor:0.00} s; fastest fall {fastest:0.00} m/s; lowest {lowestSeen * 100f:0.0} cm; now {(LowestProxyPoint(product) - CounterTop) * 100f:0.0} cm; kinematic={body.isKinematic}; bagged={product.IsBagged}; at {product.transform.position.ToString("F3")}; collisions [{trace.Seen}]";
+        Check("aside.lands_with_a_sound", landings >= 1, $"{product.Data.Id} let go {AsideDrop * 100f:0} cm over the counter: landing sounds {landings}; {held}; {after}");
+        if (trace != null) Destroy(trace);
+    }
+
+    /// <summary>Writes down what a product runs into, for SetAside's log line.</summary>
+    class AsideTrace : MonoBehaviour
+    {
+        public string Seen = "";
+        public int Touching;
+        void OnCollisionEnter(Collision collision)
+        {
+            Touching++;
+            var grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+            Seen += $"{collision.collider.name} {collision.relativeVelocity.magnitude:0.00} m/s t={Time.time:0.00} selected={(grab != null && grab.isSelected)}; ";
+        }
+        void OnCollisionExit(Collision collision)
+        {
+            Touching--;
+            Seen += $"left {collision.collider.name} t={Time.time:0.00}; ";
+        }
     }
 
     IEnumerator PayByCard(Func<bool> paid, string label)
@@ -1663,9 +1749,9 @@ public partial class P2DayVerification : MonoBehaviour
                 yield return new WaitForSeconds(0.25f);
                 if (!changePictured && remaining > value)
                 {
-                    // Once a run, with more change still to come: the first piece lying on the tray, the drawer beside it.
+                    // Once a run, with more change still to come: the first piece lying on the tray.
                     changePictured = true;
-                    yield return CaptureFrom("cash_3_change_on_the_tray", new Vector3(-0.5f, 1.5f, 0.15f), new Vector3(-0.52f, 0.92f, 0.66f), 62f);
+                    yield return CaptureFrom("cash_3_change_on_the_tray", Desk.Tray.transform.position + new Vector3(-0.1f, 0.55f, -0.7f), Desk.Tray.transform.position + Vector3.down * 0.05f, 62f);
                 }
                 remaining -= value;
                 offset++;
@@ -1738,7 +1824,7 @@ public partial class P2DayVerification : MonoBehaviour
     IEnumerator MoveHand(Vector3 target, string label)
     {
         float sensitivity = simulator.mouseXTranslateSensitivity;
-        float begun = Time.realtimeSinceStartup;
+        float begun = Clock;
         while (!finished)
         {
             var error = target - rightHand.position;
@@ -1747,7 +1833,7 @@ public partial class P2DayVerification : MonoBehaviour
             float depth = Vector3.Dot(error, view.transform.forward);
             bool needPlane = Mathf.Abs(across) > MoveTolerance || Mathf.Abs(upward) > MoveTolerance;
             if (!needPlane && Mathf.Abs(depth) <= MoveTolerance) break;
-            if (Time.realtimeSinceStartup - begun > MoveTimeout)
+            if (Clock - begun > MoveTimeout)
             {
                 Check("move." + label, false, $"timeout; error={error.magnitude:F4}m target={target.ToString("F3")}");
                 break;
@@ -1794,10 +1880,10 @@ public partial class P2DayVerification : MonoBehaviour
 
     IEnumerator WaitUntil(Func<bool> condition, float timeout, string label)
     {
-        float begun = Time.realtimeSinceStartup;
+        float begun = Clock;
         while (!condition())
         {
-            if (Time.realtimeSinceStartup - begun > timeout)
+            if (Clock - begun > timeout)
             {
                 Check(label, false, $"timed out after {timeout}s; state={Game.State}; tutorial={Game.Tutorial.Step}; notice={Game.Pos.Notice}; trayAmount={Desk.Tray.Amount}; hand={rightHand.position.ToString("F3")}");
                 Finish();
@@ -1805,7 +1891,7 @@ public partial class P2DayVerification : MonoBehaviour
             }
             yield return null;
         }
-        Check(label, true, $"after {Time.realtimeSinceStartup - begun:0.0}s");
+        Check(label, true, $"after {Clock - begun:0.0}s");
     }
 
     IEnumerator Capture(string name)
@@ -1902,6 +1988,7 @@ public partial class P2DayVerification : MonoBehaviour
     {
         if (finished) return;
         finished = true;
+        FilmRecorder.CloseCurrent();
         heldKeys.Clear();
         report.pass = report.stages.Count > 0 && report.stages.TrueForAll(s => s.pass);
         report.unity = Application.unityVersion;

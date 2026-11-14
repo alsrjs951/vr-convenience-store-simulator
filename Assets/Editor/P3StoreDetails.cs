@@ -102,9 +102,11 @@ public static class P3StoreDetails
     static void PriceRails(Transform root)
     {
         float front = ShelfFront - 0.0095f, back = ShelfBack + 0.0095f;
-        var frontA = new[] { "rail_lower_snack", "rail_lower_noodle", "rail_a_1000", "rail_a_1400" };
-        var frontB = new[] { "rail_lower_noodle", "rail_lower_snack", "rail_b_1000", "rail_b_1400" };
-        var rowD = new[] { "rail_lower_noodle", "rail_lower_snack", "rail_back_a", "rail_lower_noodle" };
+        // The faces that hold products carry those products' own tags (make_store_signage.py); the carton faces keep the general ones.
+        var frontA = new[] { "rail_a_0100", "rail_a_0550", "rail_a_1000", "rail_a_1400" };
+        var frontB = new[] { "rail_b_0100", "rail_b_0550", "rail_b_1000", "rail_b_1400" };
+        var rowD = new[] { "rail_lower_snack", "rail_d_0550", "rail_d_1000", "rail_d_1400" };
+        var rowDBack = new[] { "rail_lower_snack", "rail_back_a", "rail_lower_noodle", "rail_lower_noodle" };
         for (int i = 0; i < GondolaBoards.Length; i++)
         {
             float y = GondolaBoards[i] - 0.021f;
@@ -113,7 +115,7 @@ public static class P3StoreDetails
             Surface("Price Tags", root, new Vector3(ShelfA, y, back), new Vector2(RailLength, RailHeight), SeenLookingBack, Printed("rail_back_a"));
             Surface("Price Tags", root, new Vector3(ShelfB, y, back), new Vector2(RailLength, RailHeight), SeenLookingBack, Printed("rail_back_b"));
             Surface("Price Tags", root, new Vector3(ShelfD, y, ShelfDFront - 0.0095f), new Vector2(RailLength, RailHeight), SeenLookingFront, Printed(rowD[i]));
-            Surface("Price Tags", root, new Vector3(ShelfD, y, ShelfDBack + 0.0095f), new Vector2(RailLength, RailHeight), SeenLookingBack, Printed(rowD[(i + 1) % rowD.Length]));
+            Surface("Price Tags", root, new Vector3(ShelfD, y, ShelfDBack + 0.0095f), new Vector2(RailLength, RailHeight), SeenLookingBack, Printed(rowDBack[i]));
         }
         float zc = (ShelfCNear + ShelfCFar) * 0.5f, length = ShelfCFar - ShelfCNear - 0.06f;
         foreach (var top in ShelfCBoards)
@@ -122,7 +124,8 @@ public static class P3StoreDetails
 
     /// <summary>
     /// Closed shipping cartons where no product stands, as in a store mid-restock. The delivery slots (A-1, A-2, A-3, B-1,
-    /// B-2 on the boards at 1.0 and 1.4) are left clear.
+    /// B-2 on the boards at 1.0 and 1.4) are left clear, and so is the rest of row A + B's face toward the counter, which
+    /// holds products (P2StoreBuilder.BuildDecorSlots, BuildFillSlots).
     /// </summary>
     static void Cartons(Transform root)
     {
@@ -131,14 +134,10 @@ public static class P3StoreDetails
         const float inset = 0.71f, front = ShelfFront + 0.02f, back = ShelfBack - 0.02f, depth = 0.19f;
         foreach (var x in new[] { ShelfA, ShelfB })
             foreach (var board in new[] { 0.1f, 0.55f })
-            {
-                RowAlongX(parent, x - inset, x + inset, board, front + depth * 0.5f, depth, 0.38f);
                 RowAlongX(parent, x - inset, x + inset, board, back - depth * 0.5f, depth, 0.38f);
-            }
         foreach (var x in new[] { ShelfA, ShelfB })
             RowAlongX(parent, x - inset, x + inset, 1.0f, back - depth * 0.5f, depth, 0.34f);
-        // The boards at 1.4 and row D's face toward the street hold real products (P2StoreBuilder.BuildDecorSlots).
-        RowAlongX(parent, ShelfB - inset, ShelfB - inset + 0.34f, 1.0f, front + depth * 0.5f, depth, 0.34f);
+        // Row D's face toward the street holds real products as well (P2StoreBuilder.BuildDecorSlots).
 
         // Row D holds no deliveries: every board on the far side, the bottom board on the near side, and the overstock on top.
         foreach (var board in GondolaBoards)

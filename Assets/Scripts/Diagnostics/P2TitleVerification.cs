@@ -40,6 +40,7 @@ public partial class P2DayVerification
         if (finished) yield break;
         yield return WaitUntil(NearTitleSpot, 6f, "intro.player_at_door");
         if (finished) yield break;
+        if (filmIntro) yield return BeginIntroFilm();
         yield return new WaitForSeconds(2f);
         Check("intro.manager_in_the_store", manager != null && manager.InStore && manager.Body.FaceRig != null && manager.Body.FaceRig.HasFaceBones, manager == null || manager.Body == null ? "no manager" : $"face={manager.Body.FaceRig != null}");
         Check("intro.people_already_shopping", director.Ambient.Count == 2 && director.Present.Count == 0 && director.Records.Count == 0, $"shopping={director.Ambient.Count}; present={director.Present.Count}; records={director.Records.Count}");
@@ -50,6 +51,8 @@ public partial class P2DayVerification
         yield return PressButton(Title.StartButton, "intro.start");
         yield return WaitUntil(() => Game.State == DayState.Commute, 3f, "intro.commute");
         if (finished) yield break;
+        // The ray has pressed the one button there is; from here on it is two white strokes across the film.
+        if (filmIntro) HidePointingRays();
         yield return new WaitForSeconds(0.5f);
         var managerFace = manager.Body.FaceRig;
         Check("intro.manager_waves_and_speaks", manager.Waves == 1 && managerFace.Talking && manager.Body.Playing == CustomerCharacter.LeaveState, $"waves={manager.Waves}; talking={managerFace.Talking}; playing={manager.Body.Playing}");
@@ -68,6 +71,15 @@ public partial class P2DayVerification
         if (finished) yield break;
         yield return new WaitForSeconds(1.5f);
         yield return Capture("i03_first_customer_coming");
+        if (filmIntro)
+        {
+            // The film has what it came for: the title, the way in, the time card, the manager, the first customer coming.
+            // The lesson that follows is the counter's work, which the counter's film shows.
+            yield return new WaitForSeconds(6f);
+            film.Mark("end");
+            Finish();
+            yield break;
+        }
         yield return Tutorial();
         if (finished) yield break;
         yield return null;
@@ -98,9 +110,9 @@ public partial class P2DayVerification
         int twins = 0;
         for (int i = 0; i < director.Ambient.Count; i++)
         {
-            if (director.Ambient[i].Record.Avatar == manager.Prefab.name) twins++;
+            if (CustomerDirector.Model(director.Ambient[i].Record.Avatar) == manager.Prefab.name) twins++;
             for (int j = i + 1; j < director.Ambient.Count; j++)
-                if (director.Ambient[i].Record.Avatar == director.Ambient[j].Record.Avatar) twins++;
+                if (CustomerDirector.Model(director.Ambient[i].Record.Avatar) == CustomerDirector.Model(director.Ambient[j].Record.Avatar)) twins++;
         }
         return twins;
     }

@@ -80,8 +80,6 @@ public static class P3StoreDressing
         {
             var n = t.name;
             if (n.StartsWith("Shelf A ") || n.StartsWith("Shelf B ") || n.StartsWith("Shelf D ")) P3Meshes.Round(t.gameObject, n.EndsWith("Spine") || n.EndsWith("Base") ? 0.012f : 0.007f);
-            else if (n.StartsWith("Stand ") && n.EndsWith(" Body")) P3Meshes.Round(t.gameObject, 0.02f);
-            else if (n == "Cart Body") P3Meshes.Round(t.gameObject, 0.03f);
         }
 
         Ceiling(dressing);
@@ -527,89 +525,56 @@ public static class P3StoreDressing
     // ---------- Counter (after the builder made it): looks only ----------
 
     /// <summary>
-    /// A fixed bioptic scanner, as at a supermarket checkout: the flat window on the counter (the builder's pad, whose
-    /// collider and scan zone stay as they are) in a steel frame, joined by a base to an angular tower behind it, with a
-    /// tall smoked window facing the clerk, a green lamp and side vents. The red light is in the upright window, where the
-    /// builder's ScanBeam sends it out from; the flat one is plain dark glass. All added parts are looks only, with no
-    /// collider, so scanning and the hand's paths over the pad are unchanged. The tower stands a few centimetres behind the
-    /// flat window so a product lying on the pad does not reach into it.
+    /// The scanner (2026-11-14): a small fixed one, as stands on a store's counter, in place of the supermarket kind with
+    /// a window in the counter. A low dark wedge on a foot, its face leaning back to look up at the clerk, a smoked window
+    /// in the face with the red light behind it, where the builder's ScanBeam sends it out from, and a green lamp over
+    /// the window. Looks only: the builder's "Scanner Body" box is what a hand or a product runs into, and is not drawn.
     /// </summary>
-    static void BiopticScanner(Transform environment, Transform parent)
+    static void CounterScanner(Transform environment, Transform parent)
     {
-        const float towerGap = P2StoreBuilder.ScannerTowerGap, towerHeight = P2StoreBuilder.ScannerTowerHeight, towerLean = P2StoreBuilder.ScannerTowerLean;
-        const float towerDepth = 0.14f, towerTopDepth = 0.06f;
+        const float width = P2StoreBuilder.ScannerWidth, depth = P2StoreBuilder.ScannerDepth, height = P2StoreBuilder.ScannerHeight, lean = P2StoreBuilder.ScannerLean;
+        const float window = P2StoreBuilder.ScannerWindowHeight;
+        const float windowTall = 0.07f;
         var body = Plain("P3_ScannerBody", new Color(0.16f, 0.17f, 0.19f), 0.5f, 0.15f);
         var frame = Plain("P3_ScannerSteel", new Color(0.56f, 0.58f, 0.61f), 0.82f, 0.5f);
-        var flatGlass = Plain("P3_ScannerFlatGlass", new Color(0.02f, 0.022f, 0.026f), 0.95f);
+        var darkGlass = Plain("P3_ScannerFlatGlass", new Color(0.02f, 0.022f, 0.026f), 0.95f);
         // Dim while it waits. ScannerZone turns it bright for a moment on a read.
         var ready = Emissive("P3_ScannerReady", new Color(0.05f, 0.2f, 0.08f), new Color(0.03f, 0.22f, 0.05f));
-
-        // The flat window: steel housing, dark glass, a thin steel rim.
-        var pad = Find(environment, "Scanner Pad");
-        var size = pad.transform.localScale;
-        P3Meshes.Round(pad, 0.008f);
-        pad.GetComponent<Renderer>().sharedMaterial = frame;
-        Find(environment, "Scanner Glass").GetComponent<Renderer>().sharedMaterial = flatGlass;
-        // The upright window: the same dark glass with the red laser star glowing behind it.
+        // The window: dark glass with the red laser star glowing behind it.
         var glass = Lit("P3_ScannerGlass", $"{Generated}/scanner_glass", Vector2.one, Color.white, 2.2f);
         glass.SetFloat("_Smoothness", 0.95f);
-        var p = pad.transform.position;
-        float top = p.y + size.y * 0.5f, bottom = p.y - size.y * 0.5f, back = p.z + size.z * 0.5f;
-        foreach (var (offset, rim) in new[]
-        {
-            (new Vector3(0f, 0f, -size.z * 0.5f + 0.005f), new Vector3(size.x, 0.003f, 0.01f)),
-            (new Vector3(0f, 0f, size.z * 0.5f - 0.005f), new Vector3(size.x, 0.003f, 0.01f)),
-            (new Vector3(-size.x * 0.5f + 0.005f, 0f, 0f), new Vector3(0.01f, 0.003f, size.z)),
-            (new Vector3(size.x * 0.5f - 0.005f, 0f, 0f), new Vector3(0.01f, 0.003f, size.z)),
-        })
-            Visual("Scanner Rim", parent, new Vector3(p.x, top + 0.0015f, p.z) + offset, rim, frame, 0.001f);
 
-        // The base from the window back under the tower, flush with the window's top.
-        float towerFront = back + towerGap;
-        float baseFront = back - 0.004f, baseBack = towerFront + towerDepth + 0.01f;
-        Visual("Scanner Base", parent, new Vector3(p.x, p.y, (baseFront + baseBack) * 0.5f), new Vector3(size.x, size.y, baseBack - baseFront), frame, 0.006f);
-
-        // The tower: a prism leaning away from the clerk, deep at the foot and narrow on top.
-        var profile = new[]
-        {
-            new Vector2(0f, 0f), new Vector2(towerDepth, 0f),
-            new Vector2(towerLean + towerTopDepth, towerHeight), new Vector2(towerLean, towerHeight),
-        };
-        var tower = new GameObject("Scanner Tower", typeof(MeshFilter), typeof(MeshRenderer));
-        tower.transform.SetParent(parent, false);
-        tower.transform.position = new Vector3(p.x, bottom, towerFront);
-        tower.GetComponent<MeshFilter>().sharedMesh = P3Meshes.Prism(profile, size.x);
-        tower.GetComponent<MeshRenderer>().sharedMaterial = body;
-
-        // On the front face (it leans back by atan(lean / height)): the window the red light comes out of, and the lamp.
-        float slant = Mathf.Atan2(towerLean, towerHeight);
+        Find(environment, "Scanner Body").GetComponent<Renderer>().enabled = false;
+        // The foot of the face, on the counter. The face leans back by atan(lean / height).
+        var origin = new Vector3(P2StoreBuilder.ScannerX, 0.9f, P2StoreBuilder.ScannerFront);
+        float slant = Mathf.Atan2(lean, height);
         var faceNormal = new Vector3(0f, Mathf.Sin(slant), -Mathf.Cos(slant));
         var faceRotation = Quaternion.Euler(slant * Mathf.Rad2Deg, 0f, 0f);
-        var origin = tower.transform.position;
-        Vector3 OnFront(float y, float outward) => origin + new Vector3(0f, y, towerLean * y / towerHeight) + faceNormal * outward;
-        Visual("Scanner Tower Window", parent, OnFront(P2StoreBuilder.ScannerWindowHeight, 0.002f), new Vector3(size.x - 0.03f, 0.19f, 0.004f), flatGlass, 0.003f).transform.rotation = faceRotation;
+        Vector3 OnFront(float y, float outward) => origin + new Vector3(0f, y, lean * y / height) + faceNormal * outward;
+
+        Visual("Scanner Foot", parent, origin + new Vector3(0f, 0.004f, (lean + depth) * 0.5f), new Vector3(width + 0.016f, 0.008f, lean + depth + 0.02f), frame, 0.003f);
+        // The housing: a wedge, deep at the foot, its face leaning back and its back upright.
+        var profile = new[] { new Vector2(0f, 0f), new Vector2(lean + depth, 0f), new Vector2(lean + depth, height), new Vector2(lean, height) };
+        var housing = new GameObject("Scanner Housing", typeof(MeshFilter), typeof(MeshRenderer));
+        housing.transform.SetParent(parent, false);
+        housing.transform.position = origin;
+        housing.GetComponent<MeshFilter>().sharedMesh = P3Meshes.Prism(profile, width);
+        housing.GetComponent<MeshRenderer>().sharedMaterial = body;
+        Visual("Scanner Window", parent, OnFront(window, 0.001f), new Vector3(width - 0.02f, windowTall, 0.004f), darkGlass, 0.003f).transform.rotation = faceRotation;
         // A quad carries the star: the rounded box has no texture coordinates to speak of.
-        Quad("Scanner Tower Light", parent, OnFront(P2StoreBuilder.ScannerWindowHeight, 0.0046f), new Vector2(size.x - 0.04f, size.x - 0.04f), glass).transform.rotation = faceRotation;
-        var lamp = Visual("Scanner Ready Light", parent, OnFront(towerHeight - 0.017f, 0.003f) + new Vector3(size.x * 0.27f, 0f, 0f), new Vector3(0.04f, 0.01f, 0.004f), ready, 0.002f);
+        Quad("Scanner Light", parent, OnFront(window, 0.0036f), new Vector2(width - 0.03f, width - 0.03f), glass).transform.rotation = faceRotation;
+        var lamp = Visual("Scanner Ready Light", parent, OnFront(window + windowTall * 0.5f + 0.013f, 0.002f) + new Vector3(width * 0.25f, 0f, 0f), new Vector3(0.03f, 0.008f, 0.004f), ready, 0.002f);
         lamp.transform.rotation = faceRotation;
         Find(null, "ScannerZone").GetComponent<ScannerZone>().Indicator = lamp.GetComponent<Renderer>();
 
-        // Vent slots low on both sides, toward the back.
-        foreach (float side in new[] { -1f, 1f })
-            for (int i = 0; i < 5; i++)
-                Visual("Scanner Vent", parent, origin + new Vector3(side * (size.x * 0.5f + 0.0012f), 0.1f + i * 0.022f, 0.09f), new Vector3(0.003f, 0.006f, 0.045f), graphite, 0.001f);
-
         // The newer model a store that is kept can order in (docs/p2/해금_성장_기획_2026-11-10.md 5, reads at a wider angle):
-        // a head on the tower with a blue light bar, and a reading window in each side. Looks only, above and beside the
-        // tower, so the clerk's view of the upright window and the hand's paths over the pad stay as they are.
+        // a hood over the head, a blue light bar under the window and a reading window in each side. Looks only.
         var upgrade = EquipmentGroup(environment, GameManager.ScannerLook);
         var bar = Emissive("P3_ScannerBar", new Color(0.08f, 0.22f, 0.5f), new Color(0.2f, 0.55f, 1.3f));
-        const float headHeight = 0.06f, headDepth = 0.075f;
-        var headCenter = new Vector3(p.x, bottom + towerHeight + headHeight * 0.5f, towerFront + towerLean + headDepth * 0.5f);
-        Visual("Scanner Head", upgrade, headCenter, new Vector3(size.x + 0.02f, headHeight, headDepth), body, 0.01f);
-        Visual("Scanner Head Bar", upgrade, headCenter + new Vector3(0f, 0f, -headDepth * 0.5f - 0.001f), new Vector3(size.x - 0.03f, 0.012f, 0.003f), bar, 0.001f);
+        Visual("Scanner Hood", upgrade, origin + new Vector3(0f, height + 0.006f, lean + depth * 0.5f - 0.005f), new Vector3(width + 0.016f, 0.012f, depth + 0.02f), body, 0.005f);
+        Visual("Scanner Bar", upgrade, OnFront(window - windowTall * 0.5f - 0.012f, 0.002f), new Vector3(width - 0.03f, 0.008f, 0.003f), bar, 0.001f).transform.rotation = faceRotation;
         foreach (float side in new[] { -1f, 1f })
-            Visual("Scanner Side Window", upgrade, origin + new Vector3(side * (size.x * 0.5f + 0.0015f), 0.24f, towerLean * 0.24f / towerHeight + 0.034f), new Vector3(0.003f, 0.07f, 0.05f), flatGlass, 0.001f);
+            Visual("Scanner Side Window", upgrade, origin + new Vector3(side * (width * 0.5f + 0.0012f), window, lean + depth * 0.5f), new Vector3(0.003f, 0.06f, 0.04f), darkGlass, 0.001f);
     }
 
     /// <summary>The counter, the devices on it and the two screens' housings. Colliders and zones are untouched.</summary>
@@ -638,7 +603,7 @@ public static class P3StoreDressing
         Visual("Counter Front", parent, new Vector3(c.x, 0.47f, far + 0.006f), new Vector3(size.x - 0.1f, 0.6f, 0.012f), navy, 0.004f);
         Sign(parent, "Counter Name", new Vector3(c.x, 0.5f, far + 0.013f), Quaternion.Euler(0f, 180f, 0f), new Vector2(1.3f, 0.24f), "동아편의점", "", new Color(0, 0, 0, 0), Color.white, false);
 
-        BiopticScanner(environment, parent);
+        CounterScanner(environment, parent);
 
         // Card terminal: rounded graphite body, a lit screen, a keypad. The slot and its frame are unchanged.
         foreach (var (name, radius) in new[] { ("Terminal Base", 0.004f), ("Terminal Top", 0.01f), ("Terminal Side L", 0.003f), ("Terminal Side R", 0.003f) })
@@ -660,8 +625,8 @@ public static class P3StoreDressing
         CashRegisterLooks(environment);
         float tillTop = 0.9f + P2StoreBuilder.RegisterHeight;
 
-        // Trays: light grey with a low lip.
-        foreach (var trayName in new[] { "Change Tray", "Customer Plate" })
+        // The money tray: light grey with a low lip.
+        foreach (var trayName in new[] { "Change Tray" })
         {
             var tray = Find(environment, trayName);
             tray.GetComponent<Renderer>().sharedMaterial = grey;
@@ -675,15 +640,16 @@ public static class P3StoreDressing
                 Visual(trayName + " Lip", parent, p + offset, rim, grey, 0.002f);
         }
 
-        // Coin dispenser, there once the store has ordered it (docs/p2/해금_성장_기획_2026-11-10.md 5): a small machine left
-        // of the change tray, under the POS screen, with a chute onto the tray, where PaymentDesk lays the coins. Looks only.
+        // Coin dispenser, there once the store has ordered it (docs/p2/해금_성장_기획_2026-11-10.md 5): a small machine right
+        // of the money tray as the clerk sees it, with a chute onto the tray, where PaymentDesk lays the coins. Not left of
+        // it: the bag stands between that side and the clerk. Looks only.
         var changeTray = Find(environment, "Change Tray").transform;
         var coins = EquipmentGroup(environment, GameManager.CoinLook);
-        var machine = new Vector3(changeTray.position.x - changeTray.localScale.x * 0.5f - 0.075f, size.y, changeTray.position.z + 0.02f);
+        var machine = new Vector3(changeTray.position.x + changeTray.localScale.x * 0.5f + 0.075f, size.y, changeTray.position.z + 0.02f);
         Visual("Coin Dispenser Body", coins, machine + new Vector3(0f, 0.065f, 0f), new Vector3(0.11f, 0.13f, 0.13f), graphite, 0.012f);
         Visual("Coin Dispenser Hopper", coins, machine + new Vector3(0f, 0.134f, 0f), new Vector3(0.09f, 0.01f, 0.11f), steel, 0.004f);
         Visual("Coin Dispenser Display", coins, machine + new Vector3(0f, 0.095f, -0.066f), new Vector3(0.07f, 0.028f, 0.004f), screenGlow, 0.002f);
-        Visual("Coin Dispenser Chute", coins, machine + new Vector3(0.075f, 0.035f, 0f), new Vector3(0.07f, 0.004f, 0.05f), steel, 0.001f).transform.rotation = Quaternion.Euler(0f, 0f, -28f);
+        Visual("Coin Dispenser Chute", coins, machine + new Vector3(-0.075f, 0.035f, 0f), new Vector3(0.07f, 0.004f, 0.05f), steel, 0.001f).transform.rotation = Quaternion.Euler(0f, 0f, 28f);
 
         // The bag: thin white film with the store's mark printed on both sides, standing open where the builder put its foot.
         var film = Lit("P3_BagFilm", $"{Generated}/bag_film", Vector2.one, Color.white);
@@ -1226,8 +1192,10 @@ public static class P3StoreDressing
             ("07_aisle_back", new Vector3(-4.6f, 1.6f, 4f), new Vector3(2f, 1f, 4.2f)),
             ("08_overview", new Vector3(4.1f, 2.7f, 4.3f), new Vector3(-3f, 0.4f, 0.5f)),
             ("09_tobacco_wall", new Vector3(0.1f, 1.6f, 0.2f), new Vector3(0.1f, 1.5f, -1.75f)),
-            ("10_scanner_clerk", new Vector3(0.22f, 1.28f, 0.12f), new Vector3(0f, 1.0f, 0.62f)),
-            ("11_scanner_side", new Vector3(0.6f, 1.12f, 0.42f), new Vector3(0f, 1.02f, 0.7f)),
+            ("10_scanner_clerk", new Vector3(0.12f, 1.3f, 0.02f), new Vector3(0.36f, 0.96f, 0.5f)),
+            ("11_scanner_side", new Vector3(0.72f, 1.08f, 0.2f), new Vector3(0.36f, 0.97f, 0.5f)),
+            ("24_counter_from_above", new Vector3(0f, 2.25f, 0.4f), new Vector3(0f, 0.9f, 0.66f)),
+            ("25_counter_from_the_clerk_standing", new Vector3(0f, 1.6f, 0f), new Vector3(0f, 0.9f, 0.8f)),
             ("12_microwave_corner", new Vector3(-4.4f, 1.55f, 3.9f), new Vector3(-5.8f, 1.05f, 3.9f)),
             ("15_counter_extension", new Vector3(2.6f, 1.45f, 1.5f), new Vector3(1f, 0.85f, 0.65f)),
             ("16_freezer", new Vector3(2.4f, 1.5f, 3.4f), new Vector3(0.7f, 0.7f, 3.45f)),
@@ -1270,9 +1238,9 @@ public static class P3StoreDressing
         Shot("19_till_open_from_above", new Vector3(-0.78f, 1.42f, 0.16f), new Vector3(-0.78f, 0.95f, 0.4f));
         Shot("20_till_open_from_the_start", new Vector3(0f, 1.6f, -0.05f), new Vector3(-0.72f, 0.95f, 0.5f));
         // The bag: from where the clerk stands, close from the scanner's side, and from the customer's side.
-        Shot("21_bag_from_the_clerk", new Vector3(-0.2f, 1.5f, -0.1f), new Vector3(-0.4f, 1.0f, 0.56f));
-        Shot("22_bag_close", new Vector3(-0.08f, 1.22f, 0.22f), new Vector3(-0.4f, 1.0f, 0.56f));
-        Shot("23_bag_from_the_customer", new Vector3(-0.15f, 1.5f, 1.55f), new Vector3(-0.4f, 1.0f, 0.56f));
+        Shot("21_bag_from_the_clerk", new Vector3(0.06f, 1.5f, -0.1f), new Vector3(-0.14f, 1.0f, 0.56f));
+        Shot("22_bag_close", new Vector3(0.18f, 1.22f, 0.22f), new Vector3(-0.14f, 1.0f, 0.56f));
+        Shot("23_bag_from_the_customer", new Vector3(0.11f, 1.5f, 1.55f), new Vector3(-0.14f, 1.0f, 0.56f));
 
         RenderTexture.active = null;
         UnityEngine.Object.DestroyImmediate(go);

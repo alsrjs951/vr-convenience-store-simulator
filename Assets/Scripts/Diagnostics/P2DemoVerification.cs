@@ -95,8 +95,8 @@ public partial class P2DayVerification
                 string label = $"demo.order{number}.item{i}";
                 yield return GrabProduct(products[i], label);
                 yield return TurnBarcodeDown(products[i]);
-                yield return MoveHeldAbovePad(products[i]);
-                yield return LowerUntilScanned(products[i], label + ".scan");
+                yield return MoveHeldBeforeScanner(products[i]);
+                yield return ShowUntilScanned(products[i], label + ".scan");
                 if (order.NeedsBag) yield return PutInBag(products[i], label + ".bag");
                 else yield return SetAside(products[i], i);
                 yield return ResetHandRotation();

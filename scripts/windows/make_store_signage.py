@@ -125,16 +125,25 @@ def spread(names, offset=0.0):
     return [((i + 0.5) * step + offset, n, p, i % 3 == 2) for i, (n, p) in enumerate(names)]
 
 
-# Gondola x runs -0.73..0.73 around each centre; tags sit under the delivery and stock slots (P2StoreBuilder.BuildIntake).
-def u(x, centre):
-    return (x - (centre - 0.73)) / 1.46
+# The faces that hold scanned products (2026-11-14): one tag under the middle of each slot, with the name and price the
+# POS shows for that product. A gondola's rail runs -0.73..0.73 around its centre; the first number is the slot's centre
+# from there, as in P2StoreBuilder (BuildIntake's slots, BuildDecorSlots, BuildFillSlots). No sale tags: nothing here is
+# sold at another price.
+def under(*tags):
+    return [((offset + 0.73) / 1.46, label, price, False) for offset, label, price in tags]
 
 
-A, B = -2.2, 2.2
-rail('rail_a_1000', [(u(-2.44, A), '신라면', '1,000', False), (u(-1.86, A), '치토스', '1,700', False)])
-rail('rail_a_1400', [(u(-2.62, A), '컵라면', '1,300', False), (u(-2.22, A), '볶음면', '1,500', True), (u(-1.86, A), '오징어땅콩', '1,800', False)])
-rail('rail_b_1000', [(u(1.62, B), '즉석밥', '1,800', False), (u(2.07, B), '오감자', '1,800', False), (u(2.55, B), '고래밥', '2,500', False)])
-rail('rail_b_1400', spread([('즉석카레', '1,500'), ('즉석국', '2,200'), ('통조림', '3,200'), ('시리얼', '4,500'), ('즉석죽', '3,000')]))
+rail('rail_a_1400', under((-0.36, '신짱', '1,500'), (0.34, '오징어땅콩', '1,800')))
+rail('rail_a_1000', under((-0.24, '신라면', '1,000'), (0.34, '치토스', '1,700')))
+rail('rail_a_0550', under((-0.36, '꼬북칩', '2,000'), (0.36, '포테토칩', '1,700')))
+rail('rail_a_0100', under((-0.36, '꼬깔콘', '1,700'), (0.36, '신라면', '1,000')))
+rail('rail_b_1400', under((-0.36, '죠리퐁', '1,700'), (0.36, '아몬드초콜릿', '1,500')))
+rail('rail_b_1000', under((-0.54, '오징어땅콩', '1,800'), (-0.13, '오감자', '1,800'), (0.35, '고래밥', '2,500')))
+rail('rail_b_0550', under((-0.36, '썬칩', '1,800'), (0.36, '콘칩', '1,800')))
+rail('rail_b_0100', under((-0.36, '오감자', '1,800'), (0.36, '치토스', '1,700')))
+rail('rail_d_1400', under((-0.36, '포카칩', '1,800'), (0.36, '양파링', '1,700')))
+rail('rail_d_1000', under((-0.36, '감자깡', '1,700'), (0.36, '인디안밥', '1,700')))
+rail('rail_d_0550', under((-0.36, '카라멜콘땅콩', '1,700'), (0.36, '꼬깔콘', '1,700')))
 rail('rail_lower_snack', spread([('봉지과자', '1,700'), ('감자칩', '1,800'), ('크래커', '1,500'), ('초콜릿', '1,200'), ('쿠키', '2,300'), ('젤리', '1,000')]))
 rail('rail_lower_noodle', spread([('봉지라면', '1,000'), ('컵라면', '1,300'), ('쌀국수', '1,800'), ('짜장라면', '1,300'), ('우동', '1,500'), ('냉면', '2,000')]))
 rail('rail_back_a', spread([('사탕', '800'), ('껌', '1,000'), ('견과류', '3,000'), ('육포', '4,000'), ('오징어채', '3,500'), ('비스킷', '1,700')]))

@@ -21,6 +21,10 @@ public static class P2CustomerSetup
     const string MaterialFolder = "Assets/Materials/Customers";
     const string ControllerFolder = "Assets/Data/Customers";
     const string PrefabFolder = "Assets/Prefabs/Customers";
+    // Repainted textures (scripts/windows/make_customer_looks.py): dark hair, and a second look's clothes.
+    const string LookFolder = "Assets/Art/Generated/Customers";
+    /// <summary>The same model in other clothes is a prefab of its own, named with this at the end.</summary>
+    public const string SecondLook = "_B";
     const int TextureSize = 1024;
     // Rocketbox men are about 1.84 m and women 1.77 m tall; closer to Korean adults this way.
     const float ModelScale = 0.95f;
@@ -57,7 +61,8 @@ public static class P2CustomerSetup
         Directory.CreateDirectory(PrefabFolder);
         AssetDatabase.Refresh();
 
-        foreach (var path in AssetDatabase.FindAssets("t:Texture2D", new[] { Root }).Select(AssetDatabase.GUIDToAssetPath))
+        var textureFolders = Directory.Exists(LookFolder) ? new[] { Root, LookFolder } : new[] { Root };
+        foreach (var path in AssetDatabase.FindAssets("t:Texture2D", textureFolders).Select(AssetDatabase.GUIDToAssetPath))
             ConfigureTexture(path);
 
         var avatars = new Dictionary<string, Avatar>();
@@ -89,7 +94,14 @@ public static class P2CustomerSetup
 
         var prefabs = new List<CustomerCharacter>();
         foreach (var avatar in Avatars)
-            prefabs.Add(BuildPrefab(avatar.name, controllers[avatar.female], avatars[avatar.name], leaveClips[avatar.female]));
+        {
+            prefabs.Add(BuildPrefab(avatar.name, avatar.name, controllers[avatar.female], avatars[avatar.name], leaveClips[avatar.female], null));
+            var clothes = AssetDatabase.LoadAssetAtPath<Texture2D>($"{LookFolder}/{avatar.name}_b_body_color.png");
+            if (clothes == null) continue;
+            var body = LitMaterial($"{MaterialFolder}/{avatar.name}{SecondLook}_body.mat", clothes,
+                Texture($"{Root}/Avatars/{avatar.name}/Textures/{avatar.prefix}_body_normal.png"), false);
+            prefabs.Add(BuildPrefab(avatar.name, avatar.name + SecondLook, controllers[avatar.female], avatars[avatar.name], leaveClips[avatar.female], body));
+        }
         AssetDatabase.SaveAssets();
         Debug.Log($"[Customers] setup done: {prefabs.Count} prefabs; walk clip speed male={walkClips[false].averageSpeed.magnitude:0.000} female={walkClips[true].averageSpeed.magnitude:0.000} (normalized)");
         return prefabs.ToArray();
@@ -147,9 +159,9 @@ public static class P2CustomerSetup
         var wanted = new Dictionary<string, Material>
         {
             [$"{prefix}_body"] = LitMaterial($"{MaterialFolder}/{avatarName}_body.mat", Texture($"{textures}_body_color.png"), Texture($"{textures}_body_normal.png"), false),
-            [$"{prefix}_head"] = LitMaterial($"{MaterialFolder}/{avatarName}_head.mat", Texture($"{textures}_head_color.png"), Texture($"{textures}_head_normal.png"), false),
+            [$"{prefix}_head"] = LitMaterial($"{MaterialFolder}/{avatarName}_head.mat", Painted(avatarName, "head_color") ?? Texture($"{textures}_head_color.png"), Texture($"{textures}_head_normal.png"), false),
         };
-        var hair = AssetDatabase.LoadAssetAtPath<Texture2D>($"{textures}_opacity_color.png");
+        var hair = Painted(avatarName, "opacity_color") ?? AssetDatabase.LoadAssetAtPath<Texture2D>($"{textures}_opacity_color.png");
         if (hair != null) wanted[$"{prefix}_opacity"] = LitMaterial($"{MaterialFolder}/{avatarName}_opacity.mat", hair, null, true);
 
         var map = importer.GetExternalObjectMap();
@@ -232,12 +244,16 @@ public static class P2CustomerSetup
         return controller;
     }
 
-    static CustomerCharacter BuildPrefab(string name, AnimatorController controller, Avatar avatar, AnimationClip leave)
+    /// <summary>The repainted texture of an avatar, when there is one (dark hair for the blond ones).</summary>
+    static Texture2D Painted(string avatarName, string kind) => AssetDatabase.LoadAssetAtPath<Texture2D>($"{LookFolder}/{avatarName}_{kind}.png");
+
+    /// <summary><paramref name="body"/>: the second look's clothes, in place of the model's own body material.</summary>
+    static CustomerCharacter BuildPrefab(string modelName, string name, AnimatorController controller, Avatar avatar, AnimationClip leave, Material body)
     {
         var root = new GameObject(name) { layer = CustomerLayer };
         try
         {
-            var model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath(name));
+            var model = AssetDatabase.LoadAssetAtPath<GameObject>(ModelPath(modelName));
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(model, root.transform);
             PrefabUtility.UnpackPrefabInstance(instance, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             instance.name = "Model";
@@ -254,6 +270,19 @@ public static class P2CustomerSetup
                 skinned.updateWhenOffscreen = false;
                 skinned.skinnedMotionVectors = false;
                 skinned.shadowCastingMode = ShadowCastingMode.On;
+            }
+            if (body != null)
+            {
+                var first = AssetDatabase.LoadAssetAtPath<Material>($"{MaterialFolder}/{modelName}_body.mat");
+                int changed = 0;
+                foreach (var skinned in instance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {
+                    var materials = skinned.sharedMaterials;
+                    for (int i = 0; i < materials.Length; i++)
+                        if (materials[i] == first) { materials[i] = body; changed++; }
+                    skinned.sharedMaterials = materials;
+                }
+                if (changed == 0) throw new Exception($"{name}: no body material to change the clothes of.");
             }
 
             var agent = root.AddComponent<NavMeshAgent>();

@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     const float BriefSeconds = 7f;
     const float RequestGuideSeconds = 12f;
     const int AmbientCustomers = 2;
-    static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check", "-demo", "-p2-demo-verify" };
+    static readonly string[] NoTitleArguments = { "-skip-title", "-start-day", "-p0-verify", "-p1-verify", "-p2-verify", "-p2-face-verify", "-p2-day2-verify", "-p2-locomotion-verify", "-p2-load", "-hmd-perf", "-hmd-guard-check", "-demo", "-p2-demo-verify", "-p2-film" };
 
     // ---------- A store that is kept and grows (docs/p2/해금_성장_기획_2026-11-10.md). All numbers are [제안]. ----------
     /// <summary>The days of learning. From the next one the customers follow from what the store sells.</summary>
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
     const float SampleSpacing = 0.22f;
     // With these the game is the fixed three days it was, the whole store stocked and nothing saved: the checks written
     // for them go through the title. Those that skip the title (NoTitleArguments) are the fixed days anyway.
-    static readonly string[] FixedDaysArguments = { "-fixed-days", "-p2-title-verify", "-p2-intro-verify" };
+    static readonly string[] FixedDaysArguments = { "-fixed-days", "-p2-title-verify", "-p2-intro-verify", "-p2-film-intro" };
 
     public int Day = 1;
     public int LastDay = 3;
@@ -193,7 +193,7 @@ public class GameManager : MonoBehaviour
         if (index >= 0 && index + 1 < args.Length && int.TryParse(args[index + 1], out int start) && start >= 1) Day = start;
         // -with-title: through the title all the same, for the store that is kept with the headset recorder on (-hmd-perf).
         UsesTitle = Title != null && (Array.IndexOf(args, "-with-title") >= 0 || !Array.Exists(args, argument => Array.IndexOf(NoTitleArguments, argument) >= 0));
-        Demo = !UsesTitle && (Array.IndexOf(args, "-demo") >= 0 || Array.IndexOf(args, "-p2-demo-verify") >= 0);
+        Demo = !UsesTitle && (Array.IndexOf(args, "-demo") >= 0 || Array.IndexOf(args, "-p2-demo-verify") >= 0 || Array.IndexOf(args, "-p2-film") >= 0);
         Director.OrderArrived += OnOrderArrived;
         Director.OrderEnded += OnOrderEnded;
 

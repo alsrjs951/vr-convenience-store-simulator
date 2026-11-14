@@ -146,9 +146,8 @@ public class TutorialController : MonoBehaviour
         while (held < FacingHoldSeconds && !productScanned)
         {
             var normal = Product.transform.TransformDirection(Product.Data.BarcodeLocalNormal);
-            // Toward either glass: the upright one the arrow shows next, or the flat one under it.
-            bool facing = Vector3.Angle(normal, Scanner.Shown.position - Product.transform.position) <= FacingAngle
-                || Vector3.Angle(normal, Scanner.transform.position - Product.transform.position) <= FacingAngle;
+            // Toward the scanner's glass, which the arrow shows next.
+            bool facing = Vector3.Angle(normal, Scanner.Shown.position - Product.transform.position) <= FacingAngle;
             held = Product.Grab.isSelected && facing ? held + Time.deltaTime : 0f;
             if (Time.time - begun > HintAfterSeconds)
                 Board.text = "2/6  바코드 찾기\n화살표가 가리키는 면이 바코드입니다";
@@ -202,7 +201,7 @@ public class TutorialController : MonoBehaviour
         var card = Director.LeaveCardFor(Guest);
         Desk.EndPayment();
         if (card == null) yield break;
-        Board.text = "5/6  카드 결제\n카드를 손님 접시에 돌려놓기";
+        Board.text = "5/6  카드 결제\n카드를 접시에 돌려놓기";
         Pointer.Aim = () => card == null ? (PointerAim?)null
             : card.Grab.isSelected && Desk.CardSlot.CardInside ? PointerAim.Down(card.transform.position, "꺼내기")
             : card.Grab.isSelected ? PointerAim.Down(Desk.CustomerPlate.position, "여기에 돌려놓기")

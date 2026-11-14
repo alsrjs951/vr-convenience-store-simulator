@@ -83,6 +83,7 @@ public partial class P2DayVerification
             $"{far.Slot}: target={farSlot.IsTarget}, {farSlot.CountText}; {near.Slot}: target={nearSlot.IsTarget}, {nearSlot.CountText}; boxes of {farBox.Units.Length} and {nearBox.Units.Length}; "
             + $"customers={Game.OrderCount}; lines asking for the two new products={asked}; box sizes {farBox.Inner.ToString("F3")} and {nearBox.Inner.ToString("F3")}");
         yield return CaptureFrom("gh_01_two_boxes_on_the_cart", new Vector3(2.2f, 1.6f, 0.2f), new Vector3(3.4f, 0.8f, -1.6f), 60f);
+        if (filmGrowth) yield return BeginGrowthFilm(nearBox, farBox, nearSlot, farSlot);
 
         // The shelf beside the stand: E-3 is on gondola B's top board, by stand B.
         float begun = Time.realtimeSinceStartup;
@@ -110,7 +111,13 @@ public partial class P2DayVerification
         Check("gh.day.new_products_in_the_settlement", Game.NewSoldToday + Game.MissedNewToday == asked && Game.BoardText.Contains($"새 상품 {far.Name} · {near.Name}") && Game.BoardText.Contains($"{Game.NewSoldToday}개 판매")
                 && servedByCode == Game.OrderCount && Game.Director.Left == 0 && Intake.Shelved == 6,
             $"asked for {asked}: sold {Game.NewSoldToday}, left out before they were shelved {Game.MissedNewToday}; customers served by code={servedByCode}/{Game.OrderCount}; shelved by hand today={Intake.Shelved}; board={Game.BoardText.Replace("\n", " / ")}");
+        if (filmGrowth) ShowPointingRays();
         yield return OrderByRay();
+        if (filmGrowth && !finished)
+        {
+            yield return new WaitForSeconds(3f);
+            film.Mark("end");
+        }
         Finish();
     }
 
