@@ -27,7 +27,7 @@
     { "id": "voice_tutorial_2", "speaker": "manager", "when": "튜토리얼 2/6 바코드 찾기", "text": "손목을 돌려서, 바코드 있는 면이 스캐너를 보게 해 봐요.", "direction": "옆에서 가르치듯" },
     { "id": "voice_tutorial_3", "speaker": "manager", "when": "튜토리얼 3/6 스캔", "text": "이제 그 면을 스캐너 유리에 갖다 대요. 삑 소리 나면 찍힌 거예요.", "direction": "옆에서 가르치듯" },
     { "id": "voice_tutorial_4", "speaker": "manager", "when": "튜토리얼 4/6 봉투에 담기, 손님이 봉투를 부탁한 뒤", "text": "찍은 건 봉투 위로 가져가서 손을 놓으면 돼요.", "direction": "옆에서 가르치듯" },
-    { "id": "voice_tutorial_5", "speaker": "manager", "when": "튜토리얼 5/6 카드 결제", "text": "카드네요. 손님 카드를 받아서, 오른쪽 단말기 앞 노란 칸에 쭉 밀어 넣어요.", "direction": "옆에서 가르치듯" },
+    { "id": "voice_tutorial_5", "speaker": "manager", "when": "튜토리얼 5/6 카드 결제", "text": "카드네요. 손님 카드를 받아서, 왼쪽 단말기 앞 노란 칸에 쭉 밀어 넣어요.", "direction": "옆에서 가르치듯" },
     { "id": "voice_tutorial_6", "speaker": "manager", "when": "튜토리얼 6/6 현금 결제. 금액은 TutorialController의 CashBill 5,000원, CashPrice 1,500원과 맞아야 한다", "text": "이번엔 현금이에요. 계산은 제가 찍어 놨어요. 오천 원은 왼쪽 서랍에 넣고, 거스름돈 삼천오백 원을 접시에 올려 드려요.", "direction": "천천히, 숫자는 또박또박" },
     { "id": "voice_manager_alone", "speaker": "manager", "when": "튜토리얼이 끝났을 때", "text": "잘하네요! 이제 혼자서도 되겠어요. 저는 은행 좀 다녀올게요.", "direction": "칭찬하고, 나갈 채비를 하며" },
 

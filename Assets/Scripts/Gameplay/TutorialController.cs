@@ -138,7 +138,9 @@ public class TutorialController : MonoBehaviour
     {
         Step = TutorialStep.Rotate;
         Narrate(2);
-        Board.text = "2/6  바코드 찾기\n손목을 돌려 바코드 면을 스캐너 쪽으로";
+        // The barcode is on the far face of a thing as the customer sets it down, and the scanner looks at the clerk: brought
+        // to the clerk's side of the scanner, that face is toward the glass already. No turn of the wrist is asked for.
+        Board.text = "2/6  바코드 찾기\n바코드 면(화살표)이 스캐너 유리를 보게 들기";
         Pointer.Aim = AimAtBarcode;
         float begun = Time.time;
         float held = 0f;

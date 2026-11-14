@@ -109,10 +109,12 @@ public static class P2StoreBuilder
     // middle. The scanner is at the clerk's right hand (ScannerX), on the clerk's side of the counter, in front of where
     // the goods are set down: a thing taken from the row comes past it on its way to the clerk.
     public const float DeviceX = -0.47f, ScannerX = 0.36f;
-    // The scanner, a small fixed one that P3StoreDressing draws: low, so the goods standing behind it are seen over it.
-    // Its face stands at ScannerFront and leans away from the clerk by ScannerLean over its height, looking up at them.
-    // The red light comes out of the glass in that face, whose middle is at ScannerWindowHeight above the counter.
-    public const float ScannerFront = 0.45f, ScannerWidth = 0.11f, ScannerDepth = 0.06f, ScannerHeight = 0.14f, ScannerLean = 0.05f, ScannerWindowHeight = 0.075f;
+    // The scanner, a small fixed one that P3StoreDressing draws: low and near the clerk's edge of the counter, so the goods
+    // standing behind it are seen over it (at 14 cm high and 4 cm farther in, it hid the lower third of the first thing
+    // in the row from where the clerk stands; like this, the lowest 2 cm). Its face stands at ScannerFront and leans away
+    // from the clerk by ScannerLean over its height, looking up at them. The red light comes out of the glass in that
+    // face, whose middle is at ScannerWindowHeight above the counter.
+    public const float ScannerFront = 0.41f, ScannerWidth = 0.11f, ScannerDepth = 0.06f, ScannerHeight = 0.12f, ScannerLean = 0.044f, ScannerWindowHeight = 0.065f;
     // The space in front of the glass where a barcode is read in the air: a little wider than the scanner, from just over
     // the counter to above the scanner, and out toward the clerk past the counter's edge.
     const float ScanReadWidth = 0.16f, ScanReadBottom = 0.03f, ScanReadHeight = 0.24f, ScanReadDepth = 0.24f;

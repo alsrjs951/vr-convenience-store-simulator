@@ -534,7 +534,7 @@ public static class P3StoreDressing
     {
         const float width = P2StoreBuilder.ScannerWidth, depth = P2StoreBuilder.ScannerDepth, height = P2StoreBuilder.ScannerHeight, lean = P2StoreBuilder.ScannerLean;
         const float window = P2StoreBuilder.ScannerWindowHeight;
-        const float windowTall = 0.07f;
+        const float windowTall = 0.06f;
         var body = Plain("P3_ScannerBody", new Color(0.16f, 0.17f, 0.19f), 0.5f, 0.15f);
         var frame = Plain("P3_ScannerSteel", new Color(0.56f, 0.58f, 0.61f), 0.82f, 0.5f);
         var darkGlass = Plain("P3_ScannerFlatGlass", new Color(0.02f, 0.022f, 0.026f), 0.95f);
@@ -1192,8 +1192,9 @@ public static class P3StoreDressing
             ("07_aisle_back", new Vector3(-4.6f, 1.6f, 4f), new Vector3(2f, 1f, 4.2f)),
             ("08_overview", new Vector3(4.1f, 2.7f, 4.3f), new Vector3(-3f, 0.4f, 0.5f)),
             ("09_tobacco_wall", new Vector3(0.1f, 1.6f, 0.2f), new Vector3(0.1f, 1.5f, -1.75f)),
-            ("10_scanner_clerk", new Vector3(0.12f, 1.3f, 0.02f), new Vector3(0.36f, 0.96f, 0.5f)),
-            ("11_scanner_side", new Vector3(0.72f, 1.08f, 0.2f), new Vector3(0.36f, 0.97f, 0.5f)),
+            ("10_scanner_clerk", new Vector3(0.12f, 1.3f, 0.02f), new Vector3(0.36f, 0.96f, 0.46f)),
+            ("11_scanner_side", new Vector3(0.72f, 1.08f, 0.18f), new Vector3(0.36f, 0.96f, 0.46f)),
+            ("26_goods_behind_the_scanner", new Vector3(0f, 1.36f, 0f), new Vector3(0.42f, 0.95f, 0.66f)),
             ("24_counter_from_above", new Vector3(0f, 2.25f, 0.4f), new Vector3(0f, 0.9f, 0.66f)),
             ("25_counter_from_the_clerk_standing", new Vector3(0f, 1.6f, 0f), new Vector3(0f, 0.9f, 0.8f)),
             ("12_microwave_corner", new Vector3(-4.4f, 1.55f, 3.9f), new Vector3(-5.8f, 1.05f, 3.9f)),
