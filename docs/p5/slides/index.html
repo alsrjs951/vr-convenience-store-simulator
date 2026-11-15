@@ -148,13 +148,13 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
 </div>
 
 <!-- 2. 무엇을 만들었나 -->
-<div class="slide" data-notes="[0:40] 기존 VR 직업 체험은 만화 같은 3D 모델을 씁니다. 저희는 실제 과자를 휴대폰으로 찍어서 그대로 VR에 넣었습니다. 상품 스물세 개를 전부 직접 촬영했고, Quest 2에서 약 72프레임으로 돌아갑니다. 먼저 영상으로 보여 드리겠습니다.">
+<div class="slide" data-notes="[0:40] 기존 VR 직업 체험은 만화 같은 3D 모델을 씁니다. 저희는 실제 과자를 휴대폰으로 찍어서 그대로 VR에 넣었습니다. 상품 스물세 개를 전부 직접 촬영했고, Quest 2 헤드셋에서 끊김 없이 돌아갑니다. 먼저 영상으로 보여 드리겠습니다.">
   <p class="a tag">무엇을 만들었나</p>
   <h2 class="a">실제 과자를 휴대폰으로 찍어 <span class="hi">3DGS</span>로 만들고,<br>VR 편의점에서 손으로 집어 계산한다</h2>
   <div class="a row" style="margin-top:28px;align-items:stretch">
     <div style="width:430px;display:flex;flex-direction:column;gap:14px">
       <div class="card"><p class="stat">23<small>개</small></p><p class="stat-label">3DGS 상품 모델</p></div>
-      <div class="card"><p class="stat">약 72<small>fps</small></p><p class="stat-label">Quest 2 (Link) 실측</p></div>
+      <div class="card"><p class="stat">약 72<small>fps</small></p><p class="stat-label">Quest 2 실측, 끊김 없이</p></div>
       <div class="card"><p class="stat">100<small>%</small></p><p class="stat-label">직접 촬영한 실제 상품</p></div>
     </div>
     <div class="grow">
@@ -230,15 +230,15 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   <p class="a note">같은 사진·같은 카메라 포즈 · 상품 2종 · RTX 4070 · 속도는 nerfstudio 안에서 잰 값(VR 프레임 아님)</p>
 </div>
 
-<!-- 6. 72fps -->
-<div class="slide" data-notes="[1:15] VR 72프레임을 지킨 방법입니다. 쓰는 렌더러는 개발이 멈춘 프로젝트이고 Quest 2는 지원 목록에 없었습니다. 그래서 측정부터 했습니다. 가우시안 백만 개에 6에서 7밀리초가 든다는 것을 쟀고, 등 뒤에 있는 상품도 비용을 낸다는 것을 찾아서 건너뛰게 했습니다. 진열대는 칸마다 하나로 합쳐 절반으로 줄였고, 마지막에 헤드셋에서 확인했습니다. Quest 2에서 72프레임이 유지됐고, 8분 동안 빠진 프레임은 다섯 개였습니다.">
+<!-- 6. 최적화 -->
+<div class="slide" data-notes="[1:15] 3DGS 상품은 점이 많을수록 무거워집니다. VR은 화면이 조금만 끊겨도 어지러워서, 상품을 늘려도 끊기지 않게 최적화했습니다. 먼저 얼마나 무거운지 쟀습니다. 가우시안 백만 개에 6에서 7밀리초가 들었습니다. 그다음 눈에 안 보이는 등 뒤 상품도 비용을 내고 있다는 것을 찾아 건너뛰게 해서 그리는 시간을 절반으로 줄였습니다. 진열대는 칸마다 하나로 합치고 집는 순간에만 떼어 내서 점 수를 절반으로 줄였습니다. 그 결과 Quest 2에서 초당 72장인 화면을 거의 그대로 유지했고, 8분 동안 빠진 프레임은 다섯 개였습니다.">
   <div class="num">03</div>
-  <p class="a tag">성능</p>
-  <h2 class="a">VR 72fps를 지킨 방법</h2>
-  <p class="a lead">렌더러는 개발이 멈춘 프로젝트이고 Quest 2는 지원 목록에 없었다. 그래서 <span class="hi">측정부터</span> 했다.</p>
+  <p class="a tag">최적화</p>
+  <h2 class="a">3DGS 상품을 VR에서 가볍게</h2>
+  <p class="a lead">3DGS는 점이 많을수록 무겁고, VR은 화면이 조금만 끊겨도 어지럽다. 상품을 늘려도 끊기지 않게 <span class="hi">재고, 줄이고, 다시 쟀다</span>.</p>
   <div class="a cards">
-    <div class="card"><p class="step-n">01 · 먼저 쟀다</p><p class="stat" style="font-size:38px">6~7<small>ms</small></p><p class="stat-label">Gaussian 100만 개당 드는 시간</p></div>
-    <div class="card"><p class="step-n">02 · 안 보이는 것을 건너뛰었다</p><p class="stat" style="font-size:38px">82<small>%</small> → 절반</p><p class="stat-label">등 뒤 상품도 눈앞 상품의 82% 비용. 시야 컬링을 넣어 GPU 시간 절반</p></div>
+    <div class="card"><p class="step-n">01 · 무게를 쟀다</p><p class="stat" style="font-size:38px">6~7<small>ms</small></p><p class="stat-label">Gaussian 100만 개를 그리는 데 드는 시간</p></div>
+    <div class="card"><p class="step-n">02 · 안 보이는 상품은 건너뛴다</p><p class="stat" style="font-size:38px">GPU 시간 절반</p><p class="stat-label">등 뒤 상품도 눈앞 상품의 82% 비용을 내고 있었다. 시야 밖은 그리지 않게</p></div>
     <div class="card"><p class="step-n">03 · 진열대를 합쳤다</p><p class="stat" style="font-size:38px">144.7<small>만</small> → 72.5<small>만</small></p><p class="stat-label">칸마다 하나로 병합, 집는 순간만 분리</p>
       <div class="bars">
         <div class="bar-row"><span>전</span><div class="bar" style="width:100%;background:#bbb"></div></div>
@@ -246,9 +246,9 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
         <div class="bar-row"><span>멀리</span><div class="bar" style="width:22%"></div></div>
       </div>
     </div>
-    <div class="card" style="border-color:#0066cc"><p class="step-n">04 · 헤드셋에서 확인</p><p class="stat" style="font-size:38px">71.8<small>fps</small></p><p class="stat-label">Quest 2 Link · 8분 동안 빠진 프레임 5개 · GPU 평균 6ms</p></div>
+    <div class="card" style="border-color:#0066cc"><p class="step-n">04 · 헤드셋에서 확인</p><p class="stat" style="font-size:38px">71.8<small> / 72장</small></p><p class="stat-label">Quest 2 화면(초당 72장)을 거의 그대로 유지 · 8분 동안 빠진 프레임 5개</p></div>
   </div>
-  <p class="a note">01~02는 PC 모의 스테레오 측정(RTX 4070) · 03은 Gaussian 수(멀리서는 32.0만) · 04는 2026-11-15 Quest 2 실측(72Hz, 진열대를 채운 지금 빌드)</p>
+  <p class="a note">01~02는 PC 모의 스테레오 측정(RTX 4070) · 03은 Gaussian 수(멀리서는 32.0만) · 04는 2026-11-15 Quest 2 Link 실측(진열대를 채운 지금 빌드, GPU 평균 5.9ms)</p>
 </div>
 
 <!-- 7. 게임 -->
@@ -263,43 +263,41 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   </div>
 </div>
 
-<!-- 8. 직접 해 보고 고친 것 -->
-<div class="slide" data-notes="[0:50] 헤드셋을 쓰고 직접 해 봐야 보이는 것들이 있었습니다. 지폐가 접시에 묻혀 안 보였고, 손님이 손을 번쩍 들며 인사하는 것이 어색했고, 계산대 가운데 스캐너가 손을 가렸습니다. 하나씩 고쳤고, 고칠 때마다 다른 곳이 깨지지 않았는지는 게임을 처음부터 끝까지 하는 자동 검사로 확인했습니다.">
+<!-- 8. 검증 -->
+<div class="slide" data-notes="[0:45] 고칠 때마다 다른 곳이 깨지지 않았는지 확인하는 방법을 만들었습니다. 게임이 스스로 처음부터 끝까지 플레이하면서 상품을 집고, 스캔하고, 돈을 주고받는 것을 하나하나 점검합니다. 1일차는 335개 항목입니다. 마지막에는 Quest 2를 쓰고 출근부터 수습 3일, 발주와 진열, 4일차 근무까지 직접 해서 확인했습니다.">
   <div class="num">05</div>
-  <p class="a tag">다듬기</p>
-  <h2 class="a">직접 해 보고 고친 것</h2>
-  <div class="a" style="width:100%;margin-top:22px">
-    <table>
-      <tr><th>헤드셋으로 해 보니</th><th></th><th>이렇게 고쳤다</th></tr>
-      <tr><td class="before">지폐가 접시 속에 묻혀 안 보였다</td><td class="arr">&rarr;</td><td class="after">접시를 단단하게 만들어 위에 놓이게</td></tr>
-      <tr><td class="before">손님이 손을 번쩍 들며 인사했다</td><td class="arr">&rarr;</td><td class="after">실제 손님처럼 감사 인사만 하고 나간다</td></tr>
-      <tr><td class="before">"오래 걸리네요"가 너무 빨리 나왔다</td><td class="arr">&rarr;</td><td class="after">시간이 30% 남았을 때로 늦췄다</td></tr>
-      <tr><td class="before">계산대 가운데 큰 스캐너가 손을 가렸다</td><td class="arr">&rarr;</td><td class="after">작은 스캐너를 오른손 앞으로 옮겼다</td></tr>
-    </table>
+  <p class="a tag">검증</p>
+  <h2 class="a">어떻게 확인했나</h2>
+  <div class="a row" style="margin-top:26px;align-items:stretch">
+    <div style="width:470px;display:flex;flex-direction:column;gap:14px">
+      <div class="card"><p class="step-n">자동 플레이 검사</p><p class="stat" style="font-size:38px">335<small>항목</small></p><p class="stat-label">게임이 스스로 1일차를 끝까지 플레이하며 점검. 시연 214 · 이동 88 · 타이틀 76항목 등, 고칠 때마다 다시 돌렸다</p></div>
+      <div class="card" style="border-color:#0066cc"><p class="step-n">헤드셋 실기 확인</p><p class="stat" style="font-size:38px">11<small>분</small></p><p class="stat-label">Quest 2로 출근 → 수습 3일 → 발주 · 진열 → 4일차 근무까지 직접 플레이</p></div>
+    </div>
+    <div class="grow">
+      <div class="shot" style="aspect-ratio:16/9"><img src="assets/autotest.jpg" alt="자동 검사가 상품을 스캐너에 대는 장면" style="width:100%;height:100%;object-fit:cover;margin-top:0"></div>
+      <p class="cap">자동 검사 중 찍힌 화면: 상품을 집어 스캐너에 대는 단계</p>
+    </div>
   </div>
-  <p class="a callout">고칠 때마다 게임을 처음부터 끝까지 하는 <span class="hi">자동 검사</span>(1일차 335항목 등)를 돌렸다.</p>
 </div>
 
 <!-- 9. 한계 -->
-<div class="slide" data-notes="[0:45] 하지 못한 것을 먼저 말씀드리겠습니다. 체험자 설문은 하지 못했습니다. NeRF와 3DGS 비교는 상품 두 종뿐이고, 페트병이나 캔 같은 반사 재질은 촬영하지 못했습니다. 전자레인지와 온수에 맞는 상품이 없어서 과자와 봉지라면에 붙였습니다. 그리고 상품을 늘리려면 촬영과 크기 재기는 여전히 사람 손이 듭니다.">
+<div class="slide" data-notes="[0:30] 남은 과제는 두 가지입니다. NeRF와 3DGS 비교는 상품 두 종으로 했고, 페트병이나 캔처럼 빛을 반사하는 상품은 아직 다루지 못했습니다. 그리고 촬영과 크기 재기를 자동화하면 상품을 훨씬 빠르게 늘릴 수 있습니다.">
   <div class="num">06</div>
-  <p class="a tag">한계</p>
-  <h2 class="a">못 한 것과 한계</h2>
+  <p class="a tag">다음 단계</p>
+  <h2 class="a">남은 과제</h2>
   <div class="a limits">
-    <div class="limit"><h3>체험자 설문을 하지 못했다</h3><p>실재감과 멀미를 다른 사람에게 재지 못했다.</p></div>
-    <div class="limit"><h3>비교는 상품 2종뿐</h3><p>페트병·캔 같은 반사 재질은 촬영하지 못했다.</p></div>
-    <div class="limit"><h3>전자레인지·온수에 맞는 상품이 없다</h3><p>도시락·컵라면이 없어 과자와 봉지라면에 붙였다.</p></div>
-    <div class="limit"><h3>상품 추가에는 사람 손이 든다</h3><p>촬영과 크기 재기는 자동화하지 못했다.</p></div>
+    <div class="limit"><h3>반사 재질 상품</h3><p>비교는 과자 2종으로 했다. 페트병·캔처럼 빛나는 상품은 다음 과제다.</p></div>
+    <div class="limit"><h3>상품 추가 자동화</h3><p>촬영과 크기 재기를 자동화하면 상품을 더 빠르게 늘릴 수 있다.</p></div>
   </div>
 </div>
 
 <!-- 10. 마무리 -->
-<div class="slide" data-notes="[0:15] 이상으로 발표를 마치겠습니다. 발표가 끝난 뒤 데모 세션에서 헤드셋으로 직접 해 보실 수 있습니다. 질문 받겠습니다.">
+<div class="slide" data-notes="[0:15] 이상으로 발표를 마치겠습니다. 감사합니다. 질문 받겠습니다.">
   <div class="row" style="align-items:center">
     <div class="grow">
       <p class="a overline">THANK YOU</p>
       <h1 class="a xl" style="font-size:72px">진짜 상품을<br>손에.</h1>
-      <p class="a sub">데모 세션에서 헤드셋으로 직접 해 보실 수 있습니다</p>
+      <p class="a sub">감사합니다</p>
       <p class="a sub" style="margin-top:36px;font-size:18px;color:#333"><b>질문</b> &nbsp;·&nbsp; 팀 도민 &nbsp;·&nbsp; 권도훈 &nbsp;·&nbsp; 이민건</p>
     </div>
     <div class="a" style="width:520px">
