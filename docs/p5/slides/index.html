@@ -121,6 +121,15 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   .slide .a{opacity:1!important;animation:none!important}
   @page{size:1280px 720px;margin:0}
 }
+/* Agenda, requirement lists (added for the course's required sections) */
+.agenda{width:100%;margin-top:28px;border-top:1px solid var(--line)}
+.agenda-item{display:flex;align-items:baseline;gap:26px;padding:17px 4px;border-bottom:1px solid var(--line);font-size:26px;font-weight:700;color:#222}
+.agenda-item span{font-family:var(--mono);color:var(--accent);font-size:18px;width:34px}
+.agenda-item small{margin-left:auto;font-size:16px;font-weight:500;color:var(--text-3)}
+ul.req{list-style:none;margin-top:4px}
+ul.req li{font-size:16px;color:#333;line-height:1.5;padding:7px 0 7px 22px;border-bottom:1px dashed #eee;position:relative}
+ul.req li:last-child{border-bottom:none}
+ul.req li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700}
 </style>
 </head>
 <body>
@@ -133,7 +142,7 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
 <div class="deck" id="deck">
 
 <!-- 1. 표지 -->
-<div class="slide active" data-notes="[0:20] 안녕하세요. 팀 도민의 동아편의점 발표를 시작하겠습니다. 실제 상품을 3D 가우시안 스플래팅으로 옮긴 VR 편의점입니다.">
+<div class="slide active" data-notes="[0:15] 안녕하세요. 팀 도민의 동아편의점 발표를 시작하겠습니다. 실제 상품을 3D 가우시안 스플래팅으로 옮긴 VR 편의점입니다.">
   <div class="row" style="align-items:center">
     <div class="grow">
       <p class="a overline">가상현실 TERM PROJECT · 2026.11.17</p>
@@ -147,34 +156,111 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   </div>
 </div>
 
-<!-- 2. 무엇을 만들었나 -->
-<div class="slide" data-notes="[0:40] 기존 VR 직업 체험은 만화 같은 3D 모델을 씁니다. 저희는 실제 과자를 휴대폰으로 찍어서 그대로 VR에 넣었습니다. 상품 스물세 개를 전부 직접 촬영했고, Quest 2 헤드셋에서 끊김 없이 돌아갑니다. 먼저 영상으로 보여 드리겠습니다.">
-  <p class="a tag">무엇을 만들었나</p>
-  <h2 class="a">실제 과자를 휴대폰으로 찍어 <span class="hi">3DGS</span>로 만들고,<br>VR 편의점에서 손으로 집어 계산한다</h2>
-  <div class="a row" style="margin-top:28px;align-items:stretch">
-    <div style="width:430px;display:flex;flex-direction:column;gap:14px">
-      <div class="card"><p class="stat">23<small>개</small></p><p class="stat-label">3DGS 상품 모델</p></div>
-      <div class="card"><p class="stat">약 72<small>fps</small></p><p class="stat-label">Quest 2 실측, 끊김 없이</p></div>
-      <div class="card"><p class="stat">100<small>%</small></p><p class="stat-label">직접 촬영한 실제 상품</p></div>
+<!-- 2. 목차 -->
+<div class="slide" data-notes="[0:10] 기획 의도와 요구사항, 업무 분장, 개발 일정과 주요 이슈, 결과물의 주요 특징, 결과물 동영상 순서로 말씀드리겠습니다.">
+  <p class="a tag">목차</p>
+  <h2 class="a">오늘 말씀드릴 것</h2>
+  <div class="a agenda">
+    <div class="agenda-item"><span>01</span>기획 의도 및 요구사항</div>
+    <div class="agenda-item"><span>02</span>팀원 간 업무 분장</div>
+    <div class="agenda-item"><span>03</span>개발 일정 및 주요 이슈</div>
+    <div class="agenda-item"><span>04</span>결과물 주요 특징<small>시연 영상 1분 포함</small></div>
+    <div class="agenda-item"><span>05</span>결과물 동영상<small>3분 이내 · 로비 상영용</small></div>
+  </div>
+</div>
+
+<!-- 3. 기획 의도 -->
+<div class="slide" data-notes="[0:35] 기획 의도입니다. 편의점은 누구나 매일 가는 곳이라 체험하는 사람이 진짜 같은지 바로 알 수 있습니다. 계산은 집고, 돌려서 바코드를 찾고, 찍는 손의 일이라 VR 컨트롤러와 잘 맞습니다. 그런데 기존 VR 직업 체험은 만화 같은 3D 모델을 씁니다. 그래서 저희는 실제 과자를 휴대폰으로 찍어 그대로 VR에 넣기로 했습니다.">
+  <div class="num">01</div>
+  <p class="a tag">기획 의도</p>
+  <h2 class="a">만화 같은 상품 대신, <span class="hi">진짜 상품</span>을 손에</h2>
+  <div class="a row" style="margin-top:26px;align-items:stretch">
+    <div style="width:460px;display:flex;flex-direction:column;gap:14px">
+      <div class="card"><h3>모두가 아는 공간</h3><p>매일 들르는 편의점. 진짜 같은지 누구나 바로 판단할 수 있다.</p></div>
+      <div class="card"><h3>손으로 하는 일</h3><p>집고, 돌려서 바코드를 찾고, 찍고, 담는다. 컨트롤러 움직임이 그대로 업무가 된다.</p></div>
+      <div class="card"><h3>실제 상품</h3><p>휴대폰으로 찍은 과자를 3DGS로 복원해 포장 글씨와 주름까지 그대로.</p></div>
     </div>
     <div class="grow">
-      <div class="shot" style="aspect-ratio:16/8.9"><img src="assets/barcode.jpg" alt="손에 든 신라면의 뒷면 바코드를 찾는 장면" style="width:135%;margin-left:-17.5%;margin-top:-8%"></div>
+      <div class="shot" style="aspect-ratio:16/10.2"><img src="assets/barcode.jpg" alt="손에 든 신라면의 뒷면 바코드를 찾는 장면" style="width:150%;margin-left:-25%;margin-top:-8%"></div>
       <p class="cap">게임 화면: 실제 포장의 바코드를 찾아 스캐너에 댄다</p>
     </div>
   </div>
 </div>
 
-<!-- 3. 시연 영상 -->
-<div class="slide" id="video-slide" style="justify-content:flex-start;padding-top:34px" data-notes="[1:05] 실제 과자를 찍은 3DGS 상품, 계산, 모자란 거스름돈, 정산, 발주, 입고와 진열 순서입니다. (Enter를 눌러 재생. 재생 중에는 말하지 않는다. 영상은 57초.)">
-  <p class="a tag" style="margin-bottom:6px">시연 영상 · 57초</p>
-  <h2 class="a" style="font-size:28px">출근 → 계산 → 모자란 거스름돈 → 발주 → 입고·진열</h2>
+<!-- 4. 요구사항 -->
+<div class="slide" data-notes="[0:40] 요구사항입니다. 과목 요건은 3D 공간, HMD, 그리고 NeRF나 3DGS를 쓰고 비교하는 것입니다. 기능은 상품을 잡고 돌리기, 바코드 스캔, 봉투와 카드, 현금, 거스름돈, 손님 주문부터 하루 정산까지를 필수로 두었고, 진열과 입고, 전자레인지 같은 특수 요청을 확장으로 두었습니다. 성능은 헤드셋에서 끊기지 않는 것, 상품은 실제 크기 그대로를 목표로 했습니다. 모두 구현했습니다.">
+  <div class="num">01</div>
+  <p class="a tag">요구사항</p>
+  <h2 class="a">필수 기능을 먼저, 확장 기능을 더해</h2>
+  <div class="a cards">
+    <div class="card"><p class="step-n">과목 요건</p><ul class="req"><li>3D 가상 공간</li><li>HMD(Meta Quest 2)</li><li>NeRF · 3DGS 활용과 비교</li></ul></div>
+    <div class="card"><p class="step-n">필수 기능</p><ul class="req"><li>상품 잡기 · 돌리기 · 내려놓기</li><li>바코드 면 스캔과 합산</li><li>봉투 · 카드 · 현금 · 거스름돈</li><li>손님 주문 → 계산 → 하루 정산</li></ul></div>
+    <div class="card"><p class="step-n">확장 기능</p><ul class="req"><li>입고 상자 개봉과 진열</li><li>전자레인지 · 온수 · 1+1</li><li>발주로 상품 · 설비 늘리기</li></ul></div>
+    <div class="card"><p class="step-n">비기능</p><ul class="req"><li>헤드셋에서 끊김 없이(72Hz)</li><li>상품 실제 크기(cm) 반영</li><li>멀미 줄이기(이동 중 시야 가림)</li></ul></div>
+  </div>
+  <p class="a callout">전부 구현했다. 실제 상품 3DGS 모델 <span class="hi">23개</span>, 모두 직접 촬영.</p>
+</div>
+
+<!-- 5. 업무 분장 -->
+<div class="slide" data-notes="[0:35] 업무 분장입니다. 권도훈은 팀장으로 상품 촬영과 상품 데이터, 매장 구성과 플레이 테스트를 맡았습니다. 이민건은 Unity VR 개발 전체와 3DGS, NeRF 학습과 비교, 렌더링 최적화, 빌드와 헤드셋 측정을 맡았습니다. 두 사람은 상품 표 하나로 연결되어, 촬영한 상품이 표에 한 줄 들어가면 게임에 들어옵니다.">
+  <div class="num">02</div>
+  <p class="a tag">업무 분장</p>
+  <h2 class="a">찍는 사람과 만드는 사람, 상품 표 하나로 연결</h2>
+  <div class="a cards">
+    <div class="card"><p class="step-n">권도훈 · 팀장</p><h3>3DGS 캡처 · 콘텐츠</h3><ul class="req"><li>상품 촬영(앞 · 뒤 영상)</li><li>상품 데이터: 가격 · 실측 크기 · 바코드 면</li><li>매장 구성 자료와 주문 시나리오</li><li>플레이 테스트, 일정 관리</li></ul></div>
+    <div class="card"><p class="step-n">이민건 · 팀원</p><h3>VR 개발 · 시스템</h3><ul class="req"><li>Unity VR 구현: 상호작용 · 손님 · 결제 · 정산 · 발주 · 입고</li><li>3DGS · NeRF 학습과 비교 실험</li><li>렌더링 최적화: 시야 컬링 · 진열대 병합 · 경량본</li><li>빌드, 헤드셋 측정, 시연 영상</li></ul></div>
+  </div>
+  <p class="a callout">연결: <span class="hi">상품 표(CSV) + 3DGS 모델 → 게임 속 상품 자동 생성</span> · 함께: 통합 점검, 플레이 테스트, 발표</p>
+</div>
+
+<!-- 6. 개발 일정 -->
+<div class="slide" data-notes="[0:35] 개발 일정입니다. 10월 말 제안과 환경 구축을 하고, 11월 6일 기획을 확정하고 Quest 2를 확보했습니다. 그 뒤 열흘 동안 게임 루프, 최적화와 NeRF 비교, 결제와 성장, 손과 손님 동작을 차례로 만들고, 마지막 이틀은 계산대를 다듬고 헤드셋으로 전체를 점검했습니다.">
+  <div class="num">03</div>
+  <p class="a tag">개발 일정</p>
+  <h2 class="a">10월 24일 착수, 11월 17일 발표</h2>
+  <div class="a flow">
+    <div class="step"><p class="step-n">10/24 ~ 25</p><p class="step-label">제안 · 환경</p><p class="step-sub">Unity 프로젝트, 3DGS 렌더 확인</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">11/06</p><p class="step-label">기획 확정</p><p class="step-sub">Quest 2 확보, 이동 방식 결정</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">11/07 ~ 08</p><p class="step-label">게임 루프</p><p class="step-sub">상품 반입, 1~3일차, 손님, 매장</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">11/09 ~ 10</p><p class="step-label">최적화 · 비교</p><p class="step-sub">진열대 병합, NeRF 비교, 조명 · 음성, 상품 9종 추가</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">11/11 ~ 13</p><p class="step-label">결제 · 성장 · 손</p><p class="step-sub">현금 결제, 발주 · 입고, 손 모델, 상품 10종 품질 개선</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step" style="border-color:#0066cc"><p class="step-n">11/14 ~ 15</p><p class="step-label">다듬기 · 점검</p><p class="step-sub">계산대 재배치, 헤드셋 전체 점검 · 성능 측정</p></div>
+  </div>
+  <p class="a note">일정은 커밋 기록 기준</p>
+</div>
+
+<!-- 7. 주요 이슈 -->
+<div class="slide" data-notes="[0:45] 개발 중 주요 이슈 네 가지입니다. 쓰려던 3DGS 렌더러는 개발이 멈춘 프로젝트이고 Quest 2는 지원 목록에 없어서, 첫 주에 헤드셋에서 직접 재고 필요한 기능을 넣었습니다. 3DGS에는 표면도 충돌도 없어서 보이는 것과 물리를 따로 만들었습니다. 상품이 늘수록 프레임이 떨어져서 진열대를 합치고 가볍게 만들었습니다. 포장 글씨가 흐린 상품은 앞뒤 두 영상을 함께 복원해 열 종을 다시 만들었습니다.">
+  <div class="num">03</div>
+  <p class="a tag">주요 이슈</p>
+  <h2 class="a">막힌 곳과 푼 방법</h2>
+  <div class="a" style="width:100%;margin-top:22px">
+    <table>
+      <tr><th>이슈</th><th></th><th>해결</th></tr>
+      <tr><td class="before">3DGS 렌더러가 개발 중단, Quest 2는 지원 목록에 없음</td><td class="arr">&rarr;</td><td class="after">첫 주에 헤드셋에서 직접 측정, 시야 컬링을 직접 구현</td></tr>
+      <tr><td class="before">3DGS에는 표면도 충돌도 없다</td><td class="arr">&rarr;</td><td class="after">보이는 것(스플랫)과 물리(상자 충돌체) 분리, 바코드 면 판정</td></tr>
+      <tr><td class="before">상품이 늘수록 프레임 하락(24개면 기준 초과)</td><td class="arr">&rarr;</td><td class="after">진열대를 칸마다 병합 · 경량본, Gaussian 절반으로</td></tr>
+      <tr><td class="before">포장 글씨가 흐린 상품</td><td class="arr">&rarr;</td><td class="after">앞 · 뒤 두 영상을 함께 복원, 10종 다시 제작</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 8. 시연 영상 -->
+<div class="slide" id="video-slide" style="justify-content:flex-start;padding-top:34px" data-notes="[1:05] 결과물을 먼저 영상으로 보여 드리겠습니다. 실제 과자를 찍은 3DGS 상품, 계산, 모자란 거스름돈, 정산, 발주, 입고와 진열 순서입니다. (Enter를 눌러 재생. 재생 중에는 말하지 않는다. 영상은 57초.)">
+  <p class="a tag" style="margin-bottom:6px">04 결과물 · 시연 영상 · 57초</p>
+  <h2 class="a" style="font-size:30px">실제로 해 보면 이렇게 됩니다</h2>
   <div class="a video"><video id="demo" src="assets/demo.mp4" poster="assets/customer_goods.jpg" controls preload="metadata"></video></div>
 </div>
 
-<!-- 4. 제작 과정 -->
-<div class="slide" data-notes="[1:15] 과자 한 봉지가 게임에 들어오는 과정입니다. 휴대폰으로 앞뒤를 찍고, 3DGS로 학습하고, 배경을 지우고, 가벼운 복사본을 만들어 진열대에 합칩니다. 3DGS는 점들의 구름이라 표면도 충돌도 없습니다. 그래서 보이는 것과 물리를 따로 만들었습니다. 바코드 면에만 판정을 둬서, 상품을 돌려 바코드를 찾는 것이 게임 규칙이 됐습니다.">
-  <div class="num">01</div>
-  <p class="a tag">제작 과정</p>
+<!-- 9. 제작 과정 -->
+<div class="slide" data-notes="[0:55] 첫 번째 특징은 과자 한 봉지가 게임에 들어오는 과정입니다. 휴대폰으로 앞뒤를 찍고, 3DGS로 학습하고, 배경을 지우고, 가벼운 복사본을 만들어 진열대에 합칩니다. 3DGS는 점들의 구름이라 표면도 충돌도 없어서 보이는 것과 물리를 따로 만들었고, 바코드 면에만 판정을 둬서 상품을 돌려 바코드를 찾는 것이 게임 규칙이 됐습니다.">
+  <div class="num">04</div>
+  <p class="a tag">결과물 특징 1 · 제작 과정</p>
   <h2 class="a">과자 한 봉지가 게임에 들어오기까지</h2>
   <div class="a flow">
     <div class="step"><p class="step-n">01</p><p class="step-label">휴대폰 촬영</p><p class="step-sub">앞면·뒷면 영상</p></div>
@@ -203,10 +289,10 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   <p class="a callout">3DGS에는 표면도 충돌도 없다. 그래서 <span class="hi">"돌려서 바코드를 찾는 것"</span>이 게임 규칙이 됐다.</p>
 </div>
 
-<!-- 5. NeRF vs 3DGS -->
-<div class="slide" data-notes="[1:15] 왜 NeRF가 아니라 3DGS인지입니다. 같은 사진, 같은 카메라 포즈로 둘 다 학습해 비교했습니다. 화질 지표는 모두 3DGS가 앞섰고, 속도는 약 90배입니다. NeRF는 초당 0.3장이라 VR에 필요한 72장의 240분의 1입니다. 그래서 NeRF는 비교 기준으로만 쓰고, 게임에는 3DGS를 넣었습니다. 비교는 상품 두 종으로 했습니다.">
-  <div class="num">02</div>
-  <p class="a tag">NeRF · 3DGS 비교</p>
+<!-- 10. NeRF vs 3DGS -->
+<div class="slide" data-notes="[0:55] 두 번째는 NeRF와 3DGS 비교입니다. 같은 사진, 같은 카메라 포즈로 둘 다 학습했습니다. 화질 지표는 모두 3DGS가 앞섰고, 속도는 약 90배입니다. NeRF는 초당 0.3장이라 VR에 쓸 수 없어서, 비교 기준으로만 쓰고 게임에는 3DGS를 넣었습니다.">
+  <div class="num">04</div>
+  <p class="a tag">결과물 특징 2 · NeRF · 3DGS 비교</p>
   <h2 class="a">왜 NeRF가 아니라 3DGS인가</h2>
   <div class="a row" style="margin-top:20px;align-items:stretch">
     <div class="grow">
@@ -220,7 +306,7 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
     </div>
     <div style="width:330px;display:flex;flex-direction:column;gap:14px">
       <div class="card" style="flex:1"><p class="stat">약 90<small>배</small></p><p class="stat-label">3DGS가 빠르다. 화질도 앞선다</p></div>
-      <div class="card" style="flex:1"><p class="stat">1/240</p><p class="stat-label">NeRF 0.3fps는 VR 72fps의 240분의 1</p></div>
+      <div class="card" style="flex:1"><p class="stat">0.3<small>fps</small></p><p class="stat-label">NeRF로는 VR 화면(초당 72장)을 그릴 수 없다</p></div>
     </div>
   </div>
   <div class="a" style="width:100%;margin-top:16px">
@@ -230,10 +316,10 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   <p class="a note">같은 사진·같은 카메라 포즈 · 상품 2종 · RTX 4070 · 속도는 nerfstudio 안에서 잰 값(VR 프레임 아님)</p>
 </div>
 
-<!-- 6. 최적화 -->
-<div class="slide" data-notes="[1:15] 3DGS 상품은 점이 많을수록 무거워집니다. VR은 화면이 조금만 끊겨도 어지러워서, 상품을 늘려도 끊기지 않게 최적화했습니다. 먼저 얼마나 무거운지 쟀습니다. 가우시안 백만 개에 6에서 7밀리초가 들었습니다. 그다음 눈에 안 보이는 등 뒤 상품도 비용을 내고 있다는 것을 찾아 건너뛰게 해서 그리는 시간을 절반으로 줄였습니다. 진열대는 칸마다 하나로 합치고 집는 순간에만 떼어 내서 점 수를 절반으로 줄였습니다. 그 결과 Quest 2에서 초당 72장인 화면을 거의 그대로 유지했고, 8분 동안 빠진 프레임은 다섯 개였습니다.">
-  <div class="num">03</div>
-  <p class="a tag">최적화</p>
+<!-- 11. 최적화 -->
+<div class="slide" data-notes="[0:55] 세 번째는 최적화입니다. 3DGS는 점이 많을수록 무겁고, VR은 화면이 조금만 끊겨도 어지럽습니다. 먼저 가우시안 백만 개에 6에서 7밀리초가 드는 것을 쟀고, 눈에 안 보이는 등 뒤 상품도 비용을 낸다는 것을 찾아 건너뛰게 해서 그리는 시간을 절반으로 줄였습니다. 진열대는 칸마다 하나로 합치고 집는 순간에만 떼어 내서 점 수를 절반으로 줄였습니다. 그 결과 Quest 2의 초당 72장 화면을 거의 그대로 유지했습니다.">
+  <div class="num">04</div>
+  <p class="a tag">결과물 특징 3 · 최적화</p>
   <h2 class="a">3DGS 상품을 VR에서 가볍게</h2>
   <p class="a lead">3DGS는 점이 많을수록 무겁고, VR은 화면이 조금만 끊겨도 어지럽다. 상품을 늘려도 끊기지 않게 <span class="hi">재고, 줄이고, 다시 쟀다</span>.</p>
   <div class="a cards">
@@ -251,10 +337,10 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   <p class="a note">01~02는 PC 모의 스테레오 측정(RTX 4070) · 03은 Gaussian 수(멀리서는 32.0만) · 04는 2026-11-15 Quest 2 Link 실측(진열대를 채운 지금 빌드, GPU 평균 5.9ms)</p>
 </div>
 
-<!-- 7. 게임 -->
-<div class="slide" data-notes="[1:15] 게임으로 만든 것입니다. 처음에는 순서만 따라 하면 100점이 나왔습니다. 직접 해 보니 재미가 없어서, 거스름돈을 기계가 세어 주지 않게 바꿨습니다. 더 주면 가게가 손해를 보고, 덜 주면 손님이 말합니다. 손님은 상품과 카드를 직접 손으로 놓고 봉투를 들고 나갑니다. 번 돈으로는 상품을 발주하고, 다음 날 상자로 오면 직접 진열합니다.">
+<!-- 12. 게임 -->
+<div class="slide" data-notes="[0:55] 네 번째는 게임으로서의 특징입니다. 처음에는 순서만 따라 하면 100점이 나와서 재미가 없었습니다. 그래서 거스름돈을 기계가 세어 주지 않게 바꿨습니다. 더 주면 가게 돈이 비고, 덜 주면 손님이 말합니다. 손님은 상품과 카드를 직접 손으로 놓고 봉투를 들고 나갑니다. 번 돈으로는 새 상품을 발주하고, 다음 날 상자로 오면 직접 뜯어서 진열해야 팔립니다.">
   <div class="num">04</div>
-  <p class="a tag">게임</p>
+  <p class="a tag">결과물 특징 4 · 게임</p>
   <h2 class="a">게임으로 만든 것</h2>
   <div class="a cards">
     <div class="card"><div class="shot tall"><img src="assets/short_change.jpg" alt="거스름돈이 모자라다고 말하는 손님"></div><h3>틀릴 수 있는 계산</h3><p>거스름돈을 POS가 세어 주지 않는다. 더 주면 가게 돈이 비고, 덜 주면 손님이 모자라다고 말한다.</p></div>
@@ -263,9 +349,9 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   </div>
 </div>
 
-<!-- 8. 앞으로 -->
-<div class="slide" data-notes="[0:40] 앞으로는 세 가지를 더 하려고 합니다. 첫째, 상품을 더 찍어서 매장을 더 채우겠습니다. 둘째, 상품이 늘어도 끊기지 않게 최적화를 더 하겠습니다. 셋째, 게임으로서 오래 할 이유가 되도록 성장과 해금 같은 기획을 더 다듬겠습니다.">
-  <div class="num">05</div>
+<!-- 13. 앞으로 -->
+<div class="slide" data-notes="[0:25] 앞으로는 상품을 더 찍어서 매장을 채우고, 상품이 늘어도 끊기지 않게 최적화를 더 하고, 성장과 해금 같은 기획을 다듬어 오래 할 이유를 만들겠습니다.">
+  <div class="num">04</div>
   <p class="a tag">다음 단계</p>
   <h2 class="a">앞으로</h2>
   <div class="a limits" style="grid-template-columns:1fr 1fr 1fr">
@@ -275,8 +361,15 @@ td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
   </div>
 </div>
 
-<!-- 9. 마무리 -->
-<div class="slide" data-notes="[0:15] 이상으로 발표를 마치겠습니다. 감사합니다. 질문 받겠습니다.">
+<!-- 14. 결과물 동영상 -->
+<div class="slide" style="justify-content:flex-start;padding-top:34px" data-notes="[0:10] 3분짜리 결과물 동영상은 발표 자료에 넣어 두었고, 6동 로비에서 상영됩니다. 시간 관계상 여기서는 재생하지 않겠습니다. (질문 시간이 남으면 Enter로 재생.)">
+  <p class="a tag" style="margin-bottom:6px">05 결과물 동영상 · 로비 상영용</p>
+  <h2 class="a" style="font-size:30px">동아편의점 결과물 동영상</h2>
+  <div class="a video"><video id="lobby" src="assets/lobby.mp4" poster="assets/shelf.jpg" controls preload="metadata"></video></div>
+</div>
+
+<!-- 15. 마무리 -->
+<div class="slide" data-notes="[0:10] 이상으로 발표를 마치겠습니다. 감사합니다. 질문 받겠습니다.">
   <div class="row" style="align-items:center">
     <div class="grow">
       <p class="a overline">THANK YOU</p>
@@ -386,19 +479,21 @@ function updateNotes() {
   } catch(e) {}
 }
 
-// Demo video: Enter plays or pauses it; leaving the slide pauses it
-const demo = document.getElementById('demo');
-const videoSlide = document.getElementById('video-slide');
+// Videos: Enter plays or pauses the video on the current slide; leaving a slide pauses its video
 document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Enter' || slides[current] !== videoSlide) return;
+  if (e.key !== 'Enter') return;
+  const v = slides[current].querySelector('video');
+  if (!v) return;
   e.preventDefault();
-  demo.paused ? demo.play() : demo.pause();
+  v.paused ? v.play() : v.pause();
 });
-new MutationObserver(() => {
-  if (!videoSlide.classList.contains('active')) demo.pause();
-}).observe(videoSlide, { attributes: true, attributeFilter: ['class'] });
-// Keys pressed while the video has focus should still move the slides, not scrub the video
-demo.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key.startsWith('Arrow')) demo.blur(); });
+slides.forEach((s) => {
+  const v = s.querySelector('video');
+  if (!v) return;
+  new MutationObserver(() => { if (!s.classList.contains('active')) v.pause(); }).observe(s, { attributes: true, attributeFilter: ['class'] });
+  // Keys pressed while the video has focus should still move the slides, not scrub the video
+  v.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key.startsWith('Arrow')) v.blur(); });
+});
 
 updateProgress();
 updateCounter();
