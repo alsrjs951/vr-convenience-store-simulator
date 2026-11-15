@@ -29,11 +29,12 @@ public partial class P2DayVerification
 {
     const float FilmMaxSeconds = 480f;
     const float ShowTurnDegreesPerSecond = 80f;
-    // Beside the scanner and over what its upright glass reads, so turning the product here scans nothing.
+    // Over the scanner and above what its glass reads, so turning the product here scans nothing.
     static readonly Vector3 ShowSpot = new Vector3(0.45f, 1.45f, 0.25f);
-    // Where the left hand waits while the right one works: lying on the counter between the bag and the scanner.
-    // (The counter's near edge is at about z 0.4: at 0.2 the hand hung in the air in front of it, take 2.)
-    static readonly Vector3 LeftHandRest = new Vector3(-0.17f, 0.95f, 0.47f);
+    // Where the left hand waits while the right one works: down by the left hip, below the counter's edge. On the
+    // counter there is no place left for it (2026-11-15): the bag stands where it lay, and between the bag and the
+    // scanner is where a thing rung up is set aside.
+    static readonly Vector3 LeftHandRest = new Vector3(-0.25f, 0.8f, -0.05f);
 
     bool filmMode, filmGrowth, filmIntro;
     /// <summary>The film of the demo's three customers at the counter, and not one of the films of a check's run.</summary>
@@ -93,11 +94,10 @@ public partial class P2DayVerification
                 yield return GrabProduct(products[i], label);
                 film.Mark($"order{number} item{i} in hand");
                 if (i == 0) yield return ShowToTheCamera(products[i], number);
-                film.Mark($"order{number} item{i} turn barcode down");
-                yield return TurnBarcodeDown(products[i]);
-                yield return MoveHeldBeforeScanner(products[i]);
+                int scansBefore = scansSeen;
+                yield return BringBeforeScannerForTheFilm(products[i]);
                 film.Mark($"order{number} item{i} before the scanner");
-                yield return ShowUntilScanned(products[i], label + ".scan");
+                yield return ShowForTheFilm(products[i], label + ".scan", scansBefore);
                 film.Mark($"order{number} item{i} scanned");
                 if (order.NeedsBag) yield return PutInBag(products[i], label + ".bag");
                 else yield return SetAside(products[i], i);
@@ -215,6 +215,54 @@ public partial class P2DayVerification
         yield return TurnHandSlowly(180f);
         yield return new WaitForSeconds(0.3f);
         film.Mark($"order{number} show ends");
+    }
+
+    /// <summary>
+    /// As a clerk does it: the thing stays upright as it was taken from the row, its barcode on the far side, and is
+    /// brought in front of the scanner on the clerk's side. Only a barcode printed on another face is turned to the
+    /// far side first, about the upright axis. (The checks lay the barcode down and stand it up again, which reads the
+    /// same and looks like nobody's hands.)
+    /// </summary>
+    IEnumerator BringBeforeScannerForTheFilm(ProductPrefab product)
+    {
+        var glass = Scanner.Shown;
+        var center = product.transform.position;
+        // High: the way from the row to the clerk's side goes over the scanner, and a thing carried upright through the
+        // space it reads, its barcode on the far side, is read on the way (take 14: read twice, and the sale would not close).
+        float travel = Mathf.Max(center.y, ShowSpot.y + 0.05f);
+        yield return MoveProduct(product, new Vector3(center.x, travel, center.z), "film.scanner.rise");
+        var normal = product.transform.TransformDirection(product.Data.BarcodeLocalNormal);
+        var flat = Vector3.ProjectOnPlane(normal, Vector3.up);
+        float yaw = flat.sqrMagnitude > 0.01f ? -Vector3.SignedAngle(Vector3.forward, flat, Vector3.up) : 0f;
+        if (Mathf.Abs(yaw) > 5f)
+        {
+            yield return RotateHand(new Vector3(0f, yaw, 0f));
+            yield return new WaitForSeconds(0.3f);
+        }
+        normal = product.transform.TransformDirection(product.Data.BarcodeLocalNormal);
+        Check("film.barcode_faces_the_glass", Vector3.Angle(normal, -glass.up) < 35f, $"{product.Data.Id} angle from the glass={Vector3.Angle(normal, -glass.up):0.0}; turned by {yaw:0}");
+        center = product.transform.position;
+        float height = Mathf.Max(glass.position.y, CounterTop + OverTheTerminal + center.y - LowestProxyPoint(product));
+        // Down in front of the scanner from above the space it reads, well short of it.
+        float near = Mathf.Max(ShowFrom, center.z + glass.position.z - ShowFromGlass - 0.06f - BarcodeFaceZ(product));
+        yield return MoveProduct(product, new Vector3(glass.position.x, travel, near), "film.scanner.over");
+        yield return MoveProduct(product, new Vector3(glass.position.x, height, near), "film.scanner.level");
+    }
+
+    /// <summary>In toward the glass until it is read, and held there a moment for the picture.</summary>
+    IEnumerator ShowForTheFilm(ProductPrefab product, string label, int before)
+    {
+        var glass = Scanner.Shown;
+        var target = rightHand.position;
+        float begun = Clock;
+        while (scansSeen == before && Clock - begun < LowerTimeout * 2f && glass.position.z - BarcodeFaceZ(product) > 0.04f)
+        {
+            target += Vector3.forward * ShowStep;
+            yield return MoveHand(target, label + ".approach");
+            yield return new WaitForSeconds(0.05f);
+        }
+        Check(label, scansSeen > before, $"{product.Data.Id} scans {before}->{scansSeen}; gap to the glass={glass.position.z - BarcodeFaceZ(product):0.000}");
+        yield return new WaitForSeconds(0.4f);
     }
 
     /// <summary>RotateHand's yaw, at a speed fit to be looked at.</summary>
@@ -489,7 +537,7 @@ public partial class P2DayVerification
         var director = Game.Director;
 
         // Where the clerk's eyes are, looking over the counter at whoever stands there.
-        film.Add("pov", 60f, (camera, t) => Aim(camera, new Vector3(0f, 1.6f, -0.2f), new Vector3(0.12f, 1.0f, 0.85f)));
+        film.Add("pov", 60f, (camera, t) => Aim(camera, new Vector3(0f, 1.6f, -0.2f), new Vector3(0.18f, 1.0f, 0.8f)));
 
         // Over the clerk's right shoulder, staying with the right hand and what it holds.
         var drawnHand = rightHand.GetComponentInChildren<PlayerHand>();
@@ -500,8 +548,8 @@ public partial class P2DayVerification
             // What it holds is what is looked at; far enough back that a bag of snacks fits in the picture.
             var target = rightInteractor.hasSelection ? rightInteractor.interactablesSelected[0].transform.position : hand();
             handAt = Vector3.SmoothDamp(handAt, target, ref handSpeed, 0.2f);
-            // From the right; from the left once the hand is over the bag, the tray and the till, which would stand in the way.
-            // There it also looks down from higher up: the tray lies right behind the bag (take 2 showed only the bag).
+            // From the right; from the left once the hand is over the bag, the card terminal and the till, which would
+            // stand in the way. There it also looks down from higher up.
             float left = Mathf.InverseLerp(0f, -0.3f, handAt.x);
             var offset = Vector3.Lerp(new Vector3(0.3f, 0.28f, -0.5f), new Vector3(-0.2f, 0.6f, -0.3f), left);
             handFrom = Vector3.SmoothDamp(handFrom, handAt + offset, ref fromSpeed, 0.35f);
