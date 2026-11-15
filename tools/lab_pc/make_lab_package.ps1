@@ -20,9 +20,11 @@ if ($LASTEXITCODE -ge 8) { throw "robocopy 실패: $LASTEXITCODE" }
 Copy-Item (Join-Path $repo '시연모드_켜기.bat') (Join-Path $pkg '2_start_demo.bat')
 Copy-Item (Join-Path $PSScriptRoot '1_check_pc.bat') $pkg
 Copy-Item (Join-Path $PSScriptRoot 'check_pc.ps1') $pkg
+Copy-Item (Join-Path $PSScriptRoot '3_pc_autoplay.bat') $pkg
+Copy-Item (Join-Path $PSScriptRoot '4_pc_keyboard.bat') $pkg
 Get-Content (Join-Path $repo 'docs\p5\발표날_시연_진행순서.md') -Encoding UTF8 | Set-Content (Join-Path $pkg 'README.txt') -Encoding UTF8
-$video = Join-Path $repo 'capture\film\presentation_v5.mp4'
-if (Test-Path $video) { Copy-Item $video (Join-Path $pkg 'backup_video_presentation_v5.mp4') }
+$video = Join-Path $repo 'capture\film\presentation_v6_1min.mp4'
+if (Test-Path $video) { Copy-Item $video (Join-Path $pkg 'demo_video_1min.mp4') }
 
 & (Join-Path $env:SystemRoot 'System32\tar.exe') -a -cf $zip -C $out 'DongA_Store_Demo'
 if ($LASTEXITCODE -ne 0) { throw "압축 실패: $LASTEXITCODE" }

@@ -4,7 +4,7 @@
 //   npm install pptxgenjs puppeteer-core   (아무 폴더에나, 그 폴더의 node_modules를 NODE_PATH로 준다)
 //   NODE_PATH=<그 폴더>/node_modules node docs/p5/slides/make_pptx.cjs
 //
-// 결과: docs/p5/slides/동아편의점_발표.pptx, 확인용 그림 docs/p5/slides/shots/slide_NN.png
+// 결과: docs/p5/slides/동아편의점_발표.pptx(영상이 있는 장은 assets의 mp4를 그대로 넣는다), 확인용 그림 docs/p5/slides/shots/slide_NN.png
 const fs = require('fs');
 const path = require('path');
 const { pathToFileURL } = require('url');
@@ -78,6 +78,25 @@ const BROWSERS = [
     const png = await page.screenshot({ path: file, type: 'png' });
     const slide = pptx.addSlide();
     slide.addImage({ data: `image/png;base64,${Buffer.from(png).toString('base64')}`, x: 0, y: 0, w: '100%', h: '100%' });
+    // 영상이 있는 장: 그림 위 같은 자리에 실제 영상을 넣는다(PowerPoint에서 누르면 재생). 표지는 그 자리를 찍은 그림.
+    const video = await page.evaluate((idx) => {
+      const el = document.querySelectorAll('.slide')[idx].querySelector('video');
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return { x: r.left, y: r.top, w: r.width, h: r.height, src: el.getAttribute('src') };
+    }, index);
+    if (video) {
+      const videoPath = path.join(here, video.src);
+      if (!fs.existsSync(videoPath)) throw new Error(`영상이 없다: ${videoPath}`);
+      const cover = await page.screenshot({ type: 'png', clip: { x: video.x, y: video.y, width: video.w, height: video.h } });
+      const inch = 13.333 / 1280;
+      slide.addMedia({
+        type: 'video', path: videoPath,
+        x: video.x * inch, y: video.y * inch, w: video.w * inch, h: video.h * inch,
+        cover: `data:image/png;base64,${Buffer.from(cover).toString('base64')}`,
+      });
+      report[report.length - 1].video = `${video.src} (${Math.round(fs.statSync(videoPath).size / 1e6)}MB)`;
+    }
     if (notes[index]) slide.addNotes(notes[index]);
   }
 
@@ -86,7 +105,7 @@ const BROWSERS = [
   await pptx.writeFile({ fileName: out });
   for (const r of report) {
     const over = r.lowest > 720 || r.widest > 1280 ? '  <-- 넘침' : '';
-    const broken = r.broken.length ? `  <-- 안 뜬 그림: ${r.broken.join(', ')}` : '';
+    const broken = (r.broken.length ? `  <-- 안 뜬 그림: ${r.broken.join(', ')}` : '') + (r.video ? `  [영상 ${r.video}]` : '');
     console.log(`slide ${r.slide}: bottom ${r.lowest}/720, right ${r.widest}/1280${over}${broken}`);
   }
   console.log(`${notes.length} slides -> ${out}`);
