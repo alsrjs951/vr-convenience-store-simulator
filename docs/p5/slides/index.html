@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>동아편의점 — 가상현실 Term Project 최종 발표</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* make-slide · theme: minimal-light · layout: wide */
+:root{--bg:#fafafa;--text:#1a1a1a;--text-2:#555;--text-3:#888;--accent:#0066cc;--accent-2:#0a84ff;--line:#e0e0e0;--card:#fff;
+  --font:'Pretendard Variable','Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono','Consolas',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;word-break:keep-all}
+
+/* 16:9 stage, scaled to the window */
+.deck{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%);transform-origin:center;overflow:hidden;background:var(--bg)}
+
+/* Base slide (wide layout: left aligned, full width) */
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;padding:52px 72px;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.slide.active{opacity:1;pointer-events:auto;z-index:2}
+
+/* Stagger animation */
+.slide.active .a{opacity:0;animation:fadeInUp 0.4s ease forwards}
+.a:nth-child(1){animation-delay:0.05s}
+.a:nth-child(2){animation-delay:0.1s}
+.a:nth-child(3){animation-delay:0.15s}
+.a:nth-child(4){animation-delay:0.2s}
+.a:nth-child(5){animation-delay:0.25s}
+.a:nth-child(6){animation-delay:0.3s}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Typography */
+.overline{font-size:15px;letter-spacing:5px;color:#666;margin-bottom:22px}
+.tag{font-size:15px;letter-spacing:1px;color:var(--accent);font-weight:600;margin-bottom:12px}
+.xl{font-size:84px;font-weight:800;line-height:1.1;letter-spacing:-0.03em}
+h2{font-size:38px;font-weight:800;line-height:1.25;letter-spacing:-0.02em;width:100%}
+.sub{font-size:21px;color:var(--text-2);margin-top:18px;line-height:1.6}
+.lead{font-size:19px;color:var(--text-2);line-height:1.6;margin-top:10px;width:100%}
+.hi{color:var(--accent);font-weight:700}
+.note{font-size:14px;color:var(--text-3);margin-top:14px;width:100%}
+.num{font-size:110px;font-weight:900;color:rgba(0,0,0,0.05);position:absolute;top:22px;right:60px;line-height:1;pointer-events:none;font-family:var(--mono)}
+.row{display:flex;gap:28px;width:100%}
+.grow{flex:1;min-width:0}
+
+/* Game screenshots: the frame is cropped so the film's own caption and label stay out */
+.shot{width:100%;aspect-ratio:16/6.5;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:#ddd;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.shot img{display:block;width:100%;margin-top:-6.5%}
+.shot.tall{aspect-ratio:16/8}
+.shot.tall img{width:125%;margin-left:-12.5%;margin-top:-8.1%}
+.cap{font-size:14px;color:var(--text-3);margin-top:8px}
+
+/* Cards and stats */
+.cards{display:flex;gap:20px;width:100%;margin-top:26px}
+.card{flex:1;min-width:0;padding:22px 24px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.card h3{font-size:22px;font-weight:700;margin-bottom:8px}
+.card p{font-size:17px;color:#444;line-height:1.6}
+.card .shot{margin-bottom:16px;border-radius:10px}
+.card .stat{font-size:46px;font-weight:800;color:var(--accent);line-height:1.15;letter-spacing:-0.02em}
+.card .stat small{font-size:22px;font-weight:700}
+.card .stat-label{font-size:16px;color:var(--text-2);margin-top:6px;line-height:1.5}
+.step-n,.card .step-n{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:10px;line-height:1.4}
+
+/* Flow */
+.flow{display:flex;align-items:stretch;gap:10px;width:100%;margin-top:24px}
+.step{flex:1;padding:16px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.step-label{font-size:17px;font-weight:700;color:#222}
+.step-sub{font-size:14px;color:var(--text-2);margin-top:4px;line-height:1.5}
+.arrow{display:flex;align-items:center;font-size:20px;color:#bbb}
+.layers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.layer{padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px;font-size:16px;color:#333}
+.layer b{display:block;font-size:12px;color:var(--accent);letter-spacing:1px;margin-bottom:2px}
+.callout{width:100%;margin-top:22px;padding:18px 24px;background:#f0f6fc;border-left:4px solid var(--accent);border-radius:0 10px 10px 0;font-size:18px;color:#222;line-height:1.6}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:20px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th{font-size:13px;letter-spacing:2px;color:var(--text-3);font-weight:600;text-align:left;padding:12px 20px;background:#f3f3f3;border-bottom:1px solid var(--line)}
+td{padding:16px 22px;border-bottom:1px solid #eee;color:#333}
+tr:last-child td{border-bottom:none}
+td.win{color:var(--accent);font-weight:700;font-family:var(--mono)}
+td.lose{color:#777;font-family:var(--mono)}
+td.before{color:#666}
+td.after{color:#1a1a1a;font-weight:600}
+td.arr{color:#bbb;width:40px;text-align:center;padding:16px 0}
+
+/* Bars */
+.bars{margin-top:12px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-2);margin-top:6px}
+.bar-row span{width:56px;font-family:var(--mono)}
+.bar{height:10px;border-radius:5px;background:var(--accent)}
+
+/* Video */
+.video{width:1010px;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#000;margin:14px auto 0;box-shadow:0 4px 18px rgba(0,0,0,0.10)}
+.video video{width:100%;height:100%;display:block}
+
+/* Limits */
+.limits{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%;margin-top:26px}
+.limit{padding:28px 30px;background:#f6f6f6;border:1px solid var(--line);border-radius:14px}
+.limit h3{font-size:23px;font-weight:700;margin-bottom:8px;color:#222}
+.limit p{font-size:18px;color:#555;line-height:1.6}
+
+/* Progress bar */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:100;transition:width 0.3s ease}
+/* Slide counter */
+.slide-counter{position:fixed;bottom:16px;right:26px;font-size:12px;color:#999;font-family:var(--mono);z-index:100}
+/* Keyboard hints */
+.hint{position:fixed;bottom:16px;left:26px;font-size:11px;color:#999;z-index:100;display:flex;gap:12px}
+.hint span{display:flex;align-items:center;gap:4px}
+.kbd{padding:2px 6px;border-radius:3px;background:#e8e8e8;border:1px solid #ccc;font-family:var(--mono);font-size:10px;color:#555}
+/* Fullscreen button */
+.fullscreen-btn{position:fixed;top:14px;right:18px;padding:6px 16px;border-radius:20px;background:#eee;border:1px solid #ddd;color:#666;font-size:11px;cursor:pointer;z-index:100;font-family:var(--font)}
+.fullscreen-btn:hover{color:var(--accent);border-color:var(--accent-2)}
+:fullscreen .hint,:fullscreen .fullscreen-btn{display:none}
+
+/* Print / PDF export */
+@media print{
+  .progress-bar,.slide-counter,.hint,.fullscreen-btn,nav,button,[class*="hint"],[class*="btn"]{display:none!important}
+  html,body{overflow:visible;height:auto;background:#fff}
+  .deck{position:static;transform:none!important;width:1280px;height:auto;overflow:visible}
+  .slide{page-break-after:always;position:relative!important;opacity:1!important;display:flex!important;width:1280px;height:720px;inset:auto}
+  .slide .a{opacity:1!important;animation:none!important}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+<div class="slide-counter" id="counter"></div>
+<div class="hint"><span><span class="kbd">Space</span> 다음</span><span><span class="kbd">&larr;&rarr;</span> 이동</span><span><span class="kbd">F</span> 전체 화면</span><span><span class="kbd">S</span> 발표자 노트</span><span><span class="kbd">Enter</span> 영상 재생</span></div>
+<button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; 전체 화면</button>
+
+<div class="deck" id="deck">
+
+<!-- 1. 표지 -->
+<div class="slide active" data-notes="[0:20] 안녕하세요. 팀 도민의 동아편의점 발표를 시작하겠습니다. 실제 상품을 3D 가우시안 스플래팅으로 옮긴 VR 편의점입니다.">
+  <div class="row" style="align-items:center">
+    <div class="grow">
+      <p class="a overline">가상현실 TERM PROJECT · 2026.11.17</p>
+      <h1 class="a xl">동아편의점</h1>
+      <p class="a sub">실제 상품을 3D Gaussian Splatting으로 옮긴<br>VR 편의점</p>
+      <p class="a sub" style="margin-top:44px;font-size:18px;color:#333"><b>팀 도민</b> &nbsp;·&nbsp; 권도훈 &nbsp;·&nbsp; 이민건</p>
+    </div>
+    <div class="a" style="width:520px">
+      <div class="shot" style="aspect-ratio:16/10.5"><img src="assets/shelf.jpg" alt="스캔한 과자로 채운 동아편의점 진열대" style="width:160%;margin-left:-45%;margin-top:-8.1%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. 무엇을 만들었나 -->
+<div class="slide" data-notes="[0:40] 기존 VR 직업 체험은 만화 같은 3D 모델을 씁니다. 저희는 실제 과자를 휴대폰으로 찍어서 그대로 VR에 넣었습니다. 상품 스물세 개를 전부 직접 촬영했고, Quest 2에서 약 72프레임으로 돌아갑니다. 먼저 영상으로 보여 드리겠습니다.">
+  <p class="a tag">무엇을 만들었나</p>
+  <h2 class="a">실제 과자를 휴대폰으로 찍어 <span class="hi">3DGS</span>로 만들고,<br>VR 편의점에서 손으로 집어 계산한다</h2>
+  <div class="a row" style="margin-top:28px;align-items:stretch">
+    <div style="width:430px;display:flex;flex-direction:column;gap:14px">
+      <div class="card"><p class="stat">23<small>개</small></p><p class="stat-label">3DGS 상품 모델</p></div>
+      <div class="card"><p class="stat">약 72<small>fps</small></p><p class="stat-label">Quest 2 (Link) 실측</p></div>
+      <div class="card"><p class="stat">100<small>%</small></p><p class="stat-label">직접 촬영한 실제 상품</p></div>
+    </div>
+    <div class="grow">
+      <div class="shot" style="aspect-ratio:16/8.9"><img src="assets/barcode.jpg" alt="손에 든 신라면의 뒷면 바코드를 찾는 장면" style="width:135%;margin-left:-17.5%;margin-top:-8%"></div>
+      <p class="cap">게임 화면: 실제 포장의 바코드를 찾아 스캐너에 댄다</p>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 시연 영상 -->
+<div class="slide" id="video-slide" style="justify-content:flex-start;padding-top:34px" data-notes="[1:40] 출근, 계산, 모자란 거스름돈, 발주, 입고와 진열 순서입니다. (Enter를 눌러 재생. 재생 중에는 말하지 않는다. 영상은 100초.)">
+  <p class="a tag" style="margin-bottom:6px">시연 영상 · 100초</p>
+  <h2 class="a" style="font-size:28px">출근 → 계산 → 모자란 거스름돈 → 발주 → 입고·진열</h2>
+  <div class="a video"><video id="demo" src="assets/demo.mp4" poster="assets/customer_goods.jpg" controls preload="metadata"></video></div>
+</div>
+
+<!-- 4. 제작 과정 -->
+<div class="slide" data-notes="[1:15] 과자 한 봉지가 게임에 들어오는 과정입니다. 휴대폰으로 앞뒤를 찍고, 3DGS로 학습하고, 배경을 지우고, 가벼운 복사본을 만들어 진열대에 합칩니다. 3DGS는 점들의 구름이라 표면도 충돌도 없습니다. 그래서 보이는 것과 물리를 따로 만들었습니다. 바코드 면에만 판정을 둬서, 상품을 돌려 바코드를 찾는 것이 게임 규칙이 됐습니다.">
+  <div class="num">01</div>
+  <p class="a tag">제작 과정</p>
+  <h2 class="a">과자 한 봉지가 게임에 들어오기까지</h2>
+  <div class="a flow">
+    <div class="step"><p class="step-n">01</p><p class="step-label">휴대폰 촬영</p><p class="step-sub">앞면·뒷면 영상</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">02</p><p class="step-label">3DGS 학습</p><p class="step-sub">splatfacto · 약 8~10분</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">03</p><p class="step-label">배경 제거</p><p class="step-sub">상품만 남기기</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">04</p><p class="step-label">경량본 만들기</p><p class="step-sub">멀리서 볼 가벼운 복사본</p></div>
+    <div class="arrow">&rarr;</div>
+    <div class="step"><p class="step-n">05</p><p class="step-label">진열대에 병합</p><p class="step-sub">칸마다 하나로</p></div>
+  </div>
+  <div class="a row" style="margin-top:22px;align-items:flex-start">
+    <div style="width:330px"><div class="shot"><img src="assets/phone.jpg" alt="휴대폰으로 찍은 실제 양파링"></div><p class="cap">휴대폰으로 찍은 실물</p></div>
+    <div style="width:330px"><div class="shot"><img src="assets/splat.jpg" alt="게임 속에서 손에 든 3DGS 양파링"></div><p class="cap">게임 속 3DGS 상품</p></div>
+    <div class="grow">
+      <p style="font-size:15px;font-weight:700;color:#222">상품 한 개 = 네 겹</p>
+      <div class="layers">
+        <div class="layer"><b>보이는 것</b>스플랫</div>
+        <div class="layer"><b>부딪히는 것</b>상자 충돌체</div>
+        <div class="layer"><b>판정</b>바코드 면</div>
+        <div class="layer"><b>정보</b>상품 데이터</div>
+      </div>
+    </div>
+  </div>
+  <p class="a callout">3DGS에는 표면도 충돌도 없다. 그래서 <span class="hi">"돌려서 바코드를 찾는 것"</span>이 게임 규칙이 됐다.</p>
+</div>
+
+<!-- 5. NeRF vs 3DGS -->
+<div class="slide" data-notes="[1:15] 왜 NeRF가 아니라 3DGS인지입니다. 같은 사진, 같은 카메라 포즈로 둘 다 학습해 비교했습니다. 화질 지표는 모두 3DGS가 앞섰고, 속도는 약 90배입니다. NeRF는 초당 0.3장이라 VR에 필요한 72장의 240분의 1입니다. 그래서 NeRF는 비교 기준으로만 쓰고, 게임에는 3DGS를 넣었습니다. 비교는 상품 두 종으로 했습니다.">
+  <div class="num">02</div>
+  <p class="a tag">NeRF · 3DGS 비교</p>
+  <h2 class="a">왜 NeRF가 아니라 3DGS인가</h2>
+  <div class="a row" style="margin-top:20px;align-items:stretch">
+    <div class="grow">
+      <table>
+        <tr><th>항목 (고래밥 / 치토스)</th><th>3DGS</th><th>NeRF</th></tr>
+        <tr><td>PSNR &uarr;</td><td class="win">30.31 / 30.09</td><td class="lose">27.22 / 26.18</td></tr>
+        <tr><td>SSIM &uarr;</td><td class="win">0.925 / 0.928</td><td class="lose">0.888 / 0.903</td></tr>
+        <tr><td>1080p 렌더 속도</td><td class="win">약 31 fps</td><td class="lose">약 0.3 fps</td></tr>
+        <tr><td>학습 시간</td><td class="win">7.9 / 9.7분</td><td class="lose">30.0 / 22.3분</td></tr>
+      </table>
+    </div>
+    <div style="width:330px;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="flex:1"><p class="stat">약 90<small>배</small></p><p class="stat-label">3DGS가 빠르다. 화질도 앞선다</p></div>
+      <div class="card" style="flex:1"><p class="stat">1/240</p><p class="stat-label">NeRF 0.3fps는 VR 72fps의 240분의 1</p></div>
+    </div>
+  </div>
+  <div class="a" style="width:100%;margin-top:16px">
+    <div style="display:flex;font-size:12px;color:#888;letter-spacing:2px;margin-bottom:6px"><p style="flex:1;text-align:center">실제 사진</p><p style="flex:1;text-align:center">3DGS</p><p style="flex:1;text-align:center">NeRF</p></div>
+    <img src="assets/nerf_goraebap.jpg" alt="고래밥의 실제 사진, 3DGS, NeRF 렌더링 비교" style="display:block;width:100%;border-radius:10px;border:1px solid #e0e0e0">
+  </div>
+  <p class="a note">같은 사진·같은 카메라 포즈 · 상품 2종 · RTX 4070 · 속도는 nerfstudio 안에서 잰 값(VR 프레임 아님)</p>
+</div>
+
+<!-- 6. 72fps -->
+<div class="slide" data-notes="[1:15] VR 72프레임을 지킨 방법입니다. 쓰는 렌더러는 개발이 멈춘 프로젝트이고 Quest 2는 지원 목록에 없었습니다. 그래서 측정부터 했습니다. 가우시안 백만 개에 6에서 7밀리초가 든다는 것을 쟀고, 등 뒤에 있는 상품도 비용을 낸다는 것을 찾아서 건너뛰게 했습니다. 진열대는 칸마다 하나로 합쳐 절반으로 줄였고, 마지막에 헤드셋에서 확인했습니다. Quest 2에서 72프레임이 유지됐고, 8분 동안 빠진 프레임은 다섯 개였습니다.">
+  <div class="num">03</div>
+  <p class="a tag">성능</p>
+  <h2 class="a">VR 72fps를 지킨 방법</h2>
+  <p class="a lead">렌더러는 개발이 멈춘 프로젝트이고 Quest 2는 지원 목록에 없었다. 그래서 <span class="hi">측정부터</span> 했다.</p>
+  <div class="a cards">
+    <div class="card"><p class="step-n">01 · 먼저 쟀다</p><p class="stat" style="font-size:38px">6~7<small>ms</small></p><p class="stat-label">Gaussian 100만 개당 드는 시간</p></div>
+    <div class="card"><p class="step-n">02 · 안 보이는 것을 건너뛰었다</p><p class="stat" style="font-size:38px">82<small>%</small> → 절반</p><p class="stat-label">등 뒤 상품도 눈앞 상품의 82% 비용. 시야 컬링을 넣어 GPU 시간 절반</p></div>
+    <div class="card"><p class="step-n">03 · 진열대를 합쳤다</p><p class="stat" style="font-size:38px">144.7<small>만</small> → 72.5<small>만</small></p><p class="stat-label">칸마다 하나로 병합, 집는 순간만 분리</p>
+      <div class="bars">
+        <div class="bar-row"><span>전</span><div class="bar" style="width:100%;background:#bbb"></div></div>
+        <div class="bar-row"><span>가까이</span><div class="bar" style="width:50%"></div></div>
+        <div class="bar-row"><span>멀리</span><div class="bar" style="width:22%"></div></div>
+      </div>
+    </div>
+    <div class="card" style="border-color:#0066cc"><p class="step-n">04 · 헤드셋에서 확인</p><p class="stat" style="font-size:38px">71.8<small>fps</small></p><p class="stat-label">Quest 2 Link · 8분 동안 빠진 프레임 5개 · GPU 평균 6ms</p></div>
+  </div>
+  <p class="a note">01~02는 PC 모의 스테레오 측정(RTX 4070) · 03은 Gaussian 수(멀리서는 32.0만) · 04는 2026-11-15 Quest 2 실측(72Hz, 진열대를 채운 지금 빌드)</p>
+</div>
+
+<!-- 7. 게임 -->
+<div class="slide" data-notes="[1:15] 게임으로 만든 것입니다. 처음에는 순서만 따라 하면 100점이 나왔습니다. 직접 해 보니 재미가 없어서, 거스름돈을 기계가 세어 주지 않게 바꿨습니다. 더 주면 가게가 손해를 보고, 덜 주면 손님이 말합니다. 손님은 상품과 카드를 직접 손으로 놓고 봉투를 들고 나갑니다. 번 돈으로는 상품을 발주하고, 다음 날 상자로 오면 직접 진열합니다.">
+  <div class="num">04</div>
+  <p class="a tag">게임</p>
+  <h2 class="a">게임으로 만든 것</h2>
+  <div class="a cards">
+    <div class="card"><div class="shot tall"><img src="assets/short_change.jpg" alt="거스름돈이 모자라다고 말하는 손님"></div><h3>틀릴 수 있는 계산</h3><p>거스름돈을 POS가 세어 주지 않는다. 더 주면 시재 손실, 덜 주면 손님이 말한다.</p></div>
+    <div class="card"><div class="shot tall"><img src="assets/customer_goods.jpg" alt="계산대에 상품을 올려놓는 손님"></div><h3>손으로 주고받는 손님</h3><p>상품을 계산대에 놓고, 카드와 지폐를 접시에 놓고, 봉투를 들고 나간다.</p></div>
+    <div class="card"><div class="shot tall"><img src="assets/order.jpg" alt="발주 단말기에서 새 상품을 주문하는 화면"></div><h3>발주로 커지는 매장</h3><p>번 돈으로 상품과 설비를 들이고, 다음 날 상자로 오면 직접 진열한다.</p></div>
+  </div>
+</div>
+
+<!-- 8. 직접 해 보고 고친 것 -->
+<div class="slide" data-notes="[0:50] 헤드셋을 쓰고 직접 해 봐야 보이는 것들이 있었습니다. 지폐가 접시에 묻혀 안 보였고, 손님이 손을 번쩍 들며 인사하는 것이 어색했고, 계산대 가운데 스캐너가 손을 가렸습니다. 하나씩 고쳤고, 고칠 때마다 다른 곳이 깨지지 않았는지는 게임을 처음부터 끝까지 하는 자동 검사로 확인했습니다.">
+  <div class="num">05</div>
+  <p class="a tag">다듬기</p>
+  <h2 class="a">직접 해 보고 고친 것</h2>
+  <div class="a" style="width:100%;margin-top:22px">
+    <table>
+      <tr><th>헤드셋으로 해 보니</th><th></th><th>이렇게 고쳤다</th></tr>
+      <tr><td class="before">지폐가 접시 속에 묻혀 안 보였다</td><td class="arr">&rarr;</td><td class="after">접시를 단단하게 만들어 위에 놓이게</td></tr>
+      <tr><td class="before">손님이 손을 번쩍 들며 인사했다</td><td class="arr">&rarr;</td><td class="after">실제 손님처럼 감사 인사만 하고 나간다</td></tr>
+      <tr><td class="before">"오래 걸리네요"가 너무 빨리 나왔다</td><td class="arr">&rarr;</td><td class="after">시간이 30% 남았을 때로 늦췄다</td></tr>
+      <tr><td class="before">계산대 가운데 큰 스캐너가 손을 가렸다</td><td class="arr">&rarr;</td><td class="after">작은 스캐너를 오른손 앞으로 옮겼다</td></tr>
+    </table>
+  </div>
+  <p class="a callout">고칠 때마다 게임을 처음부터 끝까지 하는 <span class="hi">자동 검사</span>(1일차 335항목 등)를 돌렸다.</p>
+</div>
+
+<!-- 9. 한계 -->
+<div class="slide" data-notes="[0:45] 하지 못한 것을 먼저 말씀드리겠습니다. 체험자 설문은 하지 못했습니다. NeRF와 3DGS 비교는 상품 두 종뿐이고, 페트병이나 캔 같은 반사 재질은 촬영하지 못했습니다. 전자레인지와 온수에 맞는 상품이 없어서 과자와 봉지라면에 붙였습니다. 그리고 상품을 늘리려면 촬영과 크기 재기는 여전히 사람 손이 듭니다.">
+  <div class="num">06</div>
+  <p class="a tag">한계</p>
+  <h2 class="a">못 한 것과 한계</h2>
+  <div class="a limits">
+    <div class="limit"><h3>체험자 설문을 하지 못했다</h3><p>실재감과 멀미를 다른 사람에게 재지 못했다.</p></div>
+    <div class="limit"><h3>비교는 상품 2종뿐</h3><p>페트병·캔 같은 반사 재질은 촬영하지 못했다.</p></div>
+    <div class="limit"><h3>전자레인지·온수에 맞는 상품이 없다</h3><p>도시락·컵라면이 없어 과자와 봉지라면에 붙였다.</p></div>
+    <div class="limit"><h3>상품 추가에는 사람 손이 든다</h3><p>촬영과 크기 재기는 자동화하지 못했다.</p></div>
+  </div>
+</div>
+
+<!-- 10. 마무리 -->
+<div class="slide" data-notes="[0:15] 이상으로 발표를 마치겠습니다. 헤드셋이 준비되어 있으니 직접 해 보실 수 있습니다. 질문 받겠습니다.">
+  <div class="row" style="align-items:center">
+    <div class="grow">
+      <p class="a overline">THANK YOU</p>
+      <h1 class="a xl" style="font-size:72px">진짜 상품을<br>손에.</h1>
+      <p class="a sub">헤드셋으로 직접 해 보실 수 있습니다</p>
+      <p class="a sub" style="margin-top:36px;font-size:18px;color:#333"><b>질문</b> &nbsp;·&nbsp; 팀 도민 &nbsp;·&nbsp; 권도훈 &nbsp;·&nbsp; 이민건</p>
+    </div>
+    <div class="a" style="width:520px">
+      <div class="shot" style="aspect-ratio:16/10.5"><img src="assets/splat.jpg" alt="게임 속에서 손에 든 3DGS 양파링" style="width:160%;margin-left:-25%;margin-top:-8.1%"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// Fit the 16:9 stage to the window
+const deck = document.getElementById('deck');
+function fitDeck() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  deck.style.transform = 'translate(-50%,-50%) scale(' + scale + ')';
+}
+window.addEventListener('resize', fitDeck);
+fitDeck();
+
+// Slide navigation
+const slides = [...document.querySelectorAll('.slide')];
+let current = 0;
+
+function goTo(index) {
+  if (index < 0 || index >= slides.length) return;
+  slides[current].classList.remove('active');
+  slides[index].classList.add('active');
+  current = index;
+  updateProgress();
+  updateCounter();
+  updateNotes();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+  if (e.key.toLowerCase() === 'f') toggleFullscreen();
+  if (e.key.toLowerCase() === 's') toggleNotes();
+});
+
+// Touch/swipe
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+});
+
+function updateProgress() {
+  document.getElementById('progress').style.width =
+    (current / (slides.length - 1) * 100) + '%';
+}
+
+function updateCounter() {
+  document.getElementById('counter').textContent =
+    (current + 1) + ' / ' + slides.length;
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+let notesWindow = null;
+
+function toggleNotes() {
+  if (notesWindow && !notesWindow.closed) {
+    notesWindow.close();
+    notesWindow = null;
+    return;
+  }
+  notesWindow = window.open('', 'SpeakerNotes', 'width=520,height=420,top=80,left=80');
+  notesWindow.document.write(`<!DOCTYPE html>
+<html><head><style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+         background: #1a1a1a; color: #e0e0e0; padding: 24px; }
+  .slide-num { font-size: 12px; color: #888; margin-bottom: 12px; font-family: monospace; }
+  .label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+           color: #666; margin-bottom: 8px; }
+  .notes { font-size: 16px; line-height: 1.8; color: #ccc; }
+</style></head><body>
+  <div class="slide-num" id="sn"></div>
+  <div class="label">Speaker Notes</div>
+  <div class="notes" id="nt"></div>
+</body></html>`);
+  notesWindow.document.close();
+  updateNotes();
+}
+
+function updateNotes() {
+  if (!notesWindow || notesWindow.closed) return;
+  try {
+    const note = slides[current].dataset.notes || '(No notes)';
+    notesWindow.document.getElementById('nt').textContent = note;
+    notesWindow.document.getElementById('sn').textContent =
+      'Slide ' + (current + 1) + ' / ' + slides.length;
+  } catch(e) {}
+}
+
+// Demo video: Enter plays or pauses it; leaving the slide pauses it
+const demo = document.getElementById('demo');
+const videoSlide = document.getElementById('video-slide');
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' || slides[current] !== videoSlide) return;
+  e.preventDefault();
+  demo.paused ? demo.play() : demo.pause();
+});
+new MutationObserver(() => {
+  if (!videoSlide.classList.contains('active')) demo.pause();
+}).observe(videoSlide, { attributes: true, attributeFilter: ['class'] });
+// Keys pressed while the video has focus should still move the slides, not scrub the video
+demo.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key.startsWith('Arrow')) demo.blur(); });
+
+updateProgress();
+updateCounter();
+</script>
+</body>
+</html>
