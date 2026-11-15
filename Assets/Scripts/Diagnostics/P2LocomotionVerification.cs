@@ -181,6 +181,8 @@ public class P2LocomotionVerification : MonoBehaviour
         Check("config.capsule",
             capsule.gameObject.layer == player && player == 14 && Mathf.Approximately(capsule.radius, BodyRadius) && Mathf.Approximately(capsule.skinWidth, SkinWidth) && touched.Count == 1 && touched[0] == "Default#0",
             $"layer={capsule.gameObject.layer}; radius={capsule.radius}; skin={capsule.skinWidth}; collidesWith={string.Join(",", touched)}");
+        // 2026-11-15: with the rig's own 0.5 m step the player walked up onto low things and the view stood too high.
+        Check("config.capsule_step_is_a_doormat", capsule.stepOffset <= RoomScaleBody.StepUp + 1e-4f, $"step={capsule.stepOffset:0.000}; allowed={RoomScaleBody.StepUp}");
 
         var transformer = FindFirstObjectByType<XRBodyTransformer>();
         Check("config.body_follows_with_collision", ReferenceEquals(transformer.bodyPositionEvaluator, body), $"evaluator={transformer.bodyPositionEvaluator?.GetType().Name}");

@@ -1,0 +1,475 @@
+Found 2 interfaces on host : 0) 192.168.219.113 1) 100.71.35.78
+Player connection [44952]  Target information:
+
+Player connection [44952]  * "[IP] 192.168.219.113 [Port] 55000 [Flags] 2 [Guid] 1393376320 [EditorId] 1529444399 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [44952]  * "[IP] 100.71.35.78 [Port] 55000 [Flags] 2 [Guid] 1393376320 [EditorId] 1529444399 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [44952] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.26f1 (de8167e7440c)
+[Subsystems] Discovering subsystems at path C:/Projects/vr-convenience-store-simulator/Builds/Store/VRStore_Data/UnitySubsystems
+[Subsystems] No descriptors matched for  examples in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 4070
+[D3D12 Device Filter] Driver Version: 32.0.15.9159
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 12010 MB
+[D3D12 Device Filter] Processor Count: 20
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 (ID=0x2786)
+    Vendor:          NVIDIA
+    VRAM:            12010 MB
+    App VRAM Budget: 11242 MB
+    Driver:          32.0.15.9159
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+XRGeneral Settings awakening...
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.Management.XRGeneralSettings:Awake()
+
+[XR] [44952] [16:59:28.464][Info   ] Available Layers: (0)
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Input
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+Loading OpenXR loader library at path: openxr_loader
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:LoadOpenXRSymbols()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:InitializeInternal()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:Initialize()
+UnityEngine.XR.Management.XRManagerSettings:InitializeLoaderSync()
+UnityEngine.XR.Management.XRGeneralSettings:InitXRSDK()
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Display...
+[XR] [44952] [16:59:28.692][Info   ] Available Layers: (0)
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Input...
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+[RuntimeIPCLoader [RUNTIMEIPC]] [INFO] RuntimeIPC: Successfully loaded library
+[RuntimeIPCSystem [RUNTIMEIPC]] [INFO] RuntimeIPCSystem: Init called: Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: BEGIN: friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcLocalTransportMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer SUCCESS RuntimeServiceServer
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 16 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 24 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 20 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] Event buffer size (client): eventBufferSize=8192
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 8216 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: WindowsPackage:WindowsProcess:5816, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer), Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 86800 bytes: 1453
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=0, friendlyName=Client: WindowsPackage:WindowsProcess:5816, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: SUCCESS. Client: WindowsPackage:WindowsProcess:5816, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: SUCCESS: friendlyName=Client: WindowsPackage:WindowsProcess:5816, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:5816, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[XR] [44952] [16:59:28.912][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE session=2 time=281464964540000
+[XR] [44952] [16:59:28.912][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY session=2 time=281464964569500
+[XR] XR_META_performance_metrics: Active providers:
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/cpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/cpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/dropped_frame_count
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/dropped_frame_count
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/motion_to_photon_latency
+d3d12: upload buffer was too small for the requested resource! Size: 16777216. Requested: 51118080.
+[XR] [44952] [16:59:29.303][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED session=2 time=281465463025600
+[XR] [44952] [16:59:30.027][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE session=2 time=281466187177800
+[XR] [44952] [16:59:30.027][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED session=2 time=281466187193300
+[XR] [44952] [16:59:30.027][Info   ] 
+
+==== Start Unity OpenXR Diagnostic Report ====
+
+
+[XR] [44952] [16:59:30.027][Info   ] ==== Report Reason: System Startup Completed ====
+
+
+[XR] [44952] [16:59:30.027][Info   ] ==== OpenXR Settings ====
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Symmetric Projection: False
+[XR] [44952] [16:59:30.027][Info   ] Stereo Rendering Mode: MultiPass
+[XR] [44952] [16:59:30.027][Info   ] Latency Optimization: PrioritizeRendering
+[XR] [44952] [16:59:30.027][Info   ] Color Submission Modes: kRenderTextureFormatGroup8888
+[XR] [44952] [16:59:30.027][Info   ] Depth Submission Mode: None
+[XR] [44952] [16:59:30.027][Info   ] Space Warp Motion Vector Texture Format: RGBA16f
+[XR] [44952] [16:59:30.027][Info   ] Optimize Buffer Discards: False
+[XR] [44952] [16:59:30.027][Info   ] Multiview Render Regions Optimization Mode: None
+[XR] [44952] [16:59:30.027][Info   ] Use OpenXR Predicted Time: True
+[XR] [44952] [16:59:30.027][Info   ] Foveated Rendering API: SRPFoveation
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] ==== OpenXR Provider Info ====
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Provider Version: ecb5f4e-dirty
+[XR] [44952] [16:59:30.027][Info   ] App: vr-convenience-store-simulator #3118937138
+[XR] [44952] [16:59:30.027][Info   ] Engine: 6000.3.26f1 #87139329
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] ==== OpenXR Runtime Info ====
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Available Runtime Extensions: (36)
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_D3D11_enable: Version=11
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_opengl_enable: Version=12
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_vulkan_enable: Version=10
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_vulkan_enable2: Version=4
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_win32_convert_performance_counter_time: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_convert_timespec_time: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_composition_layer_cube: Version=8
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_composition_layer_cylinder: Version=4
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_composition_layer_equirect: Version=3
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_composition_layer_color_scale_bias: Version=5
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_maintenance1: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_win32_appcontainer_compatible: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_debug_utils: Version=5
+[XR] [44952] [16:59:30.027][Info   ]   XR_OCULUS_recenter_event: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_FB_color_space: Version=3
+[XR] [44952] [16:59:30.027][Info   ]   XR_FB_display_refresh_rate: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [44952] [16:59:30.027][Info   ]   XR_META_headset_id: Version=2
+[XR] [44952] [16:59:30.027][Info   ]   XR_OCULUS_ovrsession_handle: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_active_action_set_priority: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_future: Version=2
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_palm_pose: Version=3
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_haptic_parametric: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_FB_haptic_amplitude_envelope: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_FB_haptic_pcm: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_FB_touch_controller_pro: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_META_touch_controller_plus: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_FB_touch_controller_proximity: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_OCULUS_external_camera: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_META_detached_controllers: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_LOGITECH_mx_ink_stylus_interaction: Version=1
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Available Layers: (0)
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Runtime Name: Oculus
+[XR] [44952] [16:59:30.027][Info   ] Runtime Version: 1.208.0
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Form factor: XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Runtime extensions enabled: (6)
+[XR] [44952] [16:59:30.027][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [44952] [16:59:30.027][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [44952] [16:59:30.027][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [44952] [16:59:30.027][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Available Reference Spaces: (4)
+[XR] [44952] [16:59:30.027][Info   ]   XR_REFERENCE_SPACE_TYPE_VIEW
+[XR] [44952] [16:59:30.027][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL
+[XR] [44952] [16:59:30.027][Info   ]   XR_REFERENCE_SPACE_TYPE_STAGE
+[XR] [44952] [16:59:30.027][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Instance Id  : 0x1
+[XR] [44952] [16:59:30.027][Info   ] System Id    : 0x14
+[XR] [44952] [16:59:30.027][Info   ] Session Id   : 0x2
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Available View Configuration Types: (1)
+[XR] [44952] [16:59:30.027][Info   ]   XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO (Selected): FovMutable=False
+[XR] [44952] [16:59:30.027][Info   ]     [0]: Recommended: Width=2080, Height=2096, SampleCount=1
+[XR] [44952] [16:59:30.027][Info   ]     [0]:     Maximum: Width=4160, Height=4192, SampleCount=4
+[XR] [44952] [16:59:30.027][Info   ]     [1]: Recommended: Width=2080, Height=2096, SampleCount=1
+[XR] [44952] [16:59:30.027][Info   ]     [1]:     Maximum: Width=4160, Height=4192, SampleCount=4
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Skip Present To Main Screen: No
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Available Environment Blend Modes: (1)
+[XR] [44952] [16:59:30.027][Info   ]   XR_ENVIRONMENT_BLEND_MODE_OPAQUE (Selected)
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Features requested to be enabled: (1)
+[XR] [44952] [16:59:30.027][Info   ]   Oculus Touch Controller Profile: Version=0.0.1, Company="Unity"
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.027][Info   ] Requested feature extensions not supported by runtime: (0)
+[XR] [44952] [16:59:30.027][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] System Properties: Name="Oculus Quest2", VendorId=-11714
+[XR] [44952] [16:59:30.028][Info   ] System Graphics Properties: MaxWidth=4096, MaxHeight=4096, MaxLayers=16
+[XR] [44952] [16:59:30.028][Info   ] System Tracking Properties: OrientationTracking=True, PositionTracking=True
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] ==== OpenXR API Spec Version ====
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] XrInstance Created with OpenXR API Version: 1.1.54
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] ==== OpenXR Input ====
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] Action Sets (1): 
+[XR] [44952] [16:59:30.028][Info   ]   oculustouchcontroller: ActionCount=17
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] ==== OpenXR Swapchain Details ====
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] Render Mode: MultiPass
+[XR] [44952] [16:59:30.028][Info   ] Latency Optimization: Prioritize Rendering
+[XR] [44952] [16:59:30.028][Info   ] Color Submission Mode: RGBA, 8 bits per channel (LDR)
+[XR] [44952] [16:59:30.028][Info   ] Depth Submission Mode: None
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] Swapchain Format Preferences: 
+[XR] [44952] [16:59:30.028][Info   ]    kRenderTextureFormatGroup8888
+[XR] [44952] [16:59:30.028][Info   ] Swapchain Formats: 
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_R8G8B8A8_UNORM
+[XR] [44952] [16:59:30.028][Info   ] [c:DXGI_FORMAT_R8G8B8A8_UNORM_SRGB]
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_B8G8R8A8_UNORM
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_B8G8R8A8_UNORM_SRGB
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_B8G8R8X8_UNORM_SRGB
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_R16G16B16A16_FLOAT
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_R11G11B10_FLOAT
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_D16_UNORM
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_D24_UNORM_S8_UINT
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_D32_FLOAT
+[XR] [44952] [16:59:30.028][Info   ]    DXGI_FORMAT_D32_FLOAT_S8X24_UINT
+[XR] [44952] [16:59:30.028][Info   ] Swapchain Views: (2)
+[XR] [44952] [16:59:30.028][Info   ]   [0]: Width=2080, Height=2096, SampleCount=1
+[XR] [44952] [16:59:30.028][Info   ]   [1]: Width=2080, Height=2096, SampleCount=1
+[XR] [44952] [16:59:30.028][Info   ] 
+[XR] [44952] [16:59:30.028][Info   ] ==== Last 20 Events ====
+[XR] [44952] [16:59:30.028][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE
+[XR] [44952] [16:59:30.028][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY
+[XR] [44952] [16:59:30.028][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED
+[XR] [44952] [16:59:30.028][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE
+[XR] [44952] [16:59:30.028][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED
+[XR] [44952] [16:59:30.028][Info   ] 
+
+==== End Unity OpenXR Diagnostic Report ====
+
+
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 1 col: 000001EC6B713BE0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 1)
+IVRDeviceCallback_CreateEyeTextureResources 000001EC6B713BE0
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 2 col: 000001EC6B7120B0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 2)
+IVRDeviceCallback_CreateEyeTextureResources 000001EC6B7120B0
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 3 col: 000001EC6B714E00 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 3)
+IVRDeviceCallback_CreateEyeTextureResources 000001EC6B714E00
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 4 col: 000001EC6B716020 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 4)
+IVRDeviceCallback_CreateEyeTextureResources 000001EC6B716020
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 5 col: 000001EC6B715710 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 5)
+IVRDeviceCallback_CreateEyeTextureResources 000001EC6B715710
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 6 col: 000001EC6B7129C0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 6)
+IVRDeviceCallback_CreateEyeTextureResources 000001EC6B7129C0
+UnloadTime: 0.217900 ms
+[Simulator Guard] OpenXRLoader is running; XR Device Simulator stays off.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SimulatorHmdGuard:Awake()
+
+[Progress] Loaded day=1 graduated=False budget=0 owned=0 arriving=0 from C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/play_1115.json
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+StoreProgress:Load(String)
+GameManager:Awake()
+
+[Game] Growing store: 16 things to order, save at C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/play_1115.json
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+GameManager:Awake()
+
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Decor stock: 52 places on 9 display and 9 fill slots, far gaussians=1038818
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDecor()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 1: no intake; display stock=16 on 5 slots, gaussians=319888
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDisplays()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] start mode=game runtime=Oculus 1.208.0 xr=True eye=2080x2096 refresh=72 known=True tracking=Floor simulators=0
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 1: no intake; display stock=16 on 5 slots, gaussians=319888
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDisplays()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=30 state=PunchIn frames=2137 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=5.05/5.32 work_p95=3.35
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=60 state=Tutorial frames=2143 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.16/5.82 work_p95=3.03
+[Customers] Guest 1 (Male_Adult_16_B) found the card back on the plate 0.2 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Guest 2 (Female_Adult_01) ended 0.46 m short of (0.20, 0.00, 1.35) at (0.39, 0.03, 1.77) (path PathComplete). Near: Guest 1 (Male_Adult_16_B) Leaving walking 0.83 m/s at (0.10, 0.03, 1.36) (0.50 m). Clerk at (0.09, 1.78, -0.17). Trail: (2.10,3.97)>(2.10,3.97) (1.66,3.10)>(1.42,2.67) (0.95,2.29)>(0.06,1.69)
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:LogWarning(Object)
+<WalkTo>d__105:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=90 state=Tutorial frames=2156 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=5.10/5.75 work_p95=3.03
+[HMD Perf] t=120 state=Shift frames=2149 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=4.86/5.12 work_p95=2.89
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order t01_01 (day 1 #1; 2 items; card; bag) paid after 11.4 s at the counter; limit 150 s less 0.0 s for the line; share left 0.92; tip 300; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 3 (Female_Adult_01) found the card back on the plate 3.0 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Browser 6 (Male_Adult_08) blocked at (-1.57, 0.03, 0.77) on the way to (2.10, 0.00, 3.98) (-0.16 m closer, 0.18 m moved in 2 s); stepping aside 0.36 m. Near: Customer 4 (Male_Adult_08_B) Queued walking 1.10 m/s at (-2.55, 0.03, 1.77) (1.40 m). Clerk at (0.21, 1.69, 0.14).
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<StepAside>d__106:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=150 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=5.71/6.54 work_p95=3.04
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Customers] order t01_02 (day 1 #2; 1 items; cash) paid after 30.3 s at the counter; limit 150 s less 0.0 s for the line; share left 0.80; tip 200; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Training day=1 done: paid=2/2 sales=5200 tips=500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Store day=1 earned=1540 budget=1540 graduated=False owned=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunStoreDays>d__178:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=180 state=DayEnd frames=2149 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.34/5.62 work_p95=2.97
+[XR] [44952] [17:02:47.721][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_FOCUSED->XR_SESSION_STATE_VISIBLE session=2 time=281663881413300
+[XR] [44952] [17:02:47.721][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_SYNCHRONIZED session=2 time=281663881420500
+[XR] [44952] [17:02:47.721][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_STOPPING session=2 time=281663881499300
+[XR] [44952] [17:02:47.722][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_STOPPING->XR_SESSION_STATE_IDLE session=2 time=281663881570500
+Direct3D: detected that IDXGISwapChain::GetFrameStatistics is broken (it does not return proper timestamps). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+[HMD Perf] t=210 state=DayEnd frames=3048 fps=249.5 p95=13.92 max=14.0 missed=0 gpu=4.94/5.14 work_p95=2.89
+[HMD Perf] t=240 state=DayEnd frames=3749 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=4.97/5.55 work_p95=3.04
+[HMD Perf] t=270 state=DayEnd frames=4318 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=5.02/5.56 work_p95=2.80
+[HMD Perf] t=300 state=DayEnd frames=4318 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=4.95/5.24 work_p95=2.67
+[HMD Perf] t=330 state=DayEnd frames=4318 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=4.94/5.24 work_p95=2.60
+[HMD Perf] t=360 state=DayEnd frames=4317 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=5.15/5.76 work_p95=2.91
+[HMD Perf] t=390 state=DayEnd frames=4317 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=5.33/5.78 work_p95=3.00
+[HMD Perf] t=420 state=DayEnd frames=4305 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=5.02/5.51 work_p95=2.95
+[HMD Perf] t=450 state=DayEnd frames=4319 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=4.97/5.28 work_p95=2.67

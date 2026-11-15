@@ -1,0 +1,929 @@
+Found 2 interfaces on host : 0) 192.168.219.113 1) 100.71.35.78
+Player connection [41440]  Target information:
+
+Player connection [41440]  * "[IP] 192.168.219.113 [Port] 55000 [Flags] 2 [Guid] 3008614645 [EditorId] 4019472535 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [41440]  * "[IP] 100.71.35.78 [Port] 55000 [Flags] 2 [Guid] 3008614645 [EditorId] 4019472535 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [41440] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.26f1 (de8167e7440c)
+[Subsystems] Discovering subsystems at path C:/Projects/vr-convenience-store-simulator/Builds/Store/VRStore_Data/UnitySubsystems
+[Subsystems] No descriptors matched for  examples in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 4070
+[D3D12 Device Filter] Driver Version: 32.0.15.9159
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 12010 MB
+[D3D12 Device Filter] Processor Count: 20
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 (ID=0x2786)
+    Vendor:          NVIDIA
+    VRAM:            12010 MB
+    App VRAM Budget: 11242 MB
+    Driver:          32.0.15.9159
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+XRGeneral Settings awakening...
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.Management.XRGeneralSettings:Awake()
+
+[XR] [41440] [17:48:25.072][Info   ] Available Layers: (0)
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Input
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+Loading OpenXR loader library at path: openxr_loader
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:LoadOpenXRSymbols()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:InitializeInternal()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:Initialize()
+UnityEngine.XR.Management.XRManagerSettings:InitializeLoaderSync()
+UnityEngine.XR.Management.XRGeneralSettings:InitXRSDK()
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Display...
+[XR] [41440] [17:48:25.343][Info   ] Available Layers: (0)
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Input...
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+[RuntimeIPCLoader [RUNTIMEIPC]] [INFO] RuntimeIPC: Successfully loaded library
+[RuntimeIPCSystem [RUNTIMEIPC]] [INFO] RuntimeIPCSystem: Init called: Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: BEGIN: friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcLocalTransportMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer SUCCESS RuntimeServiceServer
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 16 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 24 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 20 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] Event buffer size (client): eventBufferSize=8192
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 8216 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer), Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 86800 bytes: 1453
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=0, friendlyName=Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: SUCCESS. Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: SUCCESS: friendlyName=Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:34092, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[XR] [41440] [17:48:25.606][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE session=2 time=284401621455999
+[XR] [41440] [17:48:25.606][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY session=2 time=284401621620300
+[XR] XR_META_performance_metrics: Active providers:
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/cpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/cpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/gpu_frametime
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/dropped_frame_count
+[XR] XR_META_performance_metrics: /perfmetrics_meta/compositor/dropped_frame_count
+[XR] XR_META_performance_metrics: /perfmetrics_meta/app/motion_to_photon_latency
+d3d12: upload buffer was too small for the requested resource! Size: 16777216. Requested: 51118080.
+[XR] [41440] [17:48:25.921][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED session=2 time=284402081240400
+[XR] [41440] [17:48:26.631][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE session=2 time=284402791205299
+[XR] [41440] [17:48:26.631][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED session=2 time=284402791232700
+[XR] [41440] [17:48:26.631][Info   ] 
+
+==== Start Unity OpenXR Diagnostic Report ====
+
+
+[XR] [41440] [17:48:26.631][Info   ] ==== Report Reason: System Startup Completed ====
+
+
+[XR] [41440] [17:48:26.631][Info   ] ==== OpenXR Settings ====
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Symmetric Projection: False
+[XR] [41440] [17:48:26.631][Info   ] Stereo Rendering Mode: MultiPass
+[XR] [41440] [17:48:26.631][Info   ] Latency Optimization: PrioritizeRendering
+[XR] [41440] [17:48:26.631][Info   ] Color Submission Modes: kRenderTextureFormatGroup8888
+[XR] [41440] [17:48:26.631][Info   ] Depth Submission Mode: None
+[XR] [41440] [17:48:26.631][Info   ] Space Warp Motion Vector Texture Format: RGBA16f
+[XR] [41440] [17:48:26.631][Info   ] Optimize Buffer Discards: False
+[XR] [41440] [17:48:26.631][Info   ] Multiview Render Regions Optimization Mode: None
+[XR] [41440] [17:48:26.631][Info   ] Use OpenXR Predicted Time: True
+[XR] [41440] [17:48:26.631][Info   ] Foveated Rendering API: SRPFoveation
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] ==== OpenXR Provider Info ====
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Provider Version: ecb5f4e-dirty
+[XR] [41440] [17:48:26.631][Info   ] App: vr-convenience-store-simulator #3118937138
+[XR] [41440] [17:48:26.631][Info   ] Engine: 6000.3.26f1 #87139329
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] ==== OpenXR Runtime Info ====
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Available Runtime Extensions: (36)
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_D3D11_enable: Version=11
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_opengl_enable: Version=12
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_vulkan_enable: Version=10
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_vulkan_enable2: Version=4
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_win32_convert_performance_counter_time: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_convert_timespec_time: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_composition_layer_cube: Version=8
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_composition_layer_cylinder: Version=4
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_composition_layer_equirect: Version=3
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_composition_layer_color_scale_bias: Version=5
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_maintenance1: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_win32_appcontainer_compatible: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_debug_utils: Version=5
+[XR] [41440] [17:48:26.631][Info   ]   XR_OCULUS_recenter_event: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_FB_color_space: Version=3
+[XR] [41440] [17:48:26.631][Info   ]   XR_FB_display_refresh_rate: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [41440] [17:48:26.631][Info   ]   XR_META_headset_id: Version=2
+[XR] [41440] [17:48:26.631][Info   ]   XR_OCULUS_ovrsession_handle: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_active_action_set_priority: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_future: Version=2
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_palm_pose: Version=3
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_haptic_parametric: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_FB_haptic_amplitude_envelope: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_FB_haptic_pcm: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_FB_touch_controller_pro: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_META_touch_controller_plus: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_FB_touch_controller_proximity: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_OCULUS_external_camera: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_META_detached_controllers: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_LOGITECH_mx_ink_stylus_interaction: Version=1
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Available Layers: (0)
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Runtime Name: Oculus
+[XR] [41440] [17:48:26.631][Info   ] Runtime Version: 1.208.0
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Form factor: XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Runtime extensions enabled: (6)
+[XR] [41440] [17:48:26.631][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [41440] [17:48:26.631][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [41440] [17:48:26.631][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [41440] [17:48:26.631][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Available Reference Spaces: (4)
+[XR] [41440] [17:48:26.631][Info   ]   XR_REFERENCE_SPACE_TYPE_VIEW
+[XR] [41440] [17:48:26.631][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL
+[XR] [41440] [17:48:26.631][Info   ]   XR_REFERENCE_SPACE_TYPE_STAGE
+[XR] [41440] [17:48:26.631][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Instance Id  : 0x1
+[XR] [41440] [17:48:26.631][Info   ] System Id    : 0x14
+[XR] [41440] [17:48:26.631][Info   ] Session Id   : 0x2
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Available View Configuration Types: (1)
+[XR] [41440] [17:48:26.631][Info   ]   XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO (Selected): FovMutable=False
+[XR] [41440] [17:48:26.631][Info   ]     [0]: Recommended: Width=2080, Height=2096, SampleCount=1
+[XR] [41440] [17:48:26.631][Info   ]     [0]:     Maximum: Width=4160, Height=4192, SampleCount=4
+[XR] [41440] [17:48:26.631][Info   ]     [1]: Recommended: Width=2080, Height=2096, SampleCount=1
+[XR] [41440] [17:48:26.631][Info   ]     [1]:     Maximum: Width=4160, Height=4192, SampleCount=4
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Skip Present To Main Screen: No
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Available Environment Blend Modes: (1)
+[XR] [41440] [17:48:26.631][Info   ]   XR_ENVIRONMENT_BLEND_MODE_OPAQUE (Selected)
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.631][Info   ] Features requested to be enabled: (1)
+[XR] [41440] [17:48:26.631][Info   ]   Oculus Touch Controller Profile: Version=0.0.1, Company="Unity"
+[XR] [41440] [17:48:26.631][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] Requested feature extensions not supported by runtime: (0)
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] System Properties: Name="Oculus Quest2", VendorId=-11714
+[XR] [41440] [17:48:26.632][Info   ] System Graphics Properties: MaxWidth=4096, MaxHeight=4096, MaxLayers=16
+[XR] [41440] [17:48:26.632][Info   ] System Tracking Properties: OrientationTracking=True, PositionTracking=True
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] ==== OpenXR API Spec Version ====
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] XrInstance Created with OpenXR API Version: 1.1.54
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] ==== OpenXR Input ====
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] Action Sets (1): 
+[XR] [41440] [17:48:26.632][Info   ]   oculustouchcontroller: ActionCount=17
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] ==== OpenXR Swapchain Details ====
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] Render Mode: MultiPass
+[XR] [41440] [17:48:26.632][Info   ] Latency Optimization: Prioritize Rendering
+[XR] [41440] [17:48:26.632][Info   ] Color Submission Mode: RGBA, 8 bits per channel (LDR)
+[XR] [41440] [17:48:26.632][Info   ] Depth Submission Mode: None
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] Swapchain Format Preferences: 
+[XR] [41440] [17:48:26.632][Info   ]    kRenderTextureFormatGroup8888
+[XR] [41440] [17:48:26.632][Info   ] Swapchain Formats: 
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_R8G8B8A8_UNORM
+[XR] [41440] [17:48:26.632][Info   ] [c:DXGI_FORMAT_R8G8B8A8_UNORM_SRGB]
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_B8G8R8A8_UNORM
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_B8G8R8A8_UNORM_SRGB
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_B8G8R8X8_UNORM_SRGB
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_R16G16B16A16_FLOAT
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_R11G11B10_FLOAT
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_D16_UNORM
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_D24_UNORM_S8_UINT
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_D32_FLOAT
+[XR] [41440] [17:48:26.632][Info   ]    DXGI_FORMAT_D32_FLOAT_S8X24_UINT
+[XR] [41440] [17:48:26.632][Info   ] Swapchain Views: (2)
+[XR] [41440] [17:48:26.632][Info   ]   [0]: Width=2080, Height=2096, SampleCount=1
+[XR] [41440] [17:48:26.632][Info   ]   [1]: Width=2080, Height=2096, SampleCount=1
+[XR] [41440] [17:48:26.632][Info   ] 
+[XR] [41440] [17:48:26.632][Info   ] ==== Last 20 Events ====
+[XR] [41440] [17:48:26.632][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE
+[XR] [41440] [17:48:26.632][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_IDLE->XR_SESSION_STATE_READY
+[XR] [41440] [17:48:26.632][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_READY->XR_SESSION_STATE_SYNCHRONIZED
+[XR] [41440] [17:48:26.632][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_VISIBLE
+[XR] [41440] [17:48:26.632][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_FOCUSED
+[XR] [41440] [17:48:26.632][Info   ] 
+
+==== End Unity OpenXR Diagnostic Report ====
+
+
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 1 col: 0000027E6985A5B0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 1)
+IVRDeviceCallback_CreateEyeTextureResources 0000027E6985A5B0
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 2 col: 0000027E6985B7D0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 2)
+IVRDeviceCallback_CreateEyeTextureResources 0000027E6985B7D0
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 3 col: 0000027E69857860 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 3)
+IVRDeviceCallback_CreateEyeTextureResources 0000027E69857860
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 4 col: 0000027E69858170 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 4)
+IVRDeviceCallback_CreateEyeTextureResources 0000027E69858170
+XRTextureManager::RequestCreateTexture
+XRTextureManager::RequestCreateTexture
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 5 col: 0000027E6985AEC0 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 5)
+IVRDeviceCallback_CreateEyeTextureResources 0000027E6985AEC0
+XRTextureManager::SetupRenderTextureFromXRRequest (id: 6 col: 0000027E6985EE30 d: 0000000000000000 sr: 0000000000000000)
+RenderTexture::Create (id: 6)
+IVRDeviceCallback_CreateEyeTextureResources 0000027E6985EE30
+UnloadTime: 0.207700 ms
+[Simulator Guard] OpenXRLoader is running; XR Device Simulator stays off.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SimulatorHmdGuard:Awake()
+
+[Progress] Loaded day=1 graduated=False budget=0 owned=0 arriving=0 from C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/play_1115b.json
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+StoreProgress:Load(String)
+GameManager:Awake()
+
+[Game] Growing store: 16 things to order, save at C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/play_1115b.json
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+GameManager:Awake()
+
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Decor stock: 52 places on 9 display and 9 fill slots, far gaussians=1038818
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDecor()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 1: no intake; display stock=16 on 5 slots, gaussians=319888
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDisplays()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Body] step 0.05 m; floor y 0.000; headset True; tracking origin Unknown; camera offset 1.361 m; head 1.09 m above the tracking origin
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+RoomScaleBody:KeepEyeHeight()
+
+[Body] the head is 1.09 m above the tracking origin, so the poses are from the floor: the camera offset of 1.361 m (tracking origin Unknown) is taken off
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+RoomScaleBody:KeepEyeHeight()
+
+[Body] tracking origin Unknown -> Floor; camera offset 0.000 -> 0.000 m; head 1.09 m above the tracking origin; headset True
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+RoomScaleBody:KeepEyeHeight()
+
+[HMD Perf] start mode=game runtime=Oculus 1.208.0 xr=True eye=2080x2096 refresh=72 known=True tracking=Floor simulators=0
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 1: no intake; display stock=16 on 5 slots, gaussians=319888
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDisplays()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=30 state=PunchIn frames=2138 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.00/5.43 work_p95=3.24 eye_y=1.49 rig_y=0.000
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] Guest 1 (Female_Adult_01_B) found the card back on the plate 0.2 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=60 state=Tutorial frames=2143 fps=71.8 p95=13.96 max=14.5 missed=0 gpu=5.59/6.18 work_p95=3.15 eye_y=1.52 rig_y=0.000
+[HMD Perf] t=90 state=Shift frames=2149 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.15/6.21 work_p95=3.08 eye_y=1.52 rig_y=0.000
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order t01_01 (day 1 #1; 2 items; card; bag) paid after 18.4 s at the counter; limit 150 s less 0.0 s for the line; share left 0.88; tip 300; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 3 (Male_Adult_08_B) found the card back on the plate 3.4 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=120 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.10/7.08 work_p95=3.30 eye_y=1.56 rig_y=0.000
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order t01_02 (day 1 #2; 1 items; cash) paid after 14.9 s at the counter; limit 150 s less 0.0 s for the line; share left 0.90; tip 200; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Training day=1 done: paid=2/2 sales=5200 tips=500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Store day=1 earned=1540 budget=1540 graduated=False owned=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunStoreDays>d__178:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 2: 3 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Deliveries] Day 2: 처리 1건 / 스킵 0건
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DeliveryLoader:Parse(String, Int32, ProductCatalog, IReadOnlyDictionary`2, Int32, List`1)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 2: boxes=1 of 1 delivered=6 stock=10 expired=2 skipped=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 2: 3 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=150 state=Tutorial frames=2138 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.25/5.85 work_p95=3.13 eye_y=1.49 rig_y=0.000
+[HMD Perf] t=180 state=Tutorial frames=2155 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=7.11/9.39 work_p95=3.34 eye_y=1.46 rig_y=0.000
+[HMD Perf] t=210 state=Shift frames=2149 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=8.00/9.30 work_p95=3.17 eye_y=1.51 rig_y=0.000
+[Scanner] 오감자 (개발용) (dev_ogamja_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 오징어땅콩 (개발용) (dev_squidpeanut_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=240 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.7 missed=0 gpu=5.56/6.77 work_p95=3.32 eye_y=1.47 rig_y=0.000
+[Customers] order t02_01 (day 2 #1; 2 items; card; bag) paid after 13.6 s at the counter; limit 120 s less 0.0 s for the line; share left 0.89; tip 400; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 9 (Male_Adult_16) found the card back on the plate 3.0 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=270 state=Shift frames=2155 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.12/7.44 work_p95=3.26 eye_y=1.49 rig_y=0.000
+[Customers] order t02_02 (day 2 #2; 2 items; cash) paid after 24.5 s at the counter; limit 120 s less 0.0 s for the line; share left 0.80; tip 200; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=300 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.59/6.91 work_p95=3.24 eye_y=1.52 rig_y=0.000
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Customers] order t02_03 (day 2 #3; 1 items; card) paid after 6.9 s at the counter; limit 120 s less 0.0 s for the line; share left 0.94; tip 200; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Training day=2 done: paid=3/3 sales=7300 tips=800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Store day=2 earned=2260 budget=3800 graduated=False owned=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunStoreDays>d__178:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 12 (Female_Adult_01_B) found the card back on the plate 3.3 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 3: 4 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Deliveries] Day 3: 처리 1건 / 스킵 0건
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DeliveryLoader:Parse(String, Int32, ProductCatalog, IReadOnlyDictionary`2, Int32, List`1)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 3: boxes=1 of 1 delivered=4 stock=12 expired=2 skipped=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scenario] Day 3: 4 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=330 state=Shift frames=2137 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=5.19/6.07 work_p95=3.15 eye_y=1.46 rig_y=0.000
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order t03_01 (day 3 #1; 2 items; card; bag) paid after 26.8 s at the counter; limit 90 s less 0.0 s for the line; share left 0.70; tip 400; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=360 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.69/8.71 work_p95=3.33 eye_y=1.51 rig_y=0.000
+[Customers] Customer 17 (Male_Adult_16_B) found the card back on the plate 2.8 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 오징어땅콩 (개발용) (dev_squidpeanut_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=390 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.62/6.41 work_p95=3.24 eye_y=1.46 rig_y=0.000
+[Customers] order t03_02 (day 3 #2; 1 items; cash) paid after 19.3 s at the counter; limit 90 s less 0.0 s for the line; share left 0.79; tip 200; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 오감자 (개발용) (dev_ogamja_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order t03_03 (day 3 #3; 2 items; card; bag) paid after 11.4 s at the counter; limit 90 s less 0.0 s for the line; share left 0.87; tip 400; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 20 (Female_Adult_01) found the card back on the plate 2.5 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=420 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.00/6.85 work_p95=3.29 eye_y=1.54 rig_y=0.000
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 오감자 (개발용) (dev_ogamja_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[HMD Perf] t=450 state=Shift frames=2155 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=6.30/6.70 work_p95=3.29 eye_y=1.51 rig_y=0.000
+[Customers] order t03_04 (day 3 #4; 2 items; cash; bag) paid after 30.4 s at the counter; limit 90 s less 0.0 s for the line; share left 0.66; tip 300; satisfaction 1.00; asked for change 0; change over 400
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Training day=3 done: paid=4/4 sales=11600 tips=1300
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Game] Store day=3 earned=7220 budget=11020 graduated=True owned=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunStoreDays>d__178:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Tablet] Ordered dev_pocachip_01 for 3000; budget=8020
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+OrderTablet:Buy(Int32)
+UnityEngine.Events.InvokableCall:Invoke(Object[])
+UnityEngine.Events.UnityEvent:Invoke()
+UnityEngine.EventSystems.ExecuteEvents:Execute(GameObject, BaseEventData, EventFunction`1)
+UnityEngine.XR.Interaction.Toolkit.UI.UIInputModule:ProcessPointerButton(ButtonDeltaState, PointerEventData, Boolean)
+UnityEngine.XR.Interaction.Toolkit.UI.UIInputModule:ProcessTrackedDevice(TrackedDeviceModel&, Boolean)
+UnityEngine.XR.Interaction.Toolkit.UI.XRUIInputModule:DoProcess()
+UnityEngine.XR.Interaction.Toolkit.UI.UIInputModule:Update()
+
+[Tablet] Ordered hotwater for 5000; budget=3020
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+OrderTablet:Buy(Int32)
+UnityEngine.Events.InvokableCall:Invoke(Object[])
+UnityEngine.Events.UnityEvent:Invoke()
+UnityEngine.EventSystems.ExecuteEvents:Execute(GameObject, BaseEventData, EventFunction`1)
+UnityEngine.XR.Interaction.Toolkit.UI.UIInputModule:ProcessPointerButton(ButtonDeltaState, PointerEventData, Boolean)
+UnityEngine.XR.Interaction.Toolkit.UI.UIInputModule:ProcessTrackedDevice(TrackedDeviceModel&, Boolean)
+UnityEngine.XR.Interaction.Toolkit.UI.XRUIInputModule:DoProcess()
+UnityEngine.XR.Interaction.Toolkit.UI.UIInputModule:Update()
+
+[HMD Perf] t=480 state=DayEnd frames=2148 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=4.92/6.16 work_p95=3.05 eye_y=1.54 rig_y=0.000
+[Orders] Day 4: 7 generated from 6 products (1 ordered in), services=1
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+OrderGenerator:Build(ShiftPlan)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Deliveries] Day 2: 처리 2건 / 스킵 0건
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DeliveryLoader:Parse(String, Int32, ProductCatalog, IReadOnlyDictionary`2, Int32, List`1)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 4: boxes=2 of 3 delivered=9 stock=6 expired=3 skipped=0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Orders] Day 4: 7 generated from 6 products (1 ordered in), services=1
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+OrderGenerator:Build(ShiftPlan)
+GameManager:ParseOrders(Int32)
+<RunDay>d__211:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=510 state=Shift frames=2141 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=5.14/6.62 work_p95=3.12 eye_y=1.50 rig_y=0.000
+[Scanner] 오징어땅콩 (개발용) (dev_squidpeanut_01) price=1800
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order g04_01 (day 4 #1; 2 items; cash) paid after 22.3 s at the counter; limit 90 s less 0.0 s for the line; share left 0.75; tip 400; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=540 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.0 missed=0 gpu=6.28/7.73 work_p95=3.38 eye_y=1.52 rig_y=0.000
+[Game] dev_pocachip_01 is on its shelf D-1: on sale from now on
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+GameManager:OnDisplayShelved(ShelfSlotZone, ProductPrefab)
+<Snap>d__78:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Scanner] 치토스 (개발용) (dev_cheetos_01) price=1700
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[HMD Perf] t=570 state=Shift frames=2156 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=7.36/8.50 work_p95=3.58 eye_y=1.49 rig_y=0.000
+[Customers] order g04_02 (day 4 #2; 2 items; cash) paid after 35.3 s at the counter; limit 90 s less 0.0 s for the line; share left 0.61; tip 300; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 4: box dev_d02_02 arrived after customer 2; delivered=13
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:ReceiveMidDayBoxes(Int32)
+GameManager:OnOrderEnded(Order, Boolean)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Browser 37 (Female_Adult_01) blocked at (-2.96, 0.02, -0.40) on the way to (2.10, 0.00, 3.98) (-0.36 m closer, 0.58 m moved in 2 s); stepping aside 0.55 m. Near: nobody. Clerk at (-3.18, 1.56, 0.15).
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<StepAside>d__106:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=600 state=Shift frames=2155 fps=71.8 p95=13.96 max=14.1 missed=0 gpu=6.60/7.43 work_p95=3.50 eye_y=1.49 rig_y=0.000
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Scanner] 고래밥 (개발용) (dev_goraebap_01) price=2500
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Stayed(Collider, Transform)
+
+[Customers] order g04_03 (day 4 #3; 2 items; cash) paid after 18.9 s at the counter; limit 90 s less 8.4 s for the line; share left 0.70; tip 400; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] t=630 state=Shift frames=2154 fps=71.8 p95=13.96 max=27.8 missed=1 gpu=5.61/6.81 work_p95=3.46 eye_y=1.54 rig_y=0.000
+[Scanner] 신라면 (개발용) (dev_shinramen_01) price=1000
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+ScannerZone:Scan(ProductPrefab)
+ScannerZone:Entered(Collider, Transform)
+
+[Customers] order g04_04 (day 4 #4; 1 items; card; bag) paid after 7.7 s at the counter; limit 90 s less 5.2 s for the line; share left 0.86; tip 100; satisfaction 1.00; asked for change 0; change over 0
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<RunOrder>d__487:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Customers] Customer 35 (Female_Adult_17_B) found the card back on the plate 3.0 s after paying and takes it.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+<TakeCardBack>d__457:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[XR] [41440] [17:59:21.723][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_FOCUSED->XR_SESSION_STATE_VISIBLE session=2 time=285057883238600
+[XR] [41440] [17:59:21.723][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_VISIBLE->XR_SESSION_STATE_SYNCHRONIZED session=2 time=285057883244800
+[XR] [41440] [17:59:21.723][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_SYNCHRONIZED->XR_SESSION_STATE_STOPPING session=2 time=285057883313600
+[XR] [41440] [17:59:21.723][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_STOPPING->XR_SESSION_STATE_IDLE session=2 time=285057883386600
+[HMD Perf] t=660 state=Shift frames=2921 fps=150.6 p95=13.95 max=14.1 missed=0 gpu=5.41/6.17 work_p95=3.27 eye_y=1.49 rig_y=0.000
+Direct3D: detected that IDXGISwapChain::GetFrameStatistics is broken (it does not return proper timestamps). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+[HMD Perf] t=690 state=Shift frames=4155 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=5.10/5.25 work_p95=2.97 eye_y=1.49 rig_y=0.000
+[HMD Perf] t=720 state=Shift frames=4019 fps=100000.0 p95=0.01 max=0.0 missed=0 gpu=5.28/5.60 work_p95=3.13 eye_y=1.49 rig_y=0.000

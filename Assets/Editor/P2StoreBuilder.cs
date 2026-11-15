@@ -216,6 +216,8 @@ public static class P2StoreBuilder
         var capsule = root.GetComponent<CharacterController>();
         capsule.radius = CapsuleRadius;
         capsule.skinWidth = CapsuleSkin;
+        // The rig comes with a 0.5 m step, which walks the player up onto anything knee-high (RoomScaleBody).
+        capsule.stepOffset = RoomScaleBody.StepUp;
         capsule.center = new Vector3(0f, capsule.height * 0.5f + CapsuleSkin, 0f);
         PrefabUtility.RecordPrefabInstancePropertyModifications(capsule);
 

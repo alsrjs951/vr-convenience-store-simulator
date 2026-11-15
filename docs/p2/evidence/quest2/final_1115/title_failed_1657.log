@@ -1,0 +1,398 @@
+Found 2 interfaces on host : 0) 192.168.219.113 1) 100.71.35.78
+Player connection [53696]  Target information:
+
+Player connection [53696]  * "[IP] 192.168.219.113 [Port] 55000 [Flags] 2 [Guid] 888528304 [EditorId] 1529444399 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [53696]  * "[IP] 100.71.35.78 [Port] 55000 [Flags] 2 [Guid] 888528304 [EditorId] 1529444399 [Version] 1048832 [Id] WindowsPlayer(2,mingeon) [Debug] 0 [PackageName] WindowsPlayer [ProjectName] vr-convenience-store-simulator" 
+
+Player connection [53696] Started UDP target info broadcast (1) on [225.0.0.222:54997].
+
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.3.26f1 (de8167e7440c)
+[Subsystems] Discovering subsystems at path C:/Projects/vr-convenience-store-simulator/Builds/Store/VRStore_Data/UnitySubsystems
+[Subsystems] No descriptors matched for  examples in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[Subsystems] 1 'inputs' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] 1 'displays' descriptors matched in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json
+[Subsystems] No descriptors matched for  meshings in UnitySubsystems/UnityOpenXR/UnitySubsystemsManifest.json.
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 4070
+[D3D12 Device Filter] Driver Version: 32.0.15.9159
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 12010 MB
+[D3D12 Device Filter] Processor Count: 20
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 (ID=0x2786)
+    Vendor:          NVIDIA
+    VRAM:            12010 MB
+    App VRAM Budget: 11242 MB
+    Driver:          32.0.15.9159
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+XRGeneral Settings awakening...
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.Management.XRGeneralSettings:Awake()
+
+[XR] [53696] [16:57:39.443][Info   ] Available Layers: (0)
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Input
+[Subsystems] OpenXR XR Plugin successfully registered Provider for OpenXR Display
+Loading OpenXR loader library at path: openxr_loader
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:LoadOpenXRSymbols()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:InitializeInternal()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:Initialize()
+UnityEngine.XR.Management.XRManagerSettings:InitializeLoaderSync()
+UnityEngine.XR.Management.XRGeneralSettings:InitXRSDK()
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Display...
+[XR] [53696] [16:57:39.680][Info   ] Available Layers: (0)
+[Subsystems] Loading plugin UnityOpenXR for subsystem OpenXR Input...
+<RI> Initializing input.
+Using Windows.Gaming.Input
+<RI> Input initialized.
+[RuntimeIPCLoader [RUNTIMEIPC]] [INFO] RuntimeIPC: Successfully loaded library
+[RuntimeIPCSystem [RUNTIMEIPC]] [INFO] RuntimeIPCSystem: Init called: Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] CheckShouldSpawnProxy: Android target package detected on Windows. package: com.oculus.systemdriver, server: RuntimeServiceServer (forcing Link transport)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: BEGIN: friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: :, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcLocalTransportMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer SUCCESS RuntimeServiceServer
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 16 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 24 bytes: 1453
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 20 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] Event buffer size (client): eventBufferSize=8192
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 8216 bytes: 1453
+[RipcClientConnection [RUNTIMEIPC]] [INFO] TryToGetIPCResourcesFromServer: RPC_CONNECTOR_CONNECT_TO_SERVER SUCCESS: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer), Version: 87, Platform: Windows, Build Date: 1, Build Time: 1, BuildMode: shared
+[IPCSharedMemory [RUNTIMEIPC]] [WARN] IPCSharedMemory::MapSharedMemory: VirtualLock failed for 86800 bytes: 1453
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: SUCCESS. Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] establishConnection: SUCCESS: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[XR] [53696] [16:57:39.908][Info   ] OpenXRSession::HandleSessionStateChangedEvent: state XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE session=2 time=281355937161600
+d3d12: upload buffer was too small for the requested resource! Size: 16777216. Requested: 51118080.
+Direct3D: detected that IDXGISwapChain::GetFrameStatistics is broken (it does not return proper timestamps). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+UnloadTime: 0.392200 ms
+[Simulator Guard] OpenXRLoader is running; XR Device Simulator stays off.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+SimulatorHmdGuard:Awake()
+
+[Progress] Loaded day=1 graduated=False budget=0 owned=0 arriving=0 from C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/play_1115.json
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+StoreProgress:Load(String)
+GameManager:Awake()
+
+[Game] Growing store: 16 things to order, save at C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/play_1115.json
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+GameManager:Awake()
+
+[Scenario] Day 1: 2 orders, 0 skipped
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog, List`1)
+DayScenarioLoader:Parse(String, Int32, ProductCatalog)
+GameManager:ParseOrders(Int32)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Decor stock: 52 places on 9 display and 9 fill slots, far gaussians=1038818
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDecor()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[Intake] Day 1: no intake; display stock=16 on 5 slots, gaussians=319888
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+IntakeDirector:StockDisplays()
+IntakeDirector:BeginDay(Int32, Int32, Int32, List`1)
+GameManager:PrepareStore(Int32)
+<RunTitle>d__198:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+
+[HMD Perf] start mode=game runtime=Oculus 1.208.0 xr=False eye=0x0 refresh=72 known=False tracking=Unknown simulators=0
+[HMD Perf] t=30 state=Title frames=4305 fps=143.7 p95=6.97 max=21.0 missed=1 gpu=2.47/2.61 work_p95=1.63
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RPCClientHelper [RUNTIMEIPC]] [WARN] CallServerRPC: MakeRequest failed.
+[BrokerRPC [RUNTIMEIPC]] [WARN] CallServiceRPC failed, trying again. Attempt: 2/2, WindowsProcess, rpcType=19
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 109: The pipe has been ended.
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [WARN] RuntimeIPCNotificationThread MainLoop: WaitForNotification FAILED: -1
+Shutting down OpenXR.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, LogOption, String, Object)
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+UnityEngine.XR.OpenXR.<RestartCoroutine>d__36:MoveNext()
+UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+UnityEngine.XR.OpenXR.OpenXRRestarter:Shutdown()
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:ReceiveNativeEvent(NativeEvent, UInt64)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase:ProcessOpenXRMessageLoop()
+UnityEngine.BeforeRenderHelper:Invoke()
+
+[XR] [53696] [16:58:18.448][Info   ] 
+
+==== Start Unity OpenXR Diagnostic Report ====
+
+
+[XR] [53696] [16:58:18.448][Info   ] ==== Report Reason: System Shutdown ====
+
+
+[XR] [53696] [16:58:18.448][Info   ] ==== OpenXR Settings ====
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Symmetric Projection: False
+[XR] [53696] [16:58:18.448][Info   ] Stereo Rendering Mode: MultiPass
+[XR] [53696] [16:58:18.448][Info   ] Latency Optimization: PrioritizeRendering
+[XR] [53696] [16:58:18.448][Info   ] Color Submission Modes: kRenderTextureFormatGroup8888
+[XR] [53696] [16:58:18.448][Info   ] Depth Submission Mode: None
+[XR] [53696] [16:58:18.448][Info   ] Space Warp Motion Vector Texture Format: RGBA16f
+[XR] [53696] [16:58:18.448][Info   ] Optimize Buffer Discards: False
+[XR] [53696] [16:58:18.448][Info   ] Multiview Render Regions Optimization Mode: None
+[XR] [53696] [16:58:18.448][Info   ] Use OpenXR Predicted Time: True
+[XR] [53696] [16:58:18.448][Info   ] Foveated Rendering API: SRPFoveation
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] ==== OpenXR Provider Info ====
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Provider Version: ecb5f4e-dirty
+[XR] [53696] [16:58:18.448][Info   ] App: vr-convenience-store-simulator #3118937138
+[XR] [53696] [16:58:18.448][Info   ] Engine: 6000.3.26f1 #87139329
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] ==== OpenXR Runtime Info ====
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Available Runtime Extensions: (36)
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_D3D11_enable: Version=11
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_opengl_enable: Version=12
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_vulkan_enable: Version=10
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_vulkan_enable2: Version=4
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_win32_convert_performance_counter_time: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_convert_timespec_time: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_composition_layer_cube: Version=8
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_composition_layer_cylinder: Version=4
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_composition_layer_equirect: Version=3
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_composition_layer_color_scale_bias: Version=5
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_maintenance1: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_win32_appcontainer_compatible: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_debug_utils: Version=5
+[XR] [53696] [16:58:18.448][Info   ]   XR_OCULUS_recenter_event: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_FB_color_space: Version=3
+[XR] [53696] [16:58:18.448][Info   ]   XR_FB_display_refresh_rate: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [53696] [16:58:18.448][Info   ]   XR_META_headset_id: Version=2
+[XR] [53696] [16:58:18.448][Info   ]   XR_OCULUS_ovrsession_handle: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_active_action_set_priority: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_future: Version=2
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_palm_pose: Version=3
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_haptic_parametric: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_FB_haptic_amplitude_envelope: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_FB_haptic_pcm: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_FB_touch_controller_pro: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_META_touch_controller_plus: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_FB_touch_controller_proximity: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_OCULUS_external_camera: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_META_detached_controllers: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_LOGITECH_mx_ink_stylus_interaction: Version=1
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Available Layers: (0)
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Runtime Name: Oculus
+[XR] [53696] [16:58:18.448][Info   ] Runtime Version: 1.208.0
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Form factor: XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Runtime extensions enabled: (6)
+[XR] [53696] [16:58:18.448][Info   ]   XR_EXT_local_floor: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_D3D12_enable: Version=11
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_composition_layer_depth: Version=6
+[XR] [53696] [16:58:18.448][Info   ]   XR_KHR_visibility_mask: Version=2
+[XR] [53696] [16:58:18.448][Info   ]   XR_OCULUS_audio_device_guid: Version=1
+[XR] [53696] [16:58:18.448][Info   ]   XR_META_performance_metrics: Version=2
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Available Reference Spaces: (4)
+[XR] [53696] [16:58:18.448][Info   ]   XR_REFERENCE_SPACE_TYPE_VIEW
+[XR] [53696] [16:58:18.448][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL
+[XR] [53696] [16:58:18.448][Info   ]   XR_REFERENCE_SPACE_TYPE_STAGE
+[XR] [53696] [16:58:18.448][Info   ]   XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] Instance Id  : 0x1
+[XR] [53696] [16:58:18.448][Info   ] System Id    : 0x14
+[XR] [53696] [16:58:18.448][Info   ] Session Id   : 0x2
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] ==== OpenXR API Spec Version ====
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] XrInstance Created with OpenXR API Version: 1.1.54
+[XR] [53696] [16:58:18.448][Info   ] 
+[XR] [53696] [16:58:18.448][Info   ] ==== Last 20 Events ====
+[XR] [53696] [16:58:18.448][Info   ] XrEventDataSessionStateChanged: XR_SESSION_STATE_UNKNOWN->XR_SESSION_STATE_IDLE
+[XR] [53696] [16:58:18.448][Info   ] XrEventDataInstanceLossPending: Loss Time: 281394600771199
+[XR] [53696] [16:58:18.448][Info   ] 
+
+==== End Unity OpenXR Diagnostic Report ====
+
+
+[XR] XR_META_performance_metrics: Attempted to stop before session ready
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[BrokerRPC [RUNTIMEIPC]] [INFO] InitRPCToServiceInternal
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: GetLastError()=232: The pipe is being closed., expected ERROR_IO_PENDING
+[RPCClientHelper [RUNTIMEIPC]] [WARN] CallServerRPC: MakeRequest failed.
+[BrokerMethodsWin [RUNTIMEIPC]] [WARN] GetConnectInfo: EnsureServiceConnectionInternal failed
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] startOverlapped: !isValid()
+[RPCClientHelper [RUNTIMEIPC]] [WARN] CallServerRPC: MakeRequest failed.
+[BrokerMethodsWin [RUNTIMEIPC]] [WARN] GetConnectInfo: EnsureServiceConnectionInternal failed
+[BrokerRPC [RUNTIMEIPC]] [WARN] InitRPCToServiceInternal: connectInfo invalid
+[BrokerRPC [RUNTIMEIPC]] [WARN] InitRPCToServiceInternal: client_.Init FAILED
+[BrokerRPC [RUNTIMEIPC]] [WARN] InitRPCToService: InitRPCToServiceInternal failed, trying again. Attempt: 2, elapsed: 4229ms, sleeping 1000ms, WindowsProcess
+[BrokerRPC [RUNTIMEIPC]] [INFO] InitRPCToServiceInternal
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] startOverlapped: !isValid()
+[RPCClientHelper [RUNTIMEIPC]] [WARN] CallServerRPC: MakeRequest failed.
+[BrokerRPC [RUNTIMEIPC]] [INFO] InitRPCToServiceInternal: SUCCESS
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: processConnection_ == nullptr (but IsConnected was true): Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcServerMgr [RUNTIMEIPC]] [INFO] UpdateServerListOnBroker: SUCCESS: pid=52328, shouldNotify=true, servers=[]
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: processConnection_ == nullptr (but IsConnected was true): Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: processConnection_ == nullptr (but IsConnected was true): Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: processConnection_ == nullptr (but IsConnected was true): Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: processConnection_ == nullptr (but IsConnected was true): Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] DisconnectFromServer: Not connected: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: COMPLETE: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RuntimeIPCNotificationThread [RUNTIMEIPC]] [INFO] RuntimeIPCNotificationThread MainLoop: exiting
+[RipcClientConnection [RUNTIMEIPC]] [WARN] EnsureServerConnection: Reconnecting: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] TryToGetIPCResourcesFromServer FAILED in 0.031300 ms
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: TryToGetIPCResourcesFromServerWithWait FAILED, allowOfflineInitialization=false, isReconnecting=true: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcFramework_Client [RUNTIMEIPC]] [WARN] CallServerRPC FAILED: EnableRemoteServer. Error Code: 1
+[RipcLocalTransportMgr [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer FAILED RuntimeServiceServer
+[RipcClientConnection [RUNTIMEIPC]] [WARN] TryToGetIPCResourcesFromServer: Could not establish remote connection: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] EnsureServerConnection: Reconnecting: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] TryToGetIPCResourcesFromServer FAILED in 0.020300 ms
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: TryToGetIPCResourcesFromServerWithWait FAILED, allowOfflineInitialization=false, isReconnecting=true: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcFramework_Client [RUNTIMEIPC]] [WARN] CallServerRPC FAILED: EnableRemoteServer. Error Code: 1
+[RipcLocalTransportMgr [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer FAILED HapticsServer
+[RipcClientConnection [RUNTIMEIPC]] [WARN] TryToGetIPCResourcesFromServer: Could not establish remote connection: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: COMPLETE: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer), result=SUCCESS
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] DisconnectFromServer DONE: clientId: 6, Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:0 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] EnsureServerConnection: Reconnecting: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] TryToGetIPCResourcesFromServer FAILED in 0.023700 ms
+[RipcClientConnection [RUNTIMEIPC]] [INFO] EnsureServerConnection: TryToGetIPCResourcesFromServerWithWait FAILED, allowOfflineInitialization=false, isReconnecting=true: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcFramework_Client [RUNTIMEIPC]] [WARN] CallServerRPC FAILED: EnableRemoteServer. Error Code: 1
+[RipcLocalTransportMgr [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] RipcLocalProxyServerMgr::EnableProxyServer FAILED HandInputDataServer
+[RipcClientConnection [RUNTIMEIPC]] [WARN] TryToGetIPCResourcesFromServer: Could not establish remote connection: Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnectedSlow: IsConnected is false: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: BEGIN: type=1, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] SendConnectEventInternal: completed: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] DisconnectFromServer: Not connected: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: COMPLETE: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: COMPLETE: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer), result=SUCCESS
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] DisconnectFromServer DONE: clientId: 4, Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HapticsServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] DisconnectFromServer: Not connected: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: COMPLETE: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: COMPLETE: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer), result=SUCCESS
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] DisconnectFromServer DONE: clientId: 5, Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (HandInputDataServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] DisconnectFromServer: Not connected: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: COMPLETE: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: BEGIN: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClientConnection [RUNTIMEIPC]] [WARN] IsConnected: ipcStateReadWrite_ not mapped: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [WARN] [RIPC_CONNECT_LOG] DisconnectFromServer: Not connected: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] ShutdownLocked: COMPLETE: elapsed_ms=0, friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: COMPLETE: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link), result=SUCCESS
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] DisconnectFromServer DONE: clientId: 3, Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RipcRemoteTransportServer_link)
+[RipcClient [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] Shutdown: COMPLETE: friendlyName=Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer), result=SUCCESS
+[RipcClientMgr [RUNTIMEIPC]] [INFO] [RIPC_CONNECT_LOG] DisconnectFromServer DONE: clientId: 2, Client: WindowsPackage:WindowsProcess:52328, Server: WindowsPackage:WindowsProcess:46692 (RuntimeServiceServer)
+[RuntimeIPCSystem [RUNTIMEIPC]] [INFO] Shutdown: WindowsProcess
+[RipcServerMgr [RUNTIMEIPC]] [INFO] RipcServerMgr::Shutdown: BEGIN
+[RipcServerMgr [RUNTIMEIPC]] [INFO] RipcServerMgr::Shutdown: completed
+[RipcClientMgr [RUNTIMEIPC]] [INFO] RipcClientMgr::Shutdown
+[IPCDataChannelWindowsOverlappedWrapper [RUNTIMEIPC]] [WARN] waitForOverlapped: I/O FAILED. GetLastError(): 233: No process is on the other end of the pipe.
+[RuntimeIPCSystem [RUNTIMEIPC]] [INFO] Shutdown: complete WindowsProcess
+[HMD Perf] done report=C:/Projects/vr-convenience-store-simulator/docs/p2/evidence/quest2/final_1115/perf\hmd_report.json segments=2 frames=4588 marks=0 gate_runs_passed=0
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+PlayerConnection::Cleanup##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794729504003,"processId":52328,"allocatedMemory":1396171,"memoryLabels":[{"Default":248},{"NewDelete":23780},{"Thread":9152},{"Manager":15798},{"Shader":2580},{"GfxDevice":2128},{"GfxThread":4608},{"Animation":4784},{"Audio":752},{"Serialization":520},{"JobScheduler":32768},{"ScriptingNativeRuntime":1099240},{"Renderer":55908},{"String":303},{"DynamicArray":64984},{"HashMap":52736},{"PoolAlloc":192},{"AI":64},{"VR":7456},{"Video":144},{"NativeArray":23106},{"Gui":360},{"CoreBusinessMetrics":120}]}

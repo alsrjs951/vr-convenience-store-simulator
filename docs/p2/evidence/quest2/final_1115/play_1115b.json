@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "day": 4,
+    "graduated": true,
+    "budget": 3020,
+    "totalSales": 24100,
+    "daysWorked": 3,
+    "owned": [
+        "dev_pocachip_01",
+        "hotwater"
+    ],
+    "arriving": [],
+    "shelved": [
+        "dev_pocachip_01"
+    ],
+    "completed": false
+}

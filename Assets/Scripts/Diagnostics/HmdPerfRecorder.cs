@@ -266,7 +266,7 @@ public class HmdPerfRecorder : MonoBehaviour
             if (now >= nextLog)
             {
                 var recent = Summarize("recent", nextLogFrame, frames.Count - nextLogFrame);
-                Log($"t={now - begun:0} state={name} frames={recent.frames} fps={recent.fps_avg:0.0} p95={recent.ms_p95:0.00} max={recent.ms_max:0.0} missed={recent.missed_frames} gpu={recent.gpu_ms_avg:0.00}/{recent.gpu_ms_p95:0.00} work_p95={recent.cpu_work_ms_p95:0.00}");
+                Log($"t={now - begun:0} state={name} frames={recent.frames} fps={recent.fps_avg:0.0} p95={recent.ms_p95:0.00} max={recent.ms_max:0.0} missed={recent.missed_frames} gpu={recent.gpu_ms_avg:0.00}/{recent.gpu_ms_p95:0.00} work_p95={recent.cpu_work_ms_p95:0.00} eye_y={view.transform.position.y:0.00} rig_y={origin.transform.position.y:0.000}");
                 nextLog = now + LogEverySeconds;
                 nextLogFrame = frames.Count;
             }

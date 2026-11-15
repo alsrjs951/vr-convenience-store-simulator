@@ -1,0 +1,12 @@
+{
+    "version": 2,
+    "day": 2,
+    "graduated": false,
+    "budget": 1540,
+    "totalSales": 5200,
+    "daysWorked": 1,
+    "owned": [],
+    "arriving": [],
+    "shelved": [],
+    "completed": false
+}
