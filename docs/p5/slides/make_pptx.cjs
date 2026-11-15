@@ -54,6 +54,16 @@ const BROWSERS = [
         }
       });
     }, index);
+    // 영상 장: 표지에 브라우저 재생 막대·로딩 동그라미가 찍히지 않게 controls를 떼고 첫 화면이 뜰 때까지 기다린다
+    // (이 페이지 안에서만 바꾼다. index.html의 영상은 그대로 controls가 있다)
+    await page.evaluate((idx) => {
+      const v = document.querySelectorAll('.slide')[idx].querySelector('video');
+      if (v) { v.removeAttribute('controls'); v.preload = 'auto'; v.load(); }
+    }, index);
+    await page.waitForFunction((idx) => {
+      const v = document.querySelectorAll('.slide')[idx].querySelector('video');
+      return !v || v.readyState >= 2;
+    }, { timeout: 30000 }, index);
     await new Promise((r) => setTimeout(r, 500));
 
     // 넘친 곳과 안 뜬 그림을 적어 둔다
