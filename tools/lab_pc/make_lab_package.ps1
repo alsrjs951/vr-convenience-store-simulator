@@ -23,8 +23,9 @@ Copy-Item (Join-Path $PSScriptRoot 'check_pc.ps1') $pkg
 Copy-Item (Join-Path $PSScriptRoot '3_pc_autoplay.bat') $pkg
 Copy-Item (Join-Path $PSScriptRoot '4_pc_keyboard.bat') $pkg
 Get-Content (Join-Path $repo 'docs\p5\발표날_시연_진행순서.md') -Encoding UTF8 | Set-Content (Join-Path $pkg 'README.txt') -Encoding UTF8
-$test = Join-Path $repo 'docs\p5\학교_사전테스트_2026-11-16.md'
-if (Test-Path $test) { Get-Content $test -Encoding UTF8 | Set-Content (Join-Path $pkg 'TEST_CHECKLIST.txt') -Encoding UTF8 }
+# 11/16 학교 사전 테스트는 취소됐다. 대신 발표 날 일찍 가서 준비하는 시간표를 넣는다.
+$early = Join-Path $repo 'docs\p5\발표날_일찍도착_준비_2026-11-17.md'
+if (Test-Path $early) { Get-Content $early -Encoding UTF8 | Set-Content (Join-Path $pkg 'EARLY_SETUP.txt') -Encoding UTF8 }
 $video = Join-Path $repo 'capture\film\presentation_v6_1min.mp4'
 if (Test-Path $video) { Copy-Item $video (Join-Path $pkg 'demo_video_1min.mp4') }
 
